@@ -19,8 +19,6 @@ class CryptoUtils extends ICryptoUtils {
   static const KEY_LENGTH = 32;
 
   static const TYPE_LENGTH = 1;
-  static const TYPE_0 = 0;
-  static const TYPE_1 = 1;
 
   @override
   CryptoKeyPair generateKeyPair() {
@@ -121,12 +119,12 @@ class CryptoUtils extends ICryptoUtils {
     String? iv,
     String? senderPublicKey,
   }) async {
-    final int decodedType = type != null ? type : TYPE_0;
+    final int decodedType = type != null ? type : EncodeOptions.TYPE_0;
     // print(message);
     // print(symKey);
 
     // Check for type 1 envelope, throw an error if data is invalid
-    if (decodedType == TYPE_1 && senderPublicKey == null) {
+    if (decodedType == EncodeOptions.TYPE_1 && senderPublicKey == null) {
       throw WCError(
         code: -1,
         message: 'Missing sender public key for type 1 envelope',
@@ -134,7 +132,8 @@ class CryptoUtils extends ICryptoUtils {
     }
 
     // final String senderPublicKey = senderPublicKey !=
-    final Uint8List usedIV = (iv != null ? hex.decode(iv) : randomBytes(IV_LENGTH)) as Uint8List;
+    final Uint8List usedIV =
+        (iv != null ? hex.decode(iv) : randomBytes(IV_LENGTH)) as Uint8List;
 
     final chacha = dc.Chacha20.poly1305Aead();
     dc.SecretBox b = await chacha.encrypt(
@@ -149,7 +148,9 @@ class CryptoUtils extends ICryptoUtils {
       decodedType,
       b.concatenation(),
       usedIV,
-      senderPublicKey: senderPublicKey != null ? hex.decode(senderPublicKey) as Uint8List : null,
+      senderPublicKey: senderPublicKey != null
+          ? hex.decode(senderPublicKey) as Uint8List
+          : null,
     );
   }
 
@@ -178,7 +179,7 @@ class CryptoUtils extends ICryptoUtils {
   }) {
     List<int> l = [type];
 
-    if (type == TYPE_1) {
+    if (type == EncodeOptions.TYPE_1) {
       if (senderPublicKey == null) {
         throw WCError(
           code: -1,
@@ -202,7 +203,7 @@ class CryptoUtils extends ICryptoUtils {
 
     int index = TYPE_LENGTH;
     Uint8List? senderPublicKey;
-    if (type == TYPE_1) {
+    if (type == EncodeOptions.TYPE_1) {
       senderPublicKey = bytes.sublist(
         index,
         index + KEY_LENGTH,
@@ -229,8 +230,9 @@ class CryptoUtils extends ICryptoUtils {
     String? receiverPublicKey,
   }) {
     final EncodingParams deserialized = deserialize(encoded);
-    final String? senderPublicKey =
-        deserialized.senderPublicKey != null ? hex.encode(deserialized.senderPublicKey!) : null;
+    final String? senderPublicKey = deserialized.senderPublicKey != null
+        ? hex.encode(deserialized.senderPublicKey!)
+        : null;
     return validateEncoding(
       type: deserialized.type,
       senderPublicKey: senderPublicKey,
@@ -244,8 +246,8 @@ class CryptoUtils extends ICryptoUtils {
     String? senderPublicKey,
     String? receiverPublicKey,
   }) {
-    final int t = type != null ? type : TYPE_0;
-    if (t == TYPE_1) {
+    final int t = type != null ? type : EncodeOptions.TYPE_0;
+    if (t == EncodeOptions.TYPE_1) {
       if (senderPublicKey == null) {
         throw new WCError(code: -1, message: "Missing sender public key");
       }
@@ -264,6 +266,8 @@ class CryptoUtils extends ICryptoUtils {
   bool isTypeOneEnvelope(
     EncodingValidation result,
   ) {
-    return result.type == TYPE_1 && result.senderPublicKey != null && result.receiverPublicKey != null;
+    return result.type == EncodeOptions.TYPE_1 &&
+        result.senderPublicKey != null &&
+        result.receiverPublicKey != null;
   }
 }

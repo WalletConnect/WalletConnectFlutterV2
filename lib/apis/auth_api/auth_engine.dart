@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:event/event.dart';
@@ -10,8 +11,11 @@ import 'package:wallet_connect_flutter_v2/apis/auth_api/stores/i_generic_store.d
 import 'package:wallet_connect_flutter_v2/apis/auth_api/utils/address_utils.dart';
 import 'package:wallet_connect_flutter_v2/apis/auth_api/utils/auth_api_validators.dart';
 import 'package:wallet_connect_flutter_v2/apis/auth_api/utils/auth_constants.dart';
+import 'package:wallet_connect_flutter_v2/apis/auth_api/utils/auth_signature.dart';
+import 'package:wallet_connect_flutter_v2/apis/core/crypto/crypto_models.dart';
 import 'package:wallet_connect_flutter_v2/apis/core/i_core.dart';
 import 'package:wallet_connect_flutter_v2/apis/core/pairing/utils/pairing_models.dart';
+import 'package:wallet_connect_flutter_v2/apis/core/pairing/utils/pairing_utils.dart';
 import 'package:wallet_connect_flutter_v2/apis/core/relay_client/relay_client_models.dart';
 import 'package:wallet_connect_flutter_v2/apis/models/basic_models.dart';
 import 'package:wallet_connect_flutter_v2/apis/models/json_rpc_error.dart';
@@ -38,9 +42,11 @@ class AuthEngine implements IAuthEngine {
   @override
   late IGenericStore<String> pairingTopics;
   @override
-  late IGenericStore<PendingRequest> authRequests;
+  late IGenericStore<PendingAuthRequest> authRequests;
   @override
   late IGenericStore<StoredCacao> completeRequests;
+
+  List<AuthRequestCompleter> pendingAuthRequests = [];
 
   AuthEngine({
     required this.core,
@@ -72,11 +78,11 @@ class AuthEngine implements IAuthEngine {
       core,
       'authRequests',
       '2.0',
-      (PendingRequest value) {
+      (PendingAuthRequest value) {
         return jsonEncode(value.toJson());
       },
       (String value) {
-        return PendingRequest.fromJson(jsonDecode(value));
+        return PendingAuthRequest.fromJson(jsonDecode(value));
       },
     );
     completeRequests = GenericStore(
@@ -111,14 +117,15 @@ class AuthEngine implements IAuthEngine {
 
   @override
   Future<AuthRequestResponse> requestAuth({
-    required String topic,
     required AuthRequestParams params,
+    String? pairingTopic,
   }) async {
     _checkInitialized();
 
     AuthApiValidators.isValidRequest(params);
 
-    final bool hasKnownPairing = core.pairing.getStore().has(topic);
+    final bool hasKnownPairing =
+        pairingTopic != null && core.pairing.getStore().has(pairingTopic);
 
     final Relay relay = Relay(
       WalletConnectConstants.RELAYER_DEFAULT_PROTOCOL,
@@ -128,32 +135,38 @@ class AuthEngine implements IAuthEngine {
       params.expiry ?? WalletConnectConstants.FIVE_MINUTES,
     );
     final String publicKey = await core.crypto.generateKeyPair();
+    final String responseTopic = core.crypto.getUtils().hashKey(publicKey);
+
+    WcAuthRequestRequest request = WcAuthRequestRequest(
+      payloadParams: AuthPayloadParams(
+        type: params.type ?? CacaoHeader.EIP4361,
+        chainId: params.chainId,
+        statement: params.statement,
+        aud: params.aud,
+        domain: params.domain,
+        version: '1',
+        nonce: params.nonce,
+        iat: DateTime.now().toIso8601String(),
+      ),
+      requester: ConnectionMetadata(
+        publicKey: publicKey,
+        metadata: metadata,
+      ),
+    );
+
+    late int id;
+    Completer<AuthResponse> completer = Completer.sync();
+    Uri? uri;
 
     if (hasKnownPairing) {
-      final PairingInfo knownPairing = core.pairing.getStore().get(topic)!;
-
-      WcAuthRequestRequest request = WcAuthRequestRequest(
-        payloadParams: AuthPayloadParams(
-          type: params.type ?? CacaoHeader.EIP4361,
-          chainId: params.chainId,
-          statement: params.statement,
-          aud: params.aud,
-          domain: params.domain,
-          version: '1',
-          nonce: params.nonce,
-          iat: DateTime.now().toIso8601String(),
-        ),
-        requester: ConnectionMetadata(
-          publicKey: publicKey,
-          metadata: metadata,
-        ),
-      );
-
-      await core.pairing.sendRequest(
-        topic,
-        MethodConstants.WC_AUTH_REQUEST,
-        request.toJson(),
-        ttl: expiry,
+      id = PairingUtils.payloadId();
+      _requestAuthResponseHandler(
+        pairingTopic: pairingTopic,
+        responseTopic: responseTopic,
+        request: request,
+        id: id,
+        expiry: expiry,
+        completer: completer,
       );
     } else {
       final String symKey = core.crypto.getUtils().generateRandomBytes32();
@@ -173,115 +186,136 @@ class AuthEngine implements IAuthEngine {
         AuthConstants.AUTH_CLIENT_PUBLIC_KEY_NAME,
         AuthPublicKey(publicKey: publicKey),
       );
+
+      await pairingTopics.set(
+        responseTopic,
+        pairingTopic,
+      );
+
+      await core.relayClient.subscribe(topic: pairingTopic);
+      await core.relayClient.subscribe(topic: responseTopic);
+
+      id = PairingUtils.payloadId();
+      _requestAuthResponseHandler(
+        pairingTopic: pairingTopic,
+        responseTopic: responseTopic,
+        request: request,
+        id: id,
+        expiry: expiry,
+        completer: completer,
+      );
+
+      uri = WalletConnectUtils.formatUri(
+        protocol: core.protocol,
+        version: core.version,
+        topic: pairingTopic,
+        symKey: symKey,
+        relay: relay,
+        methods: [],
+      );
     }
 
-    // const hasKnownPairing =
-    //   Boolean(opts?.topic) &&
-    //   this.client.core.pairing.pairings
-    //     .getAll({ active: true })
-    //     .some((pairing) => pairing.topic === opts?.topic);
+    return AuthRequestResponse(
+      id: id,
+      completer: completer,
+      uri: uri,
+    );
+  }
 
-    // const relay = { protocol: RELAYER_DEFAULT_PROTOCOL };
+  Future<void> _requestAuthResponseHandler({
+    required String pairingTopic,
+    required String responseTopic,
+    required WcAuthRequestRequest request,
+    required int id,
+    required int expiry,
+    required Completer<AuthResponse> completer,
+  }) async {
+    Map<String, dynamic>? resp;
+    try {
+      resp = await core.pairing.sendRequest(
+        pairingTopic,
+        MethodConstants.WC_AUTH_REQUEST,
+        request.toJson(),
+        id: id,
+        ttl: expiry,
+      );
+    } on JsonRpcError catch (e) {
+      final resp = AuthResponse(
+        id: id,
+        topic: responseTopic,
+        jsonRpcError: e,
+      );
+      onAuthResponse.broadcast(resp);
+      completer.complete(resp);
+      return;
+    }
 
-    // const expiry = calcExpiry(params.expiry || FIVE_MINUTES);
-    // const publicKey = await this.client.core.crypto.generateKeyPair();
+    core.pairing.activate(topic: pairingTopic);
 
-    // if (hasKnownPairing) {
-    //   const knownPairing = this.client.core.pairing.pairings
-    //     .getAll({ active: true })
-    //     .find((pairing) => pairing.topic === opts?.topic);
+    final Cacao cacao = Cacao.fromJson(resp!);
+    final CacaoSignature sig = cacao.s;
+    final CacaoPayload payload = cacao.p;
+    await completeRequests.set(
+      id.toString(),
+      StoredCacao.fromCacao(
+        cacao,
+        id.toString(),
+      ),
+    );
 
-    //   if (!knownPairing)
-    //     throw new Error(`Could not find pairing for provided topic ${opts?.topic}`);
+    final String reconstructed = formatMessage(
+      iss: payload.iss,
+      cacaoPayload: payload,
+    );
 
-    //   // Send request to existing pairing
-    //   await this.sendRequest(
-    //     knownPairing.topic,
-    //     "wc_authRequest",
-    //     {
-    //       payloadParams: {
-    //         type: type ?? "eip4361",
-    //         chainId,
-    //         statement,
-    //         aud,
-    //         domain,
-    //         version: "1",
-    //         nonce,
-    //         iat: new Date().toISOString(),
-    //       },
-    //       requester: { publicKey, metadata: this.client.metadata },
-    //     },
-    //     {},
-    //     params.expiry,
-    //   );
+    final String walletAddress = AddressUtils.getDidAddress(payload.iss);
+    final String chainId = AddressUtils.getDidChainId(payload.iss);
 
-    //   this.client.logger.debug("sent request to existing pairing");
-    // }
+    if (walletAddress.isEmpty) {
+      throw Errors.getSdkError(
+        Errors.MISSING_OR_INVALID,
+        context: 'authResponse walletAddress is empty',
+      );
+    }
+    if (chainId.isEmpty) {
+      throw Errors.getSdkError(
+        Errors.MISSING_OR_INVALID,
+        context: 'authResponse chainId is empty',
+      );
+    }
 
-    // const symKey = generateRandomBytes32();
+    final bool isValid = await AuthSignature.verifySignature(
+      walletAddress,
+      reconstructed,
+      sig,
+      chainId,
+      core.projectId,
+    );
 
-    // const pairingTopic = await this.client.core.crypto.setSymKey(symKey);
-
-    // // Preparing pairing URI
-    // const pairing = { topic: pairingTopic, expiry, relay, active: false };
-    // await this.client.core.pairing.pairings.set(pairingTopic, pairing);
-
-    // this.client.logger.debug("Generated new pairing", pairing);
-
-    // this.setExpiry(pairingTopic, expiry);
-
-    // this.client.authKeys.set(AUTH_CLIENT_PUBLIC_KEY_NAME, { publicKey });
-
-    // const responseTopic = hashKey(publicKey);
-
-    // await this.client.pairingTopics.set(responseTopic, { pairingTopic });
-
-    // // Subscribe to the pairing topic (for pings)
-    // await this.client.core.relayer.subscribe(pairingTopic);
-    // // Subscribe to auth_response topic
-    // await this.client.core.relayer.subscribe(responseTopic);
-
-    // this.client.logger.debug("sending request to potential pairing");
-
-    // // SPEC: A encrypts reuqest with symKey S
-    // // SPEC: A publishes encrypted request to topic
-    // const id = await this.sendRequest(
-    //   pairingTopic,
-    //   "wc_authRequest",
-    //   {
-    //     payloadParams: {
-    //       type: type ?? "eip4361",
-    //       chainId,
-    //       statement,
-    //       aud,
-    //       domain,
-    //       version: "1",
-    //       nonce,
-    //       iat: new Date().toISOString(),
-    //     },
-    //     requester: { publicKey, metadata: this.client.metadata },
-    //   },
-    //   {},
-    //   params.expiry,
-    // );
-
-    // this.client.logger.debug("sent request to potential pairing");
-
-    // const uri = formatUri({
-    //   protocol: this.client.protocol,
-    //   version: this.client.core.version,
-    //   topic: pairingTopic,
-    //   symKey,
-    //   relay,
-    // });
-
-    // return { uri, id };
-
-    return AuthRequestResponse(uri: Uri.parse(params.aud), id: -1);
+    if (!isValid) {
+      final resp = AuthResponse(
+        id: id,
+        topic: responseTopic,
+        error: WCErrorResponse(
+          code: -1,
+          message: 'Invalid signature',
+        ),
+      );
+      onAuthResponse.broadcast(resp);
+      completer.complete(resp);
+    } else {
+      final resp = AuthResponse(
+        id: id,
+        topic: responseTopic,
+        result: cacao,
+      );
+      onAuthResponse.broadcast(resp);
+      completer.complete(resp);
+    }
   }
 
   @override
-  Future<bool> respond({
+  Future<void> respond({
     required int id,
     required String iss,
     CacaoSignature? signature,
@@ -289,55 +323,65 @@ class AuthEngine implements IAuthEngine {
   }) async {
     _checkInitialized();
 
-    return true;
+    Map<int, PendingAuthRequest> pendingRequests = getPendingRequests();
+    AuthApiValidators.isValidRespond(
+      id: id,
+      pendingRequests: pendingRequests,
+      signature: signature,
+      error: error,
+    );
 
-    //   this.isInitialized();
+    final PendingAuthRequest pendingRequest = pendingRequests[id]!;
+    final String receiverPublicKey = pendingRequest.metadata.publicKey;
+    final String senderPublicKey = await core.crypto.generateKeyPair();
+    final String responseTopic = core.crypto.getUtils().hashKey(
+          receiverPublicKey,
+        );
+    final EncodeOptions encodeOpts = EncodeOptions(
+      type: EncodeOptions.TYPE_1,
+      receiverPublicKey: receiverPublicKey,
+      senderPublicKey: senderPublicKey,
+    );
 
-    //   if (!isValidRespond(respondParams, this.client.requests)) {
-    //     throw new Error("Invalid response");
-    //   }
+    if (error != null) {
+      await core.pairing.sendError(
+        id,
+        responseTopic,
+        MethodConstants.WC_AUTH_REQUEST,
+        JsonRpcError.serverError(error.message),
+        encodeOptions: encodeOpts,
+      );
+    } else {
+      final Cacao cacao = Cacao(
+        h: CacaoHeader(),
+        p: CacaoPayload.fromRequestPayload(
+          pendingRequest.cacaoPayload,
+          iss,
+        ),
+        s: signature!,
+      );
 
-    //   const pendingRequest = getPendingRequest(this.client.requests, respondParams.id);
+      await core.pairing.sendResult(
+        id,
+        responseTopic,
+        MethodConstants.WC_AUTH_REQUEST,
+        cacao.toJson(),
+        encodeOptions: encodeOpts,
+      );
 
-    //   const receiverPublicKey = pendingRequest.requester.publicKey;
-    //   const senderPublicKey = await this.client.core.crypto.generateKeyPair();
-    //   const responseTopic = hashKey(receiverPublicKey);
-    //   const encodeOpts = {
-    //     type: TYPE_1,
-    //     receiverPublicKey,
-    //     senderPublicKey,
-    //   };
-
-    //   if ("error" in respondParams) {
-    //     await this.sendError(pendingRequest.id, responseTopic, respondParams, encodeOpts);
-    //     return;
-    //   }
-
-    //   const cacao: AuthEngineTypes.Cacao = {
-    //     h: {
-    //       t: "eip4361",
-    //     },
-    //     p: {
-    //       ...pendingRequest.cacaoPayload,
-    //       iss,
-    //     },
-    //     s: respondParams.signature,
-    //   };
-
-    //   const id = await this.sendResult<"wc_authRequest">(
-    //     pendingRequest.id,
-    //     responseTopic,
-    //     cacao,
-    //     encodeOpts,
-    //   );
-
-    //   await this.client.requests.set(id, { id, ...cacao });
-    // }
+      await completeRequests.set(
+        id.toString(),
+        StoredCacao.fromCacao(
+          cacao,
+          id.toString(),
+        ),
+      );
+    }
   }
 
   @override
-  Map<int, PendingRequest> getPendingRequests() {
-    Map<int, PendingRequest> pendingRequests = {};
+  Map<int, PendingAuthRequest> getPendingRequests() {
+    Map<int, PendingAuthRequest> pendingRequests = {};
     authRequests.getAll().forEach((key) {
       pendingRequests[key.id] = key;
     });
@@ -347,25 +391,26 @@ class AuthEngine implements IAuthEngine {
   @override
   String formatMessage({
     required String iss,
-    required CacaoPayload cacao,
+    required CacaoPayload cacaoPayload,
   }) {
     final header =
-        '${cacao.domain} wants you to sign in with your Ethereum account';
+        '${cacaoPayload.domain} wants you to sign in with your Ethereum account';
     final walletAddress = AddressUtils.getDidAddress(iss);
-    final uri = 'URI: ${cacao.aud}';
-    final version = 'Version: ${cacao.version}';
+    final uri = 'URI: ${cacaoPayload.aud}';
+    final version = 'Version: ${cacaoPayload.version}';
     final chainId = 'Chain ID: ${AddressUtils.getDidChainId(iss)}';
-    final nonce = 'Nonce: ${cacao.nonce}';
-    final issuedAt = 'Issued At: ${cacao.iat}';
-    final resources = cacao.resources != null && cacao.resources!.isNotEmpty
-        ? 'Resources:\n${cacao.resources!.map((resource) => '- $resource').join('\n')}'
+    final nonce = 'Nonce: ${cacaoPayload.nonce}';
+    final issuedAt = 'Issued At: ${cacaoPayload.iat}';
+    final resources = cacaoPayload.resources != null &&
+            cacaoPayload.resources!.isNotEmpty
+        ? 'Resources:\n${cacaoPayload.resources!.map((resource) => '- $resource').join('\n')}'
         : null;
 
     final message = [
       header,
       walletAddress,
       '',
-      cacao.statement,
+      cacaoPayload.statement,
       '',
       uri,
       version,
@@ -376,31 +421,6 @@ class AuthEngine implements IAuthEngine {
     ].where((element) => element != null).join('\n');
 
     return message;
-
-    // const version = `Version: ${cacao.version}`;
-    // const chainId = `Chain ID: ${getDidChainId(iss)}`;
-    // const nonce = `Nonce: ${cacao.nonce}`;
-    // const issuedAt = `Issued At: ${cacao.iat}`;
-    // const resources =
-    //   cacao.resources && cacao.resources.length > 0
-    //     ? `Resources:\n${cacao.resources.map((resource) => `- ${resource}`).join("\n")}`
-    //     : undefined;
-
-    // const message = [
-    //   header,
-    //   walletAddress,
-    //   ``,
-    //   statement,
-    //   ``,
-    //   uri,
-    //   version,
-    //   chainId,
-    //   nonce,
-    //   issuedAt,
-    //   resources,
-    // ]
-    //   .filter((val) => val !== undefined && val !== null) // remove unnecessary empty lines
-    //   .join("\n");
   }
 
   /// ---- PRIVATE HELPERS ---- ///
@@ -442,7 +462,7 @@ class AuthEngine implements IAuthEngine {
 
       authRequests.set(
         payload.id.toString(),
-        PendingRequest(
+        PendingAuthRequest(
           id: payload.id,
           metadata: request.requester,
           cacaoPayload: cacaoPayload,

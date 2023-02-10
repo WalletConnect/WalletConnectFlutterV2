@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:event/event.dart';
+import 'package:wallet_connect_flutter_v2/apis/core/crypto/crypto_models.dart';
 import 'package:wallet_connect_flutter_v2/apis/core/i_core.dart';
 import 'package:wallet_connect_flutter_v2/apis/core/pairing/i_pairing.dart';
 import 'package:wallet_connect_flutter_v2/apis/core/pairing/i_pairing_store.dart';
@@ -284,6 +285,7 @@ class Pairing implements IPairing {
     Map<String, dynamic> params, {
     int? id,
     int? ttl,
+    EncodeOptions? encodeOptions,
   }) async {
     final Map<String, dynamic> payload = PairingUtils.formatJsonRpcRequest(
       method,
@@ -291,7 +293,11 @@ class Pairing implements IPairing {
       id: id,
     );
     final JsonRpcRequest request = JsonRpcRequest.fromJson(payload);
-    final String message = await core.crypto.encode(topic, payload);
+    final String message = await core.crypto.encode(
+      topic,
+      payload,
+      options: encodeOptions,
+    );
     RpcOptions opts = MethodConstants.RPC_OPTS[method]!['req']!;
     if (ttl != null) {
       opts = opts.copyWith(ttl: ttl);
@@ -323,14 +329,19 @@ class Pairing implements IPairing {
     int id,
     String topic,
     String method,
-    dynamic result,
-  ) async {
+    dynamic result, {
+    EncodeOptions? encodeOptions,
+  }) async {
     // print('sending result');
     final Map<String, dynamic> payload = PairingUtils.formatJsonRpcResponse(
       id,
       result,
     );
-    final String message = await core.crypto.encode(topic, payload);
+    final String message = await core.crypto.encode(
+      topic,
+      payload,
+      options: encodeOptions,
+    );
     // final JsonRpcRecord? record = core.history.get(id);
     // if (record == null) {
     //   return;
@@ -349,13 +360,18 @@ class Pairing implements IPairing {
     int id,
     String topic,
     String method,
-    JsonRpcError error,
-  ) async {
+    JsonRpcError error, {
+    EncodeOptions? encodeOptions,
+  }) async {
     final Map<String, dynamic> payload = PairingUtils.formatJsonRpcError(
       id,
       error,
     );
-    final String message = await core.crypto.encode(topic, payload);
+    final String message = await core.crypto.encode(
+      topic,
+      payload,
+      options: encodeOptions,
+    );
     final RpcOptions opts = MethodConstants.RPC_OPTS.containsKey(method)
         ? MethodConstants.RPC_OPTS[method]!['res']!
         : MethodConstants

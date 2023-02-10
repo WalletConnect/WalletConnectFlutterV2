@@ -54,8 +54,27 @@ class AuthApiValidators {
     return true;
   }
 
-  static bool isValidRespond(
-      RespondParams params, Map<int, PendingRequest> pendingRequests) {
-    return pendingRequests.containsKey(params.id);
+  static bool isValidRespond({
+    required int id,
+    required Map<int, PendingAuthRequest> pendingRequests,
+    CacaoSignature? signature,
+    WCErrorResponse? error,
+  }) {
+    if (!pendingRequests.containsKey(id)) {
+      throw Errors.getSdkError(
+        Errors.MISSING_OR_INVALID,
+        context: 'respondAuth() invalid id: $id. No pending request found.',
+      );
+    }
+
+    if (signature == null && error == null) {
+      throw Errors.getSdkError(
+        Errors.MISSING_OR_INVALID,
+        context:
+            'respondAuth() invalid response. Must contain either signature or error.',
+      );
+    }
+
+    return true;
   }
 }

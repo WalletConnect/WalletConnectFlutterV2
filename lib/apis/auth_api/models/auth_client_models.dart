@@ -1,4 +1,7 @@
+import 'dart:async';
+
 import 'package:json_annotation/json_annotation.dart';
+import 'package:wallet_connect_flutter_v2/apis/auth_api/models/auth_client_events.dart';
 import 'package:wallet_connect_flutter_v2/apis/models/basic_models.dart';
 import 'package:wallet_connect_flutter_v2/apis/signing_api/models/sign_client_models.dart';
 
@@ -6,11 +9,13 @@ part 'auth_client_models.g.dart';
 
 class AuthRequestResponse {
   final int id;
-  final Uri uri;
+  final Completer<AuthResponse> completer;
+  final Uri? uri;
 
   AuthRequestResponse({
     required this.id,
-    required this.uri,
+    required this.completer,
+    this.uri,
   });
 }
 
@@ -22,7 +27,8 @@ class AuthPublicKey {
     required this.publicKey,
   });
 
-  factory AuthPublicKey.fromJson(Map<String, dynamic> json) => _$AuthPublicKeyFromJson(json);
+  factory AuthPublicKey.fromJson(Map<String, dynamic> json) =>
+      _$AuthPublicKeyFromJson(json);
 
   Map<String, dynamic> toJson() => _$AuthPublicKeyToJson(this);
 }
@@ -85,9 +91,10 @@ class AuthPayloadParams {
     this.resources,
   });
 
-  factory AuthPayloadParams.fromJson(Map<String, dynamic> json) => _$PayloadParamsFromJson(json);
+  factory AuthPayloadParams.fromJson(Map<String, dynamic> json) =>
+      _$AuthPayloadParamsFromJson(json);
 
-  Map<String, dynamic> toJson() => _$PayloadParamsToJson(this);
+  Map<String, dynamic> toJson() => _$AuthPayloadParamsToJson(this);
 }
 
 @JsonSerializable(includeIfNull: false)
@@ -131,7 +138,8 @@ class CacaoRequestPayload {
     );
   }
 
-  factory CacaoRequestPayload.fromJson(Map<String, dynamic> json) => _$CacaoRequestPayloadFromJson(json);
+  factory CacaoRequestPayload.fromJson(Map<String, dynamic> json) =>
+      _$CacaoRequestPayloadFromJson(json);
 
   Map<String, dynamic> toJson() => _$CacaoRequestPayloadToJson(this);
 }
@@ -165,7 +173,27 @@ class CacaoPayload extends CacaoRequestPayload {
           resources: resources,
         );
 
-  factory CacaoPayload.fromJson(Map<String, dynamic> json) => _$CacaoPayloadFromJson(json);
+  factory CacaoPayload.fromRequestPayload(
+    CacaoRequestPayload payload,
+    String issuer,
+  ) {
+    return CacaoPayload(
+      iss: issuer,
+      domain: payload.domain,
+      aud: payload.aud,
+      version: payload.version,
+      nonce: payload.nonce,
+      iat: payload.iat,
+      nbf: payload.nbf,
+      exp: payload.exp,
+      statement: payload.statement,
+      requestId: payload.requestId,
+      resources: payload.resources,
+    );
+  }
+
+  factory CacaoPayload.fromJson(Map<String, dynamic> json) =>
+      _$CacaoPayloadFromJson(json);
 
   Map<String, dynamic> toJson() => _$CacaoPayloadToJson(this);
 }
@@ -180,7 +208,8 @@ class CacaoHeader {
     this.t = 'eip4361',
   });
 
-  factory CacaoHeader.fromJson(Map<String, dynamic> json) => _$CacaoHeaderFromJson(json);
+  factory CacaoHeader.fromJson(Map<String, dynamic> json) =>
+      _$CacaoHeaderFromJson(json);
 
   Map<String, dynamic> toJson() => _$CacaoHeaderToJson(this);
 }
@@ -200,7 +229,8 @@ class CacaoSignature {
     this.m,
   });
 
-  factory CacaoSignature.fromJson(Map<String, dynamic> json) => _$CacaoSignatureFromJson(json);
+  factory CacaoSignature.fromJson(Map<String, dynamic> json) =>
+      _$CacaoSignatureFromJson(json);
 
   Map<String, dynamic> toJson() => _$CacaoSignatureToJson(this);
 }
@@ -233,26 +263,53 @@ class StoredCacao extends Cacao {
     required CacaoSignature s,
   }) : super(h: h, p: p, s: s);
 
-  factory StoredCacao.fromJson(Map<String, dynamic> json) => _$StoredCacaoFromJson(json);
+  factory StoredCacao.fromCacao(Cacao cacao, String id) {
+    return StoredCacao(
+      id: id,
+      h: cacao.h,
+      p: cacao.p,
+      s: cacao.s,
+    );
+  }
+
+  factory StoredCacao.fromJson(Map<String, dynamic> json) =>
+      _$StoredCacaoFromJson(json);
 
   Map<String, dynamic> toJson() => _$StoredCacaoToJson(this);
 }
 
 @JsonSerializable(includeIfNull: false)
-class PendingRequest {
+class PendingAuthRequest {
   final int id;
   final ConnectionMetadata metadata;
   final CacaoRequestPayload cacaoPayload;
 
-  PendingRequest({
+  PendingAuthRequest({
     required this.id,
     required this.metadata,
     required this.cacaoPayload,
   });
 
-  factory PendingRequest.fromJson(Map<String, dynamic> json) => _$PendingRequestFromJson(json);
+  factory PendingAuthRequest.fromJson(Map<String, dynamic> json) =>
+      _$PendingAuthRequestFromJson(json);
 
-  Map<String, dynamic> toJson() => _$PendingRequestToJson(this);
+  Map<String, dynamic> toJson() => _$PendingAuthRequestToJson(this);
+}
+
+class AuthRequestCompleter {
+  final int id;
+  final String pairingTopic;
+  final String responseTopic;
+  final PendingAuthRequest request;
+  final Completer<Cacao> completer;
+
+  AuthRequestCompleter({
+    required this.id,
+    required this.pairingTopic,
+    required this.responseTopic,
+    required this.request,
+    required this.completer,
+  });
 }
 
 class RespondParams {

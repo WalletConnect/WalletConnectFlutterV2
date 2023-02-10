@@ -62,9 +62,18 @@ class EncodingValidation {
 }
 
 class EncodeOptions {
+  static const TYPE_0 = 0;
+  static const TYPE_1 = 1;
+
   int? type;
   String? senderPublicKey;
   String? receiverPublicKey;
+
+  EncodeOptions({
+    this.type,
+    this.senderPublicKey,
+    this.receiverPublicKey,
+  });
 }
 
 class DecodeOptions {

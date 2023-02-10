@@ -11,11 +11,9 @@ dependencies:
     sdk: flutter
   hex: ^0.2.0
   web_socket_channel: ^2.2.0
-  uuid: ^3.0.7
   http: ^0.13.5
   cryptography: ^2.0.5
   convert: ^3.0.1
-  collection: ^1.16.0
   json_annotation: ^4.7.0
   pointycastle: ^3.6.2
   x25519: ^0.1.1
@@ -26,7 +24,6 @@ dependencies:
   stream_channel: ^2.1.0
   shared_preferences: ^2.0.17
   universal_io: ^2.0.4
-  pinenacl: ^0.5.1
 
 dev_dependencies:
   flutter_test:

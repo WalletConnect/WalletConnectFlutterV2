@@ -11,7 +11,8 @@ JsonRpcError _$JsonRpcErrorFromJson(Map<String, dynamic> json) => JsonRpcError(
       message: json['message'] as String,
     );
 
-Map<String, dynamic> _$JsonRpcErrorToJson(JsonRpcError instance) => <String, dynamic>{
+Map<String, dynamic> _$JsonRpcErrorToJson(JsonRpcError instance) =>
+    <String, dynamic>{
       'code': instance.code,
       'message': instance.message,
     };

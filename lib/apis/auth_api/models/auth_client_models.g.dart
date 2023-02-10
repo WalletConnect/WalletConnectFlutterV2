@@ -6,15 +6,18 @@ part of 'auth_client_models.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-AuthPublicKey _$AuthPublicKeyFromJson(Map<String, dynamic> json) => AuthPublicKey(
+AuthPublicKey _$AuthPublicKeyFromJson(Map<String, dynamic> json) =>
+    AuthPublicKey(
       publicKey: json['publicKey'] as String,
     );
 
-Map<String, dynamic> _$AuthPublicKeyToJson(AuthPublicKey instance) => <String, dynamic>{
+Map<String, dynamic> _$AuthPublicKeyToJson(AuthPublicKey instance) =>
+    <String, dynamic>{
       'publicKey': instance.publicKey,
     };
 
-AuthPayloadParams _$PayloadParamsFromJson(Map<String, dynamic> json) => AuthPayloadParams(
+AuthPayloadParams _$AuthPayloadParamsFromJson(Map<String, dynamic> json) =>
+    AuthPayloadParams(
       type: json['type'] as String,
       chainId: json['chainId'] as String,
       domain: json['domain'] as String,
@@ -26,10 +29,12 @@ AuthPayloadParams _$PayloadParamsFromJson(Map<String, dynamic> json) => AuthPayl
       exp: json['exp'] as String?,
       statement: json['statement'] as String?,
       requestId: json['requestId'] as String?,
-      resources: (json['resources'] as List<dynamic>?)?.map((e) => e as String).toList(),
+      resources: (json['resources'] as List<dynamic>?)
+          ?.map((e) => e as String)
+          .toList(),
     );
 
-Map<String, dynamic> _$PayloadParamsToJson(AuthPayloadParams instance) {
+Map<String, dynamic> _$AuthPayloadParamsToJson(AuthPayloadParams instance) {
   final val = <String, dynamic>{
     'type': instance.type,
     'chainId': instance.chainId,
@@ -54,7 +59,8 @@ Map<String, dynamic> _$PayloadParamsToJson(AuthPayloadParams instance) {
   return val;
 }
 
-CacaoRequestPayload _$CacaoRequestPayloadFromJson(Map<String, dynamic> json) => CacaoRequestPayload(
+CacaoRequestPayload _$CacaoRequestPayloadFromJson(Map<String, dynamic> json) =>
+    CacaoRequestPayload(
       domain: json['domain'] as String,
       aud: json['aud'] as String,
       version: json['version'] as String,
@@ -64,7 +70,9 @@ CacaoRequestPayload _$CacaoRequestPayloadFromJson(Map<String, dynamic> json) => 
       exp: json['exp'] as String?,
       statement: json['statement'] as String?,
       requestId: json['requestId'] as String?,
-      resources: (json['resources'] as List<dynamic>?)?.map((e) => e as String).toList(),
+      resources: (json['resources'] as List<dynamic>?)
+          ?.map((e) => e as String)
+          .toList(),
     );
 
 Map<String, dynamic> _$CacaoRequestPayloadToJson(CacaoRequestPayload instance) {
@@ -132,11 +140,13 @@ CacaoHeader _$CacaoHeaderFromJson(Map<String, dynamic> json) => CacaoHeader(
       t: json['t'] as String? ?? 'eip4361',
     );
 
-Map<String, dynamic> _$CacaoHeaderToJson(CacaoHeader instance) => <String, dynamic>{
+Map<String, dynamic> _$CacaoHeaderToJson(CacaoHeader instance) =>
+    <String, dynamic>{
       't': instance.t,
     };
 
-CacaoSignature _$CacaoSignatureFromJson(Map<String, dynamic> json) => CacaoSignature(
+CacaoSignature _$CacaoSignatureFromJson(Map<String, dynamic> json) =>
+    CacaoSignature(
       t: json['t'] as String,
       s: json['s'] as String,
       m: json['m'] as String?,
@@ -177,20 +187,25 @@ StoredCacao _$StoredCacaoFromJson(Map<String, dynamic> json) => StoredCacao(
       s: CacaoSignature.fromJson(json['s'] as Map<String, dynamic>),
     );
 
-Map<String, dynamic> _$StoredCacaoToJson(StoredCacao instance) => <String, dynamic>{
+Map<String, dynamic> _$StoredCacaoToJson(StoredCacao instance) =>
+    <String, dynamic>{
       'h': instance.h,
       'p': instance.p,
       's': instance.s,
       'id': instance.id,
     };
 
-PendingRequest _$PendingRequestFromJson(Map<String, dynamic> json) => PendingRequest(
+PendingAuthRequest _$PendingAuthRequestFromJson(Map<String, dynamic> json) =>
+    PendingAuthRequest(
       id: json['id'] as int,
-      metadata: ConnectionMetadata.fromJson(json['metadata'] as Map<String, dynamic>),
-      cacaoPayload: CacaoRequestPayload.fromJson(json['cacaoPayload'] as Map<String, dynamic>),
+      metadata:
+          ConnectionMetadata.fromJson(json['metadata'] as Map<String, dynamic>),
+      cacaoPayload: CacaoRequestPayload.fromJson(
+          json['cacaoPayload'] as Map<String, dynamic>),
     );
 
-Map<String, dynamic> _$PendingRequestToJson(PendingRequest instance) => <String, dynamic>{
+Map<String, dynamic> _$PendingAuthRequestToJson(PendingAuthRequest instance) =>
+    <String, dynamic>{
       'id': instance.id,
       'metadata': instance.metadata,
       'cacaoPayload': instance.cacaoPayload,

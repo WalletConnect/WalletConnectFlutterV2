@@ -24,7 +24,8 @@ JWTPayload _$JWTPayloadFromJson(Map<String, dynamic> json) => JWTPayload(
       json['exp'] as int,
     );
 
-Map<String, dynamic> _$JWTPayloadToJson(JWTPayload instance) => <String, dynamic>{
+Map<String, dynamic> _$JWTPayloadToJson(JWTPayload instance) =>
+    <String, dynamic>{
       'iss': instance.iss,
       'sub': instance.sub,
       'aud': instance.aud,
