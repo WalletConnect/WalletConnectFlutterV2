@@ -15,7 +15,8 @@ class WCError {
     required this.message,
   });
 
-  factory WCError.fromJson(Map<String, dynamic> json) => _$WCErrorFromJson(json);
+  factory WCError.fromJson(Map<String, dynamic> json) =>
+      _$WCErrorFromJson(json);
 
   Map<String, dynamic> toJson() => _$WCErrorToJson(this);
 }
@@ -30,7 +31,8 @@ class WCErrorResponse extends WCError {
     this.data,
   });
 
-  factory WCErrorResponse.fromJson(Map<String, dynamic> json) => _$WCErrorResponseFromJson(json);
+  factory WCErrorResponse.fromJson(Map<String, dynamic> json) =>
+      _$WCErrorResponseFromJson(json);
 
   Map<String, dynamic> toJson() => _$WCErrorResponseToJson(this);
 }
@@ -45,6 +47,18 @@ class RpcOptions {
     this.prompt,
     this.tag,
   );
+
+  RpcOptions copyWith({
+    int? ttl,
+    bool? prompt,
+    int? tag,
+  }) {
+    return RpcOptions(
+      ttl ?? this.ttl,
+      prompt ?? this.prompt,
+      tag ?? this.tag,
+    );
+  }
 }
 
 @JsonSerializable()
@@ -57,7 +71,8 @@ class ConnectionMetadata {
     required this.metadata,
   });
 
-  factory ConnectionMetadata.fromJson(Map<String, dynamic> json) => _$ConnectionMetadataFromJson(json);
+  factory ConnectionMetadata.fromJson(Map<String, dynamic> json) =>
+      _$ConnectionMetadataFromJson(json);
 
   Map<String, dynamic> toJson() => _$ConnectionMetadataToJson(this);
 

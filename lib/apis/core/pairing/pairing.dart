@@ -25,7 +25,8 @@ class Pairing implements IPairing {
   @override
   final Event<PairingEvent> onPairingPing = Event<PairingEvent>();
   @override
-  final Event<PairingInvalidEvent> onPairingInvalid = Event<PairingInvalidEvent>();
+  final Event<PairingInvalidEvent> onPairingInvalid =
+      Event<PairingInvalidEvent>();
   @override
   final Event<PairingEvent> onPairingDelete = Event<PairingEvent>();
   @override
@@ -282,6 +283,7 @@ class Pairing implements IPairing {
     String method,
     Map<String, dynamic> params, {
     int? id,
+    int? ttl,
   }) async {
     final Map<String, dynamic> payload = PairingUtils.formatJsonRpcRequest(
       method,
@@ -290,7 +292,10 @@ class Pairing implements IPairing {
     );
     final JsonRpcRequest request = JsonRpcRequest.fromJson(payload);
     final String message = await core.crypto.encode(topic, payload);
-    final RpcOptions opts = MethodConstants.RPC_OPTS[method]!['req']!;
+    RpcOptions opts = MethodConstants.RPC_OPTS[method]!['req']!;
+    if (ttl != null) {
+      opts = opts.copyWith(ttl: ttl);
+    }
     await core.history.set(
       topic,
       request,
@@ -353,7 +358,8 @@ class Pairing implements IPairing {
     final String message = await core.crypto.encode(topic, payload);
     final RpcOptions opts = MethodConstants.RPC_OPTS.containsKey(method)
         ? MethodConstants.RPC_OPTS[method]!['res']!
-        : MethodConstants.RPC_OPTS[MethodConstants.UNREGISTERED_METHOD]!['res']!;
+        : MethodConstants
+            .RPC_OPTS[MethodConstants.UNREGISTERED_METHOD]!['res']!;
     await core.relayClient.publish(
       topic: topic,
       message: message,
@@ -539,7 +545,8 @@ class Pairing implements IPairing {
     }
   }
 
-  Future<void> _onPairingPingResponse(String topic, JsonRpcResponse response) async {
+  Future<void> _onPairingPingResponse(
+      String topic, JsonRpcResponse response) async {
     final int id = response.id;
 
     if (!response.result is JsonRpcError) {

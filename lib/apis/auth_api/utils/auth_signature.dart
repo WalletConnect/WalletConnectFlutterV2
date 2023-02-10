@@ -1,23 +1,15 @@
 import 'dart:convert';
-import 'dart:math';
+import 'dart:typed_data';
+import 'package:http/http.dart' as http;
 
-import 'package:flutter/foundation.dart';
 import 'package:hex/hex.dart';
 import 'package:pointycastle/digests/keccak.dart';
-import 'package:pointycastle/ecc/curves/secp256k1.dart';
-import 'package:pointycastle/ecc/api.dart';
-import 'package:pointycastle/pointycastle.dart';
 import 'package:wallet_connect_flutter_v2/apis/auth_api/models/auth_client_models.dart';
-// import 'package:web3dart/crypto.dart';
-
-enum Endian {
-  be,
-}
+import 'package:wallet_connect_flutter_v2/apis/auth_api/utils/auth_constants.dart';
+import 'package:wallet_connect_flutter_v2/apis/auth_api/utils/secp256k1/auth_secp256k1.dart';
+import 'package:wallet_connect_flutter_v2/apis/core/pairing/utils/pairing_utils.dart';
 
 class AuthSignature {
-  static final ECDomainParameters _params = ECCurve_secp256k1();
-  static final BigInt _byteMask = new BigInt.from(0xff);
-
   static final KeccakDigest keccakDigest = KeccakDigest(256);
   static Uint8List keccak256(Uint8List input) {
     keccakDigest.reset();
@@ -36,96 +28,6 @@ class AuthSignature {
         ),
       ),
     );
-  }
-
-  static BigInt decodeBigInt(List<int> bytes) {
-    BigInt result = new BigInt.from(0);
-    for (int i = 0; i < bytes.length; i++) {
-      result += new BigInt.from(bytes[bytes.length - i - 1]) << (8 * i);
-    }
-    return result;
-  }
-
-  static Uint8List encodeBigInt(BigInt input, {Endian endian = Endian.be, int length = 0}) {
-    int byteLength = (input.bitLength + 7) >> 3;
-    int reqLength = length > 0 ? length : max(1, byteLength);
-    assert(byteLength <= reqLength, 'byte array longer than desired length');
-    assert(reqLength > 0, 'Requested array length <= 0');
-
-    var res = Uint8List(reqLength);
-    res.fillRange(0, reqLength - byteLength, 0);
-
-    var q = input;
-    if (endian == Endian.be) {
-      for (int i = 0; i < byteLength; i++) {
-        res[reqLength - i - 1] = (q & _byteMask).toInt();
-        q = q >> 8;
-      }
-      return res;
-    }
-
-    return Uint8List(0);
-  }
-
-  static ECPoint _decompressKey(BigInt xBN, bool yBit, ECCurve c) {
-    List<int> x9IntegerToBytes(BigInt s, int qLength) {
-      //https://github.com/bcgit/bc-java/blob/master/core/src/main/java/org/bouncycastle/asn1/x9/X9IntegerConverter.java#L45
-      final bytes = HEX.decode(s.toRadixString(16));
-
-      if (qLength < bytes.length) {
-        return bytes.sublist(0, bytes.length - qLength);
-      } else if (qLength > bytes.length) {
-        final tmp = List<int>.filled(qLength, 0);
-
-        final offset = qLength - bytes.length;
-        for (var i = 0; i < bytes.length; i++) {
-          tmp[i + offset] = bytes[i];
-        }
-
-        return tmp;
-      }
-
-      return bytes;
-    }
-
-    final compEnc = x9IntegerToBytes(xBN, 1 + ((c.fieldSize + 7) ~/ 8));
-    compEnc[0] = yBit ? 0x03 : 0x02;
-    return c.decodePoint(compEnc)!;
-  }
-
-  static Uint8List? _recoverPublicKeyFromSignature(
-    int recId,
-    BigInt r,
-    BigInt s,
-    Uint8List message,
-  ) {
-    final n = _params.n;
-    final i = BigInt.from(recId ~/ 2);
-    final x = r + (i * n);
-
-    //Parameter q of curve
-    final prime = BigInt.parse('fffffffffffffffffffffffffffffffffffffffffffffffffffffffefffffc2f', radix: 16);
-    if (x.compareTo(prime) >= 0) return null;
-
-    final R = _decompressKey(x, (recId & 1) == 1, _params.curve);
-    final ECPoint? ecPoint = R * n;
-    if (ecPoint == null || !ecPoint.isInfinity) return null;
-
-    // print(bytesToHex(message));
-    // final e = BigInt.parse(bytesToHex(message).substring(1));
-    final e = decodeBigInt(message.toList());
-
-    final eInv = (BigInt.zero - e) % n;
-    final rInv = r.modInverse(n);
-    final srInv = (rInv * s) % n;
-    final eInvrInv = (rInv * eInv) % n;
-
-    final preQ = (_params.G * eInvrInv);
-    if (preQ == null) return null;
-    final q = preQ + (R * srInv);
-
-    final bytes = q?.getEncoded(false);
-    return bytes?.sublist(1);
   }
 
   static int getNormalizedV(int v) {
@@ -173,7 +75,7 @@ class AuthSignature {
     }
 
     // Recover the public key from the signature
-    Uint8List? publicKeyBytes = _recoverPublicKeyFromSignature(
+    Uint8List? publicKeyBytes = AuthSecp256k1.recoverPublicKeyFromSignature(
       v - 27,
       r,
       s,
@@ -190,26 +92,65 @@ class AuthSignature {
     final addressBytes = hashedPubKeyBytes.sublist(12, 32);
     final recoveredAddress = '0x${HEX.encode(addressBytes)}';
 
-    return recoveredAddress == address;
+    return recoveredAddress.toLowerCase() == address.toLowerCase();
   }
 
-  static bool isValidEip1271Signature(
+  static Future<bool> isValidEip1271Signature(
     String address,
     String reconstructedMessage,
     String cacaoSignature,
     String chainId,
     String projectId,
-  ) {
-    return false;
+  ) async {
+    try {
+      final String eip1271MagicValue = "0x1626ba7e";
+      final String dynamicTypeOffset =
+          "0000000000000000000000000000000000000000000000000000000000000040";
+      final String dynamicTypeLength =
+          "0000000000000000000000000000000000000000000000000000000000000041";
+      final String nonPrefixedSignature = cacaoSignature.substring(2);
+      final String nonPrefixedHashedMessage =
+          HEX.encode(hashMessage(reconstructedMessage)).substring(2);
+
+      final String data = eip1271MagicValue +
+          nonPrefixedHashedMessage +
+          dynamicTypeOffset +
+          dynamicTypeLength +
+          nonPrefixedSignature;
+
+      final Uri url = Uri.parse(
+        '${AuthConstants.AUTH_DEFAULT_URL}/?chainId=$chainId&projectId=$projectId',
+      );
+      final Map<String, dynamic> body = PairingUtils.formatJsonRpcRequest(
+        "eth_call",
+        {
+          "to": address,
+          "data": data,
+        },
+      );
+
+      final http.Response response = await http.post(
+        url,
+        body: body,
+      );
+
+      print(response.body);
+      // final jsonBody = jsonDecode(response.body);
+      final String recoveredValue =
+          response.body.substring(0, eip1271MagicValue.length);
+      return recoveredValue.toLowerCase() == eip1271MagicValue.toLowerCase();
+    } catch (e) {
+      return false;
+    }
   }
 
-  static bool verifySignature(
+  static Future<bool> verifySignature(
     String address,
     String reconstructedMessage,
     CacaoSignature cacaoSignature,
     String chainId,
     String projectId,
-  ) {
+  ) async {
     if (cacaoSignature.t == "eip191") {
       return isValidEip191Signature(
         address,
@@ -217,7 +158,7 @@ class AuthSignature {
         cacaoSignature.s,
       );
     } else if (cacaoSignature.t == "eip1271") {
-      return isValidEip1271Signature(
+      return await isValidEip1271Signature(
         address,
         reconstructedMessage,
         cacaoSignature.s,

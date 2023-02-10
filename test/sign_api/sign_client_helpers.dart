@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:wallet_connect_flutter_v2/apis/signing_api/i_sign_engine.dart';
-import 'package:wallet_connect_flutter_v2/wallet_connect_v2.dart';
+import 'package:wallet_connect_flutter_v2/wallet_connect_flutter_v2.dart';
 
 import 'utils/sign_client_constants.dart';
 

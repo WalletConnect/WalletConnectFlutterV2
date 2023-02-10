@@ -1,4 +1,4 @@
-import 'package:wallet_connect_flutter_v2/wallet_connect_v2.dart';
+import 'package:wallet_connect_flutter_v2/wallet_connect_flutter_v2.dart';
 
 const TEST_RELAY_OPTIONS = {
   "protocol": WalletConnectConstants.RELAYER_DEFAULT_PROTOCOL,

@@ -8,7 +8,7 @@ import 'package:wallet_connect_flutter_v2/apis/signing_api/i_sign_engine.dart';
 import 'package:wallet_connect_flutter_v2/apis/signing_api/proposals.dart';
 import 'package:wallet_connect_flutter_v2/apis/signing_api/sessions.dart';
 import 'package:wallet_connect_flutter_v2/apis/utils/constants.dart';
-import 'package:wallet_connect_flutter_v2/wallet_connect_v2.dart';
+import 'package:wallet_connect_flutter_v2/wallet_connect_flutter_v2.dart';
 
 import '../shared/shared_test_values.dart';
 import 'utils/engine_constants.dart';

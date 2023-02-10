@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:wallet_connect_flutter_v2/wallet_connect_v2.dart';
+import 'package:wallet_connect_flutter_v2/wallet_connect_flutter_v2.dart';
 import 'package:wallet_connect_flutter_v2/apis/utils/namespace_utils.dart';
 import 'package:wallet_connect_flutter_v2/apis/signing_api/utils/sign_api_validator_utils.dart';
 

@@ -1,6 +1,6 @@
 // Engine Data
 
-import 'package:wallet_connect_flutter_v2/wallet_connect_v2.dart';
+import 'package:wallet_connect_flutter_v2/wallet_connect_flutter_v2.dart';
 
 import 'sign_client_constants.dart';
 

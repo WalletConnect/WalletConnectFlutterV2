@@ -26,10 +26,6 @@ dependencies:
   stream_channel: ^2.1.0
   shared_preferences: ^2.0.17
   universal_io: ^2.0.4
-  secp256k1: ^0.3.0
-  web3dart: ^2.5.1
-  sec: ^1.0.1
-  eth_sig_util: ^0.0.9
   pinenacl: ^0.5.1
 
 dev_dependencies:

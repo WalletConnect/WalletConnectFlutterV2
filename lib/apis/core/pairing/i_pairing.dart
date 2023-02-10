@@ -40,6 +40,7 @@ abstract class IPairing {
     String method,
     Map<String, dynamic> params, {
     int? id,
+    int? ttl,
   });
   Future<void> sendResult(
     int id,
