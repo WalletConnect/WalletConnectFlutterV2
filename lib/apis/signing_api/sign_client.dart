@@ -134,13 +134,13 @@ class SignClient implements ISignClient {
   }
 
   @override
-  Future<ApproveResponse> approve({
+  Future<ApproveResponse> approveSession({
     required int id,
     required Map<String, Namespace> namespaces,
     String? relayProtocol,
   }) async {
     try {
-      return await engine.approve(
+      return await engine.approveSession(
         id: id,
         namespaces: namespaces,
         relayProtocol: relayProtocol,

@@ -38,7 +38,7 @@ abstract class ISignEngine {
   Future<PairingInfo> pair({
     required Uri uri,
   });
-  Future<ApproveResponse> approve({
+  Future<ApproveResponse> approveSession({
     required int id,
     required Map<String, Namespace> namespaces,
     String? relayProtocol,

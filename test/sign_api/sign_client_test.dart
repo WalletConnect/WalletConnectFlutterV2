@@ -303,7 +303,7 @@ void signingEngineTests({
 
       test('invalid proposal id', () async {
         expect(
-          () async => await clientA.approve(
+          () async => await clientA.approveSession(
             id: TEST_APPROVE_ID_INVALID,
             namespaces: TEST_NAMESPACES,
           ),
@@ -316,7 +316,7 @@ void signingEngineTests({
           ),
         );
         expect(
-          () async => await clientA.approve(
+          () async => await clientA.approveSession(
             id: TEST_PROPOSAL_EXPIRED_ID,
             namespaces: TEST_NAMESPACES,
           ),
@@ -338,7 +338,7 @@ void signingEngineTests({
 
       test('invalid namespaces', () async {
         expect(
-          () async => await clientA.approve(
+          () async => await clientA.approveSession(
             id: TEST_PROPOSAL_INVALID_REQUIRED_NAMESPACES_ID,
             namespaces: TEST_NAMESPACES,
           ),
@@ -351,7 +351,7 @@ void signingEngineTests({
           ),
         );
         expect(
-          () async => await clientA.approve(
+          () async => await clientA.approveSession(
             id: TEST_PROPOSAL_INVALID_OPTIONAL_NAMESPACES_ID,
             namespaces: TEST_NAMESPACES,
           ),
@@ -364,7 +364,7 @@ void signingEngineTests({
           ),
         );
         expect(
-          () async => await clientA.approve(
+          () async => await clientA.approveSession(
             id: TEST_PROPOSAL_VALID_ID,
             namespaces: TEST_NAMESPACES_NONCONFORMING_KEY_1,
           ),

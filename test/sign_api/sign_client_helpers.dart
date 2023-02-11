@@ -52,7 +52,7 @@ class SignClientHelpers {
         reqNamespaces,
       );
 
-      ApproveResponse response = await b.approve(
+      ApproveResponse response = await b.approveSession(
         id: args.id,
         namespaces: workingNamespaces,
       );

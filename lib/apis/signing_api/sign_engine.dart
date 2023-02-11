@@ -227,7 +227,7 @@ class SignEngine implements ISignEngine {
   /// Approves a proposal with the id provided in the parameters.
   /// Assumes the proposal is already created.
   @override
-  Future<ApproveResponse> approve({
+  Future<ApproveResponse> approveSession({
     required int id,
     required Map<String, Namespace> namespaces,
     Map<String, String>? sessionProperties,
