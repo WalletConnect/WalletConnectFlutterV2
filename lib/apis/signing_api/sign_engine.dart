@@ -127,7 +127,9 @@ class SignEngine implements ISignEngine {
     final int id = PairingUtils.payloadId();
 
     final WcSessionProposeRequest request = WcSessionProposeRequest(
-      relays: relays == null ? [Relay(WalletConnectConstants.RELAYER_DEFAULT_PROTOCOL)] : relays,
+      relays: relays == null
+          ? [Relay(WalletConnectConstants.RELAYER_DEFAULT_PROTOCOL)]
+          : relays,
       requiredNamespaces: requiredNamespaces ?? {},
       optionalNamespaces: optionalNamespaces ?? {},
       proposer: ConnectionMetadata(
@@ -281,7 +283,9 @@ class SignEngine implements ISignEngine {
         MethodConstants.WC_SESSION_PROPOSE,
         WcSessionProposeResponse(
           relay: Relay(
-            relayProtocol != null ? relayProtocol : WalletConnectConstants.RELAYER_DEFAULT_PROTOCOL,
+            relayProtocol != null
+                ? relayProtocol
+                : WalletConnectConstants.RELAYER_DEFAULT_PROTOCOL,
           ),
           responderPublicKey: selfPubKey,
         ).toJson(),
@@ -362,7 +366,6 @@ class SignEngine implements ISignEngine {
       namespaces,
     );
 
-    print('got here 1');
     await sessions.update(
       topic,
       namespaces: namespaces,
@@ -701,7 +704,8 @@ class SignEngine implements ISignEngine {
       await _isValidSessionSettleRequest(request.namespaces, request.expiry);
       // SessionProposalCompleter sProposalCompleter =
       //     pendingProposals.remove(topic)!;
-      final SessionProposalCompleter sProposalCompleter = pendingProposals.removeLast();
+      final SessionProposalCompleter sProposalCompleter =
+          pendingProposals.removeLast();
 
       // Create the session
       final SessionData session = SessionData(
@@ -1078,7 +1082,8 @@ class SignEngine implements ISignEngine {
       );
     }
 
-    if (WalletConnectUtils.isExpired(core.pairing.getStore().get(topic)!.expiry)) {
+    if (WalletConnectUtils.isExpired(
+        core.pairing.getStore().get(topic)!.expiry)) {
       // await deletePairing(topic);
       throw Errors.getInternalError(
         Errors.EXPIRED,

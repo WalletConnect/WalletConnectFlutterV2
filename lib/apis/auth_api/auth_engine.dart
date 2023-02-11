@@ -51,52 +51,11 @@ class AuthEngine implements IAuthEngine {
   AuthEngine({
     required this.core,
     required this.metadata,
-  }) {
-    authKeys = GenericStore(
-      core,
-      'authKeys',
-      '2.0',
-      (AuthPublicKey value) {
-        return jsonEncode(value.toJson());
-      },
-      (String value) {
-        return AuthPublicKey.fromJson(jsonDecode(value));
-      },
-    );
-    pairingTopics = GenericStore(
-      core,
-      'authPairingTopics',
-      '2.0',
-      (String value) {
-        return value;
-      },
-      (String value) {
-        return value;
-      },
-    );
-    authRequests = GenericStore(
-      core,
-      'authRequests',
-      '2.0',
-      (PendingAuthRequest value) {
-        return jsonEncode(value.toJson());
-      },
-      (String value) {
-        return PendingAuthRequest.fromJson(jsonDecode(value));
-      },
-    );
-    completeRequests = GenericStore(
-      core,
-      'completedRequests',
-      '2.0',
-      (StoredCacao value) {
-        return jsonEncode(value.toJson());
-      },
-      (String value) {
-        return StoredCacao.fromJson(jsonDecode(value));
-      },
-    );
-  }
+    required this.authKeys,
+    required this.pairingTopics,
+    required this.authRequests,
+    required this.completeRequests,
+  });
 
   @override
   Future<void> init() async {
