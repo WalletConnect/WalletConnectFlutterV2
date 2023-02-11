@@ -103,7 +103,8 @@ class Crypto implements ICrypto {
   }) async {
     _checkInitialized();
 
-    final String topic = overrideTopic == null ? utils!.hashKey(symKey) : overrideTopic;
+    final String topic =
+        overrideTopic == null ? utils!.hashKey(symKey) : overrideTopic;
     // print('crypto setSymKey, symKey: $symKey, overrideTopic: $topic');
     await keyChain!.set(topic, symKey);
     return topic;
@@ -180,8 +181,8 @@ class Crypto implements ICrypto {
     }
 
     if (utils!.isTypeOneEnvelope(params)) {
-      final String selfPublicKey = params.senderPublicKey!;
-      final String peerPublicKey = params.receiverPublicKey!;
+      final String selfPublicKey = params.receiverPublicKey!;
+      final String peerPublicKey = params.senderPublicKey!;
       topic = await generateSharedKey(selfPublicKey, peerPublicKey);
     }
     final String symKey = _getSymKey(topic);

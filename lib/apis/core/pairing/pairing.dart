@@ -2,6 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:event/event.dart';
+import 'package:wallet_connect_flutter_v2/apis/auth_api/stores/generic_store.dart';
+import 'package:wallet_connect_flutter_v2/apis/auth_api/stores/i_generic_store.dart';
 import 'package:wallet_connect_flutter_v2/apis/core/crypto/crypto_models.dart';
 import 'package:wallet_connect_flutter_v2/apis/core/i_core.dart';
 import 'package:wallet_connect_flutter_v2/apis/core/pairing/i_pairing.dart';
@@ -39,6 +41,11 @@ class Pairing implements IPairing {
   ICore core;
   IPairingStore? pairings;
 
+  /// Stores the public key of Type 1 Envelopes for a topic
+  /// Once a receiver public key has been used, it is removed from the store
+  /// Thus, this store works under the assumption that a public key will only be used once
+  late IGenericStore<String> topicToReceiverPublicKey;
+
   Pairing(
     this.core, {
     this.pairings,
@@ -52,12 +59,65 @@ class Pairing implements IPairing {
 
     _registerRelayEvents();
     _registerExpirerEvents();
+
     pairings ??= PairingStore(core);
+    topicToReceiverPublicKey = GenericStore(
+      core: core,
+      context: 'topicToReceiverPublicKey',
+      version: '1.0',
+      toJsonString: (String value) {
+        return value;
+      },
+      fromJsonString: (String value) {
+        return value;
+      },
+    );
+
     await core.expirer.init();
-    await pairings!.init();
+
+    Future.wait([
+      pairings!.init(),
+      topicToReceiverPublicKey.init(),
+    ]);
+
     await _cleanup();
 
     _initialized = true;
+  }
+
+  @override
+  Future<CreateResponse> create({
+    List<List<String>> methods = const [],
+  }) async {
+    _checkInitialized();
+    final String symKey = core.crypto.getUtils().generateRandomBytes32();
+    final String topic = await core.crypto.setSymKey(symKey);
+    final int expiry = WalletConnectUtils.calculateExpiry(
+      WalletConnectConstants.FIVE_MINUTES,
+    );
+    final Relay relay = Relay(WalletConnectConstants.RELAYER_DEFAULT_PROTOCOL);
+    final PairingInfo pairing = PairingInfo(
+      topic: topic,
+      expiry: expiry,
+      relay: relay,
+      active: false,
+    );
+    final Uri uri = WalletConnectUtils.formatUri(
+      protocol: core.protocol,
+      version: core.version,
+      topic: topic,
+      symKey: symKey,
+      relay: relay,
+      methods: methods,
+    );
+    await pairings!.set(topic, pairing);
+    await core.relayClient.subscribe(topic: topic);
+    await core.expirer.set(topic, expiry);
+
+    return CreateResponse(
+      topic: topic,
+      uri: uri,
+    );
   }
 
   @override
@@ -117,41 +177,6 @@ class Pairing implements IPairing {
   }
 
   @override
-  Future<CreateResponse> create({
-    List<List<String>> methods = const [],
-  }) async {
-    _checkInitialized();
-    final String symKey = core.crypto.getUtils().generateRandomBytes32();
-    final String topic = await core.crypto.setSymKey(symKey);
-    final int expiry = WalletConnectUtils.calculateExpiry(
-      WalletConnectConstants.FIVE_MINUTES,
-    );
-    final Relay relay = Relay(WalletConnectConstants.RELAYER_DEFAULT_PROTOCOL);
-    final PairingInfo pairing = PairingInfo(
-      topic: topic,
-      expiry: expiry,
-      relay: relay,
-      active: false,
-    );
-    final Uri uri = WalletConnectUtils.formatUri(
-      protocol: core.protocol,
-      version: core.version,
-      topic: topic,
-      symKey: symKey,
-      relay: relay,
-      methods: methods,
-    );
-    await pairings!.set(topic, pairing);
-    await core.relayClient.subscribe(topic: topic);
-    await core.expirer.set(topic, expiry);
-
-    return CreateResponse(
-      topic: topic,
-      uri: uri,
-    );
-  }
-
-  @override
   Future<void> activate({required String topic}) async {
     _checkInitialized();
     final int expiry = WalletConnectUtils.calculateExpiry(
@@ -182,6 +207,22 @@ class Pairing implements IPairing {
       method: method,
       function: function,
       type: type,
+    );
+  }
+
+  @override
+  Future<void> setReceiverPublicKey({
+    required String topic,
+    required String publicKey,
+    int? expiry,
+  }) async {
+    _checkInitialized();
+    await topicToReceiverPublicKey.set(topic, publicKey);
+    await core.expirer.set(
+      publicKey,
+      WalletConnectUtils.calculateExpiry(
+        expiry ?? WalletConnectConstants.FIVE_MINUTES,
+      ),
     );
   }
 
@@ -403,6 +444,15 @@ class Pairing implements IPairing {
     expiredPairings.map(
       (PairingInfo e) async => await pairings!.delete(e.topic),
     );
+
+    // Cleanup all of the expired receiver public keys
+    final List<String> expiredReceiverPublicKeys = topicToReceiverPublicKey
+        .getAll()
+        .where((key) => WalletConnectUtils.isExpired(core.expirer.get(key)))
+        .toList();
+    expiredReceiverPublicKeys.map(
+      (String key) async => await topicToReceiverPublicKey.delete(key),
+    );
   }
 
   void _checkInitialized() {
@@ -436,8 +486,21 @@ class Pairing implements IPairing {
       return;
     }
 
+    // If we have a reciever public key for the topic, use it
+    String? receiverPublicKey = topicToReceiverPublicKey.get(event.topic);
+    // If there was a public key, delete it. One use.
+    if (receiverPublicKey != null) {
+      await topicToReceiverPublicKey.delete(event.topic);
+    }
+
     // Decode the message
-    String payloadString = await core.crypto.decode(event.topic, event.message);
+    String payloadString = await core.crypto.decode(
+      event.topic,
+      event.message,
+      options: DecodeOptions(
+        receiverPublicKey: receiverPublicKey,
+      ),
+    );
     Map<String, dynamic> data = jsonDecode(payloadString);
 
     // If it's an rpc request, handle it

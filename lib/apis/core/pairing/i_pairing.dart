@@ -1,4 +1,5 @@
 import 'package:event/event.dart';
+import 'package:wallet_connect_flutter_v2/apis/auth_api/stores/i_generic_store.dart';
 import 'package:wallet_connect_flutter_v2/apis/core/crypto/crypto_models.dart';
 import 'package:wallet_connect_flutter_v2/apis/core/pairing/i_pairing_store.dart';
 import 'package:wallet_connect_flutter_v2/apis/core/pairing/utils/pairing_models.dart';
@@ -22,6 +23,11 @@ abstract class IPairing {
     required String method,
     required Function(String, JsonRpcRequest) function,
     required ProtocolType type,
+  });
+  Future<void> setReceiverPublicKey({
+    required String topic,
+    required String publicKey,
+    int? expiry,
   });
   Future<void> updateExpiry({
     required String topic,

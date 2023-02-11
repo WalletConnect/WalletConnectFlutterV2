@@ -30,7 +30,8 @@ class PairingInfo {
     this.peerMetadata,
   });
 
-  factory PairingInfo.fromJson(Map<String, dynamic> json) => _$PairingInfoFromJson(json);
+  factory PairingInfo.fromJson(Map<String, dynamic> json) =>
+      _$PairingInfoFromJson(json);
 
   Map<String, dynamic> toJson() => _$PairingInfoToJson(this);
 }
@@ -51,7 +52,15 @@ class PairingMetadata {
     this.redirect,
   });
 
-  factory PairingMetadata.fromJson(Map<String, dynamic> json) => _$PairingMetadataFromJson(json);
+  factory PairingMetadata.empty() => PairingMetadata(
+        name: '',
+        description: '',
+        url: '',
+        icons: [],
+      );
+
+  factory PairingMetadata.fromJson(Map<String, dynamic> json) =>
+      _$PairingMetadataFromJson(json);
 
   Map<String, dynamic> toJson() => _$PairingMetadataToJson(this);
 
@@ -87,7 +96,8 @@ class Redirect {
     this.universal,
   });
 
-  factory Redirect.fromJson(Map<String, dynamic> json) => _$RedirectFromJson(json);
+  factory Redirect.fromJson(Map<String, dynamic> json) =>
+      _$RedirectFromJson(json);
 
   Map<String, dynamic> toJson() => _$RedirectToJson(this);
 
@@ -97,7 +107,9 @@ class Redirect {
   }
 
   @override
-  int get hashCode => (native == null ? 1 : native!.hashCode) + (universal == null ? 1 : universal!.hashCode);
+  int get hashCode =>
+      (native == null ? 1 : native!.hashCode) +
+      (universal == null ? 1 : universal!.hashCode);
 }
 
 class CreateResponse {
@@ -163,7 +175,8 @@ class JsonRpcRecord {
     this.chainId,
   });
 
-  factory JsonRpcRecord.fromJson(Map<String, dynamic> json) => _$JsonRpcRecordFromJson(json);
+  factory JsonRpcRecord.fromJson(Map<String, dynamic> json) =>
+      _$JsonRpcRecordFromJson(json);
 
   Map<String, dynamic> toJson() => _$JsonRpcRecordToJson(this);
 }

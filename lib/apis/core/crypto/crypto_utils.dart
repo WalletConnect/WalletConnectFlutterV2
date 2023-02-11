@@ -46,29 +46,6 @@ class CryptoUtils extends ICryptoUtils {
 
   @override
   Future<String> deriveSymKey(String privKeyA, String pubKeyB) async {
-    // final Uint8List zeros = Uint8List(KEY_LENGTH);
-
-    // var R = ed2.ProjectiveGroupElement();
-    // var A = ed2.ExtendedGroupElement();
-    // A.FromBytes(Uint8List.fromList(hex.decode(privKeyA)));
-    // ed2.GeDoubleScalarMultVartime(
-    //   R,
-    //   Uint8List.fromList(hex.decode(pubKeyB)),
-    //   A,
-    //   zeros,
-    // );
-
-    // Uint8List sharedKey1 = Uint8List(32);
-    // R.ToBytes(sharedKey1);
-
-    // final Uint8List sharedKey1 = TweetNaCl.crypto_scalarmult(
-    //   zeros,
-    //   Uint8List.fromList(hex.decode(privKeyA)),
-    //   Uint8List.fromList(hex.decode(pubKeyB)),
-    // );
-
-    // print(sharedKey1);
-
     final Uint8List sharedKey1 = x.X25519(
       hex.decode(privKeyA),
       hex.decode(pubKeyB),

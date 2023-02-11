@@ -1,16 +1,13 @@
-const TEST_ETHEREUM_CHAIN = "eip155:1";
+import 'package:wallet_connect_flutter_v2/wallet_connect_flutter_v2.dart';
 
-const TEST_ADDRESS_2 = '0xF4Dc0b2372Bf3e3b2E1eB46B0a7c8E07Af99e7b0';
-const TEST_MESSAGE_1 = 'Hello World!';
-const TEST_SIG_1 =
-    '0x68d3df2e1c415b0a30b8aaf0f13d86b8615b087c8e54e41d7d28f30f39b61af06c9a6657d13f430dcadf6c7e2e0d95d7e6c47b1429c848f976b9c93f36a1ee7b1b';
+const TEST_ETHEREUM_CHAIN = "eip155:1";
 
 const TEST_SIG_EIP1271 =
     '0xc1505719b2504095116db01baaf276361efd3a73c28cf8cc28dabefa945b8d536011289ac0a3b048600c1e692ff173ca944246cf7ceb319ac2262d27b395c82b1c';
 const TEST_ADDRESS_EIP1271 = '0x2faf83c542b68f1b4cdc0e770e8cb9f567b08f71';
 const TEST_MESSAGE_EIP1271 =
     '''localhost wants you to sign in with your Ethereum account:
-0x2faf83c542b68f1b4cdc0e770e8cb9f567b08f71
+$TEST_ADDRESS_EIP1271
 URI: http://localhost:3000/
 Version: 1
 Chain ID: 1
@@ -19,10 +16,18 @@ Issued At: 2022-10-10T23:03:35.700Z
 Expiration Time: 2022-10-11T23:03:35.700Z''';
 
 const TEST_SIG_EIP191 =
-    '0xa2202fc57206050a2fe2172028bd21aa8680cf1f19501c2d386a17dbd88da02160da27d931cf4c23398f933fc51b76170542f842556c2984aebd4a785a9f2bfb1b';
-const TEST_ADDRESS_EIP191 =
-    '0x87ec9d12a8b83358e8461d1218270517fa0fa792'; // '0xed54a7c1d8634bb589f24bb7f05a5554b36f9618';
-const TEST_MESSAGE_EIP191 = 'Hello world';
+    '0x560a65deed4aaf332d9dbab82af897245c93139773b483072d5e59afdc5788d76e1dcbefaef36b11a52755bfd152241b4ea03d2cc08638818c5105cba9beb83d1c';
+const TEST_PRIVATE_KEY_EIP191 =
+    '5c0caa455d5354515baae31e01421db4763f21a25dfbffd32052deeb3076dbbb';
+const TEST_ADDRESS_EIP191 = '0x06C6A22feB5f8CcEDA0db0D593e6F26A3611d5fa';
+const TEST_MESSAGE_EIP191 = 'Hello World';
 
 const TEST_SIGNATURE_FAIL =
     '0xdead5719b2504095116db01baaf276361efd3a73c28cf8cc28dabefa945b8d536011289ac0a3b048600c1e692ff173ca944246cf7ceb319ac2262d27b395c82b1c';
+
+const TEST_ISSUER_EIP191 = 'did:pkh:$TEST_ETHEREUM_CHAIN:$TEST_ADDRESS_EIP191';
+
+const TEST_CACAO_SIGNATURE = CacaoSignature(
+  t: CacaoSignature.EIP191,
+  s: TEST_SIG_EIP191,
+);

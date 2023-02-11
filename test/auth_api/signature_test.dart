@@ -1,6 +1,8 @@
+import 'dart:typed_data';
+
+import 'package:eth_sig_util/eth_sig_util.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:wallet_connect_flutter_v2/apis/auth_api/models/auth_client_models.dart';
-import 'package:wallet_connect_flutter_v2/apis/auth_api/utils/auth_signature.dart';
+import 'package:wallet_connect_flutter_v2/wallet_connect_flutter_v2.dart';
 
 import '../shared/shared_test_values.dart';
 import 'utils/signature_constants.dart';
@@ -10,6 +12,11 @@ void main() {
 
   group('AuthSignature', () {
     test('isValidEip191Signature', () async {
+      // print('Actual Sig: ${EthSigUtil.signPersonalMessage(
+      //   message: Uint8List.fromList(TEST_MESSAGE_EIP191.codeUnits),
+      //   privateKey: TEST_PRIVATE_KEY_EIP191,
+      // )}');
+
       final cacaoSig = CacaoSignature(
         t: CacaoSignature.EIP191,
         s: TEST_SIG_EIP191,

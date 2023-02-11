@@ -11,18 +11,6 @@ class PublishOptions {
 }
 
 abstract class IRelayClient {
-  Future<void> init();
-  Future<void> publish({
-    required String topic,
-    required String message,
-    required int ttl,
-    required int tag,
-  });
-  Future<String> subscribe({required String topic});
-  Future<void> unsubscribe({required String topic});
-  Future<void> connect({String? relayUrl});
-  Future<void> disconnect();
-
   /// Relay Client Events
   abstract final Event<MessageEvent> onRelayClientMessage;
   abstract final Event onRelayClientConnect;
@@ -42,4 +30,16 @@ abstract class IRelayClient {
   // Event<EventArgs> onSubscriptionDisabled();
   abstract final Event onSubscriptionSync;
   abstract final Event onSubscriptionResubscribed;
+
+  Future<void> init();
+  Future<void> publish({
+    required String topic,
+    required String message,
+    required int ttl,
+    required int tag,
+  });
+  Future<String> subscribe({required String topic});
+  Future<void> unsubscribe({required String topic});
+  Future<void> connect({String? relayUrl});
+  Future<void> disconnect();
 }

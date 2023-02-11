@@ -1,6 +1,6 @@
 class AddressUtils {
   static String getDidAddress(String iss) {
-    return iss.split(':').first;
+    return iss.split(':').last;
   }
 
   static String getDidChainId(String iss) {

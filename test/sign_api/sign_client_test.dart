@@ -955,237 +955,235 @@ void signingEngineTests({
       });
     });
 
-    // group('ping', () {
-    //   setUp(() async {
-    //     await clientA.sessions.set(
-    //       TEST_SESSION_VALID_TOPIC,
-    //       testSessionValid,
-    //     );
-    //     await clientA.sessions.set(
-    //       TEST_SESSION_EXPIRED_TOPIC,
-    //       testSessionExpired,
-    //     );
-    //   });
+    group('ping', () {
+      setUp(() async {
+        await clientA.sessions.set(
+          TEST_SESSION_VALID_TOPIC,
+          testSessionValid,
+        );
+        await clientA.sessions.set(
+          TEST_SESSION_EXPIRED_TOPIC,
+          testSessionExpired,
+        );
+      });
 
-    //   test("works from pairing and session", () async {
-    //     final connectionInfo = await SignClientHelpers.testConnectPairApprove(
-    //       clientA,
-    //       clientB,
-    //     );
-    //     final sessionTopic = connectionInfo.session.topic;
-    //     final pairingTopic = connectionInfo.pairing.topic;
-    //     print(sessionTopic);
-    //     print(pairingTopic);
+      test("works from pairing and session", () async {
+        final connectionInfo = await SignClientHelpers.testConnectPairApprove(
+          clientA,
+          clientB,
+        );
+        final sessionTopic = connectionInfo.session.topic;
+        final pairingTopic = connectionInfo.pairing.topic;
 
-    //     int counterAS = 0;
-    //     int counterBS = 0;
-    //     int counterAP = 0;
-    //     int counterBP = 0;
-    //     clientA.onSessionPing.subscribe((SessionPing? session) {
-    //       expect(session != null, true);
-    //       expect(session!.topic, sessionTopic);
-    //       counterAS++;
-    //     });
-    //     clientB.onSessionPing.subscribe((SessionPing? session) {
-    //       expect(session != null, true);
-    //       expect(session!.topic, sessionTopic);
-    //       counterBS++;
-    //     });
-    //     clientA.core.pairing.onPairingPing.subscribe((PairingEvent? pairing) {
-    //       expect(pairing != null, true);
-    //       expect(pairing!.topic, pairingTopic);
-    //       counterAP++;
-    //     });
-    //     clientB.core.pairing.onPairingPing.subscribe((PairingEvent? pairing) {
-    //       expect(pairing != null, true);
-    //       expect(pairing!.topic, pairingTopic);
-    //       counterBP++;
-    //     });
+        int counterAS = 0;
+        int counterBS = 0;
+        int counterAP = 0;
+        int counterBP = 0;
+        clientA.onSessionPing.subscribe((SessionPing? session) {
+          expect(session != null, true);
+          expect(session!.topic, sessionTopic);
+          counterAS++;
+        });
+        clientB.onSessionPing.subscribe((SessionPing? session) {
+          expect(session != null, true);
+          expect(session!.topic, sessionTopic);
+          counterBS++;
+        });
+        clientA.core.pairing.onPairingPing.subscribe((PairingEvent? pairing) {
+          expect(pairing != null, true);
+          expect(pairing!.topic, pairingTopic);
+          counterAP++;
+        });
+        clientB.core.pairing.onPairingPing.subscribe((PairingEvent? pairing) {
+          expect(pairing != null, true);
+          expect(pairing!.topic, pairingTopic);
+          counterBP++;
+        });
 
-    //     await clientA.ping(topic: sessionTopic);
-    //     await clientB.ping(topic: sessionTopic);
-    //     await clientA.ping(topic: pairingTopic);
-    //     await clientB.ping(topic: pairingTopic);
+        await clientA.ping(topic: sessionTopic);
+        await clientB.ping(topic: sessionTopic);
+        await clientA.ping(topic: pairingTopic);
+        await clientB.ping(topic: pairingTopic);
 
-    //     await Future.delayed(Duration(milliseconds: 150));
+        await Future.delayed(Duration(milliseconds: 150));
 
-    //     expect(counterAS, 1);
-    //     expect(counterBS, 1);
-    //     expect(counterAP, 2);
-    //     expect(counterBP, 2);
+        expect(counterAS, 1);
+        expect(counterBS, 1);
+        expect(counterAP, 2);
+        expect(counterBP, 2);
 
-    //     clientA.onSessionPing.unsubscribeAll();
-    //     clientB.onSessionPing.unsubscribeAll();
-    //     clientA.core.pairing.onPairingPing.unsubscribeAll();
-    //     clientB.core.pairing.onPairingPing.unsubscribeAll();
-    //   });
+        clientA.onSessionPing.unsubscribeAll();
+        clientB.onSessionPing.unsubscribeAll();
+        clientA.core.pairing.onPairingPing.unsubscribeAll();
+        clientB.core.pairing.onPairingPing.unsubscribeAll();
+      });
 
-    //   test('invalid topic', () async {
-    //     expect(
-    //       () async => await clientA.ping(
-    //         topic: TEST_SESSION_INVALID_TOPIC,
-    //       ),
-    //       throwsA(
-    //         isA<WCError>().having(
-    //           (e) => e.message,
-    //           'message',
-    //           'No matching key. session or pairing topic doesn\'t exist: $TEST_SESSION_INVALID_TOPIC',
-    //         ),
-    //       ),
-    //     );
-    //     expect(
-    //       () async => await clientA.ping(
-    //         topic: TEST_SESSION_EXPIRED_TOPIC,
-    //       ),
-    //       throwsA(
-    //         isA<WCError>().having(
-    //           (e) => e.message,
-    //           'message',
-    //           'Expired. session topic: $TEST_SESSION_EXPIRED_TOPIC',
-    //         ),
-    //       ),
-    //     );
-    //     await Future.delayed(Duration(milliseconds: 150));
-    //     expect(
-    //       clientA.sessions.has(
-    //         TEST_SESSION_EXPIRED_TOPIC,
-    //       ),
-    //       false,
-    //     );
-    //   });
-    // });
+      test('invalid topic', () async {
+        expect(
+          () async => await clientA.ping(
+            topic: TEST_SESSION_INVALID_TOPIC,
+          ),
+          throwsA(
+            isA<WCError>().having(
+              (e) => e.message,
+              'message',
+              'No matching key. session or pairing topic doesn\'t exist: $TEST_SESSION_INVALID_TOPIC',
+            ),
+          ),
+        );
+        expect(
+          () async => await clientA.ping(
+            topic: TEST_SESSION_EXPIRED_TOPIC,
+          ),
+          throwsA(
+            isA<WCError>().having(
+              (e) => e.message,
+              'message',
+              'Expired. session topic: $TEST_SESSION_EXPIRED_TOPIC',
+            ),
+          ),
+        );
+        await Future.delayed(Duration(milliseconds: 150));
+        expect(
+          clientA.sessions.has(
+            TEST_SESSION_EXPIRED_TOPIC,
+          ),
+          false,
+        );
+      });
+    });
 
-    // group("disconnect", () {
-    //   setUp(() async {
-    //     await clientA.sessions.set(
-    //       TEST_SESSION_VALID_TOPIC,
-    //       testSessionValid,
-    //     );
-    //     await clientA.sessions.set(
-    //       TEST_SESSION_EXPIRED_TOPIC,
-    //       testSessionExpired,
-    //     );
-    //   });
+    group("disconnect", () {
+      setUp(() async {
+        await clientA.sessions.set(
+          TEST_SESSION_VALID_TOPIC,
+          testSessionValid,
+        );
+        await clientA.sessions.set(
+          TEST_SESSION_EXPIRED_TOPIC,
+          testSessionExpired,
+        );
+      });
 
-    //   test("using pairing works", () async {
-    //     final connectionInfo = await SignClientHelpers.testConnectPairApprove(
-    //       clientA,
-    //       clientB,
-    //     );
-    //     final pairingATopic = connectionInfo.pairing.topic;
+      test("using pairing works", () async {
+        final connectionInfo = await SignClientHelpers.testConnectPairApprove(
+          clientA,
+          clientB,
+        );
+        final pairingATopic = connectionInfo.pairing.topic;
 
-    //     int counterA = 0;
-    //     int counterB = 0;
-    //     clientA.core.pairing.onPairingDelete.subscribe((PairingEvent? e) {
-    //       expect(e != null, true);
-    //       expect(e!.topic, pairingATopic);
-    //       counterA++;
-    //     });
-    //     clientB.core.pairing.onPairingDelete.subscribe((PairingEvent? e) {
-    //       expect(e != null, true);
-    //       expect(e!.topic, pairingATopic);
-    //       counterB++;
-    //     });
+        int counterA = 0;
+        int counterB = 0;
+        clientA.core.pairing.onPairingDelete.subscribe((PairingEvent? e) {
+          expect(e != null, true);
+          expect(e!.topic, pairingATopic);
+          counterA++;
+        });
+        clientB.core.pairing.onPairingDelete.subscribe((PairingEvent? e) {
+          expect(e != null, true);
+          expect(e!.topic, pairingATopic);
+          counterB++;
+        });
 
-    //     final reason = Errors.getSdkError(Errors.USER_DISCONNECTED);
-    //     await clientA.disconnect(
-    //       topic: pairingATopic,
-    //       reason: WCErrorResponse(
-    //         code: reason.code,
-    //         message: reason.message,
-    //       ),
-    //     );
+        final reason = Errors.getSdkError(Errors.USER_DISCONNECTED);
+        await clientA.disconnect(
+          topic: pairingATopic,
+          reason: WCErrorResponse(
+            code: reason.code,
+            message: reason.message,
+          ),
+        );
 
-    //     await Future.delayed(Duration(milliseconds: 150));
+        await Future.delayed(Duration(milliseconds: 150));
 
-    //     // TODO: See if this should delete the session as well
-    //     expect(clientA.pairings.get(pairingATopic), null);
-    //     expect(clientB.pairings.get(pairingATopic), null);
+        // TODO: See if this should delete the session as well
+        expect(clientA.pairings.get(pairingATopic), null);
+        expect(clientB.pairings.get(pairingATopic), null);
 
-    //     expect(counterA, 1);
-    //     expect(counterB, 1);
+        expect(counterA, 1);
+        expect(counterB, 1);
 
-    //     clientA.core.pairing.onPairingDelete.unsubscribeAll();
-    //     clientB.core.pairing.onPairingDelete.unsubscribeAll();
-    //   });
+        clientA.core.pairing.onPairingDelete.unsubscribeAll();
+        clientB.core.pairing.onPairingDelete.unsubscribeAll();
+      });
 
-    //   test("using session works", () async {
-    //     final connectionInfo = await SignClientHelpers.testConnectPairApprove(
-    //       clientA,
-    //       clientB,
-    //     );
-    //     final sessionATopic = connectionInfo.session.topic;
+      test("using session works", () async {
+        final connectionInfo = await SignClientHelpers.testConnectPairApprove(
+          clientA,
+          clientB,
+        );
+        final sessionATopic = connectionInfo.session.topic;
 
-    //     int counterB = 0;
-    //     clientB.onSessionDelete.subscribe((SessionDelete? e) {
-    //       expect(e != null, true);
-    //       expect(e!.topic, sessionATopic);
-    //       counterB++;
-    //     });
+        int counterB = 0;
+        clientB.onSessionDelete.subscribe((SessionDelete? e) {
+          expect(e != null, true);
+          expect(e!.topic, sessionATopic);
+          counterB++;
+        });
 
-    //     final reason = Errors.getSdkError(Errors.USER_DISCONNECTED);
-    //     await clientA.disconnect(
-    //       topic: sessionATopic,
-    //       reason: WCErrorResponse(
-    //         code: reason.code,
-    //         message: reason.message,
-    //       ),
-    //     );
+        final reason = Errors.getSdkError(Errors.USER_DISCONNECTED);
+        await clientA.disconnect(
+          topic: sessionATopic,
+          reason: WCErrorResponse(
+            code: reason.code,
+            message: reason.message,
+          ),
+        );
 
-    //     await Future.delayed(Duration(milliseconds: 150));
+        await Future.delayed(Duration(milliseconds: 150));
 
-    //     expect(clientA.sessions.get(sessionATopic), null);
-    //     expect(clientB.sessions.get(sessionATopic), null);
+        expect(clientA.sessions.get(sessionATopic), null);
+        expect(clientB.sessions.get(sessionATopic), null);
 
-    //     expect(counterB, 1);
+        expect(counterB, 1);
 
-    //     clientA.onSessionDelete.unsubscribeAll();
-    //     clientB.onSessionDelete.unsubscribeAll();
-    //   });
+        clientA.onSessionDelete.unsubscribeAll();
+        clientB.onSessionDelete.unsubscribeAll();
+      });
 
-    //   test('invalid topic', () async {
-    //     final reason = Errors.getSdkError(Errors.USER_DISCONNECTED);
-    //     expect(
-    //       () async => await clientA.disconnect(
-    //         topic: TEST_SESSION_INVALID_TOPIC,
-    //         reason: WCErrorResponse(
-    //           code: reason.code,
-    //           message: reason.message,
-    //         ),
-    //       ),
-    //       throwsA(
-    //         isA<WCError>().having(
-    //           (e) => e.message,
-    //           'message',
-    //           'No matching key. session or pairing topic doesn\'t exist: $TEST_SESSION_INVALID_TOPIC',
-    //         ),
-    //       ),
-    //     );
-    //     expect(
-    //       () async => await clientA.disconnect(
-    //         topic: TEST_SESSION_EXPIRED_TOPIC,
-    //         reason: WCErrorResponse(
-    //           code: reason.code,
-    //           message: reason.message,
-    //         ),
-    //       ),
-    //       throwsA(
-    //         isA<WCError>().having(
-    //           (e) => e.message,
-    //           'message',
-    //           'Expired. session topic: $TEST_SESSION_EXPIRED_TOPIC',
-    //         ),
-    //       ),
-    //     );
-    //     await Future.delayed(Duration(milliseconds: 150));
-    //     expect(
-    //       clientA.sessions.has(
-    //         TEST_SESSION_EXPIRED_TOPIC,
-    //       ),
-    //       false,
-    //     );
-    //   });
-    // });
+      test('invalid topic', () async {
+        final reason = Errors.getSdkError(Errors.USER_DISCONNECTED);
+        expect(
+          () async => await clientA.disconnect(
+            topic: TEST_SESSION_INVALID_TOPIC,
+            reason: WCErrorResponse(
+              code: reason.code,
+              message: reason.message,
+            ),
+          ),
+          throwsA(
+            isA<WCError>().having(
+              (e) => e.message,
+              'message',
+              'No matching key. session or pairing topic doesn\'t exist: $TEST_SESSION_INVALID_TOPIC',
+            ),
+          ),
+        );
+        expect(
+          () async => await clientA.disconnect(
+            topic: TEST_SESSION_EXPIRED_TOPIC,
+            reason: WCErrorResponse(
+              code: reason.code,
+              message: reason.message,
+            ),
+          ),
+          throwsA(
+            isA<WCError>().having(
+              (e) => e.message,
+              'message',
+              'Expired. session topic: $TEST_SESSION_EXPIRED_TOPIC',
+            ),
+          ),
+        );
+        await Future.delayed(Duration(milliseconds: 150));
+        expect(
+          clientA.sessions.has(
+            TEST_SESSION_EXPIRED_TOPIC,
+          ),
+          false,
+        );
+      });
+    });
 
     group('find', () {
       test('works', () async {

@@ -1,12 +1,10 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:event/event.dart';
 import 'package:wallet_connect_flutter_v2/apis/auth_api/i_auth_engine.dart';
 import 'package:wallet_connect_flutter_v2/apis/auth_api/models/auth_client_events.dart';
 import 'package:wallet_connect_flutter_v2/apis/auth_api/models/auth_client_models.dart';
 import 'package:wallet_connect_flutter_v2/apis/auth_api/models/json_rpc_models.dart';
-import 'package:wallet_connect_flutter_v2/apis/auth_api/stores/generic_store.dart';
 import 'package:wallet_connect_flutter_v2/apis/auth_api/stores/i_generic_store.dart';
 import 'package:wallet_connect_flutter_v2/apis/auth_api/utils/address_utils.dart';
 import 'package:wallet_connect_flutter_v2/apis/auth_api/utils/auth_api_validators.dart';
@@ -16,14 +14,12 @@ import 'package:wallet_connect_flutter_v2/apis/core/crypto/crypto_models.dart';
 import 'package:wallet_connect_flutter_v2/apis/core/i_core.dart';
 import 'package:wallet_connect_flutter_v2/apis/core/pairing/utils/pairing_models.dart';
 import 'package:wallet_connect_flutter_v2/apis/core/pairing/utils/pairing_utils.dart';
-import 'package:wallet_connect_flutter_v2/apis/core/relay_client/relay_client_models.dart';
 import 'package:wallet_connect_flutter_v2/apis/models/basic_models.dart';
 import 'package:wallet_connect_flutter_v2/apis/models/json_rpc_error.dart';
 import 'package:wallet_connect_flutter_v2/apis/models/json_rpc_request.dart';
 import 'package:wallet_connect_flutter_v2/apis/utils/constants.dart';
 import 'package:wallet_connect_flutter_v2/apis/utils/errors.dart';
 import 'package:wallet_connect_flutter_v2/apis/utils/method_constants.dart';
-import 'package:wallet_connect_flutter_v2/apis/utils/wallet_connect_utils.dart';
 
 class AuthEngine implements IAuthEngine {
   bool _initialized = false;
@@ -82,30 +78,29 @@ class AuthEngine implements IAuthEngine {
     _checkInitialized();
 
     AuthApiValidators.isValidRequest(params);
+    String? pTopic = pairingTopic;
+    Uri? uri;
+    bool active = false;
 
-    final bool hasKnownPairing =
-        pairingTopic != null && core.pairing.getStore().has(pairingTopic);
+    if (pTopic != null) {
+      final PairingInfo pairing = core.pairing.getStore().get(pTopic)!;
+      active = pairing.active;
+    }
 
-    final Relay relay = Relay(
-      WalletConnectConstants.RELAYER_DEFAULT_PROTOCOL,
-    );
+    if (pTopic == null || !active) {
+      final CreateResponse newTopicAndUri = await core.pairing.create();
+      pTopic = newTopicAndUri.topic;
+      uri = newTopicAndUri.uri;
+    }
 
-    final int expiry = WalletConnectUtils.calculateExpiry(
-      params.expiry ?? WalletConnectConstants.FIVE_MINUTES,
-    );
-    final String publicKey = await core.crypto.generateKeyPair();
+    final publicKey = await core.crypto.generateKeyPair();
+    // print('requestAuth, publicKey: $publicKey');
     final String responseTopic = core.crypto.getUtils().hashKey(publicKey);
+    final int id = PairingUtils.payloadId();
 
     WcAuthRequestRequest request = WcAuthRequestRequest(
-      payloadParams: AuthPayloadParams(
-        type: params.type ?? CacaoHeader.EIP4361,
-        chainId: params.chainId,
-        statement: params.statement,
-        aud: params.aud,
-        domain: params.domain,
-        version: '1',
-        nonce: params.nonce,
-        iat: DateTime.now().toIso8601String(),
+      payloadParams: AuthPayloadParams.fromRequestParams(
+        params,
       ),
       requester: ConnectionMetadata(
         publicKey: publicKey,
@@ -113,69 +108,39 @@ class AuthEngine implements IAuthEngine {
       ),
     );
 
-    late int id;
+    final int expiry = params.expiry ?? WalletConnectConstants.FIVE_MINUTES;
+
+    await authKeys.set(
+      AuthConstants.AUTH_CLIENT_PUBLIC_KEY_NAME,
+      AuthPublicKey(publicKey: publicKey),
+    );
+
+    await pairingTopics.set(
+      responseTopic,
+      pTopic,
+    );
+
+    // Set the one time use receiver public key for decoding the Type 1 envelope
+    await core.pairing.setReceiverPublicKey(
+      topic: responseTopic,
+      publicKey: publicKey,
+      expiry: expiry,
+    );
+
     Completer<AuthResponse> completer = Completer.sync();
-    Uri? uri;
 
-    if (hasKnownPairing) {
-      id = PairingUtils.payloadId();
-      _requestAuthResponseHandler(
-        pairingTopic: pairingTopic,
-        responseTopic: responseTopic,
-        request: request,
-        id: id,
-        expiry: expiry,
-        completer: completer,
-      );
-    } else {
-      final String symKey = core.crypto.getUtils().generateRandomBytes32();
-      final String pairingTopic = await core.crypto.setSymKey(symKey);
-
-      final PairingInfo pairing = PairingInfo(
-        topic: pairingTopic,
-        expiry: expiry,
-        relay: relay,
-        active: false,
-      );
-      await core.pairing.getStore().set(pairingTopic, pairing);
-
-      _setExpiry(pairingTopic, expiry);
-
-      await authKeys.set(
-        AuthConstants.AUTH_CLIENT_PUBLIC_KEY_NAME,
-        AuthPublicKey(publicKey: publicKey),
-      );
-
-      await pairingTopics.set(
-        responseTopic,
-        pairingTopic,
-      );
-
-      await core.relayClient.subscribe(topic: pairingTopic);
-      await core.relayClient.subscribe(topic: responseTopic);
-
-      id = PairingUtils.payloadId();
-      _requestAuthResponseHandler(
-        pairingTopic: pairingTopic,
-        responseTopic: responseTopic,
-        request: request,
-        id: id,
-        expiry: expiry,
-        completer: completer,
-      );
-
-      uri = WalletConnectUtils.formatUri(
-        protocol: core.protocol,
-        version: core.version,
-        topic: pairingTopic,
-        symKey: symKey,
-        relay: relay,
-        methods: [],
-      );
-    }
+    _requestAuthResponseHandler(
+      pairingTopic: pTopic,
+      responseTopic: responseTopic,
+      request: request,
+      id: id,
+      expiry: expiry,
+      completer: completer,
+    );
 
     return AuthRequestResponse(
       id: id,
+      pairingTopic: pTopic,
       completer: completer,
       uri: uri,
     );
@@ -190,6 +155,10 @@ class AuthEngine implements IAuthEngine {
     required Completer<AuthResponse> completer,
   }) async {
     Map<String, dynamic>? resp;
+
+    // Subscribe to the responseTopic because we expect the response to use this topic
+    await core.relayClient.subscribe(topic: responseTopic);
+
     try {
       resp = await core.pairing.sendRequest(
         pairingTopic,
@@ -209,7 +178,7 @@ class AuthEngine implements IAuthEngine {
       return;
     }
 
-    core.pairing.activate(topic: pairingTopic);
+    await core.pairing.activate(topic: pairingTopic);
 
     final Cacao cacao = Cacao.fromJson(resp!);
     final CacaoSignature sig = cacao.s;
@@ -222,7 +191,7 @@ class AuthEngine implements IAuthEngine {
       ),
     );
 
-    final String reconstructed = formatMessage(
+    final String reconstructed = formatAuthMessage(
       iss: payload.iss,
       cacaoPayload: payload,
     );
@@ -274,7 +243,7 @@ class AuthEngine implements IAuthEngine {
   }
 
   @override
-  Future<void> respond({
+  Future<void> respondAuth({
     required int id,
     required String iss,
     CacaoSignature? signature,
@@ -282,7 +251,7 @@ class AuthEngine implements IAuthEngine {
   }) async {
     _checkInitialized();
 
-    Map<int, PendingAuthRequest> pendingRequests = getPendingRequests();
+    Map<int, PendingAuthRequest> pendingRequests = getPendingAuthRequests();
     AuthApiValidators.isValidRespond(
       id: id,
       pendingRequests: pendingRequests,
@@ -314,8 +283,8 @@ class AuthEngine implements IAuthEngine {
       final Cacao cacao = Cacao(
         h: CacaoHeader(),
         p: CacaoPayload.fromRequestPayload(
-          pendingRequest.cacaoPayload,
-          iss,
+          issuer: iss,
+          payload: pendingRequest.cacaoPayload,
         ),
         s: signature!,
       );
@@ -339,7 +308,7 @@ class AuthEngine implements IAuthEngine {
   }
 
   @override
-  Map<int, PendingAuthRequest> getPendingRequests() {
+  Map<int, PendingAuthRequest> getPendingAuthRequests() {
     Map<int, PendingAuthRequest> pendingRequests = {};
     authRequests.getAll().forEach((key) {
       pendingRequests[key.id] = key;
@@ -348,9 +317,9 @@ class AuthEngine implements IAuthEngine {
   }
 
   @override
-  String formatMessage({
+  String formatAuthMessage({
     required String iss,
-    required CacaoPayload cacaoPayload,
+    required CacaoRequestPayload cacaoPayload,
   }) {
     final header =
         '${cacaoPayload.domain} wants you to sign in with your Ethereum account';
@@ -416,7 +385,7 @@ class AuthEngine implements IAuthEngine {
 
       final CacaoRequestPayload cacaoPayload =
           CacaoRequestPayload.fromPayloadParams(
-        payload.params,
+        request.payloadParams,
       );
 
       authRequests.set(

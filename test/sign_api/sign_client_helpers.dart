@@ -125,7 +125,7 @@ class SignClientHelpers {
         start -
         (qrCodeScanLatencyMs ?? 0);
 
-    await Future.delayed(Duration(milliseconds: 1000));
+    await Future.delayed(Duration(milliseconds: 2000));
 
     if (sessionA == null) throw Exception("expect session A to be defined");
     if (sessionB == null) throw Exception("expect session B to be defined");

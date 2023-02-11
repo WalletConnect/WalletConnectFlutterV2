@@ -9,11 +9,13 @@ part 'auth_client_models.g.dart';
 
 class AuthRequestResponse {
   final int id;
+  final String pairingTopic;
   final Completer<AuthResponse> completer;
   final Uri? uri;
 
   AuthRequestResponse({
     required this.id,
+    required this.pairingTopic,
     required this.completer,
     this.uri,
   });
@@ -46,7 +48,7 @@ class AuthRequestParams {
   final List<String>? resources;
   final int? expiry;
 
-  AuthRequestParams({
+  const AuthRequestParams({
     required this.chainId,
     required this.domain,
     required this.nonce,
@@ -90,6 +92,23 @@ class AuthPayloadParams {
     this.requestId,
     this.resources,
   });
+
+  factory AuthPayloadParams.fromRequestParams(AuthRequestParams params) {
+    return AuthPayloadParams(
+      type: params.type ?? 'auth',
+      chainId: params.chainId,
+      domain: params.domain,
+      aud: params.aud,
+      version: '1',
+      nonce: params.nonce,
+      iat: DateTime.now().toIso8601String(),
+      nbf: params.nbf,
+      exp: params.exp,
+      statement: params.statement,
+      requestId: params.requestId,
+      resources: params.resources,
+    );
+  }
 
   factory AuthPayloadParams.fromJson(Map<String, dynamic> json) =>
       _$AuthPayloadParamsFromJson(json);
@@ -173,10 +192,10 @@ class CacaoPayload extends CacaoRequestPayload {
           resources: resources,
         );
 
-  factory CacaoPayload.fromRequestPayload(
-    CacaoRequestPayload payload,
-    String issuer,
-  ) {
+  factory CacaoPayload.fromRequestPayload({
+    required String issuer,
+    required CacaoRequestPayload payload,
+  }) {
     return CacaoPayload(
       iss: issuer,
       domain: payload.domain,
@@ -223,7 +242,7 @@ class CacaoSignature {
   final String s;
   final String? m;
 
-  CacaoSignature({
+  const CacaoSignature({
     required this.t,
     required this.s,
     this.m,

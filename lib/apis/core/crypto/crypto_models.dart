@@ -78,4 +78,8 @@ class EncodeOptions {
 
 class DecodeOptions {
   String? receiverPublicKey;
+
+  DecodeOptions({
+    this.receiverPublicKey,
+  });
 }

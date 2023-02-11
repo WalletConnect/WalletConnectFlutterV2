@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:event/event.dart';
-import 'package:stream_channel/stream_channel.dart';
 import 'package:json_rpc_2/json_rpc_2.dart';
 import 'package:wallet_connect_flutter_v2/apis/core/i_core.dart';
 import 'package:wallet_connect_flutter_v2/apis/core/relay_client/i_message_tracker.dart';
@@ -39,10 +38,12 @@ class RelayClient implements IRelayClient {
 
   /// Subscriptions
   @override
-  final Event<SubscriptionEvent> onSubscriptionCreated = Event<SubscriptionEvent>();
+  final Event<SubscriptionEvent> onSubscriptionCreated =
+      Event<SubscriptionEvent>();
 
   @override
-  final Event<SubscriptionDeletionEvent> onSubscriptionDeleted = Event<SubscriptionDeletionEvent>();
+  final Event<SubscriptionDeletionEvent> onSubscriptionDeleted =
+      Event<SubscriptionDeletionEvent>();
 
   @override
   final Event<EventArgs> onSubscriptionResubscribed = Event();
@@ -79,10 +80,10 @@ class RelayClient implements IRelayClient {
 
     // Setup the json RPC server
     jsonRPC = await _createJsonRPCProvider();
-    jsonRPC.registerMethod(
-      _buildMethod(JSON_RPC_PUBLISH),
-      _handlePublish,
-    );
+    // jsonRPC.registerMethod(
+    //   _buildMethod(JSON_RPC_PUBLISH),
+    //   _handlePublish,
+    // );
     jsonRPC.registerMethod(
       _buildMethod(JSON_RPC_SUBSCRIPTION),
       _handleSubscription,
@@ -104,6 +105,7 @@ class RelayClient implements IRelayClient {
     // }
     messageTracker ??= MessageTracker(core);
     topicMap ??= TopicMap(core);
+
     Future.wait([
       messageTracker!.init(),
       topicMap!.init(),
@@ -220,7 +222,8 @@ class RelayClient implements IRelayClient {
       onRelayClientError.broadcast(ErrorEvent(e));
       throw WCError(
         code: 401,
-        message: "Project ID doesn't exist, is invalid, or has too many requests",
+        message:
+            "Project ID doesn't exist, is invalid, or has too many requests",
       );
     }
   }
@@ -232,6 +235,7 @@ class RelayClient implements IRelayClient {
   /// JSON RPC MESSAGE HANDLERS
 
   Future<bool> handlePublish(String topic, String message) async {
+    // print('handle publish');
     // If we want to ignore the message, stop
     if (await _shouldIgnoreMessageEvent(topic, message)) return false;
 
@@ -248,12 +252,12 @@ class RelayClient implements IRelayClient {
     return true;
   }
 
-  Future<bool> _handlePublish(Parameters params) async {
-    // print('handle publish');
-    String topic = params['topic'].value;
-    String message = params['message'].value;
-    return await handlePublish(topic, message);
-  }
+  // Future<bool> _handlePublish(Parameters params) async {
+  //   // print('handle publish');
+  //   String topic = params['topic'].value;
+  //   String message = params['message'].value;
+  //   return await handlePublish(topic, message);
+  // }
 
   Future<bool> _handleSubscription(Parameters params) async {
     // print('handle subscription.');

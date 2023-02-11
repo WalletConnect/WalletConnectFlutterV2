@@ -25,13 +25,13 @@ class GenericStore<T> implements IGenericStore<T> {
   @override
   final T Function(String) fromJsonString;
 
-  GenericStore(
-    this.core,
-    this.context,
-    this.version,
-    this.toJsonString,
-    this.fromJsonString,
-  );
+  GenericStore({
+    required this.core,
+    required this.context,
+    required this.version,
+    required this.toJsonString,
+    required this.fromJsonString,
+  });
 
   @override
   Future<void> init() async {

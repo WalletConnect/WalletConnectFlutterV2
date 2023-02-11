@@ -18,6 +18,7 @@ abstract class IAuthEngine {
   abstract final IGenericStore<AuthPublicKey> authKeys;
   abstract final IGenericStore<String> pairingTopics;
   abstract final IGenericStore<PendingAuthRequest> authRequests;
+  abstract final IGenericStore<StoredCacao> completeRequests;
 
   // initializes the client with persisted storage and a network connection
   Future<void> init();
@@ -29,7 +30,7 @@ abstract class IAuthEngine {
   });
 
   /// respond wallet authentication
-  Future<void> respond({
+  Future<void> respondAuth({
     required int id,
     required String iss,
     CacaoSignature? signature,
@@ -37,11 +38,11 @@ abstract class IAuthEngine {
   });
 
   // query all pending requests
-  Map<int, PendingAuthRequest> getPendingRequests();
+  Map<int, PendingAuthRequest> getPendingAuthRequests();
 
   /// format payload to message string
-  String formatMessage({
+  String formatAuthMessage({
     required String iss,
-    required CacaoPayload cacaoPayload,
+    required CacaoRequestPayload cacaoPayload,
   });
 }
