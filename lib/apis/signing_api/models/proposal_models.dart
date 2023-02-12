@@ -16,7 +16,8 @@ class RequiredNamespace {
     required this.events,
   });
 
-  factory RequiredNamespace.fromJson(Map<String, dynamic> json) => _$RequiredNamespaceFromJson(json);
+  factory RequiredNamespace.fromJson(Map<String, dynamic> json) =>
+      _$RequiredNamespaceFromJson(json);
 
   Map<String, dynamic> toJson() => _$RequiredNamespaceToJson(this);
 
@@ -44,6 +45,17 @@ class RequiredNamespace {
 }
 
 @JsonSerializable()
+class SessionProposal {
+  final int id;
+  final ProposalData params;
+
+  SessionProposal({
+    required this.id,
+    required this.params,
+  });
+}
+
+@JsonSerializable()
 class ProposalData {
   final int id;
   final int expiry;
@@ -65,7 +77,8 @@ class ProposalData {
     this.pairingTopic,
   });
 
-  factory ProposalData.fromJson(Map<String, dynamic> json) => _$ProposalDataFromJson(json);
+  factory ProposalData.fromJson(Map<String, dynamic> json) =>
+      _$ProposalDataFromJson(json);
 
   Map<String, dynamic> toJson() => _$ProposalDataToJson(this);
 }

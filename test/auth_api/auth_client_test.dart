@@ -4,7 +4,7 @@ import 'dart:typed_data';
 import 'package:eth_sig_util/eth_sig_util.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:wallet_connect_flutter_v2/apis/auth_api/auth_engine.dart';
-import 'package:wallet_connect_flutter_v2/apis/auth_api/stores/generic_store.dart';
+import 'package:wallet_connect_flutter_v2/apis/core/store/generic_store.dart';
 import 'package:wallet_connect_flutter_v2/apis/auth_api/utils/auth_constants.dart';
 import 'package:wallet_connect_flutter_v2/wallet_connect_flutter_v2.dart';
 

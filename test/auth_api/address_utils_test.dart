@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:wallet_connect_flutter_v2/wallet_connect_flutter_v2.dart';
 
+import '../shared/shared_test_values.dart';
 import 'utils/signature_constants.dart';
 
 void main() {

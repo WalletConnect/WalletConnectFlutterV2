@@ -2,14 +2,19 @@ import 'package:event/event.dart';
 import 'package:wallet_connect_flutter_v2/apis/signing_api/models/proposal_models.dart';
 import 'package:wallet_connect_flutter_v2/apis/signing_api/models/session_models.dart';
 
-class SessionProposal extends EventArgs {
+class SessionProposalEvent extends EventArgs {
   int id;
   ProposalData params;
 
-  SessionProposal(
+  SessionProposalEvent(
     this.id,
     this.params,
   );
+
+  SessionProposalEvent.fromSessionProposal(
+    SessionProposal proposal,
+  )   : id = proposal.id,
+        params = proposal.params;
 }
 
 class SessionConnect extends EventArgs {
@@ -59,20 +64,32 @@ class SessionExpire extends EventArgs {
   SessionExpire(this.topic);
 }
 
-class SessionRequest extends EventArgs {
+class SessionRequestEvent extends EventArgs {
   int id;
   String topic;
   String method;
   String chainId;
   dynamic params;
 
-  SessionRequest(
+  SessionRequestEvent(
     this.id,
     this.topic,
     this.method,
     this.chainId,
     this.params,
   );
+
+  factory SessionRequestEvent.fromSessionRequest(
+    SessionRequest request,
+  ) {
+    return SessionRequestEvent(
+      request.id,
+      request.topic,
+      request.method,
+      request.chainId,
+      request.params,
+    );
+  }
 }
 
 class SessionEvent extends EventArgs {

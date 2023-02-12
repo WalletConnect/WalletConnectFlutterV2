@@ -1,7 +1,12 @@
+import 'dart:convert';
+
 import 'package:event/event.dart';
+import 'package:wallet_connect_flutter_v2/apis/core/store/generic_store.dart';
+import 'package:wallet_connect_flutter_v2/apis/core/store/i_generic_store.dart';
 import 'package:wallet_connect_flutter_v2/apis/core/pairing/i_pairing_store.dart';
 import 'package:wallet_connect_flutter_v2/apis/core/relay_client/relay_client_models.dart';
 import 'package:wallet_connect_flutter_v2/apis/models/basic_models.dart';
+import 'package:wallet_connect_flutter_v2/apis/models/json_rpc_response.dart';
 import 'package:wallet_connect_flutter_v2/apis/signing_api/sign_engine.dart';
 import 'package:wallet_connect_flutter_v2/apis/signing_api/i_sign_engine.dart';
 import 'package:wallet_connect_flutter_v2/apis/core/pairing/utils/pairing_models.dart';
@@ -16,6 +21,7 @@ import 'package:wallet_connect_flutter_v2/apis/signing_api/models/sign_client_ev
 import 'package:wallet_connect_flutter_v2/apis/signing_api/models/session_models.dart';
 import 'package:wallet_connect_flutter_v2/apis/signing_api/proposals.dart';
 import 'package:wallet_connect_flutter_v2/apis/signing_api/sessions.dart';
+import 'package:wallet_connect_flutter_v2/apis/signing_api/utils/sign_constants.dart';
 
 class SignClient implements ISignClient {
   bool _initialized = false;
@@ -27,64 +33,80 @@ class SignClient implements ISignClient {
 
   @override
   Event<SessionDelete> get onSessionDelete => engine.onSessionDelete;
-
   @override
   Event<SessionConnect> get onSessionConnect => engine.onSessionConnect;
-
   @override
   Event<SessionEvent> get onSessionEvent => engine.onSessionEvent;
-
   @override
   Event<SessionExpire> get onSessionExpire => engine.onSessionExpire;
-
   @override
   Event<SessionExtend> get onSessionExtend => engine.onSessionExtend;
-
   @override
   Event<SessionPing> get onSessionPing => engine.onSessionPing;
-
   @override
-  Event<SessionProposal> get onSessionProposal => engine.onSessionProposal;
-
+  Event<SessionProposalEvent> get onSessionProposal => engine.onSessionProposal;
   @override
-  Event<SessionRequest> get onSessionRequest => engine.onSessionRequest;
-
+  Event<SessionRequestEvent> get onSessionRequest => engine.onSessionRequest;
   @override
   Event<SessionUpdate> get onSessionUpdate => engine.onSessionUpdate;
 
   @override
-  IProposals get proposals => engine.proposals;
-
+  final ICore core;
+  @override
+  PairingMetadata get metadata => engine.metadata;
+  @override
+  IGenericStore<ProposalData> get proposals => engine.proposals;
   @override
   ISessions get sessions => engine.sessions;
-
   @override
-  final ICore core;
+  IGenericStore<SessionRequest> get pendingRequests => engine.pendingRequests;
 
   @override
   late ISignEngine engine;
 
-  static Future<SignClient> createInstance(
-    ICore core, {
-    PairingMetadata? self,
+  static Future<SignClient> createInstance({
+    required ICore core,
+    required PairingMetadata metadata,
   }) async {
-    final client = SignClient(core, self: self);
+    final client = SignClient(
+      core: core,
+      metadata: metadata,
+    );
     await client.init();
 
     return client;
   }
 
-  SignClient(
-    this.core, {
-    PairingMetadata? self,
+  SignClient({
+    required this.core,
+    required PairingMetadata metadata,
   }) {
-    Proposals p = Proposals(core);
-    Sessions s = Sessions(core);
     engine = SignEngine(
-      core,
-      p,
-      s,
-      selfMetadata: self,
+      core: core,
+      metadata: metadata,
+      proposals: GenericStore(
+        core: core,
+        context: SignConstants.CONTEXT_PROPOSALS,
+        version: SignConstants.VERSION_PROPOSALS,
+        toJsonString: (ProposalData value) {
+          return jsonEncode(value.toJson());
+        },
+        fromJsonString: (String value) {
+          return ProposalData.fromJson(jsonDecode(value));
+        },
+      ),
+      sessions: Sessions(core),
+      pendingRequests: GenericStore(
+        core: core,
+        context: SignConstants.CONTEXT_PENDING_REQUESTS,
+        version: SignConstants.VERSION_PENDING_REQUESTS,
+        toJsonString: (SessionRequest value) {
+          return jsonEncode(value.toJson());
+        },
+        fromJsonString: (String value) {
+          return SessionRequest.fromJson(jsonDecode(value));
+        },
+      ),
     );
   }
 
@@ -151,12 +173,12 @@ class SignClient implements ISignClient {
   }
 
   @override
-  Future<void> reject({
+  Future<void> rejectSession({
     required int id,
     required WCErrorResponse reason,
   }) async {
     try {
-      return await engine.reject(
+      return await engine.rejectSession(
         id: id,
         reason: reason,
       );
@@ -166,12 +188,12 @@ class SignClient implements ISignClient {
   }
 
   @override
-  Future<void> update({
+  Future<void> updateSession({
     required String topic,
     required Map<String, Namespace> namespaces,
   }) async {
     try {
-      return await engine.update(
+      return await engine.updateSession(
         topic: topic,
         namespaces: namespaces,
       );
@@ -182,11 +204,11 @@ class SignClient implements ISignClient {
   }
 
   @override
-  Future<void> extend({
+  Future<void> extendSession({
     required String topic,
   }) async {
     try {
-      return await engine.extend(topic: topic);
+      return await engine.extendSession(topic: topic);
     } catch (e) {
       rethrow;
     }
@@ -196,13 +218,28 @@ class SignClient implements ISignClient {
   void registerRequestHandler({
     required String chainId,
     required String method,
-    required void Function(String, dynamic) handler,
+    void Function(String, dynamic)? handler,
   }) {
     try {
       return engine.registerRequestHandler(
         chainId: chainId,
         method: method,
         handler: handler,
+      );
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> respondSessionRequest({
+    required String topic,
+    required JsonRpcResponse response,
+  }) {
+    try {
+      return engine.respondSessionRequest(
+        topic: topic,
+        response: response,
       );
     } catch (e) {
       rethrow;
@@ -230,7 +267,7 @@ class SignClient implements ISignClient {
   void registerEventHandler({
     required String chainId,
     required String event,
-    required void Function(String, dynamic) handler,
+    void Function(String, dynamic)? handler,
   }) {
     try {
       return engine.registerEventHandler(
@@ -244,13 +281,13 @@ class SignClient implements ISignClient {
   }
 
   @override
-  Future<void> emit({
+  Future<void> emitSessionEvent({
     required String topic,
     required String chainId,
     required SessionEventParams event,
   }) async {
     try {
-      return await engine.emit(
+      return await engine.emitSessionEvent(
         topic: topic,
         chainId: chainId,
         event: event,
@@ -272,12 +309,12 @@ class SignClient implements ISignClient {
   }
 
   @override
-  Future<void> disconnect({
+  Future<void> disconnectSession({
     required String topic,
     required WCErrorResponse reason,
   }) async {
     try {
-      return await engine.disconnect(
+      return await engine.disconnectSession(
         topic: topic,
         reason: reason,
       );
@@ -292,6 +329,33 @@ class SignClient implements ISignClient {
   }) {
     try {
       return engine.find(requiredNamespaces: requiredNamespaces);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Map<String, SessionData> getActiveSessions() {
+    try {
+      return engine.getActiveSessions();
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Map<String, ProposalData> getPendingSessionProposals() {
+    try {
+      return engine.getPendingSessionProposals();
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Map<String, SessionRequest> getPendingSessionRequests() {
+    try {
+      return engine.getPendingSessionRequests();
     } catch (e) {
       rethrow;
     }

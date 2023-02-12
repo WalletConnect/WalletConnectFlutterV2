@@ -62,3 +62,21 @@ Map<String, dynamic> _$SessionDataToJson(SessionData instance) =>
       'self': instance.self,
       'peer': instance.peer,
     };
+
+SessionRequest _$SessionRequestFromJson(Map<String, dynamic> json) =>
+    SessionRequest(
+      id: json['id'] as int,
+      topic: json['topic'] as String,
+      method: json['method'] as String,
+      chainId: json['chainId'] as String,
+      params: json['params'],
+    );
+
+Map<String, dynamic> _$SessionRequestToJson(SessionRequest instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'topic': instance.topic,
+      'method': instance.method,
+      'chainId': instance.chainId,
+      'params': instance.params,
+    };

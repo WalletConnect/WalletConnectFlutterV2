@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:event/event.dart';
+import 'package:wallet_connect_flutter_v2/apis/core/store/i_generic_store.dart';
 import 'package:wallet_connect_flutter_v2/apis/core/pairing/i_pairing.dart';
 import 'package:wallet_connect_flutter_v2/apis/core/pairing/i_pairing_store.dart';
 import 'package:wallet_connect_flutter_v2/apis/core/pairing/utils/pairing_utils.dart';
@@ -10,6 +11,7 @@ import 'package:wallet_connect_flutter_v2/apis/core/relay_client/relay_client_mo
 import 'package:wallet_connect_flutter_v2/apis/models/json_rpc_error.dart';
 import 'package:wallet_connect_flutter_v2/apis/models/json_rpc_request.dart';
 import 'package:wallet_connect_flutter_v2/apis/models/basic_models.dart';
+import 'package:wallet_connect_flutter_v2/apis/models/json_rpc_response.dart';
 import 'package:wallet_connect_flutter_v2/apis/signing_api/i_sign_engine.dart';
 import 'package:wallet_connect_flutter_v2/apis/signing_api/models/json_rpc_models.dart';
 import 'package:wallet_connect_flutter_v2/apis/signing_api/models/proposal_models.dart';
@@ -30,7 +32,8 @@ class SignEngine implements ISignEngine {
   @override
   final Event<SessionConnect> onSessionConnect = Event<SessionConnect>();
   @override
-  final Event<SessionProposal> onSessionProposal = Event<SessionProposal>();
+  final Event<SessionProposalEvent> onSessionProposal =
+      Event<SessionProposalEvent>();
   @override
   final Event<SessionUpdate> onSessionUpdate = Event<SessionUpdate>();
   @override
@@ -38,7 +41,8 @@ class SignEngine implements ISignEngine {
   @override
   final Event<SessionExpire> onSessionExpire = Event<SessionExpire>();
   @override
-  final Event<SessionRequest> onSessionRequest = Event<SessionRequest>();
+  final Event<SessionRequestEvent> onSessionRequest =
+      Event<SessionRequestEvent>();
   @override
   final Event<SessionEvent> onSessionEvent = Event<SessionEvent>();
   @override
@@ -49,31 +53,23 @@ class SignEngine implements ISignEngine {
   @override
   final ICore core;
   @override
-  final IProposals proposals;
+  final PairingMetadata metadata;
+  @override
+  final IGenericStore<ProposalData> proposals;
   @override
   final ISessions sessions;
+  @override
+  final IGenericStore<SessionRequest> pendingRequests;
 
   List<SessionProposalCompleter> pendingProposals = [];
 
-  late PairingMetadata selfMetadata;
-
-  SignEngine(
-    this.core,
-    this.proposals,
-    this.sessions, {
-    PairingMetadata? selfMetadata,
-  }) {
-    if (selfMetadata == null) {
-      this.selfMetadata = PairingMetadata(
-        name: '',
-        description: '',
-        url: '',
-        icons: [],
-      );
-    } else {
-      this.selfMetadata = selfMetadata;
-    }
-  }
+  SignEngine({
+    required this.core,
+    required this.metadata,
+    required this.proposals,
+    required this.sessions,
+    required this.pendingRequests,
+  });
 
   @override
   Future<void> init() async {
@@ -84,6 +80,8 @@ class SignEngine implements ISignEngine {
     await core.pairing.init();
     await proposals.init();
     await sessions.init();
+    await pendingRequests.init();
+
     _registerExpirerEvents();
     _registerRelayClientFunctions();
 
@@ -134,7 +132,7 @@ class SignEngine implements ISignEngine {
       optionalNamespaces: optionalNamespaces ?? {},
       proposer: ConnectionMetadata(
         publicKey: publicKey,
-        metadata: selfMetadata,
+        metadata: metadata,
       ),
       sessionProperties: sessionProperties,
     );
@@ -267,7 +265,7 @@ class SignEngine implements ISignEngine {
       expiry: expiry,
       controller: ConnectionMetadata(
         publicKey: selfPubKey,
-        metadata: selfMetadata,
+        metadata: metadata,
       ),
     );
 
@@ -317,7 +315,7 @@ class SignEngine implements ISignEngine {
       optionalNamespaces: proposal.optionalNamespaces,
       self: ConnectionMetadata(
         publicKey: selfPubKey,
-        metadata: selfMetadata,
+        metadata: metadata,
       ),
       peer: proposal.proposer,
     );
@@ -335,7 +333,7 @@ class SignEngine implements ISignEngine {
   }
 
   @override
-  Future<void> reject({
+  Future<void> rejectSession({
     required int id,
     required WCErrorResponse reason,
   }) async {
@@ -356,7 +354,7 @@ class SignEngine implements ISignEngine {
   }
 
   @override
-  Future<void> update({
+  Future<void> updateSession({
     required String topic,
     required Map<String, Namespace> namespaces,
   }) async {
@@ -379,7 +377,7 @@ class SignEngine implements ISignEngine {
   }
 
   @override
-  Future<void> extend({
+  Future<void> extendSession({
     required String topic,
   }) async {
     _checkInitialized();
@@ -400,12 +398,12 @@ class SignEngine implements ISignEngine {
   }
 
   /// Maps a request using chainId:method to its handler
-  Map<String, dynamic Function(String, dynamic)> _methodHandlers = {};
+  Map<String, dynamic Function(String, dynamic)?> _methodHandlers = {};
 
   void registerRequestHandler({
     required String chainId,
     required String method,
-    required dynamic Function(String, dynamic) handler,
+    dynamic Function(String, dynamic)? handler,
   }) {
     _checkInitialized();
     _methodHandlers[getRegisterKey(chainId, method)] = handler;
@@ -435,20 +433,49 @@ class SignEngine implements ISignEngine {
     );
   }
 
+  @override
+  Future<void> respondSessionRequest({
+    required String topic,
+    required JsonRpcResponse response,
+  }) async {
+    _checkInitialized();
+    await _isValidResponse(topic, response);
+
+    // final SessionRequest req = pendingRequests.get(response.id.toString())!;
+    // print('respondSessionRequest: ${req.toJson()}');
+    if (response.result != null) {
+      await core.pairing.sendResult(
+        response.id,
+        topic,
+        MethodConstants.WC_SESSION_REQUEST,
+        response.result,
+      );
+    } else {
+      await core.pairing.sendError(
+        response.id,
+        topic,
+        MethodConstants.WC_SESSION_REQUEST,
+        response.error!,
+      );
+    }
+
+    await _deletePendingRequest(response.id);
+  }
+
   /// Maps a request using chainId:event to its handler
-  Map<String, dynamic Function(String, dynamic)> _eventHandlers = {};
+  Map<String, dynamic Function(String, dynamic)?> _eventHandlers = {};
 
   void registerEventHandler({
     required String chainId,
     required String event,
-    required dynamic Function(String, dynamic) handler,
+    dynamic Function(String, dynamic)? handler,
   }) {
     _checkInitialized();
     _eventHandlers[getRegisterKey(chainId, event)] = handler;
   }
 
   @override
-  Future<void> emit({
+  Future<void> emitSessionEvent({
     required String topic,
     required String chainId,
     required SessionEventParams event,
@@ -489,7 +516,7 @@ class SignEngine implements ISignEngine {
   }
 
   @override
-  Future<void> disconnect({
+  Future<void> disconnectSession({
     required String topic,
     required WCErrorResponse reason,
   }) async {
@@ -529,6 +556,42 @@ class SignEngine implements ISignEngine {
   }
 
   @override
+  Map<String, SessionData> getActiveSessions() {
+    _checkInitialized();
+
+    Map<String, SessionData> activeSessions = {};
+    sessions.getAll().forEach((session) {
+      activeSessions[session.topic] = session;
+    });
+
+    return activeSessions;
+  }
+
+  @override
+  Map<String, ProposalData> getPendingSessionProposals() {
+    _checkInitialized();
+
+    Map<String, ProposalData> pendingProposals = {};
+    proposals.getAll().forEach((proposal) {
+      pendingProposals[proposal.id.toString()] = proposal;
+    });
+
+    return pendingProposals;
+  }
+
+  @override
+  Map<String, SessionRequest> getPendingSessionRequests() {
+    _checkInitialized();
+
+    Map<String, SessionRequest> requests = {};
+    pendingRequests.getAll().forEach((r) {
+      requests[r.id.toString()] = r;
+    });
+
+    return requests;
+  }
+
+  @override
   IPairingStore get pairings => core.pairing.getStore();
 
   /// ---- PRIVATE HELPERS ---- ////
@@ -551,22 +614,33 @@ class SignEngine implements ISignEngine {
       return;
     }
     await core.relayClient.unsubscribe(topic: topic);
-    await Future.wait([
-      sessions.delete(topic),
-      core.crypto.deleteKeyPair(session.self.publicKey),
-      core.crypto.deleteSymKey(topic),
-      expirerHasDeleted ? Future.value() : core.expirer.delete(topic),
-    ]);
+
+    await sessions.delete(topic);
+    await core.crypto.deleteKeyPair(session.self.publicKey);
+    await core.crypto.deleteSymKey(topic);
+    if (expirerHasDeleted) {
+      await core.expirer.delete(topic);
+    }
   }
 
   Future<void> _deleteProposal(
     int id, {
     bool expirerHasDeleted = false,
   }) async {
-    await Future.wait([
-      proposals.delete(id.toString()),
-      expirerHasDeleted ? Future.value() : core.expirer.delete(id.toString()),
-    ]);
+    await proposals.delete(id.toString());
+    if (expirerHasDeleted) {
+      await core.expirer.delete(id.toString());
+    }
+  }
+
+  Future<void> _deletePendingRequest(
+    int id, {
+    bool expirerHasDeleted = false,
+  }) async {
+    await pendingRequests.delete(id.toString());
+    if (expirerHasDeleted) {
+      await core.expirer.delete(id.toString());
+    }
   }
 
   Future<void> _setExpiry(String topic, int expiry) async {
@@ -584,6 +658,19 @@ class SignEngine implements ISignEngine {
     core.expirer.set(id.toString(), proposal.expiry);
   }
 
+  Future<void> _setPendingRequest(int id, SessionRequest request) async {
+    await pendingRequests.set(
+      id.toString(),
+      request,
+    );
+    core.expirer.set(
+      id.toString(),
+      WalletConnectUtils.calculateExpiry(
+        WalletConnectConstants.FIVE_MINUTES,
+      ),
+    );
+  }
+
   Future<void> _cleanup() async {
     final List<String> sessionTopics = [];
     final List<int> proposalIds = [];
@@ -598,10 +685,8 @@ class SignEngine implements ISignEngine {
         proposalIds.add(proposal.id);
       }
     }
-    await Future.wait([
-      ...sessionTopics.map((topic) => _deleteSession(topic)),
-      ...proposalIds.map((id) => _deleteProposal(id)),
-    ]);
+    sessionTopics.map((topic) async => await _deleteSession(topic));
+    proposalIds.map((id) async => await _deleteProposal(id));
   }
 
   /// ---- Relay Events ---- ///
@@ -678,7 +763,7 @@ class SignEngine implements ISignEngine {
       );
 
       await _setProposal(payload.id, proposal);
-      onSessionProposal.broadcast(SessionProposal(
+      onSessionProposal.broadcast(SessionProposalEvent(
         payload.id,
         proposal,
       ));
@@ -720,7 +805,7 @@ class SignEngine implements ISignEngine {
         sessionProperties: request.sessionProperties,
         self: ConnectionMetadata(
           publicKey: sProposalCompleter.selfPublicKey,
-          metadata: selfMetadata,
+          metadata: metadata,
         ),
         peer: request.controller,
       );
@@ -911,32 +996,51 @@ class SignEngine implements ISignEngine {
         request.request,
       );
 
+      SessionRequest sessionRequest = SessionRequest(
+        id: payload.id,
+        topic: topic,
+        method: request.request.method,
+        chainId: request.chainId,
+        params: request.request.params,
+      );
+
+      // print('payload id: ${payload.id}');
+      await _setPendingRequest(
+        payload.id,
+        sessionRequest,
+      );
+
       final String methodKey = getRegisterKey(
         request.chainId,
         request.request.method,
       );
       // print('method key: $methodKey');
       if (_methodHandlers.containsKey(methodKey)) {
-        final handler = _methodHandlers[methodKey]!;
-        try {
-          final result = await handler(
-            topic,
-            request.request.params,
-          );
-          await core.pairing.sendResult(
-            payload.id,
-            topic,
-            MethodConstants.WC_SESSION_REQUEST,
-            result,
-          );
-        } catch (err) {
-          await core.pairing.sendError(
-            payload.id,
-            topic,
-            payload.method,
-            JsonRpcError.invalidParams(
-              err.toString(),
-            ),
+        final handler = _methodHandlers[methodKey];
+        if (handler != null) {
+          try {
+            final result = await handler(
+              topic,
+              request.request.params,
+            );
+            await core.pairing.sendResult(
+              payload.id,
+              topic,
+              MethodConstants.WC_SESSION_REQUEST,
+              result,
+            );
+          } catch (err) {
+            await core.pairing.sendError(
+              payload.id,
+              topic,
+              payload.method,
+              JsonRpcError.invalidParams(
+                err.toString(),
+              ),
+            );
+          }
+          await pendingRequests.delete(
+            payload.id.toString(),
           );
         }
       } else {
@@ -951,12 +1055,8 @@ class SignEngine implements ISignEngine {
       }
 
       onSessionRequest.broadcast(
-        SessionRequest(
-          payload.id,
-          topic,
-          payload.method,
-          request.chainId,
-          request.request.params,
+        SessionRequestEvent.fromSessionRequest(
+          sessionRequest,
         ),
       );
     } on WCError catch (err) {
@@ -984,33 +1084,47 @@ class SignEngine implements ISignEngine {
         request.chainId,
       );
 
+      onSessionEvent.broadcast(
+        SessionEvent(
+          payload.id,
+          topic,
+          event.name,
+          request.chainId,
+          event.data,
+        ),
+      );
+
       final String eventKey = getRegisterKey(
         request.chainId,
         request.event.name,
       );
       if (_eventHandlers.containsKey(eventKey)) {
-        final handler = _eventHandlers[eventKey]!;
-        try {
-          await handler(
-            topic,
-            event.data,
-          );
-          await core.pairing.sendResult(
-            payload.id,
-            topic,
-            MethodConstants.WC_SESSION_REQUEST,
-            true,
-          );
-        } catch (err) {
-          await core.pairing.sendError(
-            payload.id,
-            topic,
-            payload.method,
-            JsonRpcError.invalidParams(
-              err.toString(),
-            ),
-          );
+        final handler = _methodHandlers[eventKey];
+        if (handler != null) {
+          final handler = _eventHandlers[eventKey]!;
+          try {
+            await handler(
+              topic,
+              event.data,
+            );
+          } catch (err) {
+            await core.pairing.sendError(
+              payload.id,
+              topic,
+              payload.method,
+              JsonRpcError.invalidParams(
+                err.toString(),
+              ),
+            );
+          }
         }
+
+        await core.pairing.sendResult(
+          payload.id,
+          topic,
+          MethodConstants.WC_SESSION_REQUEST,
+          true,
+        );
       } else {
         await core.pairing.sendError(
           payload.id,
@@ -1021,16 +1135,6 @@ class SignEngine implements ISignEngine {
           ),
         );
       }
-
-      onSessionEvent.broadcast(
-        SessionEvent(
-          payload.id,
-          topic,
-          event.name,
-          request.chainId,
-          event.data,
-        ),
-      );
     } on WCError catch (err) {
       await core.pairing.sendError(
         payload.id,
@@ -1046,7 +1150,7 @@ class SignEngine implements ISignEngine {
   /// ---- Event Registers ---- ///
 
   void _registerExpirerEvents() {
-    core.expirer.expired.subscribe(_onExpired);
+    core.expirer.onExpire.subscribe(_onExpired);
   }
 
   Future<void> _onExpired(ExpirationEvent? event) async {
@@ -1069,12 +1173,18 @@ class SignEngine implements ISignEngine {
         int.parse(event.target),
         expirerHasDeleted: true,
       );
+    } else if (pendingRequests.has(event.target)) {
+      await _deletePendingRequest(
+        int.parse(event.target),
+        expirerHasDeleted: true,
+      );
+      return;
     }
   }
 
   /// ---- Validation Helpers ---- ///
 
-  bool _isValidPairingTopic(String topic) {
+  Future<bool> _isValidPairingTopic(String topic) async {
     if (!core.pairing.getStore().has(topic)) {
       throw Errors.getInternalError(
         Errors.NO_MATCHING_KEY,
@@ -1082,9 +1192,7 @@ class SignEngine implements ISignEngine {
       );
     }
 
-    if (WalletConnectUtils.isExpired(
-        core.pairing.getStore().get(topic)!.expiry)) {
-      // await deletePairing(topic);
+    if (await core.expirer.checkAndExpire(topic)) {
       throw Errors.getInternalError(
         Errors.EXPIRED,
         context: "pairing topic: $topic",
@@ -1102,8 +1210,7 @@ class SignEngine implements ISignEngine {
       );
     }
 
-    if (WalletConnectUtils.isExpired(sessions.get(topic)!.expiry)) {
-      await _deleteSession(topic);
+    if (await core.expirer.checkAndExpire(topic)) {
       throw Errors.getInternalError(
         Errors.EXPIRED,
         context: "session topic: $topic",
@@ -1117,7 +1224,7 @@ class SignEngine implements ISignEngine {
     if (sessions.has(topic)) {
       await _isValidSessionTopic(topic);
     } else if (core.pairing.getStore().has(topic)) {
-      _isValidPairingTopic(topic);
+      await _isValidPairingTopic(topic);
     } else {
       throw Errors.getInternalError(
         Errors.NO_MATCHING_KEY,
@@ -1135,11 +1242,29 @@ class SignEngine implements ISignEngine {
         context: "proposal id doesn't exist: $id",
       );
     }
-    if (WalletConnectUtils.isExpired(proposals.get(id.toString())!.expiry)) {
-      await _deleteProposal(id);
+
+    if (await core.expirer.checkAndExpire(proposals.toString())) {
       throw Errors.getInternalError(
         Errors.EXPIRED,
         context: "proposal id: $id",
+      );
+    }
+
+    return true;
+  }
+
+  Future<bool> _isValidPendingRequest(int id) async {
+    if (!pendingRequests.has(id.toString())) {
+      throw Errors.getInternalError(
+        Errors.NO_MATCHING_KEY,
+        context: "proposal id doesn't exist: $id",
+      );
+    }
+
+    if (await core.expirer.checkAndExpire(id.toString())) {
+      throw Errors.getInternalError(
+        Errors.EXPIRED,
+        context: "pending request id: $id",
       );
     }
 
@@ -1158,7 +1283,7 @@ class SignEngine implements ISignEngine {
     // No need to validate sessionProperties. Strict typing enforces Strings are valid
     // No need to see if the relays are a valid array and whatnot. Strict typing enforces that.
     if (pairingTopic != null) {
-      _isValidPairingTopic(pairingTopic);
+      await _isValidPairingTopic(pairingTopic);
     }
 
     if (requiredNamespaces != null) {
@@ -1281,8 +1406,18 @@ class SignEngine implements ISignEngine {
 
   Future<bool> _isValidResponse(
     String topic,
+    JsonRpcResponse response,
   ) async {
     await _isValidSessionTopic(topic);
+
+    if (response.result == null && response.error == null) {
+      throw Errors.getInternalError(
+        Errors.MISSING_OR_INVALID,
+        context: 'JSON-RPC response and error cannot both be null',
+      );
+    }
+
+    await _isValidPendingRequest(response.id);
 
     return true;
   }

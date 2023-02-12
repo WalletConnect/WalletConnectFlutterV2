@@ -1,4 +1,4 @@
-import 'package:wallet_connect_flutter_v2/apis/auth_api/stores/i_generic_store.dart';
+import 'package:wallet_connect_flutter_v2/apis/core/store/i_generic_store.dart';
 import 'package:wallet_connect_flutter_v2/apis/core/i_core.dart';
 import 'package:wallet_connect_flutter_v2/apis/utils/errors.dart';
 import 'package:wallet_connect_flutter_v2/apis/utils/wallet_connect_utils.dart';

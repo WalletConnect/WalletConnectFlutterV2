@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:wallet_connect_flutter_v2/apis/signing_api/i_sign_engine.dart';
+import 'package:wallet_connect_flutter_v2/apis/signing_api/i_sign_engine_wallet.dart';
 import 'package:wallet_connect_flutter_v2/wallet_connect_flutter_v2.dart';
 
 import 'utils/sign_client_constants.dart';
@@ -23,7 +24,7 @@ class TestConnectMethodReturn {
 class SignClientHelpers {
   static Future<TestConnectMethodReturn> testConnectPairApprove(
     ISignEngine a,
-    ISignEngine b, {
+    ISignEngineWallet b, {
     Map<String, Namespace>? namespaces,
     Map<String, RequiredNamespace>? requiredNamespaces,
     List<Relay>? relays,
@@ -44,13 +45,15 @@ class SignClientHelpers {
     SessionData? sessionB;
 
     // Listen for a proposal via connect to avoid race conditions
-    final f = (SessionProposal? args) async {
+    final f = (SessionProposalEvent? args) async {
       // print('B Session Proposal');
 
       expect(
         args!.params.requiredNamespaces,
         reqNamespaces,
       );
+
+      expect(b.getPendingSessionProposals().length, 1);
 
       ApproveResponse response = await b.approveSession(
         id: args.id,
@@ -64,6 +67,7 @@ class SignClientHelpers {
     b.onSessionProposal.subscribe(f);
 
     // Connect to client b from a, this will trigger the above event
+    // print('connecting');
     ConnectResponse connectResponse = await a.connect(
       requiredNamespaces: reqNamespaces,
       pairingTopic: pairingTopic,
@@ -105,6 +109,7 @@ class SignClientHelpers {
       final timeout = Timer(Duration(milliseconds: pairTimeoutMs), () {
         throw Exception("Pair timed out after $pairTimeoutMs ms");
       });
+      // print('pairing B -> A');
       pairingB = await b.pair(uri: uri);
       timeout.cancel();
       expect(pairingA.topic, pairingB.topic);
@@ -119,6 +124,7 @@ class SignClientHelpers {
     }
 
     // Assign session now that we have paired
+    // print('Waiting for connect response');
     sessionA = await connectResponse.session.future;
 
     final settlePairingLatencyMs = DateTime.now().millisecondsSinceEpoch -

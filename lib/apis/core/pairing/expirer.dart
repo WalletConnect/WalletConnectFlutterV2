@@ -10,13 +10,13 @@ class Expirer implements IExpirer {
   static const VERSION = '0.3';
 
   @override
-  final Event<ExpirationEvent> created = Event<ExpirationEvent>();
+  final Event<ExpirationEvent> onCreate = Event<ExpirationEvent>();
   @override
-  final Event<ExpirationEvent> deleted = Event<ExpirationEvent>();
+  final Event<ExpirationEvent> onDelete = Event<ExpirationEvent>();
   @override
-  final Event sync = Event();
+  final Event onSync = Event();
   @override
-  final Event<ExpirationEvent> expired = Event<ExpirationEvent>();
+  final Event<ExpirationEvent> onExpire = Event<ExpirationEvent>();
 
   @override
   String get storageKey => '$VERSION//$CONTEXT';
@@ -62,16 +62,13 @@ class Expirer implements IExpirer {
   Future<void> set(String key, int value) async {
     _checkInitialized();
     expirations[key] = value;
-    bool expired = this.checkExpiry(key, value);
-    if (!expired) {
-      created.broadcast(
-        ExpirationEvent(
-          target: key,
-          expiry: value,
-        ),
-      );
-      await persist();
-    }
+    onCreate.broadcast(
+      ExpirationEvent(
+        target: key,
+        expiry: value,
+      ),
+    );
+    await persist();
   }
 
   /// Deletes the key from the keychain
@@ -80,7 +77,7 @@ class Expirer implements IExpirer {
     _checkInitialized();
     int? expiry = expirations.remove(key);
     expiry ??= -1;
-    deleted.broadcast(
+    onDelete.broadcast(
       ExpirationEvent(
         target: key,
         expiry: expiry,
@@ -90,34 +87,57 @@ class Expirer implements IExpirer {
   }
 
   @override
-  bool checkExpiry(String key, int expiry) {
-    int msToTimeout = WalletConnectUtils.toMilliseconds(expiry) - DateTime.now().toUtc().millisecondsSinceEpoch;
+  Future<bool> checkExpiry(String key, int expiry) async {
+    _checkInitialized();
+
+    int msToTimeout = WalletConnectUtils.toMilliseconds(expiry) -
+        DateTime.now().toUtc().millisecondsSinceEpoch;
     if (msToTimeout <= 0) {
-      expire(key);
+      await expire(key);
       return true;
     }
     return false;
   }
 
   @override
-  void expire(String key) {
+  Future<bool> checkAndExpire(String key) async {
+    _checkInitialized();
+
+    if (expirations.containsKey(key)) {
+      int expiration = expirations[key]!;
+      int msToTimeout = WalletConnectUtils.toMilliseconds(expiration) -
+          DateTime.now().toUtc().millisecondsSinceEpoch;
+      if (msToTimeout <= 0) {
+        await expire(key);
+        return true;
+      }
+    }
+
+    return false;
+  }
+
+  @override
+  Future<void> expire(String key) async {
+    _checkInitialized();
+
     int? expiry = expirations.remove(key);
     if (expiry == null) {
       return;
     }
-    expired.broadcast(
+    onExpire.broadcast(
       ExpirationEvent(
         target: key,
         expiry: expiry,
       ),
     );
+    await persist();
   }
 
   @override
   Future<void> persist() async {
     _checkInitialized();
     await core.storage.set(storageKey, expirations);
-    sync.broadcast();
+    onSync.broadcast();
   }
 
   @override

@@ -106,10 +106,8 @@ class RelayClient implements IRelayClient {
     messageTracker ??= MessageTracker(core);
     topicMap ??= TopicMap(core);
 
-    Future.wait([
-      messageTracker!.init(),
-      topicMap!.init(),
-    ]);
+    await messageTracker!.init();
+    await topicMap!.init();
 
     _initialized = true;
   }

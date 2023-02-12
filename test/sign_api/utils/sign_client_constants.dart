@@ -1,12 +1,13 @@
 import 'package:wallet_connect_flutter_v2/wallet_connect_flutter_v2.dart';
 
+import '../../shared/shared_test_values.dart';
+
 const TEST_RELAY_OPTIONS = {
   "protocol": WalletConnectConstants.RELAYER_DEFAULT_PROTOCOL,
 };
 
 const EVM_NAMESPACE = 'eip155';
 
-const TEST_ETHEREUM_CHAIN = "eip155:1";
 const TEST_ARBITRUM_CHAIN = "eip155:42161";
 const TEST_AVALANCHE_CHAIN = "eip155:43114";
 const TEST_UNINCLUDED_CHAIN = "eip155:2";

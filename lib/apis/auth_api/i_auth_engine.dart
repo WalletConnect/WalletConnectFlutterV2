@@ -1,7 +1,7 @@
 import 'package:event/event.dart';
 import 'package:wallet_connect_flutter_v2/apis/auth_api/models/auth_client_events.dart';
 import 'package:wallet_connect_flutter_v2/apis/auth_api/models/auth_client_models.dart';
-import 'package:wallet_connect_flutter_v2/apis/auth_api/stores/i_generic_store.dart';
+import 'package:wallet_connect_flutter_v2/apis/core/store/i_generic_store.dart';
 import 'package:wallet_connect_flutter_v2/apis/core/i_core.dart';
 import 'package:wallet_connect_flutter_v2/apis/core/pairing/utils/pairing_models.dart';
 import 'package:wallet_connect_flutter_v2/apis/models/basic_models.dart';

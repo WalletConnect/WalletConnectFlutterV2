@@ -2,8 +2,8 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:event/event.dart';
-import 'package:wallet_connect_flutter_v2/apis/auth_api/stores/generic_store.dart';
-import 'package:wallet_connect_flutter_v2/apis/auth_api/stores/i_generic_store.dart';
+import 'package:wallet_connect_flutter_v2/apis/core/store/generic_store.dart';
+import 'package:wallet_connect_flutter_v2/apis/core/store/i_generic_store.dart';
 import 'package:wallet_connect_flutter_v2/apis/core/crypto/crypto_models.dart';
 import 'package:wallet_connect_flutter_v2/apis/core/i_core.dart';
 import 'package:wallet_connect_flutter_v2/apis/core/pairing/i_pairing.dart';
@@ -74,11 +74,8 @@ class Pairing implements IPairing {
     );
 
     await core.expirer.init();
-
-    Future.wait([
-      pairings!.init(),
-      topicToReceiverPublicKey.init(),
-    ]);
+    await pairings!.init();
+    await topicToReceiverPublicKey.init();
 
     await _cleanup();
 
@@ -259,7 +256,7 @@ class Pairing implements IPairing {
   Future<void> ping({required String topic}) async {
     _checkInitialized();
 
-    _isValidPing(topic);
+    await _isValidPing(topic);
 
     if (pairings!.has(topic)) {
       try {
@@ -288,7 +285,7 @@ class Pairing implements IPairing {
   Future<void> disconnect({required String topic}) async {
     _checkInitialized();
 
-    _isValidDisconnect(topic);
+    await _isValidDisconnect(topic);
     if (pairings!.has(topic)) {
       try {
         await sendRequest(
@@ -428,11 +425,11 @@ class Pairing implements IPairing {
 
   Future<void> _deletePairing(String topic, bool expirerHasDeleted) async {
     await core.relayClient.unsubscribe(topic: topic);
-    await Future.wait([
-      pairings!.delete(topic),
-      core.crypto.deleteSymKey(topic),
-      expirerHasDeleted ? Future.value(null) : core.expirer.delete(topic),
-    ]);
+    await pairings!.delete(topic);
+    await core.crypto.deleteSymKey(topic);
+    if (expirerHasDeleted) {
+      await core.expirer.delete(topic);
+    }
   }
 
   Future<void> _cleanup() async {
@@ -544,7 +541,7 @@ class Pairing implements IPairing {
     final int id = request.id;
     try {
       // print('ping req');
-      _isValidPing(topic);
+      await _isValidPing(topic);
       await sendResult(
         id,
         topic,
@@ -575,7 +572,7 @@ class Pairing implements IPairing {
     // print('delete');
     final int id = request.id;
     try {
-      _isValidDisconnect(topic);
+      await _isValidDisconnect(topic);
       await sendResult(
         id,
         topic,
@@ -655,7 +652,7 @@ class Pairing implements IPairing {
   /// ---- Expirer Events ---- ///
 
   void _registerExpirerEvents() {
-    core.expirer.expired.subscribe(_onExpired);
+    core.expirer.onExpire.subscribe(_onExpired);
   }
 
   Future<void> _onExpired(ExpirationEvent? event) async {
@@ -676,15 +673,15 @@ class Pairing implements IPairing {
 
   /// ---- Validators ---- ///
 
-  void _isValidPing(String topic) {
-    _isValidPairingTopic(topic);
+  Future<void> _isValidPing(String topic) async {
+    await _isValidPairingTopic(topic);
   }
 
-  void _isValidDisconnect(String topic) {
-    _isValidPairingTopic(topic);
+  Future<void> _isValidDisconnect(String topic) async {
+    await _isValidPairingTopic(topic);
   }
 
-  void _isValidPairingTopic(String topic) {
+  Future<void> _isValidPairingTopic(String topic) async {
     if (!pairings!.has(topic)) {
       String message = Errors.getInternalError(
         Errors.NO_MATCHING_KEY,
@@ -692,7 +689,8 @@ class Pairing implements IPairing {
       ).message;
       throw JsonRpcError.invalidParams(message);
     }
-    if (WalletConnectUtils.isExpired(pairings!.get(topic)!.expiry)) {
+
+    if (await core.expirer.checkAndExpire(topic)) {
       String message = Errors.getInternalError(
         Errors.EXPIRED,
         context: "pairing topic: $topic",

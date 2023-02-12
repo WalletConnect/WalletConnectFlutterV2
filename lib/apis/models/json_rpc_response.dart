@@ -1,4 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'package:wallet_connect_flutter_v2/apis/models/json_rpc_error.dart';
 
 part 'json_rpc_response.g.dart';
 
@@ -6,12 +7,14 @@ part 'json_rpc_response.g.dart';
 class JsonRpcResponse<T> {
   final int id;
   final String jsonrpc;
-  final T result;
+  final JsonRpcError? error;
+  final T? result;
 
   JsonRpcResponse({
     required this.id,
     this.jsonrpc = '2.0',
-    required this.result,
+    this.error,
+    this.result,
   });
 
   factory JsonRpcResponse.fromJson(Map<String, dynamic> json) =>
@@ -19,5 +22,6 @@ class JsonRpcResponse<T> {
   Map<String, dynamic> toJson() => _$JsonRpcResponseToJson(this, (t) => t);
 
   @override
-  String toString() => 'JsonRpcResponse(id: $id, jsonrpc: $jsonrpc, result: $result)';
+  String toString() =>
+      'JsonRpcResponse(id: $id, jsonrpc: $jsonrpc, result: $result, error: $error)';
 }

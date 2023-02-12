@@ -23,6 +23,18 @@ Map<String, dynamic> _$RequiredNamespaceToJson(RequiredNamespace instance) =>
       'events': instance.events,
     };
 
+SessionProposal _$SessionProposalFromJson(Map<String, dynamic> json) =>
+    SessionProposal(
+      id: json['id'] as int,
+      params: ProposalData.fromJson(json['params'] as Map<String, dynamic>),
+    );
+
+Map<String, dynamic> _$SessionProposalToJson(SessionProposal instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'params': instance.params,
+    };
+
 ProposalData _$ProposalDataFromJson(Map<String, dynamic> json) => ProposalData(
       id: json['id'] as int,
       expiry: json['expiry'] as int,

@@ -5,7 +5,7 @@ import 'package:wallet_connect_flutter_v2/apis/auth_api/i_auth_engine.dart';
 import 'package:wallet_connect_flutter_v2/apis/auth_api/models/auth_client_events.dart';
 import 'package:wallet_connect_flutter_v2/apis/auth_api/models/auth_client_models.dart';
 import 'package:wallet_connect_flutter_v2/apis/auth_api/models/json_rpc_models.dart';
-import 'package:wallet_connect_flutter_v2/apis/auth_api/stores/i_generic_store.dart';
+import 'package:wallet_connect_flutter_v2/apis/core/store/i_generic_store.dart';
 import 'package:wallet_connect_flutter_v2/apis/auth_api/utils/address_utils.dart';
 import 'package:wallet_connect_flutter_v2/apis/auth_api/utils/auth_api_validators.dart';
 import 'package:wallet_connect_flutter_v2/apis/auth_api/utils/auth_constants.dart';

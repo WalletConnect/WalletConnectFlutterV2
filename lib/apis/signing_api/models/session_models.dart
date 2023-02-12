@@ -40,7 +40,8 @@ class Namespace {
     required this.events,
   });
 
-  factory Namespace.fromJson(Map<String, dynamic> json) => _$NamespaceFromJson(json);
+  factory Namespace.fromJson(Map<String, dynamic> json) =>
+      _$NamespaceFromJson(json);
 
   Map<String, dynamic> toJson() => _$NamespaceToJson(this);
 
@@ -93,7 +94,31 @@ class SessionData {
     required this.peer,
   });
 
-  factory SessionData.fromJson(Map<String, dynamic> json) => _$SessionDataFromJson(json);
+  factory SessionData.fromJson(Map<String, dynamic> json) =>
+      _$SessionDataFromJson(json);
 
   Map<String, dynamic> toJson() => _$SessionDataToJson(this);
+}
+
+@JsonSerializable()
+class SessionRequest {
+  /// The JSON-RPC request id
+  int id;
+  String topic;
+  String method;
+  String chainId;
+  dynamic params;
+
+  SessionRequest({
+    required this.id,
+    required this.topic,
+    required this.method,
+    required this.chainId,
+    required this.params,
+  });
+
+  factory SessionRequest.fromJson(Map<String, dynamic> json) =>
+      _$SessionRequestFromJson(json);
+
+  Map<String, dynamic> toJson() => _$SessionRequestToJson(this);
 }

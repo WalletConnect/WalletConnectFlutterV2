@@ -1,6 +1,6 @@
 import 'package:wallet_connect_flutter_v2/wallet_connect_flutter_v2.dart';
 
-const TEST_ETHEREUM_CHAIN = "eip155:1";
+import '../../shared/shared_test_values.dart';
 
 const TEST_SIG_EIP1271 =
     '0xc1505719b2504095116db01baaf276361efd3a73c28cf8cc28dabefa945b8d536011289ac0a3b048600c1e692ff173ca944246cf7ceb319ac2262d27b395c82b1c';

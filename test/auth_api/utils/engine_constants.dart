@@ -1,8 +1,7 @@
 import 'package:wallet_connect_flutter_v2/wallet_connect_flutter_v2.dart';
 
+import '../../shared/shared_test_values.dart';
 import 'signature_constants.dart';
-
-const TEST_ETHEREUM_CHAIN = 'eip155:1';
 
 const TEST_DOMAIN = 'localhost:3000';
 const TEST_DOMAIN_INVALID = 'example.com:3000';
