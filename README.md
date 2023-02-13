@@ -2,7 +2,7 @@
 
 Wallet Connect v2 Flutter library, heavily inspired by the WalletConnect V2 Javacript Monorepo. Original work for this library is attributed to [Eucalyptus Labs](https://eucalyptuslabs.com/) and Sterling Long for [Koala Wallet](https://koalawallet.io/), a wallet built for the Kadena blockchain.
 
-This library currently only contains the Signing API as defined in the Wallet Connect v2 Spec.
+This library currently only contains the Sign API as defined in the Wallet Connect v2 Spec.
 
 # To Use
 
