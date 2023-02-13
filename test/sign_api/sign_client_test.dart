@@ -21,15 +21,13 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   final List<Future<ISignEngine> Function(ICore, PairingMetadata)>
-      signingApiCreators = [
+      signApiCreators = [
     (ICore core, PairingMetadata metadata) async =>
         await SignClient.createInstance(
           core: core,
           metadata: metadata,
         ),
     (ICore core, PairingMetadata metadata) async {
-      Proposals p = Proposals(core);
-      Sessions s = Sessions(core);
       ISignEngine e = SignEngine(
         core: core,
         metadata: metadata,
@@ -65,7 +63,7 @@ void main() {
   ];
 
   final List<Future<ISignEngineWallet> Function(ICore, PairingMetadata)>
-      signingWalletCreators = [
+      signWalletCreators = [
     (ICore core, PairingMetadata metadata) async =>
         await SignClient.createInstance(
           core: core,
@@ -80,11 +78,11 @@ void main() {
 
   final List<String> contexts = ['SignClient', 'SignEngine'];
 
-  for (int i = 0; i < signingApiCreators.length; i++) {
+  for (int i = 0; i < signApiCreators.length; i++) {
     signingEngineTests(
       context: contexts[i],
-      clientACreator: signingApiCreators[i],
-      clientBCreator: signingWalletCreators[i],
+      clientACreator: signApiCreators[i],
+      clientBCreator: signWalletCreators[i],
     );
   }
 

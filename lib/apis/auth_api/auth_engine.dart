@@ -243,7 +243,7 @@ class AuthEngine implements IAuthEngine {
   }
 
   @override
-  Future<void> respondAuth({
+  Future<void> respondAuthRequest({
     required int id,
     required String iss,
     CacaoSignature? signature,

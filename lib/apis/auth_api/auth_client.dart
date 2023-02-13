@@ -133,14 +133,14 @@ class AuthClient implements IAuthClient {
   }
 
   @override
-  Future<void> respondAuth({
+  Future<void> respondAuthRequest({
     required int id,
     required String iss,
     CacaoSignature? signature,
     WCErrorResponse? error,
   }) async {
     try {
-      return engine.respondAuth(
+      return engine.respondAuthRequest(
         id: id,
         iss: iss,
         signature: signature,

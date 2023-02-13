@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:eth_sig_util/eth_sig_util.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:wallet_connect_flutter_v2/apis/auth_api/auth_engine.dart';
+import 'package:wallet_connect_flutter_v2/apis/auth_api/i_auth_engine_wallet.dart';
 import 'package:wallet_connect_flutter_v2/apis/core/store/generic_store.dart';
 import 'package:wallet_connect_flutter_v2/apis/auth_api/utils/auth_constants.dart';
 import 'package:wallet_connect_flutter_v2/wallet_connect_flutter_v2.dart';
@@ -16,7 +17,70 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   final List<Future<IAuthEngine> Function(ICore, PairingMetadata?)>
-      signingApiCreators = [
+      authCreators = [
+    (ICore core, PairingMetadata? self) async =>
+        await AuthClient.createInstance(
+          core,
+          self: self,
+        ),
+    (ICore core, PairingMetadata? self) async {
+      IAuthEngine e = AuthEngine(
+        core: core,
+        metadata: self ?? PairingMetadata.empty(),
+        authKeys: GenericStore(
+          core: core,
+          context: AuthConstants.CONTEXT_AUTH_KEYS,
+          version: AuthConstants.VERSION_AUTH_KEYS,
+          toJsonString: (AuthPublicKey value) {
+            return jsonEncode(value.toJson());
+          },
+          fromJsonString: (String value) {
+            return AuthPublicKey.fromJson(jsonDecode(value));
+          },
+        ),
+        pairingTopics: GenericStore(
+          core: core,
+          context: AuthConstants.CONTEXT_PAIRING_TOPICS,
+          version: AuthConstants.VERSION_PAIRING_TOPICS,
+          toJsonString: (String value) {
+            return value;
+          },
+          fromJsonString: (String value) {
+            return value;
+          },
+        ),
+        authRequests: GenericStore(
+          core: core,
+          context: AuthConstants.CONTEXT_AUTH_REQUESTS,
+          version: AuthConstants.VERSION_AUTH_REQUESTS,
+          toJsonString: (PendingAuthRequest value) {
+            return jsonEncode(value.toJson());
+          },
+          fromJsonString: (String value) {
+            return PendingAuthRequest.fromJson(jsonDecode(value));
+          },
+        ),
+        completeRequests: GenericStore(
+          core: core,
+          context: AuthConstants.CONTEXT_COMPLETE_REQUESTS,
+          version: AuthConstants.VERSION_COMPLETE_REQUESTS,
+          toJsonString: (StoredCacao value) {
+            return jsonEncode(value.toJson());
+          },
+          fromJsonString: (String value) {
+            return StoredCacao.fromJson(jsonDecode(value));
+          },
+        ),
+      );
+      await core.start();
+      await e.init();
+
+      return e;
+    }
+  ];
+
+  final List<Future<IAuthEngine> Function(ICore, PairingMetadata?)>
+      authWalletCreators = [
     (ICore core, PairingMetadata? self) async =>
         await AuthClient.createInstance(
           core,
@@ -80,10 +144,11 @@ void main() {
 
   final List<String> contexts = ['SignClient', 'SignEngine'];
 
-  for (int i = 0; i < signingApiCreators.length; i++) {
+  for (int i = 0; i < authCreators.length; i++) {
     runTests(
       context: contexts[i],
-      engineCreator: signingApiCreators[i],
+      engineCreator: authCreators[i],
+      engineWalletCreator: authWalletCreators[i],
     );
   }
 }
@@ -91,10 +156,12 @@ void main() {
 void runTests({
   required String context,
   required Future<IAuthEngine> Function(ICore, PairingMetadata?) engineCreator,
+  required Future<IAuthEngineWallet> Function(ICore, PairingMetadata?)
+      engineWalletCreator,
 }) {
   group(context, () {
     late IAuthEngine clientA;
-    late IAuthEngine clientB;
+    late IAuthEngineWallet clientB;
 
     setUp(() async {
       clientA = await engineCreator(
@@ -169,7 +236,7 @@ void runTests({
             privateKey: TEST_PRIVATE_KEY_EIP191,
           );
 
-          await clientB.respondAuth(
+          await clientB.respondAuthRequest(
             id: args.id,
             iss: TEST_ISSUER_EIP191,
             signature: CacaoSignature(t: CacaoSignature.EIP191, s: sig),
@@ -240,7 +307,7 @@ void runTests({
     group('respondAuth', () {
       test('invalid response params', () async {
         expect(
-          () => clientA.respondAuth(
+          () => clientA.respondAuthRequest(
             id: -1,
             iss: TEST_ISSUER_EIP191,
           ),
