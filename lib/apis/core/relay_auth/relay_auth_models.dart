@@ -37,7 +37,8 @@ class JWTHeader {
     this.typ = 'JWT',
   });
 
-  factory JWTHeader.fromJson(Map<String, dynamic> json) => _$JWTHeaderFromJson(json);
+  factory JWTHeader.fromJson(Map<String, dynamic> json) =>
+      _$JWTHeaderFromJson(json);
 
   Map<String, dynamic> toJson() => _$JWTHeaderToJson(this);
 }
@@ -58,7 +59,8 @@ class JWTPayload {
     this.exp,
   );
 
-  factory JWTPayload.fromJson(Map<String, dynamic> json) => _$JWTPayloadFromJson(json);
+  factory JWTPayload.fromJson(Map<String, dynamic> json) =>
+      _$JWTPayloadFromJson(json);
 
   Map<String, dynamic> toJson() => _$JWTPayloadToJson(this);
 }

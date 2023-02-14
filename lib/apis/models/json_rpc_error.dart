@@ -12,13 +12,19 @@ class JsonRpcError {
     required this.message,
   });
 
-  factory JsonRpcError.serverError(String message) => JsonRpcError(code: -32000, message: message);
-  factory JsonRpcError.invalidParams(String message) => JsonRpcError(code: -32602, message: message);
-  factory JsonRpcError.invalidRequest(String message) => JsonRpcError(code: -32600, message: message);
-  factory JsonRpcError.parseError(String message) => JsonRpcError(code: -32700, message: message);
-  factory JsonRpcError.methodNotFound(String message) => JsonRpcError(code: -32601, message: message);
+  factory JsonRpcError.serverError(String message) =>
+      JsonRpcError(code: -32000, message: message);
+  factory JsonRpcError.invalidParams(String message) =>
+      JsonRpcError(code: -32602, message: message);
+  factory JsonRpcError.invalidRequest(String message) =>
+      JsonRpcError(code: -32600, message: message);
+  factory JsonRpcError.parseError(String message) =>
+      JsonRpcError(code: -32700, message: message);
+  factory JsonRpcError.methodNotFound(String message) =>
+      JsonRpcError(code: -32601, message: message);
 
-  factory JsonRpcError.fromJson(Map<String, dynamic> json) => _$JsonRpcErrorFromJson(json);
+  factory JsonRpcError.fromJson(Map<String, dynamic> json) =>
+      _$JsonRpcErrorFromJson(json);
   Map<String, dynamic> toJson() => _$JsonRpcErrorToJson(this);
 
   @override
