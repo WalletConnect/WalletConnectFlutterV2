@@ -9,6 +9,7 @@ abstract class IAuthEngineCommon {
 
   abstract final IGenericStore<AuthPublicKey> authKeys;
   abstract final IGenericStore<String> pairingTopics;
+  abstract final IGenericStore<StoredCacao> completeRequests;
 
   // initializes the client with persisted storage and a network connection
   Future<void> init();

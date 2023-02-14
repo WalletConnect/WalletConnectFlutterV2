@@ -357,13 +357,6 @@ class AuthEngine implements IAuthEngine {
     }
   }
 
-  Future<void> _setExpiry(String topic, int expiry) async {
-    if (core.pairing.getStore().has(topic)) {
-      await core.pairing.updateExpiry(topic: topic, expiry: expiry);
-    }
-    await core.expirer.set(topic, expiry);
-  }
-
   /// ---- Relay Events ---- ///
 
   void _registerRelayClientFunctions() {

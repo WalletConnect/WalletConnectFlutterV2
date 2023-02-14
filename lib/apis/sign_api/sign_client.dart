@@ -12,14 +12,12 @@ import 'package:walletconnect_dart_v2/apis/sign_api/i_sign_engine.dart';
 import 'package:walletconnect_dart_v2/apis/core/pairing/utils/pairing_models.dart';
 import 'package:walletconnect_dart_v2/apis/core/i_core.dart';
 import 'package:walletconnect_dart_v2/apis/sign_api/i_sessions.dart';
-import 'package:walletconnect_dart_v2/apis/sign_api/i_proposals.dart';
 import 'package:walletconnect_dart_v2/apis/sign_api/i_sign_client.dart';
 import 'package:walletconnect_dart_v2/apis/sign_api/models/json_rpc_models.dart';
 import 'package:walletconnect_dart_v2/apis/sign_api/models/proposal_models.dart';
 import 'package:walletconnect_dart_v2/apis/sign_api/models/sign_client_models.dart';
 import 'package:walletconnect_dart_v2/apis/sign_api/models/sign_client_events.dart';
 import 'package:walletconnect_dart_v2/apis/sign_api/models/session_models.dart';
-import 'package:walletconnect_dart_v2/apis/sign_api/proposals.dart';
 import 'package:walletconnect_dart_v2/apis/sign_api/sessions.dart';
 import 'package:walletconnect_dart_v2/apis/sign_api/utils/sign_constants.dart';
 

@@ -272,7 +272,7 @@ void signingEngineTests({
           clientA.getActiveSessions().length,
           clientB.getActiveSessions().length,
         );
-        final connectionInfo2 = await SignClientHelpers.testConnectPairApprove(
+        final _ = await SignClientHelpers.testConnectPairApprove(
           clientA,
           clientB,
           pairingTopic: connectionInfo.pairing.topic,
@@ -297,7 +297,7 @@ void signingEngineTests({
           clientA.pairings.getAll().length,
           clientB.pairings.getAll().length,
         );
-        final connectionInfo2 = await SignClientHelpers.testConnectPairApprove(
+        final _ = await SignClientHelpers.testConnectPairApprove(
           clientA,
           clientB,
           pairingTopic: connectionInfo.pairing.topic,
@@ -822,7 +822,7 @@ void signingEngineTests({
 
         // No handler
         try {
-          final response = await clientA.request(
+          final _ = await clientA.request(
             topic: connectionInfo.session.topic,
             chainId: TEST_ETHEREUM_CHAIN,
             request: SessionRequestParams(
@@ -939,7 +939,7 @@ void signingEngineTests({
         });
 
         try {
-          final response = await clientA.request(
+          final _ = await clientA.request(
             topic: connectionInfo.session.topic,
             chainId: TEST_ETHEREUM_CHAIN,
             request: SessionRequestParams(

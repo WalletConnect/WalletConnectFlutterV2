@@ -8,7 +8,6 @@ import 'package:walletconnect_dart_v2/apis/core/store/i_generic_store.dart';
 import 'package:walletconnect_dart_v2/apis/sign_api/i_sessions.dart';
 import 'package:walletconnect_dart_v2/apis/sign_api/sign_engine.dart';
 import 'package:walletconnect_dart_v2/apis/sign_api/utils/sign_constants.dart';
-import 'package:walletconnect_dart_v2/apis/web3app/i_web3app.dart';
 import 'package:walletconnect_dart_v2/walletconnect_dart_v2.dart';
 
 class Web3App implements IWeb3App {
@@ -132,17 +131,6 @@ class Web3App implements IWeb3App {
     await authEngine.init();
 
     _initialized = true;
-  }
-
-  @override
-  Future<PairingInfo> pair({
-    required Uri uri,
-  }) async {
-    try {
-      return await signEngine.pair(uri: uri);
-    } catch (e) {
-      rethrow;
-    }
   }
 
   ///---------- SIGN ENGINE ----------///

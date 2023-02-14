@@ -4,7 +4,6 @@ import 'package:json_annotation/json_annotation.dart';
 import 'package:walletconnect_dart_v2/apis/core/relay_client/relay_client_models.dart';
 import 'package:walletconnect_dart_v2/apis/models/basic_models.dart';
 import 'package:walletconnect_dart_v2/apis/sign_api/models/proposal_models.dart';
-import 'package:walletconnect_dart_v2/apis/sign_api/models/sign_client_models.dart';
 
 part 'session_models.g.dart';
 

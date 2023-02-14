@@ -53,6 +53,11 @@ class SessionProposal {
     required this.id,
     required this.params,
   });
+
+  factory SessionProposal.fromJson(Map<String, dynamic> json) =>
+      _$SessionProposalFromJson(json);
+
+  Map<String, dynamic> toJson() => _$SessionProposalToJson(this);
 }
 
 @JsonSerializable()

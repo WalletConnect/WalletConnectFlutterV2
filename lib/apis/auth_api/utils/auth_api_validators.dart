@@ -16,7 +16,7 @@ class AuthApiValidators {
             'requestAuth() invalid aud: ${params.aud}. Must be a valid url.',
       );
     }
-    final validChainId = true; //NamespaceUtils.isValidChainId(params.chainId);
+    // final validChainId = true; //NamespaceUtils.isValidChainId(params.chainId);
 
     if (!params.aud.contains(params.domain)) {
       throw Errors.getInternalError(

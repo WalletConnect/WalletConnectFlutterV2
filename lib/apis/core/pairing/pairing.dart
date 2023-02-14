@@ -260,7 +260,7 @@ class Pairing implements IPairing {
 
     if (pairings!.has(topic)) {
       try {
-        final bool response = await sendRequest(
+        final bool _ = await sendRequest(
           topic,
           MethodConstants.WC_PAIRING_PING,
           {},

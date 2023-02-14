@@ -129,7 +129,7 @@ class RelayClient implements IRelayClient {
     };
 
     try {
-      var value = await jsonRPC.sendRequest(
+      var _ = await jsonRPC.sendRequest(
         _buildMethod(JSON_RPC_PUBLISH),
         data,
       );

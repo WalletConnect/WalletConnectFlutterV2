@@ -2,7 +2,6 @@ import 'dart:async';
 
 import 'package:event/event.dart';
 import 'package:walletconnect_dart_v2/apis/core/store/i_generic_store.dart';
-import 'package:walletconnect_dart_v2/apis/core/pairing/i_pairing.dart';
 import 'package:walletconnect_dart_v2/apis/core/pairing/i_pairing_store.dart';
 import 'package:walletconnect_dart_v2/apis/core/pairing/utils/pairing_utils.dart';
 import 'package:walletconnect_dart_v2/apis/core/pairing/utils/pairing_models.dart';
@@ -18,7 +17,6 @@ import 'package:walletconnect_dart_v2/apis/sign_api/models/proposal_models.dart'
 import 'package:walletconnect_dart_v2/apis/sign_api/models/sign_client_events.dart';
 import 'package:walletconnect_dart_v2/apis/sign_api/models/session_models.dart';
 import 'package:walletconnect_dart_v2/apis/sign_api/i_sessions.dart';
-import 'package:walletconnect_dart_v2/apis/sign_api/i_proposals.dart';
 import 'package:walletconnect_dart_v2/apis/sign_api/models/sign_client_models.dart';
 import 'package:walletconnect_dart_v2/apis/sign_api/utils/sign_api_validator_utils.dart';
 import 'package:walletconnect_dart_v2/apis/utils/constants.dart';
@@ -84,6 +82,7 @@ class SignEngine implements ISignEngine {
 
     _registerExpirerEvents();
     _registerRelayClientFunctions();
+    await _cleanup();
 
     _initialized = true;
   }
@@ -502,7 +501,7 @@ class SignEngine implements ISignEngine {
     await _isValidPing(topic);
 
     if (sessions.has(topic)) {
-      bool pong = await core.pairing.sendRequest(
+      bool _ = await core.pairing.sendRequest(
         topic,
         MethodConstants.WC_SESSION_PING,
         {},
@@ -883,7 +882,7 @@ class SignEngine implements ISignEngine {
     JsonRpcRequest payload,
   ) async {
     try {
-      final request = WcSessionExtendRequest.fromJson(payload.params);
+      final _ = WcSessionExtendRequest.fromJson(payload.params);
       await _isValidSessionTopic(topic);
       await _setExpiry(
         topic,
@@ -920,7 +919,7 @@ class SignEngine implements ISignEngine {
     JsonRpcRequest payload,
   ) async {
     try {
-      final request = WcSessionPingRequest.fromJson(payload.params);
+      final _ = WcSessionPingRequest.fromJson(payload.params);
       await _isValidPing(topic);
       await core.pairing.sendResult(
         payload.id,
@@ -951,7 +950,7 @@ class SignEngine implements ISignEngine {
     JsonRpcRequest payload,
   ) async {
     try {
-      final request = WcSessionDeleteRequest.fromJson(payload.params);
+      final _ = WcSessionDeleteRequest.fromJson(payload.params);
       await _isValidDisconnect(topic);
       await core.pairing.sendResult(
         payload.id,
@@ -1046,7 +1045,7 @@ class SignEngine implements ISignEngine {
           topic,
           payload.method,
           JsonRpcError.methodNotFound(
-            'No handler found for chainId:method -> ${methodKey}',
+            'No handler found for chainId:method -> $methodKey',
           ),
         );
       }
@@ -1128,7 +1127,7 @@ class SignEngine implements ISignEngine {
           topic,
           payload.method,
           JsonRpcError.methodNotFound(
-            'No handler found for chainId:event -> ${eventKey}',
+            'No handler found for chainId:event -> $eventKey',
           ),
         );
       }

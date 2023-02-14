@@ -16,15 +16,15 @@ import '../shared/shared_test_values.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  final TEST_MESSAGE = jsonEncode({
+  final testMessage = jsonEncode({
     'id': 1,
     'jsonrpc': "2.0",
     'method': "test_method",
     'params': {},
   });
 
-  final TEST_SELF = TEST_KEY_PAIRS['A']!;
-  final TEST_PEER = TEST_KEY_PAIRS['B']!;
+  final testSelf = TEST_KEY_PAIRS['A']!;
+  final testPeer = TEST_KEY_PAIRS['B']!;
 
   const TEST_IV = "717765636661617364616473";
 
@@ -278,13 +278,13 @@ void main() {
     test('hashes messages correctly', () {
       const TEST_HASHED_MESSAGE =
           "15112289b5b794e68d1ea3cd91330db55582a37d0596f7b99ea8becdf9d10496";
-      final String hashedKey = utils.hashMessage(TEST_MESSAGE);
+      final String hashedKey = utils.hashMessage(testMessage);
       expect(hashedKey, TEST_HASHED_MESSAGE);
     });
 
     test('encrypt type 0 envelope', () async {
       final String encoded = await utils.encrypt(
-        TEST_MESSAGE,
+        testMessage,
         TEST_SYM_KEY,
         iv: TEST_IV,
       );
@@ -301,16 +301,16 @@ void main() {
         TEST_SYM_KEY,
         TEST_ENCODED_TYPE_0,
       );
-      expect(decrypted, TEST_MESSAGE);
+      expect(decrypted, testMessage);
     });
 
     test("encrypt (type 1)", () async {
       final String encoded = await utils.encrypt(
-        TEST_MESSAGE,
+        testMessage,
         TEST_SYM_KEY,
         type: 1,
         iv: TEST_IV,
-        senderPublicKey: TEST_SELF.publicKey,
+        senderPublicKey: testSelf.publicKey,
       );
       expect(encoded, TEST_ENCODED_TYPE_1);
       final EncodingParams deserialized = utils.deserialize(encoded);
@@ -324,19 +324,19 @@ void main() {
       const encoded = TEST_ENCODED_TYPE_1;
       final EncodingValidation params = utils.validateDecoding(
         encoded,
-        receiverPublicKey: TEST_PEER.publicKey,
+        receiverPublicKey: testPeer.publicKey,
       );
       expect(utils.isTypeOneEnvelope(params), true);
       expect(params.type, 1);
-      expect(params.senderPublicKey, TEST_SELF.publicKey);
-      expect(params.receiverPublicKey, TEST_PEER.publicKey);
+      expect(params.senderPublicKey, testSelf.publicKey);
+      expect(params.receiverPublicKey, testPeer.publicKey);
       // print(
       //     await utils.deriveSymKey(TEST_PEER.privateKey, TEST_SELF.publicKey));
       final String symKey = await utils.deriveSymKey(
-          TEST_PEER.privateKey, params.senderPublicKey!);
+          testPeer.privateKey, params.senderPublicKey!);
       expect(symKey, TEST_SYM_KEY);
       final String decrypted = await utils.decrypt(symKey, encoded);
-      expect(decrypted, TEST_MESSAGE);
+      expect(decrypted, testMessage);
     });
   });
 }

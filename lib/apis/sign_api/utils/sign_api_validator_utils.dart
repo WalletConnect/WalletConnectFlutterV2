@@ -1,6 +1,5 @@
 import 'package:walletconnect_dart_v2/apis/sign_api/models/proposal_models.dart';
 import 'package:walletconnect_dart_v2/apis/sign_api/models/session_models.dart';
-import 'package:walletconnect_dart_v2/apis/sign_api/models/sign_client_models.dart';
 import 'package:walletconnect_dart_v2/apis/utils/namespace_utils.dart';
 import 'package:walletconnect_dart_v2/apis/utils/errors.dart';
 

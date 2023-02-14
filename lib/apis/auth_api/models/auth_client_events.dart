@@ -1,6 +1,5 @@
 import 'package:event/event.dart';
 import 'package:walletconnect_dart_v2/apis/auth_api/models/auth_client_models.dart';
-import 'package:walletconnect_dart_v2/apis/auth_api/models/json_rpc_models.dart';
 import 'package:walletconnect_dart_v2/apis/models/basic_models.dart';
 import 'package:walletconnect_dart_v2/apis/models/json_rpc_error.dart';
 

@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:walletconnect_dart_v2/apis/core/crypto/crypto_models.dart';
 import 'package:walletconnect_dart_v2/apis/core/relay_auth/relay_auth.dart';
 import 'package:walletconnect_dart_v2/apis/core/relay_auth/relay_auth_models.dart';
 import 'package:walletconnect_dart_v2/apis/utils/constants.dart';
@@ -25,8 +24,8 @@ void main() {
     const TEST_IAT = 1656910097;
 
     // Test seed to generate the same key pair
-    const TEST_SEED =
-        "58e0254c211b858ef7896b00e3f36beeb13d568d47c6031c4218b87718061295";
+    // const TEST_SEED =
+    //     "58e0254c211b858ef7896b00e3f36beeb13d568d47c6031c4218b87718061295";
 
     // Expected secret key for above seed
     const EXPECTED_SECRET_KEY =
@@ -55,7 +54,7 @@ void main() {
         "eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJkaWQ6a2V5Ono2TWtvZEhad25lVlJTaHRhTGY4SktZa3hwREdwMXZHWm5wR21kQnBYOE0yZXh4SCIsInN1YiI6ImM0NzlmZTVkYzQ2NGU3NzFlNzhiMTkzZDIzOWE2NWI1OGQyNzhjYWQxYzM0YmZiMGI1NzE2ZTViYjUxNDkyOGUiLCJhdWQiOiJ3c3M6Ly9yZWxheS53YWxsZXRjb25uZWN0LmNvbSIsImlhdCI6MTY1NjkxMDA5NywiZXhwIjoxNjU2OTk2NDk3fQ.bAKl1swvwqqV_FgwvD4Bx3Yp987B9gTpZctyBviA-EkAuWc8iI8SyokOjkv9GJESgid4U8Tf2foCgrQp2qrxBA";
 
     // Expected decoded JWT using did-jwt
-    final EXPECTED_DECODED = JWTDecoded(
+    final expectedDecoded = JWTDecoded(
       Uint8List.fromList(utf8.encode(EXPECTED_DATA)),
       Uint8List.fromList(utf8.encode(EXPECTED_SIG)),
       JWTPayload(
@@ -88,7 +87,7 @@ void main() {
     });
 
     test('encode and decode data', () async {
-      Uint8List data = relayAuth.encodeData(EXPECTED_DECODED);
+      Uint8List data = relayAuth.encodeData(expectedDecoded);
       expect(data, utf8.encode(EXPECTED_DATA));
     });
 

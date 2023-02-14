@@ -1,9 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:walletconnect_dart_v2/apis/sign_api/i_sign_engine_wallet.dart';
 import 'package:walletconnect_dart_v2/walletconnect_dart_v2.dart';
 
 import '../shared/shared_test_values.dart';
-import '../shared/sign_client_helpers.dart';
 import 'web3wallet_helpers.dart';
 
 void main() {
@@ -117,7 +115,7 @@ void runTests({
           clientA.getActiveSessions().length,
           clientB.getActiveSessions().length,
         );
-        final connectionInfo2 = await Web3WalletHelpers.testWeb3Wallet(
+        final _ = await Web3WalletHelpers.testWeb3Wallet(
           clientA,
           clientB,
           pairingTopic: connectionInfo.pairing.topic,
@@ -143,7 +141,7 @@ void runTests({
           clientA.pairings.getAll().length,
           clientB.pairings.getAll().length,
         );
-        final connectionInfo2 = await Web3WalletHelpers.testWeb3Wallet(
+        final _ = await Web3WalletHelpers.testWeb3Wallet(
           clientA,
           clientB,
           pairingTopic: connectionInfo.pairing.topic,

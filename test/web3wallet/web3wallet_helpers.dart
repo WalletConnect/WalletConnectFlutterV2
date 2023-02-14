@@ -204,14 +204,14 @@ class Web3WalletHelpers {
     expect(sessionA.self.metadata, sessionB!.peer.metadata);
     expect(sessionB!.self.metadata, sessionA.peer.metadata);
 
-    if (authResponse == null)
-      throw Exception("expect authResponse to be defined");
+    // if (authResponse == null)
+    //   throw Exception("expect authResponse to be defined");
 
     expect(authResponse.result != null, true);
     expect(authResponse.error == null, true);
     expect(authResponse.jsonRpcError == null, true);
 
-    if (pairingA == null) throw Exception("expect pairing A to be defined");
+    // if (pairingA == null) throw Exception("expect pairing A to be defined");
     if (pairingB == null) throw Exception("expect pairing B to be defined");
 
     // update pairing state beforehand

@@ -1,5 +1,4 @@
 import 'package:event/event.dart';
-import 'package:walletconnect_dart_v2/apis/core/store/i_generic_store.dart';
 import 'package:walletconnect_dart_v2/apis/core/crypto/crypto_models.dart';
 import 'package:walletconnect_dart_v2/apis/core/pairing/i_pairing_store.dart';
 import 'package:walletconnect_dart_v2/apis/core/pairing/utils/pairing_models.dart';
