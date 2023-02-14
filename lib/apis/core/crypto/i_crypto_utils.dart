@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:wallet_connect_flutter_v2/apis/core/crypto/crypto_models.dart';
+import 'package:walletconnect_dart_v2/apis/core/crypto/crypto_models.dart';
 
 abstract class ICryptoUtils {
   CryptoKeyPair generateKeyPair();

@@ -1,4 +1,4 @@
-import 'package:wallet_connect_flutter_v2/apis/core/i_core.dart';
+import 'package:walletconnect_dart_v2/apis/core/i_core.dart';
 
 abstract class IGenericStore<T> {
   abstract final String version;

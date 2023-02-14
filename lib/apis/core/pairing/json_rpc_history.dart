@@ -1,10 +1,10 @@
 import 'package:event/event.dart';
-import 'package:wallet_connect_flutter_v2/apis/core/i_core.dart';
-import 'package:wallet_connect_flutter_v2/apis/core/pairing/i_json_rpc_history.dart';
-import 'package:wallet_connect_flutter_v2/apis/core/pairing/utils/pairing_models.dart';
-import 'package:wallet_connect_flutter_v2/apis/models/json_rpc_request.dart';
-import 'package:wallet_connect_flutter_v2/apis/utils/errors.dart';
-import 'package:wallet_connect_flutter_v2/apis/utils/wallet_connect_utils.dart';
+import 'package:walletconnect_dart_v2/apis/core/i_core.dart';
+import 'package:walletconnect_dart_v2/apis/core/pairing/i_json_rpc_history.dart';
+import 'package:walletconnect_dart_v2/apis/core/pairing/utils/pairing_models.dart';
+import 'package:walletconnect_dart_v2/apis/models/json_rpc_request.dart';
+import 'package:walletconnect_dart_v2/apis/utils/errors.dart';
+import 'package:walletconnect_dart_v2/apis/utils/walletconnect_utils.dart';
 
 class JsonRpcHistory implements IJsonRpcHistory {
   static const CONTEXT = 'jsonRpcHistory';
@@ -93,7 +93,8 @@ class JsonRpcHistory implements IJsonRpcHistory {
       return;
     }
 
-    record.response = response.containsKey('result') ? response['result'] : response['error'];
+    record.response =
+        response.containsKey('result') ? response['result'] : response['error'];
     history[response['id'].toString()] = record.toJson();
     updated.broadcast(HistoryEvent(record: record));
     await persist();

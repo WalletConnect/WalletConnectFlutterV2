@@ -1,37 +1,37 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:wallet_connect_flutter_v2/apis/core/pairing/utils/pairing_models.dart';
+import 'package:walletconnect_dart_v2/apis/core/pairing/utils/pairing_models.dart';
 
 part 'basic_models.g.dart';
 
 /// ERRORS
 
 @JsonSerializable()
-class WCError {
+class WalletConnectError {
   int code;
   String message;
 
-  WCError({
+  WalletConnectError({
     required this.code,
     required this.message,
   });
 
-  factory WCError.fromJson(Map<String, dynamic> json) =>
+  factory WalletConnectError.fromJson(Map<String, dynamic> json) =>
       _$WCErrorFromJson(json);
 
   Map<String, dynamic> toJson() => _$WCErrorToJson(this);
 }
 
 @JsonSerializable()
-class WCErrorResponse extends WCError {
+class WalletConnectErrorResponse extends WalletConnectError {
   String? data;
 
-  WCErrorResponse({
+  WalletConnectErrorResponse({
     required super.code,
     required super.message,
     this.data,
   });
 
-  factory WCErrorResponse.fromJson(Map<String, dynamic> json) =>
+  factory WalletConnectErrorResponse.fromJson(Map<String, dynamic> json) =>
       _$WCErrorResponseFromJson(json);
 
   Map<String, dynamic> toJson() => _$WCErrorResponseToJson(this);

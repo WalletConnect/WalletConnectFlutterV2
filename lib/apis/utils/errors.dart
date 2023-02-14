@@ -1,11 +1,12 @@
-import 'package:wallet_connect_flutter_v2/apis/models/basic_models.dart';
+import 'package:walletconnect_dart_v2/apis/models/basic_models.dart';
 
 class Errors {
   static const INVALID_METHOD = 'INVALID_METHOD';
   static const INVALID_EVENT = 'INVALID_EVENT';
   static const INVALID_UPDATE_REQUEST = 'INVALID_UPDATE_REQUEST';
   static const INVALID_EXTEND_REQUEST = 'INVALID_EXTEND_REQUEST';
-  static const INVALID_SESSION_SETTLE_REQUEST = 'INVALID_SESSION_SETTLE_REQUEST';
+  static const INVALID_SESSION_SETTLE_REQUEST =
+      'INVALID_SESSION_SETTLE_REQUEST';
   static const UNAUTHORIZED_METHOD = 'UNAUTHORIZED_METHOD';
   static const UNAUTHORIZED_EVENT = 'UNAUTHORIZED_EVENT';
   static const UNAUTHORIZED_UPDATE_REQUEST = 'UNAUTHORIZED_UPDATE_REQUEST';
@@ -165,33 +166,33 @@ class Errors {
     },
   };
 
-  static WCError getInternalError(
+  static WalletConnectError getInternalError(
     String key, {
     String context = '',
   }) {
     if (INTERNAL_ERRORS.containsKey(key)) {
-      return new WCError(
+      return new WalletConnectError(
         code: INTERNAL_ERRORS[key]!['code']! as int,
         message: context != ''
             ? "${INTERNAL_ERRORS[key]!['message']! as String} $context"
             : INTERNAL_ERRORS[key]!['message']! as String,
       );
     }
-    return new WCError(code: -1, message: "UNKNOWN INTERNAL ERROR");
+    return new WalletConnectError(code: -1, message: "UNKNOWN INTERNAL ERROR");
   }
 
-  static WCError getSdkError(
+  static WalletConnectError getSdkError(
     String key, {
     String context = '',
   }) {
     if (SDK_ERRORS.containsKey(key)) {
-      return new WCError(
+      return new WalletConnectError(
         code: SDK_ERRORS[key]!['code']! as int,
         message: context != ''
             ? "${SDK_ERRORS[key]!['message']! as String} $context"
             : SDK_ERRORS[key]!['message']! as String,
       );
     }
-    return new WCError(code: -1, message: "UNKNOWN SDK ERROR");
+    return new WalletConnectError(code: -1, message: "UNKNOWN SDK ERROR");
   }
 }

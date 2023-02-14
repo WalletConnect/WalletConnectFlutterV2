@@ -1,10 +1,10 @@
 import 'dart:convert';
 
-import 'package:wallet_connect_flutter_v2/apis/core/i_core.dart';
-import 'package:wallet_connect_flutter_v2/apis/signing_api/i_sessions.dart';
-import 'package:wallet_connect_flutter_v2/apis/signing_api/models/session_models.dart';
-import 'package:wallet_connect_flutter_v2/apis/utils/errors.dart';
-import 'package:wallet_connect_flutter_v2/apis/utils/wallet_connect_utils.dart';
+import 'package:walletconnect_dart_v2/apis/core/i_core.dart';
+import 'package:walletconnect_dart_v2/apis/sign_api/i_sessions.dart';
+import 'package:walletconnect_dart_v2/apis/sign_api/models/session_models.dart';
+import 'package:walletconnect_dart_v2/apis/utils/errors.dart';
+import 'package:walletconnect_dart_v2/apis/utils/walletconnect_utils.dart';
 
 class Sessions implements ISessions {
   static const CONTEXT = 'sessions';

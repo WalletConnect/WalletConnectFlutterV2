@@ -3,11 +3,12 @@ import 'dart:typed_data';
 
 import 'package:eth_sig_util/eth_sig_util.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:wallet_connect_flutter_v2/apis/auth_api/auth_engine.dart';
-import 'package:wallet_connect_flutter_v2/apis/auth_api/i_auth_engine_wallet.dart';
-import 'package:wallet_connect_flutter_v2/apis/core/store/generic_store.dart';
-import 'package:wallet_connect_flutter_v2/apis/auth_api/utils/auth_constants.dart';
-import 'package:wallet_connect_flutter_v2/wallet_connect_flutter_v2.dart';
+import 'package:walletconnect_dart_v2/apis/auth_api/auth_engine.dart';
+import 'package:walletconnect_dart_v2/apis/auth_api/i_auth_engine_wallet.dart';
+import 'package:walletconnect_dart_v2/apis/core/store/generic_store.dart';
+import 'package:walletconnect_dart_v2/apis/auth_api/utils/auth_constants.dart';
+import 'package:walletconnect_dart_v2/apis/web3wallet/web3wallet.dart';
+import 'package:walletconnect_dart_v2/walletconnect_dart_v2.dart';
 
 import '../shared/shared_test_values.dart';
 import 'utils/engine_constants.dart';
@@ -16,12 +17,12 @@ import 'utils/signature_constants.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  final List<Future<IAuthEngine> Function(ICore, PairingMetadata?)>
+  final List<Future<IAuthEngine> Function(ICore, PairingMetadata)>
       authCreators = [
-    (ICore core, PairingMetadata? self) async =>
+    (ICore core, PairingMetadata metadata) async =>
         await AuthClient.createInstance(
-          core,
-          self: self,
+          core: core,
+          metadata: metadata,
         ),
     (ICore core, PairingMetadata? self) async {
       IAuthEngine e = AuthEngine(
@@ -79,17 +80,17 @@ void main() {
     }
   ];
 
-  final List<Future<IAuthEngine> Function(ICore, PairingMetadata?)>
+  final List<Future<IAuthEngineWallet> Function(ICore, PairingMetadata)>
       authWalletCreators = [
-    (ICore core, PairingMetadata? self) async =>
-        await AuthClient.createInstance(
-          core,
-          self: self,
+    (ICore core, PairingMetadata metadata) async =>
+        await Web3Wallet.createInstance(
+          core: core,
+          metadata: metadata,
         ),
-    (ICore core, PairingMetadata? self) async {
+    (ICore core, PairingMetadata metadata) async {
       IAuthEngine e = AuthEngine(
         core: core,
-        metadata: self ?? PairingMetadata.empty(),
+        metadata: metadata,
         authKeys: GenericStore(
           core: core,
           context: AuthConstants.CONTEXT_AUTH_KEYS,
@@ -155,8 +156,8 @@ void main() {
 
 void runTests({
   required String context,
-  required Future<IAuthEngine> Function(ICore, PairingMetadata?) engineCreator,
-  required Future<IAuthEngineWallet> Function(ICore, PairingMetadata?)
+  required Future<IAuthEngine> Function(ICore, PairingMetadata) engineCreator,
+  required Future<IAuthEngineWallet> Function(ICore, PairingMetadata)
       engineWalletCreator,
 }) {
   group(context, () {
@@ -221,6 +222,8 @@ void runTests({
         clientB.onAuthRequest.subscribe((AuthRequest? args) async {
           counterB++;
 
+          int currReqCount = clientB.getPendingAuthRequests().length;
+
           expect(args != null, true);
 
           // Create the message to be signed
@@ -241,6 +244,8 @@ void runTests({
             iss: TEST_ISSUER_EIP191,
             signature: CacaoSignature(t: CacaoSignature.EIP191, s: sig),
           );
+
+          expect(clientB.getPendingAuthRequests().length, currReqCount - 1);
         });
 
         expect(response.uri != null, true);
@@ -285,6 +290,33 @@ void runTests({
         clientA.core.pairing.onPairingPing.unsubscribeAll();
         clientB.core.pairing.onPairingPing.unsubscribeAll();
       });
+
+      test('counts pendingAuthRequests properly', () async {
+        AuthRequestResponse response = await clientA.requestAuth(
+          params: defaultRequestParams,
+        );
+        final String pairingTopic = response.pairingTopic;
+
+        await clientB.core.pairing.pair(uri: response.uri!);
+
+        // clientB.onAuthRequest.subscribe((AuthRequest? args) async {
+        //   print('got here');
+        //   print(clientB.getPendingAuthRequests().length);
+        // });
+
+        await Future.delayed(Duration(milliseconds: 1000));
+
+        expect(clientB.getPendingAuthRequests().length, 1);
+
+        response = await clientA.requestAuth(
+          params: defaultRequestParams,
+          pairingTopic: pairingTopic,
+        );
+
+        await Future.delayed(Duration(milliseconds: 1000));
+
+        expect(clientB.getPendingAuthRequests().length, 2);
+      });
     });
 
     group('requestAuth', () {
@@ -294,7 +326,7 @@ void runTests({
             params: testAuthRequestParamsInvalidAud,
           ),
           throwsA(
-            isA<WCError>().having(
+            isA<WalletConnectError>().having(
               (e) => e.message,
               'message',
               'Missing or invalid. requestAuth() invalid aud: ${testAuthRequestParamsInvalidAud.aud}. Must be a valid url.',
@@ -312,7 +344,7 @@ void runTests({
             iss: TEST_ISSUER_EIP191,
           ),
           throwsA(
-            isA<WCError>().having(
+            isA<WalletConnectError>().having(
               (e) => e.message,
               'message',
               'Missing or invalid. respondAuth() invalid id: -1. No pending request found.',

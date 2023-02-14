@@ -2,17 +2,17 @@ import 'dart:async';
 
 import 'package:event/event.dart';
 import 'package:json_rpc_2/json_rpc_2.dart';
-import 'package:wallet_connect_flutter_v2/apis/core/i_core.dart';
-import 'package:wallet_connect_flutter_v2/apis/core/relay_client/i_message_tracker.dart';
-import 'package:wallet_connect_flutter_v2/apis/core/relay_client/i_relay_client.dart';
-import 'package:wallet_connect_flutter_v2/apis/core/relay_client/i_topic_map.dart';
-import 'package:wallet_connect_flutter_v2/apis/core/relay_client/message_tracker.dart';
-import 'package:wallet_connect_flutter_v2/apis/core/relay_client/relay_client_models.dart';
-import 'package:wallet_connect_flutter_v2/apis/core/relay_client/topic_map.dart';
-import 'package:wallet_connect_flutter_v2/apis/models/basic_models.dart';
-import 'package:wallet_connect_flutter_v2/apis/utils/constants.dart';
-import 'package:wallet_connect_flutter_v2/apis/utils/errors.dart';
-import 'package:wallet_connect_flutter_v2/apis/utils/wallet_connect_utils.dart';
+import 'package:walletconnect_dart_v2/apis/core/i_core.dart';
+import 'package:walletconnect_dart_v2/apis/core/relay_client/i_message_tracker.dart';
+import 'package:walletconnect_dart_v2/apis/core/relay_client/i_relay_client.dart';
+import 'package:walletconnect_dart_v2/apis/core/relay_client/i_topic_map.dart';
+import 'package:walletconnect_dart_v2/apis/core/relay_client/message_tracker.dart';
+import 'package:walletconnect_dart_v2/apis/core/relay_client/relay_client_models.dart';
+import 'package:walletconnect_dart_v2/apis/core/relay_client/topic_map.dart';
+import 'package:walletconnect_dart_v2/apis/models/basic_models.dart';
+import 'package:walletconnect_dart_v2/apis/utils/constants.dart';
+import 'package:walletconnect_dart_v2/apis/utils/errors.dart';
+import 'package:walletconnect_dart_v2/apis/utils/walletconnect_utils.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 class RelayClient implements IRelayClient {
@@ -218,7 +218,7 @@ class RelayClient implements IRelayClient {
       return Peer(socket.cast<String>());
     } catch (e) {
       onRelayClientError.broadcast(ErrorEvent(e));
-      throw WCError(
+      throw WalletConnectError(
         code: 401,
         message:
             "Project ID doesn't exist, is invalid, or has too many requests",

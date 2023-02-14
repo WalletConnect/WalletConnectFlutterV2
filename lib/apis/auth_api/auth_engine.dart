@@ -1,25 +1,25 @@
 import 'dart:async';
 
 import 'package:event/event.dart';
-import 'package:wallet_connect_flutter_v2/apis/auth_api/i_auth_engine.dart';
-import 'package:wallet_connect_flutter_v2/apis/auth_api/models/auth_client_events.dart';
-import 'package:wallet_connect_flutter_v2/apis/auth_api/models/auth_client_models.dart';
-import 'package:wallet_connect_flutter_v2/apis/auth_api/models/json_rpc_models.dart';
-import 'package:wallet_connect_flutter_v2/apis/core/store/i_generic_store.dart';
-import 'package:wallet_connect_flutter_v2/apis/auth_api/utils/address_utils.dart';
-import 'package:wallet_connect_flutter_v2/apis/auth_api/utils/auth_api_validators.dart';
-import 'package:wallet_connect_flutter_v2/apis/auth_api/utils/auth_constants.dart';
-import 'package:wallet_connect_flutter_v2/apis/auth_api/utils/auth_signature.dart';
-import 'package:wallet_connect_flutter_v2/apis/core/crypto/crypto_models.dart';
-import 'package:wallet_connect_flutter_v2/apis/core/i_core.dart';
-import 'package:wallet_connect_flutter_v2/apis/core/pairing/utils/pairing_models.dart';
-import 'package:wallet_connect_flutter_v2/apis/core/pairing/utils/pairing_utils.dart';
-import 'package:wallet_connect_flutter_v2/apis/models/basic_models.dart';
-import 'package:wallet_connect_flutter_v2/apis/models/json_rpc_error.dart';
-import 'package:wallet_connect_flutter_v2/apis/models/json_rpc_request.dart';
-import 'package:wallet_connect_flutter_v2/apis/utils/constants.dart';
-import 'package:wallet_connect_flutter_v2/apis/utils/errors.dart';
-import 'package:wallet_connect_flutter_v2/apis/utils/method_constants.dart';
+import 'package:walletconnect_dart_v2/apis/auth_api/i_auth_engine.dart';
+import 'package:walletconnect_dart_v2/apis/auth_api/models/auth_client_events.dart';
+import 'package:walletconnect_dart_v2/apis/auth_api/models/auth_client_models.dart';
+import 'package:walletconnect_dart_v2/apis/auth_api/models/json_rpc_models.dart';
+import 'package:walletconnect_dart_v2/apis/core/store/i_generic_store.dart';
+import 'package:walletconnect_dart_v2/apis/auth_api/utils/address_utils.dart';
+import 'package:walletconnect_dart_v2/apis/auth_api/utils/auth_api_validators.dart';
+import 'package:walletconnect_dart_v2/apis/auth_api/utils/auth_constants.dart';
+import 'package:walletconnect_dart_v2/apis/auth_api/utils/auth_signature.dart';
+import 'package:walletconnect_dart_v2/apis/core/crypto/crypto_models.dart';
+import 'package:walletconnect_dart_v2/apis/core/i_core.dart';
+import 'package:walletconnect_dart_v2/apis/core/pairing/utils/pairing_models.dart';
+import 'package:walletconnect_dart_v2/apis/core/pairing/utils/pairing_utils.dart';
+import 'package:walletconnect_dart_v2/apis/models/basic_models.dart';
+import 'package:walletconnect_dart_v2/apis/models/json_rpc_error.dart';
+import 'package:walletconnect_dart_v2/apis/models/json_rpc_request.dart';
+import 'package:walletconnect_dart_v2/apis/utils/constants.dart';
+import 'package:walletconnect_dart_v2/apis/utils/errors.dart';
+import 'package:walletconnect_dart_v2/apis/utils/method_constants.dart';
 
 class AuthEngine implements IAuthEngine {
   bool _initialized = false;
@@ -80,17 +80,13 @@ class AuthEngine implements IAuthEngine {
     AuthApiValidators.isValidRequest(params);
     String? pTopic = pairingTopic;
     Uri? uri;
-    bool active = false;
 
-    if (pTopic != null) {
-      final PairingInfo pairing = core.pairing.getStore().get(pTopic)!;
-      active = pairing.active;
-    }
-
-    if (pTopic == null || !active) {
+    if (pTopic == null) {
       final CreateResponse newTopicAndUri = await core.pairing.create();
       pTopic = newTopicAndUri.topic;
       uri = newTopicAndUri.uri;
+    } else {
+      core.pairing.isValidPairingTopic(topic: pTopic);
     }
 
     final publicKey = await core.crypto.generateKeyPair();
@@ -224,7 +220,7 @@ class AuthEngine implements IAuthEngine {
       final resp = AuthResponse(
         id: id,
         topic: responseTopic,
-        error: WCErrorResponse(
+        error: WalletConnectErrorResponse(
           code: -1,
           message: 'Invalid signature',
         ),
@@ -247,7 +243,7 @@ class AuthEngine implements IAuthEngine {
     required int id,
     required String iss,
     CacaoSignature? signature,
-    WCErrorResponse? error,
+    WalletConnectErrorResponse? error,
   }) async {
     _checkInitialized();
 
@@ -296,6 +292,8 @@ class AuthEngine implements IAuthEngine {
         cacao.toJson(),
         encodeOptions: encodeOpts,
       );
+
+      await authRequests.delete(id.toString());
 
       await completeRequests.set(
         id.toString(),
@@ -405,7 +403,7 @@ class AuthEngine implements IAuthEngine {
           payloadParams: request.payloadParams,
         ),
       );
-    } on WCError catch (err) {
+    } on WalletConnectError catch (err) {
       await core.pairing.sendError(
         payload.id,
         topic,

@@ -1,6 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:wallet_connect_flutter_v2/apis/auth_api/utils/auth_constants.dart';
-import 'package:wallet_connect_flutter_v2/wallet_connect_flutter_v2.dart';
+import 'package:walletconnect_dart_v2/apis/auth_api/utils/auth_constants.dart';
+import 'package:walletconnect_dart_v2/walletconnect_dart_v2.dart';
 
 import '../shared/shared_test_values.dart';
 import 'utils/engine_constants.dart';
@@ -45,7 +45,7 @@ void main() {
       expect(
         () => AuthApiValidators.isValidRequest(testAuthRequestParamsInvalidAud),
         throwsA(
-          isA<WCError>().having(
+          isA<WalletConnectError>().having(
             (e) => e.message,
             'message',
             'Missing or invalid. requestAuth() invalid aud: ${testAuthRequestParamsInvalidAud.aud}. Must be a valid url.',
@@ -56,7 +56,7 @@ void main() {
         () => AuthApiValidators.isValidRequest(
             testAuthRequestParamsInvalidDomain),
         throwsA(
-          isA<WCError>().having(
+          isA<WalletConnectError>().having(
             (e) => e.message,
             'message',
             'Missing or invalid. requestAuth() invalid domain: ${testAuthRequestParamsInvalidDomain.domain}. aud must contain domain.',
@@ -68,7 +68,7 @@ void main() {
           testAuthRequestParamsInvalidNonce,
         ),
         throwsA(
-          isA<WCError>().having(
+          isA<WalletConnectError>().having(
             (e) => e.message,
             'message',
             'Missing or invalid. requestAuth() nonce must be nonempty.',
@@ -79,7 +79,7 @@ void main() {
         () =>
             AuthApiValidators.isValidRequest(testAuthRequestParamsInvalidType),
         throwsA(
-          isA<WCError>().having(
+          isA<WalletConnectError>().having(
             (e) => e.message,
             'message',
             'Missing or invalid. requestAuth() type must null or ${CacaoHeader.EIP4361}.',
@@ -90,7 +90,7 @@ void main() {
         () => AuthApiValidators.isValidRequest(
             testAuthRequestParamsInvalidExpiry),
         throwsA(
-          isA<WCError>().having(
+          isA<WalletConnectError>().having(
             (e) => e.message,
             'message',
             'Missing or invalid. requestAuth() expiry: ${testAuthRequestParamsInvalidExpiry.expiry}. Expiry must be a number (in seconds) between ${AuthConstants.AUTH_REQUEST_EXPIRY_MIN} and ${AuthConstants.AUTH_REQUEST_EXPIRY_MAX}',
@@ -114,7 +114,7 @@ void main() {
           pendingRequests: testPendingRequests,
         ),
         throwsA(
-          isA<WCError>().having(
+          isA<WalletConnectError>().having(
             (e) => e.message,
             'message',
             'Missing or invalid. respondAuth() invalid id: $TEST_PENDING_REQUEST_ID_INVALID. No pending request found.',
@@ -127,7 +127,7 @@ void main() {
           pendingRequests: testPendingRequests,
         ),
         throwsA(
-          isA<WCError>().having(
+          isA<WalletConnectError>().having(
             (e) => e.message,
             'message',
             'Missing or invalid. respondAuth() invalid response. Must contain either signature or error.',

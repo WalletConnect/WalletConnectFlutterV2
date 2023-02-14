@@ -1,4 +1,4 @@
-import 'package:wallet_connect_flutter_v2/apis/core/store/i_store_user.dart';
+import 'package:walletconnect_dart_v2/apis/core/store/i_store_user.dart';
 
 abstract class IMessageTracker extends IStoreUser {
   Future<void> init();

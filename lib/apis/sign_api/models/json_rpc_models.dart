@@ -1,8 +1,8 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:wallet_connect_flutter_v2/apis/core/relay_client/relay_client_models.dart';
-import 'package:wallet_connect_flutter_v2/apis/models/basic_models.dart';
-import 'package:wallet_connect_flutter_v2/apis/signing_api/models/proposal_models.dart';
-import 'package:wallet_connect_flutter_v2/apis/signing_api/models/session_models.dart';
+import 'package:walletconnect_dart_v2/apis/core/relay_client/relay_client_models.dart';
+import 'package:walletconnect_dart_v2/apis/models/basic_models.dart';
+import 'package:walletconnect_dart_v2/apis/sign_api/models/proposal_models.dart';
+import 'package:walletconnect_dart_v2/apis/sign_api/models/session_models.dart';
 
 part 'json_rpc_models.g.dart';
 
@@ -13,7 +13,8 @@ class WcPairingDeleteRequest {
 
   WcPairingDeleteRequest({required this.code, required this.message});
 
-  factory WcPairingDeleteRequest.fromJson(Map<String, dynamic> json) => _$WcPairingDeleteRequestFromJson(json);
+  factory WcPairingDeleteRequest.fromJson(Map<String, dynamic> json) =>
+      _$WcPairingDeleteRequestFromJson(json);
 
   Map<String, dynamic> toJson() => _$WcPairingDeleteRequestToJson(this);
 }
@@ -24,7 +25,8 @@ class WcPairingPingRequest {
 
   WcPairingPingRequest({required this.data});
 
-  factory WcPairingPingRequest.fromJson(Map<String, dynamic> json) => _$WcPairingPingRequestFromJson(json);
+  factory WcPairingPingRequest.fromJson(Map<String, dynamic> json) =>
+      _$WcPairingPingRequestFromJson(json);
 
   Map<String, dynamic> toJson() => _$WcPairingPingRequestToJson(this);
 }
@@ -45,7 +47,8 @@ class WcSessionProposeRequest {
     this.sessionProperties,
   });
 
-  factory WcSessionProposeRequest.fromJson(Map<String, dynamic> json) => _$WcSessionProposeRequestFromJson(json);
+  factory WcSessionProposeRequest.fromJson(Map<String, dynamic> json) =>
+      _$WcSessionProposeRequestFromJson(json);
 
   Map<String, dynamic> toJson() => _$WcSessionProposeRequestToJson(this);
 }
@@ -60,7 +63,8 @@ class WcSessionProposeResponse {
     required this.responderPublicKey,
   });
 
-  factory WcSessionProposeResponse.fromJson(Map<String, dynamic> json) => _$WcSessionProposeResponseFromJson(json);
+  factory WcSessionProposeResponse.fromJson(Map<String, dynamic> json) =>
+      _$WcSessionProposeResponseFromJson(json);
 
   Map<String, dynamic> toJson() => _$WcSessionProposeResponseToJson(this);
 }
@@ -85,7 +89,8 @@ class WcSessionSettleRequest {
     required this.controller,
   });
 
-  factory WcSessionSettleRequest.fromJson(Map<String, dynamic> json) => _$WcSessionSettleRequestFromJson(json);
+  factory WcSessionSettleRequest.fromJson(Map<String, dynamic> json) =>
+      _$WcSessionSettleRequestFromJson(json);
 
   Map<String, dynamic> toJson() => _$WcSessionSettleRequestToJson(this);
 }
@@ -96,7 +101,8 @@ class WcSessionUpdateRequest {
 
   WcSessionUpdateRequest({required this.namespaces});
 
-  factory WcSessionUpdateRequest.fromJson(Map<String, dynamic> json) => _$WcSessionUpdateRequestFromJson(json);
+  factory WcSessionUpdateRequest.fromJson(Map<String, dynamic> json) =>
+      _$WcSessionUpdateRequestFromJson(json);
 
   Map<String, dynamic> toJson() => _$WcSessionUpdateRequestToJson(this);
 }
@@ -107,7 +113,8 @@ class WcSessionExtendRequest {
 
   WcSessionExtendRequest({this.data});
 
-  factory WcSessionExtendRequest.fromJson(Map<String, dynamic> json) => _$WcSessionExtendRequestFromJson(json);
+  factory WcSessionExtendRequest.fromJson(Map<String, dynamic> json) =>
+      _$WcSessionExtendRequestFromJson(json);
 
   Map<String, dynamic> toJson() => _$WcSessionExtendRequestToJson(this);
 }
@@ -124,7 +131,8 @@ class WcSessionDeleteRequest {
     this.data,
   });
 
-  factory WcSessionDeleteRequest.fromJson(Map<String, dynamic> json) => _$WcSessionDeleteRequestFromJson(json);
+  factory WcSessionDeleteRequest.fromJson(Map<String, dynamic> json) =>
+      _$WcSessionDeleteRequestFromJson(json);
 
   Map<String, dynamic> toJson() => _$WcSessionDeleteRequestToJson(this);
 }
@@ -135,7 +143,8 @@ class WcSessionPingRequest {
 
   WcSessionPingRequest({required this.data});
 
-  factory WcSessionPingRequest.fromJson(Map<String, dynamic> json) => _$WcSessionPingRequestFromJson(json);
+  factory WcSessionPingRequest.fromJson(Map<String, dynamic> json) =>
+      _$WcSessionPingRequestFromJson(json);
 
   Map<String, dynamic> toJson() => _$WcSessionPingRequestToJson(this);
 }
@@ -150,7 +159,8 @@ class WcSessionRequestRequest {
     required this.request,
   });
 
-  factory WcSessionRequestRequest.fromJson(Map<String, dynamic> json) => _$WcSessionRequestRequestFromJson(json);
+  factory WcSessionRequestRequest.fromJson(Map<String, dynamic> json) =>
+      _$WcSessionRequestRequestFromJson(json);
 
   Map<String, dynamic> toJson() => _$WcSessionRequestRequestToJson(this);
 }
@@ -165,7 +175,8 @@ class SessionRequestParams {
     required this.params,
   });
 
-  factory SessionRequestParams.fromJson(Map<String, dynamic> json) => _$SessionRequestParamsFromJson(json);
+  factory SessionRequestParams.fromJson(Map<String, dynamic> json) =>
+      _$SessionRequestParamsFromJson(json);
 
   Map<String, dynamic> toJson() => _$SessionRequestParamsToJson(this);
 }
@@ -180,7 +191,8 @@ class WcSessionEventRequest {
     required this.event,
   });
 
-  factory WcSessionEventRequest.fromJson(Map<String, dynamic> json) => _$WcSessionEventRequestFromJson(json);
+  factory WcSessionEventRequest.fromJson(Map<String, dynamic> json) =>
+      _$WcSessionEventRequestFromJson(json);
 
   Map<String, dynamic> toJson() => _$WcSessionEventRequestToJson(this);
 }
@@ -195,7 +207,8 @@ class SessionEventParams {
     required this.data,
   });
 
-  factory SessionEventParams.fromJson(Map<String, dynamic> json) => _$SessionEventParamsFromJson(json);
+  factory SessionEventParams.fromJson(Map<String, dynamic> json) =>
+      _$SessionEventParamsFromJson(json);
 
   Map<String, dynamic> toJson() => _$SessionEventParamsToJson(this);
 }

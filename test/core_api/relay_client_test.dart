@@ -1,11 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
-import 'package:wallet_connect_flutter_v2/apis/core/core.dart';
-import 'package:wallet_connect_flutter_v2/apis/core/i_core.dart';
-import 'package:wallet_connect_flutter_v2/apis/core/pairing/utils/pairing_models.dart';
-import 'package:wallet_connect_flutter_v2/apis/core/relay_client/relay_client.dart';
-import 'package:wallet_connect_flutter_v2/apis/core/relay_client/relay_client_models.dart';
-import 'package:wallet_connect_flutter_v2/apis/models/basic_models.dart';
+import 'package:walletconnect_dart_v2/apis/core/core.dart';
+import 'package:walletconnect_dart_v2/apis/core/i_core.dart';
+import 'package:walletconnect_dart_v2/apis/core/pairing/utils/pairing_models.dart';
+import 'package:walletconnect_dart_v2/apis/core/relay_client/relay_client.dart';
+import 'package:walletconnect_dart_v2/apis/core/relay_client/relay_client_models.dart';
+import 'package:walletconnect_dart_v2/apis/models/basic_models.dart';
 
 import '../shared/shared_test_values.dart';
 import 'shared/shared_test_utils.mocks.dart';
@@ -29,7 +29,7 @@ void main() {
 
       expect(
         () async => await core.start(),
-        throwsA(isA<WCError>()),
+        throwsA(isA<WalletConnectError>()),
       );
     });
   });

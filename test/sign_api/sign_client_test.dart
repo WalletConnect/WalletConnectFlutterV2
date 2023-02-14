@@ -1,21 +1,16 @@
 import 'dart:convert';
-import 'dart:math';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:wallet_connect_flutter_v2/apis/core/store/generic_store.dart';
-import 'package:wallet_connect_flutter_v2/apis/models/json_rpc_response.dart';
-import 'package:wallet_connect_flutter_v2/apis/signing_api/i_sign_engine_wallet.dart';
-import 'package:wallet_connect_flutter_v2/apis/signing_api/sign_engine.dart';
-import 'package:wallet_connect_flutter_v2/apis/signing_api/proposals.dart';
-import 'package:wallet_connect_flutter_v2/apis/signing_api/sessions.dart';
-import 'package:wallet_connect_flutter_v2/apis/signing_api/utils/sign_constants.dart';
-import 'package:wallet_connect_flutter_v2/wallet_connect_flutter_v2.dart';
+import 'package:walletconnect_dart_v2/apis/core/store/generic_store.dart';
+import 'package:walletconnect_dart_v2/apis/sign_api/i_sign_engine_wallet.dart';
+import 'package:walletconnect_dart_v2/apis/sign_api/sign_engine.dart';
+import 'package:walletconnect_dart_v2/apis/sign_api/utils/sign_constants.dart';
+import 'package:walletconnect_dart_v2/walletconnect_dart_v2.dart';
 
-import '../auth_api/utils/engine_constants.dart';
 import '../shared/shared_test_values.dart';
 import 'utils/engine_constants.dart';
 import 'utils/sign_client_constants.dart';
-import 'sign_client_helpers.dart';
+import '../shared/sign_client_helpers.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -70,7 +65,7 @@ void main() {
           metadata: metadata,
         ),
     (ICore core, PairingMetadata metadata) async =>
-        await SignClient.createInstance(
+        await Web3Wallet.createInstance(
           core: core,
           metadata: metadata,
         ),
@@ -242,6 +237,8 @@ void signingEngineTests({
           pairingTopic: connectionInfo.pairing.topic,
         );
 
+        await Future.delayed(Duration(milliseconds: 100));
+
         expect(counterA, 2);
         expect(counterB, 2);
 
@@ -278,7 +275,7 @@ void signingEngineTests({
             pairingTopic: TEST_TOPIC_INVALID,
           ),
           throwsA(
-            isA<WCError>().having(
+            isA<WalletConnectError>().having(
               (e) => e.message,
               'message',
               'No matching key. pairing topic doesn\'t exist: abc',
@@ -293,7 +290,7 @@ void signingEngineTests({
             requiredNamespaces: TEST_REQUIRED_NAMESPACES_INVALID_CHAINS_1,
           ),
           throwsA(
-            isA<WCError>().having(
+            isA<WalletConnectError>().having(
               (e) => e.message,
               'message',
               'Unsupported chains. connect() check requiredNamespaces. requiredNamespace, namespace is a chainId, but chains is not empty',
@@ -306,7 +303,7 @@ void signingEngineTests({
             optionalNamespaces: TEST_REQUIRED_NAMESPACES_INVALID_CHAINS_1,
           ),
           throwsA(
-            isA<WCError>().having(
+            isA<WalletConnectError>().having(
               (e) => e.message,
               'message',
               'Unsupported chains. connect() check optionalNamespaces. requiredNamespace, namespace is a chainId, but chains is not empty',
@@ -318,16 +315,15 @@ void signingEngineTests({
 
     group('pair', () {
       test('throws with invalid methods', () {
-        final String uriWithMethods =
-            '$TEST_URI&methods=[wc_sessionPropose],[wc_authRequest,wc_authBatchRequest]';
+        final String uriWithMethods = '$TEST_URI&methods=[wc_swag]';
         for (var client in clients) {
           expect(
             () async => await client.pair(uri: Uri.parse(uriWithMethods)),
             throwsA(
-              isA<WCError>().having(
+              isA<WalletConnectError>().having(
                 (e) => e.message,
                 'message',
-                'Unsupported wc_ method. The following methods are not registered: wc_authRequest, wc_authBatchRequest.',
+                'Unsupported wc_ method. The following methods are not registered: wc_swag.',
               ),
             ),
           );
@@ -363,7 +359,7 @@ void signingEngineTests({
               namespaces: TEST_NAMESPACES,
             ),
             throwsA(
-              isA<WCError>().having(
+              isA<WalletConnectError>().having(
                 (e) => e.message,
                 'message',
                 'No matching key. proposal id doesn\'t exist: $TEST_APPROVE_ID_INVALID',
@@ -381,7 +377,7 @@ void signingEngineTests({
               namespaces: TEST_NAMESPACES,
             ),
             throwsA(
-              isA<WCError>().having(
+              isA<WalletConnectError>().having(
                 (e) => e.message,
                 'message',
                 'Expired. proposal id: $TEST_PROPOSAL_EXPIRED_ID',
@@ -408,7 +404,7 @@ void signingEngineTests({
                 namespaces: TEST_NAMESPACES,
               ),
               throwsA(
-                isA<WCError>().having(
+                isA<WalletConnectError>().having(
                   (e) => e.message,
                   'message',
                   'Unsupported chains. approve() check requiredNamespaces. requiredNamespace, namespace is a chainId, but chains is not empty',
@@ -421,7 +417,7 @@ void signingEngineTests({
                 namespaces: TEST_NAMESPACES,
               ),
               throwsA(
-                isA<WCError>().having(
+                isA<WalletConnectError>().having(
                   (e) => e.message,
                   'message',
                   'Unsupported chains. approve() check optionalNamespaces. requiredNamespace, namespace is a chainId, but chains is not empty',
@@ -434,7 +430,7 @@ void signingEngineTests({
                 namespaces: TEST_NAMESPACES_NONCONFORMING_KEY_1,
               ),
               throwsA(
-                isA<WCError>().having(
+                isA<WalletConnectError>().having(
                   (e) => e.message,
                   'message',
                   'Non conforming namespaces. approve() namespaces keys don\'t satisfy requiredNamespaces',
@@ -475,7 +471,7 @@ void signingEngineTests({
 
           await client.rejectSession(
             id: TEST_PROPOSAL_VALID_ID,
-            reason: WCErrorResponse(code: -1, message: 'reason'),
+            reason: WalletConnectErrorResponse(code: -1, message: 'reason'),
           );
 
           expect(
@@ -490,10 +486,10 @@ void signingEngineTests({
           expect(
             () async => await client.rejectSession(
               id: TEST_APPROVE_ID_INVALID,
-              reason: WCErrorResponse(code: -1, message: 'reason'),
+              reason: WalletConnectErrorResponse(code: -1, message: 'reason'),
             ),
             throwsA(
-              isA<WCError>().having(
+              isA<WalletConnectError>().having(
                 (e) => e.message,
                 'message',
                 'No matching key. proposal id doesn\'t exist: $TEST_APPROVE_ID_INVALID',
@@ -508,10 +504,10 @@ void signingEngineTests({
           expect(
             () async => await client.rejectSession(
               id: TEST_PROPOSAL_EXPIRED_ID,
-              reason: WCErrorResponse(code: -1, message: 'reason'),
+              reason: WalletConnectErrorResponse(code: -1, message: 'reason'),
             ),
             throwsA(
-              isA<WCError>().having(
+              isA<WalletConnectError>().having(
                 (e) => e.message,
                 'message',
                 'Expired. proposal id: $TEST_PROPOSAL_EXPIRED_ID',
@@ -584,7 +580,7 @@ void signingEngineTests({
               namespaces: TEST_NAMESPACES,
             ),
             throwsA(
-              isA<WCError>().having(
+              isA<WalletConnectError>().having(
                 (e) => e.message,
                 'message',
                 'No matching key. session topic doesn\'t exist: $TEST_SESSION_INVALID_TOPIC',
@@ -602,7 +598,7 @@ void signingEngineTests({
               namespaces: TEST_NAMESPACES,
             ),
             throwsA(
-              isA<WCError>().having(
+              isA<WalletConnectError>().having(
                 (e) => e.message,
                 'message',
                 'Expired. session topic: $TEST_SESSION_EXPIRED_TOPIC',
@@ -628,7 +624,7 @@ void signingEngineTests({
               namespaces: TEST_NAMESPACES_INVALID_ACCOUNTS,
             ),
             throwsA(
-              isA<WCError>().having(
+              isA<WalletConnectError>().having(
                 (e) => e.message,
                 'message',
                 'Unsupported accounts. update() namespace, account swag should conform to "namespace:chainId:address" format',
@@ -641,7 +637,7 @@ void signingEngineTests({
               namespaces: TEST_NAMESPACES_NONCONFORMING_CHAINS,
             ),
             throwsA(
-              isA<WCError>().having(
+              isA<WalletConnectError>().having(
                 (e) => e.message,
                 'message',
                 'Non conforming namespaces. update() namespaces accounts don\'t satisfy requiredNamespaces chains for eip155',
@@ -731,7 +727,7 @@ void signingEngineTests({
               topic: TEST_SESSION_INVALID_TOPIC,
             ),
             throwsA(
-              isA<WCError>().having(
+              isA<WalletConnectError>().having(
                 (e) => e.message,
                 'message',
                 'No matching key. session topic doesn\'t exist: $TEST_SESSION_INVALID_TOPIC',
@@ -748,7 +744,7 @@ void signingEngineTests({
               topic: TEST_SESSION_EXPIRED_TOPIC,
             ),
             throwsA(
-              isA<WCError>().having(
+              isA<WalletConnectError>().having(
                 (e) => e.message,
                 'message',
                 'Expired. session topic: $TEST_SESSION_EXPIRED_TOPIC',
@@ -938,7 +934,7 @@ void signingEngineTests({
             ),
           ),
           throwsA(
-            isA<WCError>().having(
+            isA<WalletConnectError>().having(
               (e) => e.message,
               'message',
               'No matching key. session topic doesn\'t exist: $TEST_SESSION_INVALID_TOPIC',
@@ -950,8 +946,8 @@ void signingEngineTests({
         clientA.core.expirer.onExpire.subscribe((args) {
           counter++;
         });
-        print(
-            'clientA.session exiry: ${clientA.sessions.get(TEST_SESSION_EXPIRED_TOPIC)!.expiry}');
+        // print(
+        //     'clientA.session exiry: ${clientA.sessions.get(TEST_SESSION_EXPIRED_TOPIC)!.expiry}');
         expect(
           () async => await clientA.request(
             topic: TEST_SESSION_EXPIRED_TOPIC,
@@ -962,7 +958,7 @@ void signingEngineTests({
             ),
           ),
           throwsA(
-            isA<WCError>().having(
+            isA<WalletConnectError>().having(
               (e) => e.message,
               'message',
               'Expired. session topic: $TEST_SESSION_EXPIRED_TOPIC',
@@ -992,7 +988,7 @@ void signingEngineTests({
             ),
           ),
           throwsA(
-            isA<WCError>().having(
+            isA<WalletConnectError>().having(
               (e) => e.message,
               'message',
               'Unsupported chains. The chain $TEST_UNINCLUDED_CHAIN is not supported',
@@ -1009,7 +1005,7 @@ void signingEngineTests({
             ),
           ),
           throwsA(
-            isA<WCError>().having(
+            isA<WalletConnectError>().having(
               (e) => e.message,
               'message',
               'Unsupported methods. The method $TEST_METHOD_INVALID_1 is not supported',
@@ -1112,7 +1108,7 @@ void signingEngineTests({
               ),
             ),
             throwsA(
-              isA<WCError>().having(
+              isA<WalletConnectError>().having(
                 (e) => e.message,
                 'message',
                 'No matching key. session topic doesn\'t exist: $TEST_SESSION_INVALID_TOPIC',
@@ -1134,7 +1130,7 @@ void signingEngineTests({
               ),
             ),
             throwsA(
-              isA<WCError>().having(
+              isA<WalletConnectError>().having(
                 (e) => e.message,
                 'message',
                 'Expired. session topic: $TEST_SESSION_EXPIRED_TOPIC',
@@ -1163,7 +1159,7 @@ void signingEngineTests({
               ),
             ),
             throwsA(
-              isA<WCError>().having(
+              isA<WalletConnectError>().having(
                 (e) => e.message,
                 'message',
                 'Unsupported chains. The chain $TEST_UNINCLUDED_CHAIN is not supported',
@@ -1180,7 +1176,7 @@ void signingEngineTests({
               ),
             ),
             throwsA(
-              isA<WCError>().having(
+              isA<WalletConnectError>().having(
                 (e) => e.message,
                 'message',
                 'Unsupported events. The event $TEST_EVENT_INVALID_1 is not supported',
@@ -1247,7 +1243,7 @@ void signingEngineTests({
             topic: TEST_SESSION_INVALID_TOPIC,
           ),
           throwsA(
-            isA<WCError>().having(
+            isA<WalletConnectError>().having(
               (e) => e.message,
               'message',
               'No matching key. session or pairing topic doesn\'t exist: $TEST_SESSION_INVALID_TOPIC',
@@ -1264,7 +1260,7 @@ void signingEngineTests({
             topic: TEST_SESSION_EXPIRED_TOPIC,
           ),
           throwsA(
-            isA<WCError>().having(
+            isA<WalletConnectError>().having(
               (e) => e.message,
               'message',
               'Expired. session topic: $TEST_SESSION_EXPIRED_TOPIC',
@@ -1305,10 +1301,11 @@ void signingEngineTests({
           counterB++;
         });
 
-        WCError reason = Errors.getSdkError(Errors.USER_DISCONNECTED);
+        WalletConnectError reason =
+            Errors.getSdkError(Errors.USER_DISCONNECTED);
         await clientA.disconnectSession(
           topic: pairingATopic,
-          reason: WCErrorResponse(
+          reason: WalletConnectErrorResponse(
             code: reason.code,
             message: reason.message,
           ),
@@ -1332,7 +1329,7 @@ void signingEngineTests({
         reason = Errors.getSdkError(Errors.USER_DISCONNECTED);
         await clientB.disconnectSession(
           topic: pairingATopic,
-          reason: WCErrorResponse(
+          reason: WalletConnectErrorResponse(
             code: reason.code,
             message: reason.message,
           ),
@@ -1372,10 +1369,11 @@ void signingEngineTests({
           counterB++;
         });
 
-        WCError reason = Errors.getSdkError(Errors.USER_DISCONNECTED);
+        WalletConnectError reason =
+            Errors.getSdkError(Errors.USER_DISCONNECTED);
         await clientA.disconnectSession(
           topic: sessionATopic,
-          reason: WCErrorResponse(
+          reason: WalletConnectErrorResponse(
             code: reason.code,
             message: reason.message,
           ),
@@ -1397,7 +1395,7 @@ void signingEngineTests({
         reason = Errors.getSdkError(Errors.USER_DISCONNECTED);
         await clientB.disconnectSession(
           topic: sessionATopic,
-          reason: WCErrorResponse(
+          reason: WalletConnectErrorResponse(
             code: reason.code,
             message: reason.message,
           ),
@@ -1436,13 +1434,13 @@ void signingEngineTests({
           expect(
             () async => await client.disconnectSession(
               topic: TEST_SESSION_INVALID_TOPIC,
-              reason: WCErrorResponse(
+              reason: WalletConnectErrorResponse(
                 code: reason.code,
                 message: reason.message,
               ),
             ),
             throwsA(
-              isA<WCError>().having(
+              isA<WalletConnectError>().having(
                 (e) => e.message,
                 'message',
                 'No matching key. session or pairing topic doesn\'t exist: $TEST_SESSION_INVALID_TOPIC',
@@ -1457,13 +1455,13 @@ void signingEngineTests({
           expect(
             () async => await client.disconnectSession(
               topic: TEST_SESSION_EXPIRED_TOPIC,
-              reason: WCErrorResponse(
+              reason: WalletConnectErrorResponse(
                 code: reason.code,
                 message: reason.message,
               ),
             ),
             throwsA(
-              isA<WCError>().having(
+              isA<WalletConnectError>().having(
                 (e) => e.message,
                 'message',
                 'Expired. session topic: $TEST_SESSION_EXPIRED_TOPIC',

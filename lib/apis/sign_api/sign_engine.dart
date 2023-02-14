@@ -1,30 +1,30 @@
 import 'dart:async';
 
 import 'package:event/event.dart';
-import 'package:wallet_connect_flutter_v2/apis/core/store/i_generic_store.dart';
-import 'package:wallet_connect_flutter_v2/apis/core/pairing/i_pairing.dart';
-import 'package:wallet_connect_flutter_v2/apis/core/pairing/i_pairing_store.dart';
-import 'package:wallet_connect_flutter_v2/apis/core/pairing/utils/pairing_utils.dart';
-import 'package:wallet_connect_flutter_v2/apis/core/pairing/utils/pairing_models.dart';
-import 'package:wallet_connect_flutter_v2/apis/core/i_core.dart';
-import 'package:wallet_connect_flutter_v2/apis/core/relay_client/relay_client_models.dart';
-import 'package:wallet_connect_flutter_v2/apis/models/json_rpc_error.dart';
-import 'package:wallet_connect_flutter_v2/apis/models/json_rpc_request.dart';
-import 'package:wallet_connect_flutter_v2/apis/models/basic_models.dart';
-import 'package:wallet_connect_flutter_v2/apis/models/json_rpc_response.dart';
-import 'package:wallet_connect_flutter_v2/apis/signing_api/i_sign_engine.dart';
-import 'package:wallet_connect_flutter_v2/apis/signing_api/models/json_rpc_models.dart';
-import 'package:wallet_connect_flutter_v2/apis/signing_api/models/proposal_models.dart';
-import 'package:wallet_connect_flutter_v2/apis/signing_api/models/sign_client_events.dart';
-import 'package:wallet_connect_flutter_v2/apis/signing_api/models/session_models.dart';
-import 'package:wallet_connect_flutter_v2/apis/signing_api/i_sessions.dart';
-import 'package:wallet_connect_flutter_v2/apis/signing_api/i_proposals.dart';
-import 'package:wallet_connect_flutter_v2/apis/signing_api/models/sign_client_models.dart';
-import 'package:wallet_connect_flutter_v2/apis/signing_api/utils/sign_api_validator_utils.dart';
-import 'package:wallet_connect_flutter_v2/apis/utils/constants.dart';
-import 'package:wallet_connect_flutter_v2/apis/utils/errors.dart';
-import 'package:wallet_connect_flutter_v2/apis/utils/method_constants.dart';
-import 'package:wallet_connect_flutter_v2/apis/utils/wallet_connect_utils.dart';
+import 'package:walletconnect_dart_v2/apis/core/store/i_generic_store.dart';
+import 'package:walletconnect_dart_v2/apis/core/pairing/i_pairing.dart';
+import 'package:walletconnect_dart_v2/apis/core/pairing/i_pairing_store.dart';
+import 'package:walletconnect_dart_v2/apis/core/pairing/utils/pairing_utils.dart';
+import 'package:walletconnect_dart_v2/apis/core/pairing/utils/pairing_models.dart';
+import 'package:walletconnect_dart_v2/apis/core/i_core.dart';
+import 'package:walletconnect_dart_v2/apis/core/relay_client/relay_client_models.dart';
+import 'package:walletconnect_dart_v2/apis/models/json_rpc_error.dart';
+import 'package:walletconnect_dart_v2/apis/models/json_rpc_request.dart';
+import 'package:walletconnect_dart_v2/apis/models/basic_models.dart';
+import 'package:walletconnect_dart_v2/apis/models/json_rpc_response.dart';
+import 'package:walletconnect_dart_v2/apis/sign_api/i_sign_engine.dart';
+import 'package:walletconnect_dart_v2/apis/sign_api/models/json_rpc_models.dart';
+import 'package:walletconnect_dart_v2/apis/sign_api/models/proposal_models.dart';
+import 'package:walletconnect_dart_v2/apis/sign_api/models/sign_client_events.dart';
+import 'package:walletconnect_dart_v2/apis/sign_api/models/session_models.dart';
+import 'package:walletconnect_dart_v2/apis/sign_api/i_sessions.dart';
+import 'package:walletconnect_dart_v2/apis/sign_api/i_proposals.dart';
+import 'package:walletconnect_dart_v2/apis/sign_api/models/sign_client_models.dart';
+import 'package:walletconnect_dart_v2/apis/sign_api/utils/sign_api_validator_utils.dart';
+import 'package:walletconnect_dart_v2/apis/utils/constants.dart';
+import 'package:walletconnect_dart_v2/apis/utils/errors.dart';
+import 'package:walletconnect_dart_v2/apis/utils/method_constants.dart';
+import 'package:walletconnect_dart_v2/apis/utils/walletconnect_utils.dart';
 
 class SignEngine implements ISignEngine {
   bool _initialized = false;
@@ -107,18 +107,14 @@ class SignEngine implements ISignEngine {
     );
     String? pTopic = pairingTopic;
     Uri? uri;
-    bool active = false;
 
-    if (pTopic != null) {
-      final PairingInfo pairing = core.pairing.getStore().get(pTopic)!;
-      active = pairing.active;
-    }
-
-    if (pTopic == null || !active) {
+    if (pTopic == null) {
       final CreateResponse newTopicAndUri = await core.pairing.create();
       pTopic = newTopicAndUri.topic;
       uri = newTopicAndUri.uri;
       // print('connect generated topic: $topic');
+    } else {
+      core.pairing.isValidPairingTopic(topic: pTopic);
     }
 
     final publicKey = await core.crypto.generateKeyPair();
@@ -175,6 +171,7 @@ class SignEngine implements ISignEngine {
     );
 
     final ConnectResponse resp = ConnectResponse(
+      pairingTopic: pTopic,
       session: completer,
       uri: uri,
     );
@@ -335,7 +332,7 @@ class SignEngine implements ISignEngine {
   @override
   Future<void> rejectSession({
     required int id,
-    required WCErrorResponse reason,
+    required WalletConnectErrorResponse reason,
   }) async {
     _checkInitialized();
 
@@ -518,7 +515,7 @@ class SignEngine implements ISignEngine {
   @override
   Future<void> disconnectSession({
     required String topic,
-    required WCErrorResponse reason,
+    required WalletConnectErrorResponse reason,
   }) async {
     _checkInitialized();
     await _isValidDisconnect(topic);
@@ -767,7 +764,7 @@ class SignEngine implements ISignEngine {
         payload.id,
         proposal,
       ));
-    } on WCError catch (err) {
+    } on WalletConnectError catch (err) {
       await core.pairing.sendError(
         payload.id,
         topic,
@@ -832,7 +829,7 @@ class SignEngine implements ISignEngine {
       onSessionConnect.broadcast(
         SessionConnect(session),
       );
-    } on WCError catch (err) {
+    } on WalletConnectError catch (err) {
       await core.pairing.sendError(
         payload.id,
         topic,
@@ -869,7 +866,7 @@ class SignEngine implements ISignEngine {
           request.namespaces,
         ),
       );
-    } on WCError catch (err) {
+    } on WalletConnectError catch (err) {
       await core.pairing.sendError(
         payload.id,
         topic,
@@ -906,7 +903,7 @@ class SignEngine implements ISignEngine {
           topic,
         ),
       );
-    } on WCError catch (err) {
+    } on WalletConnectError catch (err) {
       await core.pairing.sendError(
         payload.id,
         topic,
@@ -937,7 +934,7 @@ class SignEngine implements ISignEngine {
           topic,
         ),
       );
-    } on WCError catch (err) {
+    } on WalletConnectError catch (err) {
       await core.pairing.sendError(
         payload.id,
         topic,
@@ -969,7 +966,7 @@ class SignEngine implements ISignEngine {
         ),
       );
       await _deleteSession(topic);
-    } on WCError catch (err) {
+    } on WalletConnectError catch (err) {
       await core.pairing.sendError(
         payload.id,
         topic,
@@ -1059,7 +1056,7 @@ class SignEngine implements ISignEngine {
           sessionRequest,
         ),
       );
-    } on WCError catch (err) {
+    } on WalletConnectError catch (err) {
       await core.pairing.sendError(
         payload.id,
         topic,
@@ -1135,7 +1132,7 @@ class SignEngine implements ISignEngine {
           ),
         );
       }
-    } on WCError catch (err) {
+    } on WalletConnectError catch (err) {
       await core.pairing.sendError(
         payload.id,
         topic,
@@ -1339,7 +1336,7 @@ class SignEngine implements ISignEngine {
     return true;
   }
 
-  Future<bool> _isValidReject(int id, WCErrorResponse reason) async {
+  Future<bool> _isValidReject(int id, WalletConnectErrorResponse reason) async {
     // No need to validate reason. Strict typing enforces ErrorResponse is valid
     await _isValidProposalId(id);
     return true;

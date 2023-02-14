@@ -1,5 +1,5 @@
-import 'package:wallet_connect_flutter_v2/apis/models/basic_models.dart';
-import 'package:wallet_connect_flutter_v2/apis/utils/constants.dart';
+import 'package:walletconnect_dart_v2/apis/models/basic_models.dart';
+import 'package:walletconnect_dart_v2/apis/utils/constants.dart';
 
 class MethodConstants {
   static const WC_PAIRING_PING = 'wc_pairingPing';

@@ -1,6 +1,6 @@
 import 'package:event/event.dart';
-import 'package:wallet_connect_flutter_v2/apis/signing_api/models/proposal_models.dart';
-import 'package:wallet_connect_flutter_v2/apis/signing_api/models/session_models.dart';
+import 'package:walletconnect_dart_v2/apis/sign_api/models/proposal_models.dart';
+import 'package:walletconnect_dart_v2/apis/sign_api/models/session_models.dart';
 
 class SessionProposalEvent extends EventArgs {
   int id;

@@ -1,6 +1,6 @@
-import 'package:wallet_connect_flutter_v2/apis/core/i_core.dart';
-import 'package:wallet_connect_flutter_v2/apis/core/relay_client/i_message_tracker.dart';
-import 'package:wallet_connect_flutter_v2/apis/utils/wallet_connect_utils.dart';
+import 'package:walletconnect_dart_v2/apis/core/i_core.dart';
+import 'package:walletconnect_dart_v2/apis/core/relay_client/i_message_tracker.dart';
+import 'package:walletconnect_dart_v2/apis/utils/walletconnect_utils.dart';
 
 class MessageTracker implements IMessageTracker {
   static const MESSAGE_TRACKER_CONTEXT = 'MESSAGE_TRACKER';
@@ -38,7 +38,8 @@ class MessageTracker implements IMessageTracker {
 
   bool messageIsRecorded(String topic, String message) {
     final String hash = core.crypto.getUtils().hashMessage(message);
-    return messageRecords.containsKey(topic) && messageRecords[topic]!.containsKey(hash);
+    return messageRecords.containsKey(topic) &&
+        messageRecords[topic]!.containsKey(hash);
   }
 
   Future<void> deleteSubscriptionMessages(String topic) async {

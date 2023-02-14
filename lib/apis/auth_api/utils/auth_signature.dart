@@ -4,10 +4,10 @@ import 'package:http/http.dart' as http;
 
 import 'package:hex/hex.dart';
 import 'package:pointycastle/digests/keccak.dart';
-import 'package:wallet_connect_flutter_v2/apis/auth_api/models/auth_client_models.dart';
-import 'package:wallet_connect_flutter_v2/apis/auth_api/utils/auth_constants.dart';
-import 'package:wallet_connect_flutter_v2/apis/auth_api/utils/secp256k1/auth_secp256k1.dart';
-import 'package:wallet_connect_flutter_v2/apis/core/pairing/utils/pairing_utils.dart';
+import 'package:walletconnect_dart_v2/apis/auth_api/models/auth_client_models.dart';
+import 'package:walletconnect_dart_v2/apis/auth_api/utils/auth_constants.dart';
+import 'package:walletconnect_dart_v2/apis/auth_api/utils/secp256k1/auth_secp256k1.dart';
+import 'package:walletconnect_dart_v2/apis/core/pairing/utils/pairing_utils.dart';
 
 class AuthSignature {
   static final KeccakDigest keccakDigest = KeccakDigest(256);

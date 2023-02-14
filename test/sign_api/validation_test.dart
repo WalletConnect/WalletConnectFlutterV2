@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:wallet_connect_flutter_v2/wallet_connect_flutter_v2.dart';
-import 'package:wallet_connect_flutter_v2/apis/utils/namespace_utils.dart';
-import 'package:wallet_connect_flutter_v2/apis/signing_api/utils/sign_api_validator_utils.dart';
+import 'package:walletconnect_dart_v2/walletconnect_dart_v2.dart';
+import 'package:walletconnect_dart_v2/apis/utils/namespace_utils.dart';
+import 'package:walletconnect_dart_v2/apis/sign_api/utils/sign_api_validator_utils.dart';
 
 import '../shared/shared_test_values.dart';
 import 'utils/sign_client_constants.dart';
@@ -226,7 +226,7 @@ void main() {
         context: 'test',
       ),
       throwsA(
-        isA<WCError>().having(
+        isA<WalletConnectError>().having(
           (e) => e.message,
           'message',
           "Unsupported chains. test, namespace is a chainId, but chains is not empty",
@@ -240,7 +240,7 @@ void main() {
         context: 'test',
       ),
       throwsA(
-        isA<WCError>().having(
+        isA<WalletConnectError>().having(
           (e) => e.message,
           'message',
           'Unsupported chains. test, chain $TEST_CHAIN_INVALID_1 should conform to "namespace:chainId" format',
@@ -263,7 +263,7 @@ void main() {
         context: 'test',
       ),
       throwsA(
-        isA<WCError>().having(
+        isA<WalletConnectError>().having(
           (e) => e.message,
           'message',
           "Unsupported chains. test requiredNamespace, namespace is a chainId, but chains is not empty",
@@ -276,7 +276,7 @@ void main() {
         context: 'test',
       ),
       throwsA(
-        isA<WCError>().having(
+        isA<WalletConnectError>().having(
           (e) => e.message,
           'message',
           'Unsupported chains. test requiredNamespace, chain $TEST_CHAIN_INVALID_1 should conform to "namespace:chainId" format',
@@ -299,7 +299,7 @@ void main() {
         context: 'test',
       ),
       throwsA(
-        isA<WCError>().having(
+        isA<WalletConnectError>().having(
           (e) => e.message,
           'message',
           'Unsupported accounts. test, account $TEST_ACCOUNT_INVALID_1 should conform to "namespace:chainId:address" format',
@@ -322,7 +322,7 @@ void main() {
         context: 'test',
       ),
       throwsA(
-        isA<WCError>().having(
+        isA<WalletConnectError>().having(
           (e) => e.message,
           'message',
           'Unsupported accounts. test namespace, account $TEST_ACCOUNT_INVALID_1 should conform to "namespace:chainId:address" format',
@@ -345,7 +345,7 @@ void main() {
         chainId: TEST_UNINCLUDED_CHAIN,
       ),
       throwsA(
-        isA<WCError>().having(
+        isA<WalletConnectError>().having(
           (e) => e.message,
           'message',
           'Unsupported chains. The chain $TEST_UNINCLUDED_CHAIN is not supported',
@@ -358,7 +358,7 @@ void main() {
         chainId: TEST_CHAIN_INVALID_1,
       ),
       throwsA(
-        isA<WCError>().having(
+        isA<WalletConnectError>().having(
           (e) => e.message,
           'message',
           'Unsupported chains. chain $TEST_CHAIN_INVALID_1 should conform to "namespace:chainId" format',
@@ -371,7 +371,7 @@ void main() {
         chainId: TEST_ETHEREUM_CHAIN,
       ),
       throwsA(
-        isA<WCError>().having(
+        isA<WalletConnectError>().having(
           (e) => e.message,
           'message',
           'Unsupported accounts. isValidNamespacesChainId namespace, account $TEST_CHAIN_INVALID_1 should conform to "namespace:chainId:address" format',
@@ -396,7 +396,7 @@ void main() {
         method: TEST_METHOD_3,
       ),
       throwsA(
-        isA<WCError>().having(
+        isA<WalletConnectError>().having(
           (e) => e.message,
           'message',
           'Unsupported methods. The method $TEST_METHOD_3 is not supported',
@@ -410,7 +410,7 @@ void main() {
         method: TEST_METHOD_1,
       ),
       throwsA(
-        isA<WCError>().having(
+        isA<WalletConnectError>().having(
           (e) => e.message,
           'message',
           'Unsupported chains. chain $TEST_CHAIN_INVALID_1 should conform to "namespace:chainId" format',
@@ -424,7 +424,7 @@ void main() {
         method: TEST_METHOD_1,
       ),
       throwsA(
-        isA<WCError>().having(
+        isA<WalletConnectError>().having(
           (e) => e.message,
           'message',
           'Unsupported accounts. isValidNamespacesRequest namespace, account $TEST_CHAIN_INVALID_1 should conform to "namespace:chainId:address" format',
@@ -449,7 +449,7 @@ void main() {
         eventName: TEST_EVENT_2,
       ),
       throwsA(
-        isA<WCError>().having(
+        isA<WalletConnectError>().having(
           (e) => e.message,
           'message',
           'Unsupported events. The event $TEST_EVENT_2 is not supported',
@@ -463,7 +463,7 @@ void main() {
         eventName: TEST_EVENT_1,
       ),
       throwsA(
-        isA<WCError>().having(
+        isA<WalletConnectError>().having(
           (e) => e.message,
           'message',
           'Unsupported chains. chain $TEST_CHAIN_INVALID_1 should conform to "namespace:chainId" format',
@@ -477,7 +477,7 @@ void main() {
         eventName: TEST_EVENT_1,
       ),
       throwsA(
-        isA<WCError>().having(
+        isA<WalletConnectError>().having(
           (e) => e.message,
           'message',
           'Unsupported accounts. isValidNamespacesEvent namespace, account $TEST_CHAIN_INVALID_1 should conform to "namespace:chainId:address" format',
@@ -525,7 +525,7 @@ void main() {
           context: 'test',
         ),
         throwsA(
-          isA<WCError>().having(
+          isA<WalletConnectError>().having(
             (e) => e.message,
             'message',
             errors[i],

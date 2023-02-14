@@ -1,11 +1,13 @@
 import 'dart:async';
+import 'dart:typed_data';
 
+import 'package:eth_sig_util/eth_sig_util.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:wallet_connect_flutter_v2/apis/signing_api/i_sign_engine.dart';
-import 'package:wallet_connect_flutter_v2/apis/signing_api/i_sign_engine_wallet.dart';
-import 'package:wallet_connect_flutter_v2/wallet_connect_flutter_v2.dart';
+import 'package:walletconnect_dart_v2/walletconnect_dart_v2.dart';
 
-import 'utils/sign_client_constants.dart';
+import '../auth_api/utils/engine_constants.dart';
+import '../auth_api/utils/signature_constants.dart';
+import '../sign_api/utils/sign_client_constants.dart';
 
 class TestConnectMethodReturn {
   PairingInfo pairing;
@@ -21,10 +23,10 @@ class TestConnectMethodReturn {
   );
 }
 
-class SignClientHelpers {
-  static Future<TestConnectMethodReturn> testConnectPairApprove(
-    ISignEngine a,
-    ISignEngineWallet b, {
+class Web3WalletHelpers {
+  static Future<TestConnectMethodReturn> testWeb3Wallet(
+    IWeb3App a,
+    IWeb3Wallet b, {
     Map<String, Namespace>? namespaces,
     Map<String, RequiredNamespace>? requiredNamespaces,
     List<Relay>? relays,
@@ -43,9 +45,10 @@ class SignClientHelpers {
 
     SessionData? sessionA;
     SessionData? sessionB;
+    AuthResponse? authResponse;
 
     // Listen for a proposal via connect to avoid race conditions
-    final f = (SessionProposalEvent? args) async {
+    final signHandler = (SessionProposalEvent? args) async {
       // print('B Session Proposal');
 
       expect(
@@ -60,11 +63,38 @@ class SignClientHelpers {
         namespaces: workingNamespaces,
       );
       sessionB = response.session;
-
-      // print('B Session assigned: $sessionB');
-      // expect(b.core.expirer.has(args.params.id.toString()), true);
+      if (sessionB == null) {
+        print('session b was set to null');
+      }
     };
-    b.onSessionProposal.subscribe(f);
+    b.onSessionProposal.subscribe(signHandler);
+
+    // Listen for a auth request
+    final authHandler = (AuthRequest? args) async {
+      // print('B Session Proposal');
+
+      expect(b.getPendingAuthRequests().length, 1);
+
+      // Create the message to be signed
+      String message = b.formatAuthMessage(
+        iss: TEST_ISSUER_EIP191,
+        cacaoPayload: CacaoRequestPayload.fromPayloadParams(
+          args!.payloadParams,
+        ),
+      );
+
+      String sig = EthSigUtil.signPersonalMessage(
+        message: Uint8List.fromList(message.codeUnits),
+        privateKey: TEST_PRIVATE_KEY_EIP191,
+      );
+
+      await b.respondAuthRequest(
+        id: args.id,
+        iss: TEST_ISSUER_EIP191,
+        signature: CacaoSignature(t: CacaoSignature.EIP191, s: sig),
+      );
+    };
+    b.onAuthRequest.subscribe(authHandler);
 
     // Connect to client b from a, this will trigger the above event
     // print('connecting');
@@ -74,6 +104,13 @@ class SignClientHelpers {
       relays: relays,
     );
     Uri? uri = connectResponse.uri;
+
+    // Send an auth request as well
+    AuthRequestResponse authReqResponse = await a.requestAuth(
+      params: testAuthRequestParamsValid,
+      pairingTopic: connectResponse.pairingTopic,
+    );
+    expect(connectResponse.pairingTopic, authReqResponse.pairingTopic);
 
     // Track latency
     final clientAConnectLatencyMs =
@@ -126,13 +163,15 @@ class SignClientHelpers {
     // Assign session now that we have paired
     // print('Waiting for connect response');
     sessionA = await connectResponse.session.future;
+    authResponse = await authReqResponse.completer.future;
 
     final settlePairingLatencyMs = DateTime.now().millisecondsSinceEpoch -
         start -
         (qrCodeScanLatencyMs ?? 0);
 
-    await Future.delayed(Duration(milliseconds: 2000));
+    await Future.delayed(Duration(milliseconds: 200));
 
+    if (sessionB == null) print(sessionB);
     if (sessionA == null) throw Exception("expect session A to be defined");
     if (sessionB == null) throw Exception("expect session B to be defined");
 
@@ -165,6 +204,13 @@ class SignClientHelpers {
     expect(sessionA.self.metadata, sessionB!.peer.metadata);
     expect(sessionB!.self.metadata, sessionA.peer.metadata);
 
+    if (authResponse == null)
+      throw Exception("expect authResponse to be defined");
+
+    expect(authResponse.result != null, true);
+    expect(authResponse.error == null, true);
+    expect(authResponse.jsonRpcError == null, true);
+
     if (pairingA == null) throw Exception("expect pairing A to be defined");
     if (pairingB == null) throw Exception("expect pairing B to be defined");
 
@@ -196,7 +242,8 @@ class SignClientHelpers {
       sessionB!.peer.metadata,
     );
 
-    b.onSessionProposal.unsubscribe(f);
+    b.onSessionProposal.unsubscribe(signHandler);
+    b.onAuthRequest.unsubscribe(authHandler);
 
     return TestConnectMethodReturn(
       pairingA,

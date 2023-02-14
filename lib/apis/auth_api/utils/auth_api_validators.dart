@@ -1,6 +1,6 @@
-import 'package:wallet_connect_flutter_v2/apis/auth_api/utils/auth_constants.dart';
-import 'package:wallet_connect_flutter_v2/apis/utils/namespace_utils.dart';
-import 'package:wallet_connect_flutter_v2/wallet_connect_flutter_v2.dart';
+import 'package:walletconnect_dart_v2/apis/auth_api/utils/auth_constants.dart';
+import 'package:walletconnect_dart_v2/apis/utils/namespace_utils.dart';
+import 'package:walletconnect_dart_v2/walletconnect_dart_v2.dart';
 
 class AuthApiValidators {
   static bool isValidRequestExpiry(int expiry) {
@@ -57,7 +57,7 @@ class AuthApiValidators {
     required int id,
     required Map<int, PendingAuthRequest> pendingRequests,
     CacaoSignature? signature,
-    WCErrorResponse? error,
+    WalletConnectErrorResponse? error,
   }) {
     if (!pendingRequests.containsKey(id)) {
       throw Errors.getInternalError(

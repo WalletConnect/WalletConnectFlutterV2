@@ -1,15 +1,16 @@
-import 'package:wallet_connect_flutter_v2/apis/signing_api/models/proposal_models.dart';
-import 'package:wallet_connect_flutter_v2/apis/signing_api/models/session_models.dart';
-import 'package:wallet_connect_flutter_v2/apis/signing_api/models/sign_client_models.dart';
-import 'package:wallet_connect_flutter_v2/apis/utils/namespace_utils.dart';
-import 'package:wallet_connect_flutter_v2/apis/utils/errors.dart';
+import 'package:walletconnect_dart_v2/apis/sign_api/models/proposal_models.dart';
+import 'package:walletconnect_dart_v2/apis/sign_api/models/session_models.dart';
+import 'package:walletconnect_dart_v2/apis/sign_api/models/sign_client_models.dart';
+import 'package:walletconnect_dart_v2/apis/utils/namespace_utils.dart';
+import 'package:walletconnect_dart_v2/apis/utils/errors.dart';
 
 class SignApiValidatorUtils {
   static bool isContainedIn({
     required List<dynamic> container,
     required List<dynamic> contained,
   }) {
-    List<dynamic> matches = contained.where((x) => container.contains(x)).toList();
+    List<dynamic> matches =
+        contained.where((x) => container.contains(x)).toList();
     return matches.length == contained.length;
   }
 
@@ -35,7 +36,8 @@ class SignApiValidatorUtils {
         if (!NamespaceUtils.isValidChainId(c)) {
           throw Errors.getSdkError(
             Errors.UNSUPPORTED_CHAINS,
-            context: '$context, chain $c should conform to "namespace:chainId" format',
+            context:
+                '$context, chain $c should conform to "namespace:chainId" format',
           );
         }
       }
@@ -70,7 +72,8 @@ class SignApiValidatorUtils {
       if (!NamespaceUtils.isValidAccount(account)) {
         throw Errors.getSdkError(
           Errors.UNSUPPORTED_ACCOUNTS,
-          context: '$context, account $account should conform to "namespace:chainId:address" format',
+          context:
+              '$context, account $account should conform to "namespace:chainId:address" format',
         );
       }
     }
@@ -211,14 +214,16 @@ class SignApiValidatorUtils {
     List<String> namespaceKeys = namespaces.keys.toList();
 
     // If the namespaces doesn't have the correct keys, we can fail automatically
-    if (!isContainedIn(container: namespaceKeys, contained: requiredNamespaceKeys)) {
+    if (!isContainedIn(
+        container: namespaceKeys, contained: requiredNamespaceKeys)) {
       throw Errors.getInternalError(
         Errors.NON_CONFORMING_NAMESPACES,
         context: "$context namespaces keys don't satisfy requiredNamespaces",
       );
     } else {
       requiredNamespaceKeys.forEach((key) {
-        List<String> requiredNamespaceChains = NamespaceUtils.getChainsFromRequiredNamespace(
+        List<String> requiredNamespaceChains =
+            NamespaceUtils.getChainsFromRequiredNamespace(
           nsOrChainId: key,
           requiredNamespace: requiredNamespaces[key]!,
         );
@@ -245,17 +250,20 @@ class SignApiValidatorUtils {
         if (!chainsOverlap) {
           throw Errors.getInternalError(
             Errors.NON_CONFORMING_NAMESPACES,
-            context: "$context namespaces accounts don't satisfy requiredNamespaces chains for $key",
+            context:
+                "$context namespaces accounts don't satisfy requiredNamespaces chains for $key",
           );
         } else if (!methodsOverlap) {
           throw Errors.getInternalError(
             Errors.NON_CONFORMING_NAMESPACES,
-            context: "$context namespaces methods don't satisfy requiredNamespaces methods for $key",
+            context:
+                "$context namespaces methods don't satisfy requiredNamespaces methods for $key",
           );
         } else if (!eventsOverlap) {
           throw Errors.getInternalError(
             Errors.NON_CONFORMING_NAMESPACES,
-            context: "$context namespaces events don't satisfy requiredNamespaces events for $key",
+            context:
+                "$context namespaces events don't satisfy requiredNamespaces events for $key",
           );
         }
       });
@@ -279,7 +287,8 @@ class SignApiValidatorUtils {
     sessionKeys.forEach((key) {
       Namespace namespace = session.namespaces[key]!;
       RequiredNamespace requiredNamespace = requiredNamespaces[key]!;
-      List<String> requiredNamespaceChains = NamespaceUtils.getChainsFromRequiredNamespace(
+      List<String> requiredNamespaceChains =
+          NamespaceUtils.getChainsFromRequiredNamespace(
         nsOrChainId: key,
         requiredNamespace: requiredNamespace,
       );

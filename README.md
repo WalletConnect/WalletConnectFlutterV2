@@ -11,7 +11,7 @@ This library currently only contains the Signing API as defined in the Wallet Co
 The following code provides an example for setting up the wallet connect client.
 
 ```dart
-import 'package:wallet_connect_flutter_v2/wallet_connect_flutter_v2.dart';
+import 'package:walletconnect_dart_v2/walletconnect_dart_v2.dart';
 
 SignClient wcClient = await SignClient.createInstance(
   Core(

@@ -1,6 +1,6 @@
 import 'package:event/event.dart';
-import 'package:wallet_connect_flutter_v2/apis/core/pairing/utils/pairing_models.dart';
-import 'package:wallet_connect_flutter_v2/apis/core/store/i_store_user.dart';
+import 'package:walletconnect_dart_v2/apis/core/pairing/utils/pairing_models.dart';
+import 'package:walletconnect_dart_v2/apis/core/store/i_store_user.dart';
 
 abstract class IExpirer extends IStoreUser {
   abstract final Event<ExpirationEvent> onCreate;

@@ -2,25 +2,25 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:event/event.dart';
-import 'package:wallet_connect_flutter_v2/apis/core/store/generic_store.dart';
-import 'package:wallet_connect_flutter_v2/apis/core/store/i_generic_store.dart';
-import 'package:wallet_connect_flutter_v2/apis/core/crypto/crypto_models.dart';
-import 'package:wallet_connect_flutter_v2/apis/core/i_core.dart';
-import 'package:wallet_connect_flutter_v2/apis/core/pairing/i_pairing.dart';
-import 'package:wallet_connect_flutter_v2/apis/core/pairing/i_pairing_store.dart';
-import 'package:wallet_connect_flutter_v2/apis/models/uri_parse_result.dart';
-import 'package:wallet_connect_flutter_v2/apis/core/pairing/utils/pairing_models.dart';
-import 'package:wallet_connect_flutter_v2/apis/core/pairing/pairing_store.dart';
-import 'package:wallet_connect_flutter_v2/apis/core/pairing/utils/pairing_utils.dart';
-import 'package:wallet_connect_flutter_v2/apis/core/relay_client/relay_client_models.dart';
-import 'package:wallet_connect_flutter_v2/apis/models/json_rpc_error.dart';
-import 'package:wallet_connect_flutter_v2/apis/models/json_rpc_request.dart';
-import 'package:wallet_connect_flutter_v2/apis/models/json_rpc_response.dart';
-import 'package:wallet_connect_flutter_v2/apis/models/basic_models.dart';
-import 'package:wallet_connect_flutter_v2/apis/utils/constants.dart';
-import 'package:wallet_connect_flutter_v2/apis/utils/errors.dart';
-import 'package:wallet_connect_flutter_v2/apis/utils/method_constants.dart';
-import 'package:wallet_connect_flutter_v2/apis/utils/wallet_connect_utils.dart';
+import 'package:walletconnect_dart_v2/apis/core/store/generic_store.dart';
+import 'package:walletconnect_dart_v2/apis/core/store/i_generic_store.dart';
+import 'package:walletconnect_dart_v2/apis/core/crypto/crypto_models.dart';
+import 'package:walletconnect_dart_v2/apis/core/i_core.dart';
+import 'package:walletconnect_dart_v2/apis/core/pairing/i_pairing.dart';
+import 'package:walletconnect_dart_v2/apis/core/pairing/i_pairing_store.dart';
+import 'package:walletconnect_dart_v2/apis/models/uri_parse_result.dart';
+import 'package:walletconnect_dart_v2/apis/core/pairing/utils/pairing_models.dart';
+import 'package:walletconnect_dart_v2/apis/core/pairing/pairing_store.dart';
+import 'package:walletconnect_dart_v2/apis/core/pairing/utils/pairing_utils.dart';
+import 'package:walletconnect_dart_v2/apis/core/relay_client/relay_client_models.dart';
+import 'package:walletconnect_dart_v2/apis/models/json_rpc_error.dart';
+import 'package:walletconnect_dart_v2/apis/models/json_rpc_request.dart';
+import 'package:walletconnect_dart_v2/apis/models/json_rpc_response.dart';
+import 'package:walletconnect_dart_v2/apis/models/basic_models.dart';
+import 'package:walletconnect_dart_v2/apis/utils/constants.dart';
+import 'package:walletconnect_dart_v2/apis/utils/errors.dart';
+import 'package:walletconnect_dart_v2/apis/utils/method_constants.dart';
+import 'package:walletconnect_dart_v2/apis/utils/walletconnect_utils.dart';
 
 class Pairing implements IPairing {
   bool _initialized = false;
@@ -144,7 +144,7 @@ class Pairing implements IPairing {
         parsedUri.methods,
         routerMapRequest.values.toList(),
       );
-    } on WCError catch (e) {
+    } on WalletConnectError catch (e) {
       // Tell people that the pairing is invalid
       onPairingInvalid.broadcast(
         PairingInvalidEvent(
@@ -194,7 +194,7 @@ class Pairing implements IPairing {
     required ProtocolType type,
   }) {
     if (routerMapRequest.containsKey(method)) {
-      throw WCError(
+      throw WalletConnectError(
         code: -1,
         message: 'Method already exists',
       );
@@ -315,6 +315,24 @@ class Pairing implements IPairing {
     return pairings!;
   }
 
+  Future<void> isValidPairingTopic({required String topic}) async {
+    if (!pairings!.has(topic)) {
+      String message = Errors.getInternalError(
+        Errors.NO_MATCHING_KEY,
+        context: "pairing topic doesn't exist: $topic",
+      ).message;
+      throw JsonRpcError.invalidParams(message);
+    }
+
+    if (await core.expirer.checkAndExpire(topic)) {
+      String message = Errors.getInternalError(
+        Errors.EXPIRED,
+        context: "pairing topic: $topic",
+      ).message;
+      throw JsonRpcError.invalidParams(message);
+    }
+  }
+
   // RELAY COMMUNICATION HELPERS
 
   Future sendRequest(
@@ -422,6 +440,8 @@ class Pairing implements IPairing {
     );
     await core.history.resolve(payload);
   }
+
+  /// ---- Private Helpers ---- ///
 
   Future<void> _deletePairing(String topic, bool expirerHasDeleted) async {
     await core.relayClient.unsubscribe(topic: topic);
@@ -621,34 +641,6 @@ class Pairing implements IPairing {
     }
   }
 
-  Future<void> _onPairingPingResponse(
-      String topic, JsonRpcResponse response) async {
-    final int id = response.id;
-
-    if (!response.result is JsonRpcError) {
-      onPairingPing.broadcast(
-        PairingEvent(
-          id: id,
-          topic: topic,
-        ),
-      );
-    } else {
-      onPairingPing.broadcast(
-        PairingEvent(
-          id: id,
-          topic: topic,
-          error: response.result,
-        ),
-      );
-    }
-  }
-
-  void _onUnkownRpcMethodResponse(String method) {
-    if (routerMapRequest.containsKey(method)) {
-      return;
-    }
-  }
-
   /// ---- Expirer Events ---- ///
 
   void _registerExpirerEvents() {
@@ -674,28 +666,10 @@ class Pairing implements IPairing {
   /// ---- Validators ---- ///
 
   Future<void> _isValidPing(String topic) async {
-    await _isValidPairingTopic(topic);
+    await isValidPairingTopic(topic: topic);
   }
 
   Future<void> _isValidDisconnect(String topic) async {
-    await _isValidPairingTopic(topic);
-  }
-
-  Future<void> _isValidPairingTopic(String topic) async {
-    if (!pairings!.has(topic)) {
-      String message = Errors.getInternalError(
-        Errors.NO_MATCHING_KEY,
-        context: "pairing topic doesn't exist: $topic",
-      ).message;
-      throw JsonRpcError.invalidParams(message);
-    }
-
-    if (await core.expirer.checkAndExpire(topic)) {
-      String message = Errors.getInternalError(
-        Errors.EXPIRED,
-        context: "pairing topic: $topic",
-      ).message;
-      throw JsonRpcError.invalidParams(message);
-    }
+    await isValidPairingTopic(topic: topic);
   }
 }

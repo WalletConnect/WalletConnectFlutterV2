@@ -1,9 +1,9 @@
-import 'package:wallet_connect_flutter_v2/apis/core/crypto/i_crypto.dart';
-import 'package:wallet_connect_flutter_v2/apis/core/pairing/i_expirer.dart';
-import 'package:wallet_connect_flutter_v2/apis/core/pairing/i_json_rpc_history.dart';
-import 'package:wallet_connect_flutter_v2/apis/core/pairing/i_pairing.dart';
-import 'package:wallet_connect_flutter_v2/apis/core/relay_client/i_relay_client.dart';
-import 'package:wallet_connect_flutter_v2/apis/core/store/i_store.dart';
+import 'package:walletconnect_dart_v2/apis/core/crypto/i_crypto.dart';
+import 'package:walletconnect_dart_v2/apis/core/pairing/i_expirer.dart';
+import 'package:walletconnect_dart_v2/apis/core/pairing/i_json_rpc_history.dart';
+import 'package:walletconnect_dart_v2/apis/core/pairing/i_pairing.dart';
+import 'package:walletconnect_dart_v2/apis/core/relay_client/i_relay_client.dart';
+import 'package:walletconnect_dart_v2/apis/core/store/i_store.dart';
 
 abstract class ICore {
   final String protocol = 'wc';

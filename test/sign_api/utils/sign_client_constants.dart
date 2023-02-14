@@ -1,4 +1,4 @@
-import 'package:wallet_connect_flutter_v2/wallet_connect_flutter_v2.dart';
+import 'package:walletconnect_dart_v2/walletconnect_dart_v2.dart';
 
 import '../../shared/shared_test_values.dart';
 

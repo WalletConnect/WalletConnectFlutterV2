@@ -3,12 +3,12 @@ import 'dart:convert';
 import 'package:convert/convert.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
-import 'package:wallet_connect_flutter_v2/apis/core/core.dart';
-import 'package:wallet_connect_flutter_v2/apis/core/crypto/crypto.dart';
-import 'package:wallet_connect_flutter_v2/apis/core/crypto/crypto_models.dart';
-import 'package:wallet_connect_flutter_v2/apis/core/crypto/crypto_utils.dart';
-import 'package:wallet_connect_flutter_v2/apis/core/i_core.dart';
-import 'package:wallet_connect_flutter_v2/apis/models/basic_models.dart';
+import 'package:walletconnect_dart_v2/apis/core/core.dart';
+import 'package:walletconnect_dart_v2/apis/core/crypto/crypto.dart';
+import 'package:walletconnect_dart_v2/apis/core/crypto/crypto_models.dart';
+import 'package:walletconnect_dart_v2/apis/core/crypto/crypto_utils.dart';
+import 'package:walletconnect_dart_v2/apis/core/i_core.dart';
+import 'package:walletconnect_dart_v2/apis/models/basic_models.dart';
 
 import 'shared/shared_test_utils.mocks.dart';
 import '../shared/shared_test_values.dart';
@@ -59,7 +59,7 @@ void main() {
         cryptoAPI = Crypto(core, keyChain: keyChain);
         expect(
           () async => await cryptoAPI.generateKeyPair(),
-          throwsA(isA<WCError>()),
+          throwsA(isA<WalletConnectError>()),
         );
       });
 
@@ -89,7 +89,7 @@ void main() {
         cryptoAPI = Crypto(core, keyChain: keyChain);
         expect(
           () async => await cryptoAPI.generateSharedKey('a', 'b'),
-          throwsA(isA<WCError>()),
+          throwsA(isA<WalletConnectError>()),
         );
       });
 
@@ -134,7 +134,7 @@ void main() {
         cryptoAPI = Crypto(core, keyChain: keyChain);
         expect(
           () async => await cryptoAPI.setSymKey('a'),
-          throwsA(isA<WCError>()),
+          throwsA(isA<WalletConnectError>()),
         );
       });
 
@@ -175,7 +175,7 @@ void main() {
         cryptoAPI = Crypto(core, keyChain: keyChain);
         expect(
           () async => await cryptoAPI.deleteKeyPair('a'),
-          throwsA(isA<WCError>()),
+          throwsA(isA<WalletConnectError>()),
         );
       });
 
@@ -198,7 +198,7 @@ void main() {
         cryptoAPI = Crypto(core, keyChain: keyChain);
         expect(
           () async => await cryptoAPI.deleteSymKey('a'),
-          throwsA(isA<WCError>()),
+          throwsA(isA<WalletConnectError>()),
         );
       });
 
@@ -227,7 +227,7 @@ void main() {
         cryptoAPI = Crypto(core, keyChain: keyChain);
         expect(
           () async => await cryptoAPI.encode('a', {}),
-          throwsA(isA<WCError>()),
+          throwsA(isA<WalletConnectError>()),
         );
       });
 

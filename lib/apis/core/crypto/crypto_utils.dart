@@ -7,9 +7,9 @@ import 'package:cryptography/cryptography.dart' as dc;
 import 'package:pointycastle/digests/sha256.dart';
 import 'package:pointycastle/key_derivators/hkdf.dart';
 import 'package:pointycastle/pointycastle.dart' show HkdfParameters;
-import 'package:wallet_connect_flutter_v2/apis/core/crypto/crypto_models.dart';
-import 'package:wallet_connect_flutter_v2/apis/core/crypto/i_crypto_utils.dart';
-import 'package:wallet_connect_flutter_v2/apis/models/basic_models.dart';
+import 'package:walletconnect_dart_v2/apis/core/crypto/crypto_models.dart';
+import 'package:walletconnect_dart_v2/apis/core/crypto/i_crypto_utils.dart';
+import 'package:walletconnect_dart_v2/apis/models/basic_models.dart';
 import 'package:x25519/x25519.dart' as x;
 
 class CryptoUtils extends ICryptoUtils {
@@ -102,7 +102,7 @@ class CryptoUtils extends ICryptoUtils {
 
     // Check for type 1 envelope, throw an error if data is invalid
     if (decodedType == EncodeOptions.TYPE_1 && senderPublicKey == null) {
-      throw WCError(
+      throw WalletConnectError(
         code: -1,
         message: 'Missing sender public key for type 1 envelope',
       );
@@ -158,7 +158,7 @@ class CryptoUtils extends ICryptoUtils {
 
     if (type == EncodeOptions.TYPE_1) {
       if (senderPublicKey == null) {
-        throw WCError(
+        throw WalletConnectError(
           code: -1,
           message: 'Missing sender public key for type 1 envelope',
         );
@@ -226,10 +226,12 @@ class CryptoUtils extends ICryptoUtils {
     final int t = type != null ? type : EncodeOptions.TYPE_0;
     if (t == EncodeOptions.TYPE_1) {
       if (senderPublicKey == null) {
-        throw new WCError(code: -1, message: "Missing sender public key");
+        throw new WalletConnectError(
+            code: -1, message: "Missing sender public key");
       }
       if (receiverPublicKey == null) {
-        throw new WCError(code: -1, message: "Missing receiver public key");
+        throw new WalletConnectError(
+            code: -1, message: "Missing receiver public key");
       }
     }
     return EncodingValidation(

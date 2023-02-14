@@ -1,27 +1,27 @@
 import 'dart:convert';
 
 import 'package:event/event.dart';
-import 'package:wallet_connect_flutter_v2/apis/core/store/generic_store.dart';
-import 'package:wallet_connect_flutter_v2/apis/core/store/i_generic_store.dart';
-import 'package:wallet_connect_flutter_v2/apis/core/pairing/i_pairing_store.dart';
-import 'package:wallet_connect_flutter_v2/apis/core/relay_client/relay_client_models.dart';
-import 'package:wallet_connect_flutter_v2/apis/models/basic_models.dart';
-import 'package:wallet_connect_flutter_v2/apis/models/json_rpc_response.dart';
-import 'package:wallet_connect_flutter_v2/apis/signing_api/sign_engine.dart';
-import 'package:wallet_connect_flutter_v2/apis/signing_api/i_sign_engine.dart';
-import 'package:wallet_connect_flutter_v2/apis/core/pairing/utils/pairing_models.dart';
-import 'package:wallet_connect_flutter_v2/apis/core/i_core.dart';
-import 'package:wallet_connect_flutter_v2/apis/signing_api/i_sessions.dart';
-import 'package:wallet_connect_flutter_v2/apis/signing_api/i_proposals.dart';
-import 'package:wallet_connect_flutter_v2/apis/signing_api/i_sign_client.dart';
-import 'package:wallet_connect_flutter_v2/apis/signing_api/models/json_rpc_models.dart';
-import 'package:wallet_connect_flutter_v2/apis/signing_api/models/proposal_models.dart';
-import 'package:wallet_connect_flutter_v2/apis/signing_api/models/sign_client_models.dart';
-import 'package:wallet_connect_flutter_v2/apis/signing_api/models/sign_client_events.dart';
-import 'package:wallet_connect_flutter_v2/apis/signing_api/models/session_models.dart';
-import 'package:wallet_connect_flutter_v2/apis/signing_api/proposals.dart';
-import 'package:wallet_connect_flutter_v2/apis/signing_api/sessions.dart';
-import 'package:wallet_connect_flutter_v2/apis/signing_api/utils/sign_constants.dart';
+import 'package:walletconnect_dart_v2/apis/core/store/generic_store.dart';
+import 'package:walletconnect_dart_v2/apis/core/store/i_generic_store.dart';
+import 'package:walletconnect_dart_v2/apis/core/pairing/i_pairing_store.dart';
+import 'package:walletconnect_dart_v2/apis/core/relay_client/relay_client_models.dart';
+import 'package:walletconnect_dart_v2/apis/models/basic_models.dart';
+import 'package:walletconnect_dart_v2/apis/models/json_rpc_response.dart';
+import 'package:walletconnect_dart_v2/apis/sign_api/sign_engine.dart';
+import 'package:walletconnect_dart_v2/apis/sign_api/i_sign_engine.dart';
+import 'package:walletconnect_dart_v2/apis/core/pairing/utils/pairing_models.dart';
+import 'package:walletconnect_dart_v2/apis/core/i_core.dart';
+import 'package:walletconnect_dart_v2/apis/sign_api/i_sessions.dart';
+import 'package:walletconnect_dart_v2/apis/sign_api/i_proposals.dart';
+import 'package:walletconnect_dart_v2/apis/sign_api/i_sign_client.dart';
+import 'package:walletconnect_dart_v2/apis/sign_api/models/json_rpc_models.dart';
+import 'package:walletconnect_dart_v2/apis/sign_api/models/proposal_models.dart';
+import 'package:walletconnect_dart_v2/apis/sign_api/models/sign_client_models.dart';
+import 'package:walletconnect_dart_v2/apis/sign_api/models/sign_client_events.dart';
+import 'package:walletconnect_dart_v2/apis/sign_api/models/session_models.dart';
+import 'package:walletconnect_dart_v2/apis/sign_api/proposals.dart';
+import 'package:walletconnect_dart_v2/apis/sign_api/sessions.dart';
+import 'package:walletconnect_dart_v2/apis/sign_api/utils/sign_constants.dart';
 
 class SignClient implements ISignClient {
   bool _initialized = false;
@@ -51,7 +51,7 @@ class SignClient implements ISignClient {
   Event<SessionUpdate> get onSessionUpdate => engine.onSessionUpdate;
 
   @override
-  final ICore core;
+  ICore get core => engine.core;
   @override
   PairingMetadata get metadata => engine.metadata;
   @override
@@ -78,7 +78,7 @@ class SignClient implements ISignClient {
   }
 
   SignClient({
-    required this.core,
+    required ICore core,
     required PairingMetadata metadata,
   }) {
     engine = SignEngine(
@@ -175,7 +175,7 @@ class SignClient implements ISignClient {
   @override
   Future<void> rejectSession({
     required int id,
-    required WCErrorResponse reason,
+    required WalletConnectErrorResponse reason,
   }) async {
     try {
       return await engine.rejectSession(
@@ -311,7 +311,7 @@ class SignClient implements ISignClient {
   @override
   Future<void> disconnectSession({
     required String topic,
-    required WCErrorResponse reason,
+    required WalletConnectErrorResponse reason,
   }) async {
     try {
       return await engine.disconnectSession(

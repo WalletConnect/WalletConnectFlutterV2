@@ -1,8 +1,8 @@
 import 'dart:math';
 
-import 'package:wallet_connect_flutter_v2/apis/core/pairing/utils/pairing_models.dart';
-import 'package:wallet_connect_flutter_v2/apis/models/json_rpc_error.dart';
-import 'package:wallet_connect_flutter_v2/apis/utils/errors.dart';
+import 'package:walletconnect_dart_v2/apis/core/pairing/utils/pairing_models.dart';
+import 'package:walletconnect_dart_v2/apis/models/json_rpc_error.dart';
+import 'package:walletconnect_dart_v2/apis/utils/errors.dart';
 
 class PairingUtils {
   static int payloadId() {
@@ -63,7 +63,8 @@ class PairingUtils {
       //     'Unsupported Methods: $unsupportedMethods, Length: ${unsupportedMethods.length}');
       throw Errors.getSdkError(
         Errors.WC_METHOD_UNSUPPORTED,
-        context: 'The following methods are not registered: ${unsupportedMethods.join(', ')}.',
+        context:
+            'The following methods are not registered: ${unsupportedMethods.join(', ')}.',
       );
     }
 

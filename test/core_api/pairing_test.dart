@@ -1,14 +1,14 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:wallet_connect_flutter_v2/apis/core/core.dart';
-import 'package:wallet_connect_flutter_v2/apis/core/i_core.dart';
-import 'package:wallet_connect_flutter_v2/apis/core/pairing/utils/pairing_models.dart';
-import 'package:wallet_connect_flutter_v2/apis/core/pairing/utils/pairing_utils.dart';
-import 'package:wallet_connect_flutter_v2/apis/core/relay_client/relay_client_models.dart';
-import 'package:wallet_connect_flutter_v2/apis/models/json_rpc_error.dart';
-import 'package:wallet_connect_flutter_v2/apis/models/basic_models.dart';
-import 'package:wallet_connect_flutter_v2/apis/models/uri_parse_result.dart';
-import 'package:wallet_connect_flutter_v2/apis/utils/method_constants.dart';
-import 'package:wallet_connect_flutter_v2/apis/utils/wallet_connect_utils.dart';
+import 'package:walletconnect_dart_v2/apis/core/core.dart';
+import 'package:walletconnect_dart_v2/apis/core/i_core.dart';
+import 'package:walletconnect_dart_v2/apis/core/pairing/utils/pairing_models.dart';
+import 'package:walletconnect_dart_v2/apis/core/pairing/utils/pairing_utils.dart';
+import 'package:walletconnect_dart_v2/apis/core/relay_client/relay_client_models.dart';
+import 'package:walletconnect_dart_v2/apis/models/json_rpc_error.dart';
+import 'package:walletconnect_dart_v2/apis/models/basic_models.dart';
+import 'package:walletconnect_dart_v2/apis/models/uri_parse_result.dart';
+import 'package:walletconnect_dart_v2/apis/utils/method_constants.dart';
+import 'package:walletconnect_dart_v2/apis/utils/walletconnect_utils.dart';
 
 import '../shared/shared_test_values.dart';
 
@@ -221,7 +221,9 @@ void main() {
             () async => await coreA.pairing.pair(uri: Uri.parse('')),
             throwsA(
               predicate(
-                (e) => e is WCError && e.message == 'Invalid URI: Missing @',
+                (e) =>
+                    e is WalletConnectError &&
+                    e.message == 'Invalid URI: Missing @',
               ),
             ),
           );
@@ -229,7 +231,9 @@ void main() {
             () async => await coreA.pairing.pair(uri: Uri.parse('wc:abc')),
             throwsA(
               predicate(
-                (e) => e is WCError && e.message == 'Invalid URI: Missing @',
+                (e) =>
+                    e is WalletConnectError &&
+                    e.message == 'Invalid URI: Missing @',
               ),
             ),
           );
@@ -245,7 +249,7 @@ void main() {
             throwsA(
               predicate(
                 (e) =>
-                    e is WCError &&
+                    e is WalletConnectError &&
                     e.message ==
                         'Unsupported wc_ method. The following methods are not registered: wc_sessionPropose, wc_authRequest, wc_authBatchRequest.',
               ),
@@ -262,7 +266,7 @@ void main() {
             throwsA(
               predicate(
                 (e) =>
-                    e is WCError &&
+                    e is WalletConnectError &&
                     e.message ==
                         'Unsupported wc_ method. The following methods are not registered: wc_authRequest, wc_authBatchRequest.',
               ),
@@ -279,7 +283,7 @@ void main() {
             throwsA(
               predicate(
                 (e) =>
-                    e is WCError &&
+                    e is WalletConnectError &&
                     e.message ==
                         'Unsupported wc_ method. The following methods are not registered: wc_authBatchRequest.',
               ),

@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:json_annotation/json_annotation.dart';
-import 'package:wallet_connect_flutter_v2/apis/core/relay_client/relay_client_models.dart';
-import 'package:wallet_connect_flutter_v2/apis/signing_api/models/session_models.dart';
+import 'package:walletconnect_dart_v2/apis/core/relay_client/relay_client_models.dart';
+import 'package:walletconnect_dart_v2/apis/sign_api/models/session_models.dart';
 
 class UriParameters {
   final String protocol;
@@ -21,10 +21,12 @@ class UriParameters {
 }
 
 class ConnectResponse {
+  final String pairingTopic;
   final Completer session;
   final Uri? uri;
 
   ConnectResponse({
+    required this.pairingTopic,
     required this.session,
     this.uri,
   });

@@ -1,17 +1,17 @@
 import 'dart:convert';
 
 import 'package:event/event.dart';
-import 'package:wallet_connect_flutter_v2/apis/auth_api/auth_engine.dart';
-import 'package:wallet_connect_flutter_v2/apis/auth_api/i_auth_client.dart';
-import 'package:wallet_connect_flutter_v2/apis/auth_api/i_auth_engine.dart';
-import 'package:wallet_connect_flutter_v2/apis/auth_api/models/auth_client_events.dart';
-import 'package:wallet_connect_flutter_v2/apis/core/store/generic_store.dart';
-import 'package:wallet_connect_flutter_v2/apis/core/store/i_generic_store.dart';
-import 'package:wallet_connect_flutter_v2/apis/auth_api/models/auth_client_models.dart';
-import 'package:wallet_connect_flutter_v2/apis/auth_api/utils/auth_constants.dart';
-import 'package:wallet_connect_flutter_v2/apis/core/i_core.dart';
-import 'package:wallet_connect_flutter_v2/apis/models/basic_models.dart';
-import 'package:wallet_connect_flutter_v2/apis/core/pairing/utils/pairing_models.dart';
+import 'package:walletconnect_dart_v2/apis/auth_api/auth_engine.dart';
+import 'package:walletconnect_dart_v2/apis/auth_api/i_auth_client.dart';
+import 'package:walletconnect_dart_v2/apis/auth_api/i_auth_engine.dart';
+import 'package:walletconnect_dart_v2/apis/auth_api/models/auth_client_events.dart';
+import 'package:walletconnect_dart_v2/apis/core/store/generic_store.dart';
+import 'package:walletconnect_dart_v2/apis/core/store/i_generic_store.dart';
+import 'package:walletconnect_dart_v2/apis/auth_api/models/auth_client_models.dart';
+import 'package:walletconnect_dart_v2/apis/auth_api/utils/auth_constants.dart';
+import 'package:walletconnect_dart_v2/apis/core/i_core.dart';
+import 'package:walletconnect_dart_v2/apis/models/basic_models.dart';
+import 'package:walletconnect_dart_v2/apis/core/pairing/utils/pairing_models.dart';
 
 class AuthClient implements IAuthClient {
   bool _initialized = false;
@@ -28,6 +28,8 @@ class AuthClient implements IAuthClient {
   Event<AuthResponse> get onAuthResponse => engine.onAuthResponse;
 
   @override
+  ICore get core => engine.core;
+  @override
   PairingMetadata get metadata => engine.metadata;
   @override
   IGenericStore<AuthPublicKey> get authKeys => engine.authKeys;
@@ -39,25 +41,29 @@ class AuthClient implements IAuthClient {
   IGenericStore<StoredCacao> get completeRequests => engine.completeRequests;
 
   @override
-  final ICore core;
-  @override
   late IAuthEngine engine;
 
-  static Future<AuthClient> createInstance(
-    ICore core, {
-    PairingMetadata? self,
+  static Future<AuthClient> createInstance({
+    required ICore core,
+    required PairingMetadata metadata,
   }) async {
-    final client = AuthClient(core, self: self);
+    final client = AuthClient(
+      core: core,
+      metadata: metadata,
+    );
 
     await client.init();
 
     return client;
   }
 
-  AuthClient(this.core, {PairingMetadata? self}) {
+  AuthClient({
+    required ICore core,
+    required PairingMetadata metadata,
+  }) {
     engine = AuthEngine(
       core: core,
-      metadata: self ?? PairingMetadata.empty(),
+      metadata: metadata,
       authKeys: GenericStore(
         core: core,
         context: AuthConstants.CONTEXT_AUTH_KEYS,
@@ -137,7 +143,7 @@ class AuthClient implements IAuthClient {
     required int id,
     required String iss,
     CacaoSignature? signature,
-    WCErrorResponse? error,
+    WalletConnectErrorResponse? error,
   }) async {
     try {
       return engine.respondAuthRequest(

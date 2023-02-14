@@ -1,28 +1,14 @@
 import 'dart:convert';
 
 import 'package:event/event.dart';
-import 'package:wallet_connect_flutter_v2/apis/auth_api/auth_engine.dart';
-import 'package:wallet_connect_flutter_v2/apis/auth_api/utils/auth_constants.dart';
-import 'package:wallet_connect_flutter_v2/apis/core/i_core.dart';
-import 'package:wallet_connect_flutter_v2/apis/core/pairing/i_pairing_store.dart';
-import 'package:wallet_connect_flutter_v2/apis/core/pairing/utils/pairing_models.dart';
-import 'package:wallet_connect_flutter_v2/apis/core/relay_client/relay_client_models.dart';
-import 'package:wallet_connect_flutter_v2/apis/core/store/generic_store.dart';
-import 'package:wallet_connect_flutter_v2/apis/core/store/i_generic_store.dart';
-import 'package:wallet_connect_flutter_v2/apis/models/basic_models.dart';
-import 'package:wallet_connect_flutter_v2/apis/models/json_rpc_response.dart';
-import 'package:wallet_connect_flutter_v2/apis/signing_api/i_sessions.dart';
-import 'package:wallet_connect_flutter_v2/apis/signing_api/i_sign_engine.dart';
-import 'package:wallet_connect_flutter_v2/apis/signing_api/models/json_rpc_models.dart';
-import 'package:wallet_connect_flutter_v2/apis/signing_api/models/proposal_models.dart';
-import 'package:wallet_connect_flutter_v2/apis/signing_api/models/session_models.dart';
-import 'package:wallet_connect_flutter_v2/apis/signing_api/models/sign_client_events.dart';
-import 'package:wallet_connect_flutter_v2/apis/signing_api/models/sign_client_models.dart';
-import 'package:wallet_connect_flutter_v2/apis/signing_api/sessions.dart';
-import 'package:wallet_connect_flutter_v2/apis/signing_api/sign_engine.dart';
-import 'package:wallet_connect_flutter_v2/apis/signing_api/utils/sign_constants.dart';
-import 'package:wallet_connect_flutter_v2/apis/web3wallet/i_web_3_wallet.dart';
-import 'package:wallet_connect_flutter_v2/wallet_connect_flutter_v2.dart';
+import 'package:walletconnect_dart_v2/apis/auth_api/auth_engine.dart';
+import 'package:walletconnect_dart_v2/apis/auth_api/utils/auth_constants.dart';
+import 'package:walletconnect_dart_v2/apis/core/store/generic_store.dart';
+import 'package:walletconnect_dart_v2/apis/core/store/i_generic_store.dart';
+import 'package:walletconnect_dart_v2/apis/sign_api/i_sessions.dart';
+import 'package:walletconnect_dart_v2/apis/sign_api/sign_engine.dart';
+import 'package:walletconnect_dart_v2/apis/sign_api/utils/sign_constants.dart';
+import 'package:walletconnect_dart_v2/walletconnect_dart_v2.dart';
 
 class Web3Wallet implements IWeb3Wallet {
   bool _initialized = false;
@@ -50,11 +36,11 @@ class Web3Wallet implements IWeb3Wallet {
   @override
   final ICore core;
   @override
-  PairingMetadata get metadata => signEngine.metadata;
+  final PairingMetadata metadata;
 
   Web3Wallet({
     required this.core,
-    required PairingMetadata metadata,
+    required this.metadata,
   }) {
     signEngine = SignEngine(
       core: core,
@@ -200,7 +186,7 @@ class Web3Wallet implements IWeb3Wallet {
   @override
   Future<void> rejectSession({
     required int id,
-    required WCErrorResponse reason,
+    required WalletConnectErrorResponse reason,
   }) async {
     try {
       return await signEngine.rejectSession(
@@ -291,7 +277,7 @@ class Web3Wallet implements IWeb3Wallet {
   @override
   Future<void> disconnectSession({
     required String topic,
-    required WCErrorResponse reason,
+    required WalletConnectErrorResponse reason,
   }) async {
     try {
       return await signEngine.disconnectSession(
@@ -347,8 +333,6 @@ class Web3Wallet implements IWeb3Wallet {
   ///---------- AUTH ENGINE ----------///
   @override
   Event<AuthRequest> get onAuthRequest => authEngine.onAuthRequest;
-  @override
-  Event<AuthResponse> get onAuthResponse => authEngine.onAuthResponse;
 
   @override
   IGenericStore<AuthPublicKey> get authKeys => authEngine.authKeys;
@@ -368,7 +352,7 @@ class Web3Wallet implements IWeb3Wallet {
     required int id,
     required String iss,
     CacaoSignature? signature,
-    WCErrorResponse? error,
+    WalletConnectErrorResponse? error,
   }) async {
     try {
       return authEngine.respondAuthRequest(

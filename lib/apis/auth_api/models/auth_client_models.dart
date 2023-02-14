@@ -1,9 +1,9 @@
 import 'dart:async';
 
 import 'package:json_annotation/json_annotation.dart';
-import 'package:wallet_connect_flutter_v2/apis/auth_api/models/auth_client_events.dart';
-import 'package:wallet_connect_flutter_v2/apis/models/basic_models.dart';
-import 'package:wallet_connect_flutter_v2/apis/signing_api/models/sign_client_models.dart';
+import 'package:walletconnect_dart_v2/apis/auth_api/models/auth_client_events.dart';
+import 'package:walletconnect_dart_v2/apis/models/basic_models.dart';
+import 'package:walletconnect_dart_v2/apis/sign_api/models/sign_client_models.dart';
 
 part 'auth_client_models.g.dart';
 
@@ -334,7 +334,7 @@ class AuthRequestCompleter {
 class RespondParams {
   final int id;
   final CacaoSignature? signature;
-  final WCErrorResponse? error;
+  final WalletConnectErrorResponse? error;
 
   RespondParams({
     required this.id,

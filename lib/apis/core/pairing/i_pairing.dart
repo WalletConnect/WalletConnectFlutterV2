@@ -1,10 +1,10 @@
 import 'package:event/event.dart';
-import 'package:wallet_connect_flutter_v2/apis/core/store/i_generic_store.dart';
-import 'package:wallet_connect_flutter_v2/apis/core/crypto/crypto_models.dart';
-import 'package:wallet_connect_flutter_v2/apis/core/pairing/i_pairing_store.dart';
-import 'package:wallet_connect_flutter_v2/apis/core/pairing/utils/pairing_models.dart';
-import 'package:wallet_connect_flutter_v2/apis/models/json_rpc_error.dart';
-import 'package:wallet_connect_flutter_v2/apis/models/json_rpc_request.dart';
+import 'package:walletconnect_dart_v2/apis/core/store/i_generic_store.dart';
+import 'package:walletconnect_dart_v2/apis/core/crypto/crypto_models.dart';
+import 'package:walletconnect_dart_v2/apis/core/pairing/i_pairing_store.dart';
+import 'package:walletconnect_dart_v2/apis/core/pairing/utils/pairing_models.dart';
+import 'package:walletconnect_dart_v2/apis/models/json_rpc_error.dart';
+import 'package:walletconnect_dart_v2/apis/models/json_rpc_request.dart';
 
 abstract class IPairing {
   abstract final Event<PairingEvent> onPairingPing;
@@ -63,5 +63,9 @@ abstract class IPairing {
     String method,
     JsonRpcError error, {
     EncodeOptions? encodeOptions,
+  });
+
+  Future<void> isValidPairingTopic({
+    required String topic,
   });
 }

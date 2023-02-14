@@ -1,8 +1,8 @@
 import 'package:event/event.dart';
-import 'package:wallet_connect_flutter_v2/apis/auth_api/models/auth_client_models.dart';
-import 'package:wallet_connect_flutter_v2/apis/auth_api/models/json_rpc_models.dart';
-import 'package:wallet_connect_flutter_v2/apis/models/basic_models.dart';
-import 'package:wallet_connect_flutter_v2/apis/models/json_rpc_error.dart';
+import 'package:walletconnect_dart_v2/apis/auth_api/models/auth_client_models.dart';
+import 'package:walletconnect_dart_v2/apis/auth_api/models/json_rpc_models.dart';
+import 'package:walletconnect_dart_v2/apis/models/basic_models.dart';
+import 'package:walletconnect_dart_v2/apis/models/json_rpc_error.dart';
 
 class AuthRequest extends EventArgs {
   final int id;
@@ -22,7 +22,7 @@ class AuthResponse extends EventArgs {
   final int id;
   final String topic;
   final Cacao? result;
-  final WCError? error;
+  final WalletConnectError? error;
   final JsonRpcError? jsonRpcError;
 
   AuthResponse({
