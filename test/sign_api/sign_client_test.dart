@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
 import 'package:walletconnect_dart_v2/apis/core/store/generic_store.dart';
+import 'package:walletconnect_dart_v2/apis/sign_api/i_sign_engine_app.dart';
+import 'package:walletconnect_dart_v2/apis/sign_api/i_sign_engine_common.dart';
 import 'package:walletconnect_dart_v2/apis/sign_api/i_sign_engine_wallet.dart';
 import 'package:walletconnect_dart_v2/apis/sign_api/sign_engine.dart';
 import 'package:walletconnect_dart_v2/apis/sign_api/utils/sign_constants.dart';
@@ -15,8 +17,8 @@ import '../shared/sign_client_helpers.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  final List<Future<ISignEngine> Function(ICore, PairingMetadata)>
-      signApiCreators = [
+  final List<Future<ISignEngineApp> Function(ICore, PairingMetadata)>
+      signAppCreators = [
     (ICore core, PairingMetadata metadata) async =>
         await SignClient.createInstance(
           core: core,
@@ -54,7 +56,12 @@ void main() {
       await e.init();
 
       return e;
-    }
+    },
+    (ICore core, PairingMetadata metadata) async =>
+        await Web3App.createInstance(
+          core: core,
+          metadata: metadata,
+        ),
   ];
 
   final List<Future<ISignEngineWallet> Function(ICore, PairingMetadata)>
@@ -64,6 +71,39 @@ void main() {
           core: core,
           metadata: metadata,
         ),
+    (ICore core, PairingMetadata metadata) async {
+      ISignEngine e = SignEngine(
+        core: core,
+        metadata: metadata,
+        proposals: GenericStore(
+          core: core,
+          context: SignConstants.CONTEXT_PROPOSALS,
+          version: SignConstants.VERSION_PROPOSALS,
+          toJsonString: (ProposalData value) {
+            return jsonEncode(value.toJson());
+          },
+          fromJsonString: (String value) {
+            return ProposalData.fromJson(jsonDecode(value));
+          },
+        ),
+        sessions: Sessions(core),
+        pendingRequests: GenericStore(
+          core: core,
+          context: SignConstants.CONTEXT_PENDING_REQUESTS,
+          version: SignConstants.VERSION_PENDING_REQUESTS,
+          toJsonString: (SessionRequest value) {
+            return jsonEncode(value.toJson());
+          },
+          fromJsonString: (String value) {
+            return SessionRequest.fromJson(jsonDecode(value));
+          },
+        ),
+      );
+      await core.start();
+      await e.init();
+
+      return e;
+    },
     (ICore core, PairingMetadata metadata) async =>
         await Web3Wallet.createInstance(
           core: core,
@@ -71,12 +111,12 @@ void main() {
         ),
   ];
 
-  final List<String> contexts = ['SignClient', 'SignEngine'];
+  final List<String> contexts = ['SignClient', 'SignEngine', 'Web3App/Wallet'];
 
-  for (int i = 0; i < signApiCreators.length; i++) {
+  for (int i = 0; i < signAppCreators.length; i++) {
     signingEngineTests(
       context: contexts[i],
-      clientACreator: signApiCreators[i],
+      clientACreator: signAppCreators[i],
       clientBCreator: signWalletCreators[i],
     );
   }
@@ -147,14 +187,15 @@ void main() {
 
 void signingEngineTests({
   required String context,
-  required Future<ISignEngine> Function(ICore, PairingMetadata) clientACreator,
+  required Future<ISignEngineApp> Function(ICore, PairingMetadata)
+      clientACreator,
   required Future<ISignEngineWallet> Function(ICore, PairingMetadata)
       clientBCreator,
 }) {
   group(context, () {
-    late ISignEngine clientA;
+    late ISignEngineApp clientA;
     late ISignEngineWallet clientB;
-    List<ISignEngineWallet> clients = [];
+    List<ISignEngineCommon> clients = [];
 
     setUp(() async {
       clientA = await clientACreator(
@@ -316,216 +357,217 @@ void signingEngineTests({
     group('pair', () {
       test('throws with invalid methods', () {
         final String uriWithMethods = '$TEST_URI&methods=[wc_swag]';
-        for (var client in clients) {
-          expect(
-            () async => await client.pair(uri: Uri.parse(uriWithMethods)),
-            throwsA(
-              isA<WalletConnectError>().having(
-                (e) => e.message,
-                'message',
-                'Unsupported wc_ method. The following methods are not registered: wc_swag.',
-              ),
+
+        expect(
+          () async => await clientB.pair(uri: Uri.parse(uriWithMethods)),
+          throwsA(
+            isA<WalletConnectError>().having(
+              (e) => e.message,
+              'message',
+              'Unsupported wc_ method. The following methods are not registered: wc_swag.',
             ),
-          );
-        }
+          ),
+        );
       });
     });
 
     group('approveSession', () {
-      for (var client in clients) {
-        setUp(() async {
-          await client.proposals.set(
-            TEST_PROPOSAL_VALID_ID.toString(),
-            TEST_PROPOSAL_VALID,
-          );
-          await client.proposals.set(
+      setUp(() async {
+        await clientB.proposals.set(
+          TEST_PROPOSAL_VALID_ID.toString(),
+          TEST_PROPOSAL_VALID,
+        );
+        await clientB.proposals.set(
+          TEST_PROPOSAL_EXPIRED_ID.toString(),
+          TEST_PROPOSAL_EXPIRED,
+        );
+        await clientB.core.expirer.set(
+          TEST_PROPOSAL_EXPIRED_ID.toString(),
+          TEST_PROPOSAL_EXPIRED.expiry,
+        );
+        await clientB.proposals.set(
+          TEST_PROPOSAL_INVALID_REQUIRED_NAMESPACES_ID.toString(),
+          TEST_PROPOSAL_INVALID_REQUIRED_NAMESPACES,
+        );
+        await clientB.proposals.set(
+          TEST_PROPOSAL_INVALID_OPTIONAL_NAMESPACES_ID.toString(),
+          TEST_PROPOSAL_INVALID_OPTIONAL_NAMESPACES,
+        );
+      });
+
+      test('invalid proposal id', () async {
+        expect(
+          () async => await clientB.approveSession(
+            id: TEST_APPROVE_ID_INVALID,
+            namespaces: TEST_NAMESPACES,
+          ),
+          throwsA(
+            isA<WalletConnectError>().having(
+              (e) => e.message,
+              'message',
+              'No matching key. proposal id doesn\'t exist: $TEST_APPROVE_ID_INVALID',
+            ),
+          ),
+        );
+
+        int counter = 0;
+        clientB.core.expirer.onExpire.subscribe((args) {
+          counter++;
+        });
+        expect(
+          () async => await clientB.approveSession(
+            id: TEST_PROPOSAL_EXPIRED_ID,
+            namespaces: TEST_NAMESPACES,
+          ),
+          throwsA(
+            isA<WalletConnectError>().having(
+              (e) => e.message,
+              'message',
+              'Expired. proposal id: $TEST_PROPOSAL_EXPIRED_ID',
+            ),
+          ),
+        );
+
+        await Future.delayed(Duration(milliseconds: 250));
+        expect(
+          clientB.proposals.has(
             TEST_PROPOSAL_EXPIRED_ID.toString(),
-            TEST_PROPOSAL_EXPIRED,
-          );
-          await client.proposals.set(
-            TEST_PROPOSAL_INVALID_REQUIRED_NAMESPACES_ID.toString(),
-            TEST_PROPOSAL_INVALID_REQUIRED_NAMESPACES,
-          );
-          await client.proposals.set(
-            TEST_PROPOSAL_INVALID_OPTIONAL_NAMESPACES_ID.toString(),
-            TEST_PROPOSAL_INVALID_OPTIONAL_NAMESPACES,
-          );
-        });
+          ),
+          false,
+        );
+        expect(counter, 1);
+        clientB.core.expirer.onExpire.unsubscribeAll();
+      });
 
-        test('invalid proposal id', () async {
-          expect(
-            () async => await client.approveSession(
-              id: TEST_APPROVE_ID_INVALID,
-              namespaces: TEST_NAMESPACES,
+      test('invalid namespaces', () async {
+        expect(
+          () async => await clientB.approveSession(
+            id: TEST_PROPOSAL_INVALID_REQUIRED_NAMESPACES_ID,
+            namespaces: TEST_NAMESPACES,
+          ),
+          throwsA(
+            isA<WalletConnectError>().having(
+              (e) => e.message,
+              'message',
+              'Unsupported chains. approve() check requiredNamespaces. requiredNamespace, namespace is a chainId, but chains is not empty',
             ),
-            throwsA(
-              isA<WalletConnectError>().having(
-                (e) => e.message,
-                'message',
-                'No matching key. proposal id doesn\'t exist: $TEST_APPROVE_ID_INVALID',
-              ),
+          ),
+        );
+        expect(
+          () async => await clientB.approveSession(
+            id: TEST_PROPOSAL_INVALID_OPTIONAL_NAMESPACES_ID,
+            namespaces: TEST_NAMESPACES,
+          ),
+          throwsA(
+            isA<WalletConnectError>().having(
+              (e) => e.message,
+              'message',
+              'Unsupported chains. approve() check optionalNamespaces. requiredNamespace, namespace is a chainId, but chains is not empty',
             ),
-          );
-
-          int counter = 0;
-          client.core.expirer.onExpire.subscribe((args) {
-            counter++;
-          });
-          expect(
-            () async => await client.approveSession(
-              id: TEST_PROPOSAL_EXPIRED_ID,
-              namespaces: TEST_NAMESPACES,
+          ),
+        );
+        expect(
+          () async => await clientB.approveSession(
+            id: TEST_PROPOSAL_VALID_ID,
+            namespaces: TEST_NAMESPACES_NONCONFORMING_KEY_1,
+          ),
+          throwsA(
+            isA<WalletConnectError>().having(
+              (e) => e.message,
+              'message',
+              'Non conforming namespaces. approve() namespaces keys don\'t satisfy requiredNamespaces',
             ),
-            throwsA(
-              isA<WalletConnectError>().having(
-                (e) => e.message,
-                'message',
-                'Expired. proposal id: $TEST_PROPOSAL_EXPIRED_ID',
-              ),
-            ),
-          );
-
-          await Future.delayed(Duration(milliseconds: 150));
-          expect(
-            client.proposals.has(
-              TEST_PROPOSAL_EXPIRED_ID.toString(),
-            ),
-            false,
-          );
-          expect(counter, 1);
-          client.core.expirer.onExpire.unsubscribeAll();
-        });
-
-        test('invalid namespaces', () async {
-          for (var client in clients) {
-            expect(
-              () async => await client.approveSession(
-                id: TEST_PROPOSAL_INVALID_REQUIRED_NAMESPACES_ID,
-                namespaces: TEST_NAMESPACES,
-              ),
-              throwsA(
-                isA<WalletConnectError>().having(
-                  (e) => e.message,
-                  'message',
-                  'Unsupported chains. approve() check requiredNamespaces. requiredNamespace, namespace is a chainId, but chains is not empty',
-                ),
-              ),
-            );
-            expect(
-              () async => await client.approveSession(
-                id: TEST_PROPOSAL_INVALID_OPTIONAL_NAMESPACES_ID,
-                namespaces: TEST_NAMESPACES,
-              ),
-              throwsA(
-                isA<WalletConnectError>().having(
-                  (e) => e.message,
-                  'message',
-                  'Unsupported chains. approve() check optionalNamespaces. requiredNamespace, namespace is a chainId, but chains is not empty',
-                ),
-              ),
-            );
-            expect(
-              () async => await client.approveSession(
-                id: TEST_PROPOSAL_VALID_ID,
-                namespaces: TEST_NAMESPACES_NONCONFORMING_KEY_1,
-              ),
-              throwsA(
-                isA<WalletConnectError>().having(
-                  (e) => e.message,
-                  'message',
-                  'Non conforming namespaces. approve() namespaces keys don\'t satisfy requiredNamespaces',
-                ),
-              ),
-            );
-          }
-        });
-      }
+          ),
+        );
+      });
     });
 
     group('rejectSession', () {
-      for (var client in clients) {
-        setUp(() async {
-          await client.proposals.set(
-            TEST_PROPOSAL_VALID_ID.toString(),
-            TEST_PROPOSAL_VALID,
-          );
-          await client.proposals.set(
-            TEST_PROPOSAL_EXPIRED_ID.toString(),
-            TEST_PROPOSAL_EXPIRED,
-          );
-          await client.proposals.set(
-            TEST_PROPOSAL_INVALID_REQUIRED_NAMESPACES_ID.toString(),
-            TEST_PROPOSAL_INVALID_REQUIRED_NAMESPACES,
-          );
-          await client.proposals.set(
-            TEST_PROPOSAL_INVALID_OPTIONAL_NAMESPACES_ID.toString(),
-            TEST_PROPOSAL_INVALID_OPTIONAL_NAMESPACES,
-          );
-        });
+      setUp(() async {
+        await clientB.proposals.set(
+          TEST_PROPOSAL_VALID_ID.toString(),
+          TEST_PROPOSAL_VALID,
+        );
+        await clientB.proposals.set(
+          TEST_PROPOSAL_EXPIRED_ID.toString(),
+          TEST_PROPOSAL_EXPIRED,
+        );
+        await clientB.core.expirer.set(
+          TEST_PROPOSAL_EXPIRED_ID.toString(),
+          TEST_PROPOSAL_EXPIRED.expiry,
+        );
+        await clientB.proposals.set(
+          TEST_PROPOSAL_INVALID_REQUIRED_NAMESPACES_ID.toString(),
+          TEST_PROPOSAL_INVALID_REQUIRED_NAMESPACES,
+        );
+        await clientB.proposals.set(
+          TEST_PROPOSAL_INVALID_OPTIONAL_NAMESPACES_ID.toString(),
+          TEST_PROPOSAL_INVALID_OPTIONAL_NAMESPACES,
+        );
+      });
 
-        test('deletes the proposal', () async {
-          await client.proposals.set(
-            TEST_PROPOSAL_VALID_ID.toString(),
-            TEST_PROPOSAL_VALID,
-          );
+      test('deletes the proposal', () async {
+        await clientB.proposals.set(
+          TEST_PROPOSAL_VALID_ID.toString(),
+          TEST_PROPOSAL_VALID,
+        );
 
-          await client.rejectSession(
-            id: TEST_PROPOSAL_VALID_ID,
+        await clientB.rejectSession(
+          id: TEST_PROPOSAL_VALID_ID,
+          reason: WalletConnectErrorResponse(code: -1, message: 'reason'),
+        );
+
+        expect(
+          clientB.proposals.has(
+            TEST_PROPOSAL_VALID_ID.toString(),
+          ),
+          false,
+        );
+      });
+
+      test('invalid proposal id', () async {
+        expect(
+          () async => await clientB.rejectSession(
+            id: TEST_APPROVE_ID_INVALID,
             reason: WalletConnectErrorResponse(code: -1, message: 'reason'),
-          );
-
-          expect(
-            client.proposals.has(
-              TEST_PROPOSAL_VALID_ID.toString(),
+          ),
+          throwsA(
+            isA<WalletConnectError>().having(
+              (e) => e.message,
+              'message',
+              'No matching key. proposal id doesn\'t exist: $TEST_APPROVE_ID_INVALID',
             ),
-            false,
-          );
+          ),
+        );
+
+        int counter = 0;
+        clientB.core.expirer.onExpire.subscribe((args) {
+          counter++;
         });
+        expect(
+          () async => await clientB.rejectSession(
+            id: TEST_PROPOSAL_EXPIRED_ID,
+            reason: WalletConnectErrorResponse(code: -1, message: 'reason'),
+          ),
+          throwsA(
+            isA<WalletConnectError>().having(
+              (e) => e.message,
+              'message',
+              'Expired. proposal id: $TEST_PROPOSAL_EXPIRED_ID',
+            ),
+          ),
+        );
 
-        test('invalid proposal id', () async {
-          expect(
-            () async => await client.rejectSession(
-              id: TEST_APPROVE_ID_INVALID,
-              reason: WalletConnectErrorResponse(code: -1, message: 'reason'),
-            ),
-            throwsA(
-              isA<WalletConnectError>().having(
-                (e) => e.message,
-                'message',
-                'No matching key. proposal id doesn\'t exist: $TEST_APPROVE_ID_INVALID',
-              ),
-            ),
-          );
-
-          int counter = 0;
-          client.core.expirer.onExpire.subscribe((args) {
-            counter++;
-          });
-          expect(
-            () async => await client.rejectSession(
-              id: TEST_PROPOSAL_EXPIRED_ID,
-              reason: WalletConnectErrorResponse(code: -1, message: 'reason'),
-            ),
-            throwsA(
-              isA<WalletConnectError>().having(
-                (e) => e.message,
-                'message',
-                'Expired. proposal id: $TEST_PROPOSAL_EXPIRED_ID',
-              ),
-            ),
-          );
-
-          await Future.delayed(Duration(milliseconds: 150));
-          expect(
-            client.proposals.has(
-              TEST_PROPOSAL_EXPIRED_ID.toString(),
-            ),
-            false,
-          );
-          expect(counter, 1);
-          client.core.expirer.onExpire.unsubscribeAll();
-        });
-      }
+        await Future.delayed(Duration(milliseconds: 150));
+        expect(
+          clientB.proposals.has(
+            TEST_PROPOSAL_EXPIRED_ID.toString(),
+          ),
+          false,
+        );
+        expect(counter, 1);
+        clientB.core.expirer.onExpire.unsubscribeAll();
+      });
     });
 
     group('updateSession', () {
@@ -561,91 +603,93 @@ void signingEngineTests({
         clientA.onSessionUpdate.unsubscribeAll();
       });
 
-      for (var client in clients) {
-        setUp(() async {
-          await client.sessions.set(
-            TEST_SESSION_VALID_TOPIC,
-            testSessionValid,
-          );
-          await client.sessions.set(
+      setUp(() async {
+        await clientB.sessions.set(
+          TEST_SESSION_VALID_TOPIC,
+          testSessionValid,
+        );
+        await clientB.sessions.set(
+          TEST_SESSION_EXPIRED_TOPIC,
+          testSessionExpired,
+        );
+        await clientB.core.expirer.set(
+          TEST_SESSION_EXPIRED_TOPIC.toString(),
+          testSessionExpired.expiry,
+        );
+      });
+
+      test('invalid session topic', () async {
+        expect(
+          () async => await clientB.updateSession(
+            topic: TEST_SESSION_INVALID_TOPIC,
+            namespaces: TEST_NAMESPACES,
+          ),
+          throwsA(
+            isA<WalletConnectError>().having(
+              (e) => e.message,
+              'message',
+              'No matching key. session topic doesn\'t exist: $TEST_SESSION_INVALID_TOPIC',
+            ),
+          ),
+        );
+
+        int counter = 0;
+        clientB.core.expirer.onExpire.subscribe((args) {
+          counter++;
+        });
+        expect(
+          () async => await clientB.updateSession(
+            topic: TEST_SESSION_EXPIRED_TOPIC,
+            namespaces: TEST_NAMESPACES,
+          ),
+          throwsA(
+            isA<WalletConnectError>().having(
+              (e) => e.message,
+              'message',
+              'Expired. session topic: $TEST_SESSION_EXPIRED_TOPIC',
+            ),
+          ),
+        );
+        await Future.delayed(Duration(milliseconds: 150));
+
+        expect(
+          clientB.sessions.has(
             TEST_SESSION_EXPIRED_TOPIC,
-            testSessionExpired,
-          );
-        });
+          ),
+          false,
+        );
+        expect(counter, 1);
+        clientB.core.expirer.onExpire.unsubscribeAll();
+      });
 
-        test('invalid session topic', () async {
-          expect(
-            () async => await client.updateSession(
-              topic: TEST_SESSION_INVALID_TOPIC,
-              namespaces: TEST_NAMESPACES,
+      test('invalid namespaces', () async {
+        expect(
+          () async => await clientB.updateSession(
+            topic: TEST_SESSION_VALID_TOPIC,
+            namespaces: TEST_NAMESPACES_INVALID_ACCOUNTS,
+          ),
+          throwsA(
+            isA<WalletConnectError>().having(
+              (e) => e.message,
+              'message',
+              'Unsupported accounts. update() namespace, account swag should conform to "namespace:chainId:address" format',
             ),
-            throwsA(
-              isA<WalletConnectError>().having(
-                (e) => e.message,
-                'message',
-                'No matching key. session topic doesn\'t exist: $TEST_SESSION_INVALID_TOPIC',
-              ),
+          ),
+        );
+        expect(
+          () async => await clientB.updateSession(
+            topic: TEST_SESSION_VALID_TOPIC,
+            namespaces: TEST_NAMESPACES_NONCONFORMING_CHAINS,
+          ),
+          throwsA(
+            isA<WalletConnectError>().having(
+              (e) => e.message,
+              'message',
+              'Non conforming namespaces. update() namespaces accounts don\'t satisfy requiredNamespaces chains for eip155',
             ),
-          );
-
-          int counter = 0;
-          client.core.expirer.onExpire.subscribe((args) {
-            counter++;
-          });
-          expect(
-            () async => await client.updateSession(
-              topic: TEST_SESSION_EXPIRED_TOPIC,
-              namespaces: TEST_NAMESPACES,
-            ),
-            throwsA(
-              isA<WalletConnectError>().having(
-                (e) => e.message,
-                'message',
-                'Expired. session topic: $TEST_SESSION_EXPIRED_TOPIC',
-              ),
-            ),
-          );
-          await Future.delayed(Duration(milliseconds: 150));
-
-          expect(
-            client.sessions.has(
-              TEST_SESSION_EXPIRED_TOPIC,
-            ),
-            false,
-          );
-          expect(counter, 1);
-          client.core.expirer.onExpire.unsubscribeAll();
-        });
-
-        test('invalid namespaces', () async {
-          expect(
-            () async => await client.updateSession(
-              topic: TEST_SESSION_VALID_TOPIC,
-              namespaces: TEST_NAMESPACES_INVALID_ACCOUNTS,
-            ),
-            throwsA(
-              isA<WalletConnectError>().having(
-                (e) => e.message,
-                'message',
-                'Unsupported accounts. update() namespace, account swag should conform to "namespace:chainId:address" format',
-              ),
-            ),
-          );
-          expect(
-            () async => await client.updateSession(
-              topic: TEST_SESSION_VALID_TOPIC,
-              namespaces: TEST_NAMESPACES_NONCONFORMING_CHAINS,
-            ),
-            throwsA(
-              isA<WalletConnectError>().having(
-                (e) => e.message,
-                'message',
-                'Non conforming namespaces. update() namespaces accounts don\'t satisfy requiredNamespaces chains for eip155',
-              ),
-            ),
-          );
-        });
-      }
+          ),
+        );
+      });
     });
 
     group('extendSession', () {
@@ -713,56 +757,58 @@ void signingEngineTests({
         clientA.onSessionExtend.unsubscribeAll();
       });
 
-      for (var client in clients) {
-        setUp(() async {
-          await client.sessions.set(
+      setUp(() async {
+        await clientB.sessions.set(
+          TEST_SESSION_EXPIRED_TOPIC,
+          testSessionExpired,
+        );
+        await clientB.core.expirer.set(
+          TEST_SESSION_EXPIRED_TOPIC.toString(),
+          testSessionExpired.expiry,
+        );
+      });
+
+      test('invalid session topic', () async {
+        expect(
+          () async => await clientB.extendSession(
+            topic: TEST_SESSION_INVALID_TOPIC,
+          ),
+          throwsA(
+            isA<WalletConnectError>().having(
+              (e) => e.message,
+              'message',
+              'No matching key. session topic doesn\'t exist: $TEST_SESSION_INVALID_TOPIC',
+            ),
+          ),
+        );
+
+        int counter = 0;
+        clientB.core.expirer.onExpire.subscribe((args) {
+          counter++;
+        });
+        expect(
+          () async => await clientB.extendSession(
+            topic: TEST_SESSION_EXPIRED_TOPIC,
+          ),
+          throwsA(
+            isA<WalletConnectError>().having(
+              (e) => e.message,
+              'message',
+              'Expired. session topic: $TEST_SESSION_EXPIRED_TOPIC',
+            ),
+          ),
+        );
+
+        await Future.delayed(Duration(milliseconds: 150));
+        expect(
+          clientB.sessions.has(
             TEST_SESSION_EXPIRED_TOPIC,
-            testSessionExpired,
-          );
-        });
-
-        test('invalid session topic', () async {
-          expect(
-            () async => await client.extendSession(
-              topic: TEST_SESSION_INVALID_TOPIC,
-            ),
-            throwsA(
-              isA<WalletConnectError>().having(
-                (e) => e.message,
-                'message',
-                'No matching key. session topic doesn\'t exist: $TEST_SESSION_INVALID_TOPIC',
-              ),
-            ),
-          );
-
-          int counter = 0;
-          client.core.expirer.onExpire.subscribe((args) {
-            counter++;
-          });
-          expect(
-            () async => await client.extendSession(
-              topic: TEST_SESSION_EXPIRED_TOPIC,
-            ),
-            throwsA(
-              isA<WalletConnectError>().having(
-                (e) => e.message,
-                'message',
-                'Expired. session topic: $TEST_SESSION_EXPIRED_TOPIC',
-              ),
-            ),
-          );
-
-          await Future.delayed(Duration(milliseconds: 150));
-          expect(
-            client.sessions.has(
-              TEST_SESSION_EXPIRED_TOPIC,
-            ),
-            false,
-          );
-          expect(counter, 1);
-          client.core.expirer.onExpire.unsubscribeAll();
-        });
-      }
+          ),
+          false,
+        );
+        expect(counter, 1);
+        clientB.core.expirer.onExpire.unsubscribeAll();
+      });
     });
 
     group('request and handler', () {
@@ -919,7 +965,7 @@ void signingEngineTests({
         );
         await clientA.core.expirer.set(
           TEST_SESSION_EXPIRED_TOPIC,
-          -1,
+          testSessionExpired.expiry,
         );
       });
 
@@ -1081,110 +1127,108 @@ void signingEngineTests({
         clientA.onSessionEvent.unsubscribeAll();
       });
 
-      for (var client in clients) {
-        setUp(() async {
-          await client.sessions.set(
-            TEST_SESSION_VALID_TOPIC,
-            testSessionValid,
-          );
-          await client.sessions.set(
+      setUp(() async {
+        await clientB.sessions.set(
+          TEST_SESSION_VALID_TOPIC,
+          testSessionValid,
+        );
+        await clientB.sessions.set(
+          TEST_SESSION_EXPIRED_TOPIC,
+          testSessionExpired,
+        );
+        await clientB.core.expirer.set(
+          TEST_SESSION_EXPIRED_TOPIC,
+          testSessionExpired.expiry,
+        );
+      });
+
+      test('invalid session topic', () async {
+        expect(
+          () async => await clientB.emitSessionEvent(
+            topic: TEST_SESSION_INVALID_TOPIC,
+            chainId: TEST_ETHEREUM_CHAIN,
+            event: SessionEventParams(
+              name: TEST_EVENT_1,
+              data: TEST_MESSAGE_1,
+            ),
+          ),
+          throwsA(
+            isA<WalletConnectError>().having(
+              (e) => e.message,
+              'message',
+              'No matching key. session topic doesn\'t exist: $TEST_SESSION_INVALID_TOPIC',
+            ),
+          ),
+        );
+
+        int counter = 0;
+        clientB.core.expirer.onExpire.subscribe((args) {
+          counter++;
+        });
+        expect(
+          () async => await clientB.emitSessionEvent(
+            topic: TEST_SESSION_EXPIRED_TOPIC,
+            chainId: TEST_ETHEREUM_CHAIN,
+            event: SessionEventParams(
+              name: TEST_EVENT_1,
+              data: TEST_MESSAGE_1,
+            ),
+          ),
+          throwsA(
+            isA<WalletConnectError>().having(
+              (e) => e.message,
+              'message',
+              'Expired. session topic: $TEST_SESSION_EXPIRED_TOPIC',
+            ),
+          ),
+        );
+        await Future.delayed(Duration(milliseconds: 150));
+        expect(
+          clientB.sessions.has(
             TEST_SESSION_EXPIRED_TOPIC,
-            testSessionExpired,
-          );
-          await clientA.core.expirer.set(
-            TEST_SESSION_EXPIRED_TOPIC,
-            -1,
-          );
-        });
+          ),
+          false,
+        );
+        expect(counter, 1);
+        clientB.core.expirer.onExpire.unsubscribeAll();
+      });
 
-        test('invalid session topic', () async {
-          expect(
-            () async => await client.emitSessionEvent(
-              topic: TEST_SESSION_INVALID_TOPIC,
-              chainId: TEST_ETHEREUM_CHAIN,
-              event: SessionEventParams(
-                name: TEST_EVENT_1,
-                data: TEST_MESSAGE_1,
-              ),
+      test('invalid chains or events', () async {
+        expect(
+          () async => await clientB.emitSessionEvent(
+            topic: TEST_SESSION_VALID_TOPIC,
+            chainId: TEST_UNINCLUDED_CHAIN,
+            event: SessionEventParams(
+              name: TEST_EVENT_1,
+              data: TEST_MESSAGE_1,
             ),
-            throwsA(
-              isA<WalletConnectError>().having(
-                (e) => e.message,
-                'message',
-                'No matching key. session topic doesn\'t exist: $TEST_SESSION_INVALID_TOPIC',
-              ),
+          ),
+          throwsA(
+            isA<WalletConnectError>().having(
+              (e) => e.message,
+              'message',
+              'Unsupported chains. The chain $TEST_UNINCLUDED_CHAIN is not supported',
             ),
-          );
-
-          int counter = 0;
-          client.core.expirer.onExpire.subscribe((args) {
-            counter++;
-          });
-          expect(
-            () async => await client.emitSessionEvent(
-              topic: TEST_SESSION_EXPIRED_TOPIC,
-              chainId: TEST_ETHEREUM_CHAIN,
-              event: SessionEventParams(
-                name: TEST_EVENT_1,
-                data: TEST_MESSAGE_1,
-              ),
+          ),
+        );
+        expect(
+          () async => await clientB.emitSessionEvent(
+            topic: TEST_SESSION_VALID_TOPIC,
+            chainId: TEST_ETHEREUM_CHAIN,
+            event: SessionEventParams(
+              name: TEST_EVENT_INVALID_1,
+              data: TEST_MESSAGE_1,
             ),
-            throwsA(
-              isA<WalletConnectError>().having(
-                (e) => e.message,
-                'message',
-                'Expired. session topic: $TEST_SESSION_EXPIRED_TOPIC',
-              ),
+          ),
+          throwsA(
+            isA<WalletConnectError>().having(
+              (e) => e.message,
+              'message',
+              'Unsupported events. The event $TEST_EVENT_INVALID_1 is not supported',
             ),
-          );
-          await Future.delayed(Duration(milliseconds: 150));
-          expect(
-            client.sessions.has(
-              TEST_SESSION_EXPIRED_TOPIC,
-            ),
-            false,
-          );
-          expect(counter, 1);
-          client.core.expirer.onExpire.unsubscribeAll();
-        });
-
-        test('invalid chains or events', () async {
-          expect(
-            () async => await client.emitSessionEvent(
-              topic: TEST_SESSION_VALID_TOPIC,
-              chainId: TEST_UNINCLUDED_CHAIN,
-              event: SessionEventParams(
-                name: TEST_EVENT_1,
-                data: TEST_MESSAGE_1,
-              ),
-            ),
-            throwsA(
-              isA<WalletConnectError>().having(
-                (e) => e.message,
-                'message',
-                'Unsupported chains. The chain $TEST_UNINCLUDED_CHAIN is not supported',
-              ),
-            ),
-          );
-          expect(
-            () async => await client.emitSessionEvent(
-              topic: TEST_SESSION_VALID_TOPIC,
-              chainId: TEST_ETHEREUM_CHAIN,
-              event: SessionEventParams(
-                name: TEST_EVENT_INVALID_1,
-                data: TEST_MESSAGE_1,
-              ),
-            ),
-            throwsA(
-              isA<WalletConnectError>().having(
-                (e) => e.message,
-                'message',
-                'Unsupported events. The event $TEST_EVENT_INVALID_1 is not supported',
-              ),
-            ),
-          );
-        });
-      }
+          ),
+        );
+      });
     });
 
     group('ping', () {
@@ -1233,7 +1277,7 @@ void signingEngineTests({
         );
         await clientA.core.expirer.set(
           TEST_SESSION_EXPIRED_TOPIC,
-          -1,
+          testSessionExpired.expiry,
         );
       });
 
@@ -1425,7 +1469,7 @@ void signingEngineTests({
           );
           await clientA.core.expirer.set(
             TEST_SESSION_EXPIRED_TOPIC,
-            -1,
+            testSessionExpired.expiry,
           );
         });
 
@@ -1484,23 +1528,21 @@ void signingEngineTests({
 
     group('find', () {
       test('works', () async {
-        for (var client in clients) {
-          await client.sessions.set(
-            TEST_SESSION_VALID_TOPIC,
-            testSessionValid,
-          );
+        await clientB.sessions.set(
+          TEST_SESSION_VALID_TOPIC,
+          testSessionValid,
+        );
 
-          final sessionData = client.find(
-            requiredNamespaces: TEST_REQUIRED_NAMESPACES,
-          );
-          expect(sessionData != null, true);
-          expect(sessionData!.topic, TEST_SESSION_VALID_TOPIC);
+        final sessionData = clientB.find(
+          requiredNamespaces: TEST_REQUIRED_NAMESPACES,
+        );
+        expect(sessionData != null, true);
+        expect(sessionData!.topic, TEST_SESSION_VALID_TOPIC);
 
-          final sessionData2 = client.find(
-            requiredNamespaces: TEST_REQUIRED_NAMESPACES_INVALID_CHAINS_1,
-          );
-          expect(sessionData2, null);
-        }
+        final sessionData2 = clientB.find(
+          requiredNamespaces: TEST_REQUIRED_NAMESPACES_INVALID_CHAINS_1,
+        );
+        expect(sessionData2, null);
       });
     });
 

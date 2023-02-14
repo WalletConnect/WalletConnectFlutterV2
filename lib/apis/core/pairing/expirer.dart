@@ -99,6 +99,9 @@ class Expirer implements IExpirer {
     return false;
   }
 
+  /// Checks if the key has expired and deletes it if it has
+  /// Returns true if the key was deleted
+  /// Returns false if the key was not deleted
   @override
   Future<bool> checkAndExpire(String key) async {
     _checkInitialized();

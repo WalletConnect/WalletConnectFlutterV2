@@ -159,6 +159,16 @@ class Web3App implements IWeb3App {
   Event<SessionPing> get onSessionPing => signEngine.onSessionPing;
   @override
   Event<SessionUpdate> get onSessionUpdate => signEngine.onSessionUpdate;
+  @override
+  Event<SessionDelete> get onSessionDelete => signEngine.onSessionDelete;
+
+  @override
+  IGenericStore<ProposalData> get proposals => signEngine.proposals;
+  @override
+  ISessions get sessions => signEngine.sessions;
+  @override
+  IGenericStore<SessionRequest> get pendingRequests =>
+      signEngine.pendingRequests;
 
   @override
   late ISignEngine signEngine;
@@ -225,6 +235,21 @@ class Web3App implements IWeb3App {
   }) async {
     try {
       return await signEngine.ping(topic: topic);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> disconnectSession({
+    required String topic,
+    required WalletConnectErrorResponse reason,
+  }) async {
+    try {
+      return await signEngine.disconnectSession(
+        topic: topic,
+        reason: reason,
+      );
     } catch (e) {
       rethrow;
     }

@@ -1240,7 +1240,7 @@ class SignEngine implements ISignEngine {
       );
     }
 
-    if (await core.expirer.checkAndExpire(proposals.toString())) {
+    if (await core.expirer.checkAndExpire(id.toString())) {
       throw Errors.getInternalError(
         Errors.EXPIRED,
         context: "proposal id: $id",

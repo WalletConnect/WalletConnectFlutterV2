@@ -4,10 +4,10 @@ import 'dart:typed_data';
 import 'package:eth_sig_util/eth_sig_util.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:walletconnect_dart_v2/apis/auth_api/auth_engine.dart';
+import 'package:walletconnect_dart_v2/apis/auth_api/i_auth_engine_app.dart';
 import 'package:walletconnect_dart_v2/apis/auth_api/i_auth_engine_wallet.dart';
 import 'package:walletconnect_dart_v2/apis/core/store/generic_store.dart';
 import 'package:walletconnect_dart_v2/apis/auth_api/utils/auth_constants.dart';
-import 'package:walletconnect_dart_v2/apis/web3wallet/web3wallet.dart';
 import 'package:walletconnect_dart_v2/walletconnect_dart_v2.dart';
 
 import '../shared/shared_test_values.dart';
@@ -17,8 +17,8 @@ import 'utils/signature_constants.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  final List<Future<IAuthEngine> Function(ICore, PairingMetadata)>
-      authCreators = [
+  final List<Future<IAuthEngineApp> Function(ICore, PairingMetadata)>
+      authAppCreators = [
     (ICore core, PairingMetadata metadata) async =>
         await AuthClient.createInstance(
           core: core,
@@ -77,7 +77,12 @@ void main() {
       await e.init();
 
       return e;
-    }
+    },
+    (ICore core, PairingMetadata metadata) async =>
+        await Web3App.createInstance(
+          core: core,
+          metadata: metadata,
+        ),
   ];
 
   final List<Future<IAuthEngineWallet> Function(ICore, PairingMetadata)>
@@ -140,15 +145,20 @@ void main() {
       await e.init();
 
       return e;
-    }
+    },
+    (ICore core, PairingMetadata metadata) async =>
+        await Web3Wallet.createInstance(
+          core: core,
+          metadata: metadata,
+        ),
   ];
 
-  final List<String> contexts = ['SignClient', 'SignEngine'];
+  final List<String> contexts = ['SignClient', 'SignEngine', 'Web3App/Wallet'];
 
-  for (int i = 0; i < authCreators.length; i++) {
+  for (int i = 0; i < authAppCreators.length; i++) {
     runTests(
       context: contexts[i],
-      engineCreator: authCreators[i],
+      engineAppCreator: authAppCreators[i],
       engineWalletCreator: authWalletCreators[i],
     );
   }
@@ -156,16 +166,17 @@ void main() {
 
 void runTests({
   required String context,
-  required Future<IAuthEngine> Function(ICore, PairingMetadata) engineCreator,
+  required Future<IAuthEngineApp> Function(ICore, PairingMetadata)
+      engineAppCreator,
   required Future<IAuthEngineWallet> Function(ICore, PairingMetadata)
       engineWalletCreator,
 }) {
   group(context, () {
-    late IAuthEngine clientA;
+    late IAuthEngineApp clientA;
     late IAuthEngineWallet clientB;
 
     setUp(() async {
-      clientA = await engineCreator(
+      clientA = await engineAppCreator(
         Core(
           relayUrl: TEST_RELAY_URL,
           projectId: TEST_PROJECT_ID,
@@ -173,7 +184,7 @@ void runTests({
         ),
         TEST_METADATA_REQUESTER,
       );
-      clientB = await engineCreator(
+      clientB = await engineWalletCreator(
         Core(
           relayUrl: TEST_RELAY_URL,
           projectId: TEST_PROJECT_ID,
@@ -339,7 +350,7 @@ void runTests({
     group('respondAuth', () {
       test('invalid response params', () async {
         expect(
-          () => clientA.respondAuthRequest(
+          () => clientB.respondAuthRequest(
             id: -1,
             iss: TEST_ISSUER_EIP191,
           ),
