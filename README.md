@@ -46,7 +46,7 @@ Uri? uri = resp.uri;
 final SessionData session = await resp.session.future;
 
 // Now that you have a session, you can request signatures
-final sig = await wcClient.request(
+final dynamic signResponse = await wcClient.request(
   topic: session.topic,
   chainId: 'eip155:1',
   request: SessionRequestParams(
@@ -54,9 +54,12 @@ final sig = await wcClient.request(
     params: 'json serializable parameters',
   ),
 );
+// Unpack, or use the signResponse.
+// Structure is dependant upon the JSON RPC call you made.
+
 
 // You can also request authentication
-final auth = await wcClient.requestAuth(
+final AuthRequestResponse authReq = await wcClient.requestAuth(
   params: AuthRequestParams(
     aud: 'http://localhost:3000/login',
     domain: 'localhost:3000',
@@ -67,7 +70,20 @@ final auth = await wcClient.requestAuth(
   pairingTopic: resp.pairingTopic,
 );
 
-// You can also respond to events from the wallet, like chain changed, etc.
+// Await the auth response using the provided completer
+final AuthResponse authResponse = await authResponse.completer.future;
+if (authResponse.result != null) {
+  // Having a result means you have the signature and it is verified.
+}
+else {
+  // Otherwise, you might have gotten a WalletConnectError if there was un issue verifying the signature.
+  final WalletConnectError? error = authResponse.error;
+  // Of a JsonRpcError if something went wrong when signing with the wallet.
+  final JsonRpcError? error = authResponse.jsonRpcError;
+}
+
+
+// You can also respond to events from the wallet, like session events
 wcClient.onSessionEvent.subscribe((SessionEvent? session) {
   // Do something with the event
 });
