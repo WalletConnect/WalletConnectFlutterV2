@@ -52,7 +52,7 @@ class AuthRequestParams {
     required this.domain,
     required this.nonce,
     required this.aud,
-    this.type,
+    this.type = CacaoHeader.EIP4361,
     this.nbf,
     this.exp,
     this.statement,
@@ -94,7 +94,7 @@ class AuthPayloadParams {
 
   factory AuthPayloadParams.fromRequestParams(AuthRequestParams params) {
     return AuthPayloadParams(
-      type: params.type ?? 'auth',
+      type: params.type ?? CacaoHeader.EIP4361,
       chainId: params.chainId,
       domain: params.domain,
       aud: params.aud,

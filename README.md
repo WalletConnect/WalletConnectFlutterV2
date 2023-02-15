@@ -55,6 +55,18 @@ final sig = await wcClient.request(
   ),
 );
 
+// You can also request authentication
+final auth = await wcClient.requestAuth(
+  params: AuthRequestParams(
+    aud: 'http://localhost:3000/login',
+    domain: 'localhost:3000',
+    chainId: 'eip155:1',
+    nonce: AuthUtils.generateNonce(),
+    statement: 'Sign in with your wallet!',
+  ),
+  pairingTopic: resp.pairingTopic,
+);
+
 // You can also respond to events from the wallet, like chain changed, etc.
 wcClient.onSessionEvent.subscribe((SessionEvent? session) {
   // Do something with the event
