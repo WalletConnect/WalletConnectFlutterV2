@@ -1,4 +1,4 @@
-import 'package:walletconnect_dart_v2/apis/models/basic_models.dart';
+import 'package:walletconnect_flutter_v2/apis/models/basic_models.dart';
 
 class Errors {
   static const INVALID_METHOD = 'INVALID_METHOD';

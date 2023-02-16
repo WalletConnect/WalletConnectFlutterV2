@@ -1,7 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:walletconnect_dart_v2/walletconnect_dart_v2.dart';
-import 'package:walletconnect_dart_v2/apis/utils/namespace_utils.dart';
-import 'package:walletconnect_dart_v2/apis/sign_api/utils/sign_api_validator_utils.dart';
+import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
+import 'package:walletconnect_flutter_v2/apis/utils/namespace_utils.dart';
+import 'package:walletconnect_flutter_v2/apis/sign_api/utils/sign_api_validator_utils.dart';
 
 import '../shared/shared_test_values.dart';
 import 'utils/sign_client_constants.dart';

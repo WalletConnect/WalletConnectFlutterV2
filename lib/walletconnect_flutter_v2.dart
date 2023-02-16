@@ -1,4 +1,4 @@
-library walletconnect_dart_v2;
+library walletconnect_flutter_v2;
 
 // Common
 export 'apis/core/i_core.dart';

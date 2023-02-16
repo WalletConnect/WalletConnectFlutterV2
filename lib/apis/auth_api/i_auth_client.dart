@@ -1,4 +1,4 @@
-import 'package:walletconnect_dart_v2/apis/auth_api/i_auth_engine.dart';
+import 'package:walletconnect_flutter_v2/apis/auth_api/i_auth_engine.dart';
 
 abstract class IAuthClient extends IAuthEngine {
   final String protocol = 'wc';

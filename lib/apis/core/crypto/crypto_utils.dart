@@ -7,9 +7,9 @@ import 'package:cryptography/cryptography.dart' as dc;
 import 'package:pointycastle/digests/sha256.dart';
 import 'package:pointycastle/key_derivators/hkdf.dart';
 import 'package:pointycastle/pointycastle.dart' show HkdfParameters;
-import 'package:walletconnect_dart_v2/apis/core/crypto/crypto_models.dart';
-import 'package:walletconnect_dart_v2/apis/core/crypto/i_crypto_utils.dart';
-import 'package:walletconnect_dart_v2/apis/models/basic_models.dart';
+import 'package:walletconnect_flutter_v2/apis/core/crypto/crypto_models.dart';
+import 'package:walletconnect_flutter_v2/apis/core/crypto/i_crypto_utils.dart';
+import 'package:walletconnect_flutter_v2/apis/models/basic_models.dart';
 import 'package:x25519/x25519.dart' as x;
 
 class CryptoUtils extends ICryptoUtils {

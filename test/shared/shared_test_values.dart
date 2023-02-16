@@ -1,4 +1,4 @@
-import 'package:walletconnect_dart_v2/apis/core/crypto/crypto_models.dart';
+import 'package:walletconnect_flutter_v2/apis/core/crypto/crypto_models.dart';
 
 const TEST_RELAY_URL = 'wss://relay.walletconnect.com';
 const TEST_PROJECT_ID = '7e984f90b95f0236d3c12d791537f233';

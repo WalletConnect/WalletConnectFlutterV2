@@ -1,4 +1,4 @@
-import 'package:walletconnect_dart_v2/apis/sign_api/i_sign_engine.dart';
+import 'package:walletconnect_flutter_v2/apis/sign_api/i_sign_engine.dart';
 
 abstract class ISignClient extends ISignEngine {
   final String protocol = 'wc';

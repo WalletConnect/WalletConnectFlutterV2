@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:json_annotation/json_annotation.dart';
-import 'package:walletconnect_dart_v2/apis/auth_api/models/auth_client_events.dart';
-import 'package:walletconnect_dart_v2/apis/models/basic_models.dart';
+import 'package:walletconnect_flutter_v2/apis/auth_api/models/auth_client_events.dart';
+import 'package:walletconnect_flutter_v2/apis/models/basic_models.dart';
 
 part 'auth_client_models.g.dart';
 

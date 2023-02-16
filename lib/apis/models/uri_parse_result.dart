@@ -1,4 +1,4 @@
-import 'package:walletconnect_dart_v2/apis/core/relay_client/relay_client_models.dart';
+import 'package:walletconnect_flutter_v2/apis/core/relay_client/relay_client_models.dart';
 
 class URIParseResult {
   final String protocol;

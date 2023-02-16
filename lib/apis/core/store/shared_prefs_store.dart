@@ -1,9 +1,9 @@
 import 'dart:convert';
 
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:walletconnect_dart_v2/apis/core/store/i_store.dart';
-import 'package:walletconnect_dart_v2/apis/utils/constants.dart';
-import 'package:walletconnect_dart_v2/apis/utils/errors.dart';
+import 'package:walletconnect_flutter_v2/apis/core/store/i_store.dart';
+import 'package:walletconnect_flutter_v2/apis/utils/constants.dart';
+import 'package:walletconnect_flutter_v2/apis/utils/errors.dart';
 
 class SharedPrefsStores implements IStore<Map<String, dynamic>> {
   late SharedPreferences prefs;

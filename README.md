@@ -152,7 +152,7 @@ clientB.onAuthRequest.subscribe((AuthRequest? args) async {
 // Then, scan the QR code and parse the URI, and pair with the dApp
 // On the first pairing, you will immediately receive onSessionProposal and onAuthRequest events.
 Uri uri = Uri.parse(scannedUriString);
-await wcClient.pair(uri: uri);
+final PairingInfo pairing = await wcClient.pair(uri: uri);
 
 // Present the UI to the user, and allow them to reject or approve the proposal
 final walletNamespaces = {
@@ -196,7 +196,24 @@ await wcClient.respondAuthRequest(
   error: WalletConnectErrorResponse(code: 12001, message: 'User rejected the signature request'),
 );
 
-// Your wallet is setup and ready to go!
+// You can also emit events for the dApp
+await wcClient.emitSessionEvent(
+  topic: sessionTopic,
+  chainId: 'eip155:1',
+  event: SessionEventParams(
+    name: 'chainChanged',
+    data: 'a message!',
+  ),
+);
+
+// Finally, you can disconnect
+await wcClient.disconnectSession(
+  topic: pairing.topic,
+  reason: WalletConnectErrorResponse(
+    code: 4001,
+    message: 'User disconnected session',
+  ),
+);
 ```
 
 # To Build

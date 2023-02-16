@@ -1,6 +1,6 @@
-import 'package:walletconnect_dart_v2/apis/core/crypto/crypto_models.dart';
-import 'package:walletconnect_dart_v2/apis/core/crypto/i_crypto_utils.dart';
-import 'package:walletconnect_dart_v2/apis/core/key_chain/i_key_chain.dart';
+import 'package:walletconnect_flutter_v2/apis/core/crypto/crypto_models.dart';
+import 'package:walletconnect_flutter_v2/apis/core/crypto/i_crypto_utils.dart';
+import 'package:walletconnect_flutter_v2/apis/core/key_chain/i_key_chain.dart';
 
 abstract class ICrypto {
   abstract final String name;

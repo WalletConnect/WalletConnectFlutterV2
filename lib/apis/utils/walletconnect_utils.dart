@@ -1,9 +1,9 @@
 import 'dart:convert';
 
 import 'package:universal_io/io.dart';
-import 'package:walletconnect_dart_v2/apis/core/relay_client/relay_client_models.dart';
-import 'package:walletconnect_dart_v2/apis/models/basic_models.dart';
-import 'package:walletconnect_dart_v2/apis/models/uri_parse_result.dart';
+import 'package:walletconnect_flutter_v2/apis/core/relay_client/relay_client_models.dart';
+import 'package:walletconnect_flutter_v2/apis/models/basic_models.dart';
+import 'package:walletconnect_flutter_v2/apis/models/uri_parse_result.dart';
 
 class WalletConnectUtils {
   static bool isExpired(int expiry) {
