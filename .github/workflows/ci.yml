@@ -4,7 +4,6 @@
 # documentation.
 
 name: ci
-description: Executes Dart specific CI steps.
 
 on:
   push:
