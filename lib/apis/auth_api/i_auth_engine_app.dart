@@ -10,5 +10,6 @@ abstract class IAuthEngineApp extends IAuthEngineCommon {
   Future<AuthRequestResponse> requestAuth({
     required AuthRequestParams params,
     String? pairingTopic,
+    List<List<String>>? methods,
   });
 }

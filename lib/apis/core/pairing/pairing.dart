@@ -84,7 +84,7 @@ class Pairing implements IPairing {
 
   @override
   Future<CreateResponse> create({
-    List<List<String>> methods = const [],
+    List<List<String>>? methods,
   }) async {
     _checkInitialized();
     final String symKey = core.crypto.getUtils().generateRandomBytes32();

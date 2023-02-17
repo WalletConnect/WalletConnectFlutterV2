@@ -20,6 +20,7 @@ abstract class ISignEngineApp extends ISignEngineCommon {
     Map<String, String>? sessionProperties,
     String? pairingTopic,
     List<Relay>? relays,
+    List<List<String>>? methods,
   });
   Future<dynamic> request({
     required String topic,

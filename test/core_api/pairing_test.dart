@@ -18,7 +18,7 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   test("Format and parses URI correctly", () {
-    final Uri response = WalletConnectUtils.formatUri(
+    Uri response = WalletConnectUtils.formatUri(
         protocol: 'wc',
         version: '2',
         topic: 'abc',
@@ -26,23 +26,44 @@ void main() {
         relay: Relay('irn'),
         methods: [
           [MethodConstants.WC_SESSION_PROPOSE],
-          ['wc_authRequest', 'wc_authBatchRequest'],
+          [MethodConstants.WC_AUTH_REQUEST, 'wc_authBatchRequest'],
         ]);
     expect(
       Uri.decodeFull(response.toString()),
       'wc:abc@2?relay-protocol=irn&symKey=xyz&methods=["wc_sessionPropose"],["wc_authRequest","wc_authBatchRequest"]',
     );
 
-    final URIParseResult parsed = WalletConnectUtils.parseUri(response);
+    URIParseResult parsed = WalletConnectUtils.parseUri(response);
     expect(parsed.protocol, 'wc');
     expect(parsed.version, '2');
     expect(parsed.topic, 'abc');
     expect(parsed.symKey, 'xyz');
     expect(parsed.relay.protocol, 'irn');
     expect(parsed.methods.length, 3);
-    expect(parsed.methods[0], 'wc_sessionPropose');
-    expect(parsed.methods[1], 'wc_authRequest');
+    expect(parsed.methods[0], MethodConstants.WC_SESSION_PROPOSE);
+    expect(parsed.methods[1], MethodConstants.WC_AUTH_REQUEST);
     expect(parsed.methods[2], 'wc_authBatchRequest');
+
+    response = WalletConnectUtils.formatUri(
+      protocol: 'wc',
+      version: '2',
+      topic: 'abc',
+      symKey: 'xyz',
+      relay: Relay('irn'),
+      methods: null,
+    );
+    expect(
+      Uri.decodeFull(response.toString()),
+      'wc:abc@2?relay-protocol=irn&symKey=xyz&methods=[]',
+    );
+
+    parsed = WalletConnectUtils.parseUri(response);
+    expect(parsed.protocol, 'wc');
+    expect(parsed.version, '2');
+    expect(parsed.topic, 'abc');
+    expect(parsed.symKey, 'xyz');
+    expect(parsed.relay.protocol, 'irn');
+    expect(parsed.methods.length, 0);
   });
 
   group('Pairing API', () {
@@ -74,17 +95,33 @@ void main() {
       expect(coreB.pairing.getPairings().length, 0);
     });
 
-    test('Create returns pairing topic and URI in expected format', () async {
-      CreateResponse response = await coreA.pairing.create();
-      expect(response.topic.length, 64);
-      // print(response.uri);
-      // print('${coreA.protocol}:${response.topic}@${coreA.version}');
-      expect(
-        response.uri.toString().startsWith(
-              '${coreA.protocol}:${response.topic}@${coreA.version}',
-            ),
-        true,
-      );
+    group('create', () {
+      test('returns pairing topic and URI in expected format', () async {
+        CreateResponse response = await coreA.pairing.create();
+        expect(response.topic.length, 64);
+        // print(response.uri);
+        // print('${coreA.protocol}:${response.topic}@${coreA.version}');
+        expect(
+          response.uri.toString().startsWith(
+                '${coreA.protocol}:${response.topic}@${coreA.version}',
+              ),
+          true,
+        );
+
+        response = await coreB.pairing.create(methods: [
+          [MethodConstants.WC_SESSION_PROPOSE],
+          [MethodConstants.WC_AUTH_REQUEST, 'wc_authBatchRequest'],
+        ]);
+
+        final URIParseResult parsed = WalletConnectUtils.parseUri(response.uri);
+        expect(parsed.protocol, 'wc');
+        expect(parsed.version, '2');
+        expect(parsed.relay.protocol, 'irn');
+        expect(parsed.methods.length, 3);
+        expect(parsed.methods[0], MethodConstants.WC_SESSION_PROPOSE);
+        expect(parsed.methods[1], MethodConstants.WC_AUTH_REQUEST);
+        expect(parsed.methods[2], 'wc_authBatchRequest');
+      });
     });
 
     group('Pair', () {

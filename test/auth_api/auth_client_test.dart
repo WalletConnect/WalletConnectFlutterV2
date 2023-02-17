@@ -356,6 +356,40 @@ void runTests({
     });
 
     group('requestAuth', () {
+      test('creates correct URI', () async {
+        AuthRequestResponse response = await clientA.requestAuth(
+          params: testAuthRequestParamsValid,
+        );
+
+        expect(response.uri != null, true);
+        URIParseResult parsed = WalletConnectUtils.parseUri(response.uri!);
+        expect(parsed.protocol, 'wc');
+        expect(parsed.version, '2');
+        expect(parsed.topic, response.pairingTopic);
+        expect(parsed.relay.protocol, 'irn');
+        if (clientA is IWeb3App) {
+          expect(parsed.methods.length, 3);
+          expect(parsed.methods[0], MethodConstants.WC_SESSION_PROPOSE);
+          expect(parsed.methods[1], MethodConstants.WC_SESSION_REQUEST);
+          expect(parsed.methods[2], MethodConstants.WC_AUTH_REQUEST);
+        } else {
+          expect(parsed.methods.length, 1);
+          expect(parsed.methods[0], MethodConstants.WC_AUTH_REQUEST);
+        }
+
+        response = await clientA.requestAuth(
+          params: testAuthRequestParamsValid,
+          methods: [],
+        );
+
+        expect(response.uri != null, true);
+        parsed = WalletConnectUtils.parseUri(response.uri!);
+        expect(parsed.protocol, 'wc');
+        expect(parsed.version, '2');
+        expect(parsed.relay.protocol, 'irn');
+        expect(parsed.methods.length, 0);
+      });
+
       test('invalid request params', () async {
         expect(
           () => clientA.requestAuth(
