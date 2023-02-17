@@ -1,0 +1,12 @@
+name: release
+
+on:
+  # schedule:
+    # Runs "Every Monday 10am CET"
+    # - cron: '0 10 * * 1'
+
+  workflow_dispatch:
+
+jobs:
+  publish:
+    uses: dart-lang/setup-dart/.github/workflows/publish.yml
