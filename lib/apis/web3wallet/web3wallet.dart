@@ -149,11 +149,18 @@ class Web3Wallet implements IWeb3Wallet {
   @override
   Event<SessionDelete> get onSessionDelete => signEngine.onSessionDelete;
   @override
+  Event<SessionExpire> get onSessionExpire => signEngine.onSessionExpire;
+  @override
   Event<SessionProposalEvent> get onSessionProposal =>
       signEngine.onSessionProposal;
   @override
+  Event<SessionProposalEvent> get onProposalExpire =>
+      signEngine.onProposalExpire;
+  @override
   Event<SessionRequestEvent> get onSessionRequest =>
       signEngine.onSessionRequest;
+  @override
+  Event<SessionPing> get onSessionPing => signEngine.onSessionPing;
 
   @override
   IGenericStore<ProposalData> get proposals => signEngine.proposals;

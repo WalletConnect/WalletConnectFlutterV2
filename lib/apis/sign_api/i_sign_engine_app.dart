@@ -12,9 +12,7 @@ abstract class ISignEngineApp extends ISignEngineCommon {
   abstract final Event<SessionConnect> onSessionConnect;
   abstract final Event<SessionUpdate> onSessionUpdate;
   abstract final Event<SessionExtend> onSessionExtend;
-  abstract final Event<SessionExpire> onSessionExpire;
   abstract final Event<SessionEvent> onSessionEvent;
-  abstract final Event<SessionPing> onSessionPing;
 
   Future<ConnectResponse> connect({
     Map<String, RequiredNamespace>? requiredNamespaces,

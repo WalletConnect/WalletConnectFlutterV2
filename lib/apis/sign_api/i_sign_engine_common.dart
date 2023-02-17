@@ -11,6 +11,8 @@ import 'package:walletconnect_flutter_v2/apis/sign_api/models/sign_client_events
 
 abstract class ISignEngineCommon {
   abstract final Event<SessionDelete> onSessionDelete;
+  abstract final Event<SessionExpire> onSessionExpire;
+  abstract final Event<SessionPing> onSessionPing;
 
   abstract final ICore core;
   abstract final PairingMetadata metadata;

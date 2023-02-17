@@ -48,6 +48,7 @@ class Web3WalletHelpers {
     AuthResponse? authResponse;
 
     // Listen for a proposal via connect to avoid race conditions
+    Completer signCompleter = Completer();
     final signHandler = (SessionProposalEvent? args) async {
       // print('B Session Proposal');
 
@@ -63,13 +64,15 @@ class Web3WalletHelpers {
         namespaces: workingNamespaces,
       );
       sessionB = response.session;
-      if (sessionB == null) {
-        print('session b was set to null');
-      }
+      signCompleter.complete();
+      // if (sessionB == null) {
+      //   print('session b was set to null');
+      // }
     };
     b.onSessionProposal.subscribe(signHandler);
 
     // Listen for a auth request
+    Completer authCompleter = Completer();
     final authHandler = (AuthRequest? args) async {
       // print('B Session Proposal');
 
@@ -93,6 +96,7 @@ class Web3WalletHelpers {
         iss: TEST_ISSUER_EIP191,
         signature: CacaoSignature(t: CacaoSignature.EIP191, s: sig),
       );
+      authCompleter.complete();
     };
     b.onAuthRequest.subscribe(authHandler);
 
@@ -169,9 +173,10 @@ class Web3WalletHelpers {
         start -
         (qrCodeScanLatencyMs ?? 0);
 
-    await Future.delayed(Duration(milliseconds: 200));
+    // await Future.delayed(Duration(milliseconds: 200));
+    await signCompleter.future;
+    await authCompleter.future;
 
-    if (sessionB == null) print(sessionB);
     if (sessionA == null) throw Exception("expect session A to be defined");
     if (sessionB == null) throw Exception("expect session B to be defined");
 

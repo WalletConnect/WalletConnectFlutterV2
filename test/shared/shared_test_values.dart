@@ -1,7 +1,13 @@
 import 'package:walletconnect_flutter_v2/apis/core/crypto/crypto_models.dart';
 
-const TEST_RELAY_URL = 'wss://relay.walletconnect.com';
-const TEST_PROJECT_ID = '7e984f90b95f0236d3c12d791537f233';
+const TEST_RELAY_URL = String.fromEnvironment(
+  'RELAY_ENDPOINT',
+  defaultValue: 'wss://relay.walletconnect.com',
+);
+const TEST_PROJECT_ID = String.fromEnvironment(
+  'PROJECT_ID',
+  defaultValue: '7e984f90b95f0236d3c12d791537f233',
+);
 
 const TEST_PAIRING_TOPIC = '';
 const TEST_SESSION_TOPIC = '';

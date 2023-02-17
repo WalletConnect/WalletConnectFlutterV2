@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
 import 'package:walletconnect_flutter_v2/apis/core/core.dart';
@@ -116,6 +118,8 @@ void main() {
         await coreB.pairing.pair(uri: response.uri, activatePairing: true);
         coreA.pairing.activate(topic: response.topic);
 
+        Completer completerA = Completer();
+        Completer completerB = Completer();
         int counterA = 0;
         int counterB = 0;
         coreA.relayClient.onRelayClientMessage.subscribe((args) {
@@ -123,12 +127,14 @@ void main() {
           expect(args!.topic, response.topic);
           expect(args.message, 'Swag');
           counterA++;
+          completerA.complete();
         });
         coreB.relayClient.onRelayClientMessage.subscribe((args) {
           expect(args == null, false);
           expect(args!.topic, response.topic);
           expect(args.message, TEST_MESSAGE);
           counterB++;
+          completerB.complete();
         });
 
         // await coreA.relayClient.unsubscribe(response.topic);
@@ -147,7 +153,8 @@ void main() {
           tag: 0,
         );
 
-        await Future.delayed(Duration(milliseconds: 100));
+        await completerA.future;
+        await completerB.future;
 
         expect(counterA, 1);
         expect(counterB, 1);

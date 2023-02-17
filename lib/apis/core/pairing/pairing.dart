@@ -259,25 +259,27 @@ class Pairing implements IPairing {
     await _isValidPing(topic);
 
     if (pairings!.has(topic)) {
-      try {
-        final bool _ = await sendRequest(
-          topic,
-          MethodConstants.WC_PAIRING_PING,
-          {},
-        );
-        onPairingPing.broadcast(
-          PairingEvent(
-            topic: topic,
-          ),
-        );
-      } on JsonRpcError catch (e) {
-        onPairingPing.broadcast(
-          PairingEvent(
-            topic: topic,
-            error: e,
-          ),
-        );
-      }
+      // try {
+      final bool _ = await sendRequest(
+        topic,
+        MethodConstants.WC_PAIRING_PING,
+        {},
+      );
+      // onPairingPing.broadcast(
+      //   PairingEvent(
+      //     topic: topic,
+      //   ),
+      // );
+      // }
+      //  on JsonRpcError catch (e) {
+      //   // onPairingPing.broadcast(
+      //   //   PairingEvent(
+      //   //     topic: topic,
+      //   //     error: e,
+      //   //   ),
+      //   // );
+      //   rethrow;
+      // }
     }
   }
 
@@ -287,26 +289,29 @@ class Pairing implements IPairing {
 
     await _isValidDisconnect(topic);
     if (pairings!.has(topic)) {
-      try {
-        await sendRequest(
-          topic,
-          MethodConstants.WC_PAIRING_DELETE,
-          Errors.getSdkError(Errors.USER_DISCONNECTED).toJson(),
-        );
-        await pairings!.delete(topic);
-        onPairingDelete.broadcast(
-          PairingEvent(
-            topic: topic,
-          ),
-        );
-      } on JsonRpcError catch (e) {
-        onPairingDelete.broadcast(
-          PairingEvent(
-            topic: topic,
-            error: e,
-          ),
-        );
-      }
+      // try {
+      await sendRequest(
+        topic,
+        MethodConstants.WC_PAIRING_DELETE,
+        Errors.getSdkError(Errors.USER_DISCONNECTED).toJson(),
+      );
+      await pairings!.delete(topic);
+
+      // onPairingDelete.broadcast(
+      //   PairingEvent(
+      //     topic: topic,
+      //   ),
+      // );
+      // }
+      //  on JsonRpcError catch (e) {
+      //   rethrow;
+      //   // onPairingDelete.broadcast(
+      //   //   PairingEvent(
+      //   //     topic: topic,
+      //   //     error: e,
+      //   //   ),
+      //   // );
+      // }
     }
   }
 

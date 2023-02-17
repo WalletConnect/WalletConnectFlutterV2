@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 
 import 'package:flutter_test/flutter_test.dart';
@@ -12,7 +13,7 @@ import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 import '../shared/shared_test_values.dart';
 import 'utils/engine_constants.dart';
 import 'utils/sign_client_constants.dart';
-import '../shared/sign_client_helpers.dart';
+import 'sign_client_helpers.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -133,8 +134,10 @@ void main() {
       );
 
       int counter = 0;
+      final completer = Completer.sync();
       client.onSessionExpire.subscribe((args) {
         counter++;
+        completer.complete();
       });
 
       client.sessions.set(TEST_SESSION_TOPIC, testSessionExpired);
@@ -145,7 +148,8 @@ void main() {
 
       client.core.expirer.expire(TEST_SESSION_TOPIC);
 
-      await Future.delayed(Duration(milliseconds: 150));
+      // await Future.delayed(Duration(milliseconds: 150));
+      await completer.future;
 
       expect(client.sessions.has(TEST_SESSION_TOPIC), false);
       expect(counter, 1);
@@ -160,20 +164,20 @@ void main() {
         ),
         metadata: PairingMetadata.empty(),
       );
-      client.proposals.set(
+      await client.proposals.set(
         TEST_PROPOSAL_EXPIRED_ID.toString(),
         TEST_PROPOSAL_EXPIRED,
       );
-      client.core.expirer.set(
+      await client.core.expirer.set(
         TEST_PROPOSAL_EXPIRED_ID.toString(),
         TEST_PROPOSAL_EXPIRED.expiry,
       );
 
-      client.core.expirer.expire(
+      await client.core.expirer.expire(
         TEST_PROPOSAL_EXPIRED_ID.toString(),
       );
 
-      await Future.delayed(Duration(milliseconds: 150));
+      // await Future.delayed(Duration(milliseconds: 150));
 
       expect(
         client.proposals.has(
@@ -241,13 +245,17 @@ void signingEngineTests({
       });
 
       test('connects, reconnects, and emits proper events', () async {
+        Completer completerA = Completer();
+        Completer completerB = Completer();
         int counterA = 0;
         int counterB = 0;
         clientA.onSessionConnect.subscribe((args) {
           counterA++;
+          completerA.complete();
         });
         clientB.onSessionProposal.subscribe((args) {
           counterB++;
+          completerB.complete();
         });
 
         final connectionInfo = await SignClientHelpers.testConnectPairApprove(
@@ -255,7 +263,22 @@ void signingEngineTests({
           clientB,
         );
 
-        await Future.delayed(Duration(milliseconds: 100));
+        // await Future.delayed(Duration(milliseconds: 100));
+        await completerA.future;
+        await completerB.future;
+
+        completerA = Completer();
+        completerB = Completer();
+        // clientA.onSessionConnect.unsubscribeAll();
+        // clientB.onSessionProposal.unsubscribeAll();
+        // clientA.onSessionConnect.subscribe((args) {
+        //   counterA++;
+        //   completerA.complete();
+        // });
+        // clientB.onSessionProposal.subscribe((args) {
+        //   counterB++;
+        //   completerB.complete();
+        // });
 
         expect(counterA, 1);
         expect(counterB, 1);
@@ -278,7 +301,9 @@ void signingEngineTests({
           pairingTopic: connectionInfo.pairing.topic,
         );
 
-        await Future.delayed(Duration(milliseconds: 100));
+        // await Future.delayed(Duration(milliseconds: 100));
+        await completerA.future;
+        await completerB.future;
 
         expect(counterA, 2);
         expect(counterB, 2);
@@ -411,8 +436,16 @@ void signingEngineTests({
         );
 
         int counter = 0;
+        Completer completer = Completer();
         clientB.core.expirer.onExpire.subscribe((args) {
           counter++;
+          completer.complete();
+        });
+        int counterSession = 0;
+        Completer completer2 = Completer();
+        clientB.onProposalExpire.subscribe((args) {
+          counterSession++;
+          completer2.complete();
         });
         expect(
           () async => await clientB.approveSession(
@@ -428,7 +461,10 @@ void signingEngineTests({
           ),
         );
 
-        await Future.delayed(Duration(milliseconds: 250));
+        // await Future.delayed(Duration(milliseconds: 250));
+        await completer.future;
+        await completer2.future;
+
         expect(
           clientB.proposals.has(
             TEST_PROPOSAL_EXPIRED_ID.toString(),
@@ -436,7 +472,9 @@ void signingEngineTests({
           false,
         );
         expect(counter, 1);
+        expect(counterSession, 1);
         clientB.core.expirer.onExpire.unsubscribeAll();
+        clientB.onProposalExpire.unsubscribeAll();
       });
 
       test('invalid namespaces', () async {
@@ -541,8 +579,16 @@ void signingEngineTests({
         );
 
         int counter = 0;
+        Completer completer = Completer();
         clientB.core.expirer.onExpire.subscribe((args) {
           counter++;
+          completer.complete();
+        });
+        int counter2 = 0;
+        Completer completer2 = Completer();
+        clientB.onProposalExpire.subscribe((args) {
+          counter2++;
+          completer2.complete();
         });
         expect(
           () async => await clientB.rejectSession(
@@ -558,7 +604,10 @@ void signingEngineTests({
           ),
         );
 
-        await Future.delayed(Duration(milliseconds: 150));
+        // await Future.delayed(Duration(milliseconds: 150));
+        await completer.future;
+        await completer2.future;
+
         expect(
           clientB.proposals.has(
             TEST_PROPOSAL_EXPIRED_ID.toString(),
@@ -566,7 +615,9 @@ void signingEngineTests({
           false,
         );
         expect(counter, 1);
+        expect(counter2, 1);
         clientB.core.expirer.onExpire.unsubscribeAll();
+        clientB.onProposalExpire.unsubscribeAll();
       });
     });
 
@@ -581,8 +632,10 @@ void signingEngineTests({
         );
 
         int counter = 0;
+        Completer completer = Completer();
         clientA.onSessionUpdate.subscribe((args) {
           counter++;
+          completer.complete();
         });
 
         await clientB.updateSession(
@@ -590,7 +643,8 @@ void signingEngineTests({
           namespaces: {EVM_NAMESPACE: TEST_ETH_ARB_NAMESPACE},
         );
 
-        await Future.delayed(Duration(milliseconds: 100));
+        // await Future.delayed(Duration(milliseconds: 100));
+        await completer.future;
 
         final resultA =
             clientA.sessions.get(connectionInfo.session.topic)!.namespaces;
@@ -633,9 +687,17 @@ void signingEngineTests({
           ),
         );
 
-        int counter = 0;
+        int counterExpire = 0;
+        Completer completerExpire = Completer();
         clientB.core.expirer.onExpire.subscribe((args) {
-          counter++;
+          counterExpire++;
+          completerExpire.complete();
+        });
+        int counterSession = 0;
+        Completer completerSession = Completer();
+        clientB.onSessionExpire.subscribe((args) {
+          counterSession++;
+          completerSession.complete();
         });
         expect(
           () async => await clientB.updateSession(
@@ -650,7 +712,9 @@ void signingEngineTests({
             ),
           ),
         );
-        await Future.delayed(Duration(milliseconds: 150));
+        // await Future.delayed(Duration(milliseconds: 150));
+        await completerExpire.future;
+        await completerSession.future;
 
         expect(
           clientB.sessions.has(
@@ -658,8 +722,10 @@ void signingEngineTests({
           ),
           false,
         );
-        expect(counter, 1);
+        expect(counterExpire, 1);
+        expect(counterSession, 1);
         clientB.core.expirer.onExpire.unsubscribeAll();
+        clientB.onSessionExpire.unsubscribeAll();
       });
 
       test('invalid namespaces', () async {
@@ -716,8 +782,10 @@ void signingEngineTests({
         // );
 
         int counter = 0;
+        Completer completer = Completer();
         clientA.onSessionExtend.subscribe((args) {
           counter++;
+          completer.complete();
         });
 
         final offset = 100;
@@ -727,7 +795,8 @@ void signingEngineTests({
           topic: connectionInfo.session.topic,
         );
 
-        await Future.delayed(Duration(milliseconds: 100));
+        // await Future.delayed(Duration(milliseconds: 100));
+        await completer.future;
 
         final endingExpiryA =
             clientA.sessions.get(connectionInfo.session.topic)!.expiry;
@@ -783,8 +852,16 @@ void signingEngineTests({
         );
 
         int counter = 0;
+        Completer completer = Completer();
         clientB.core.expirer.onExpire.subscribe((args) {
           counter++;
+          completer.complete();
+        });
+        int counterSession = 0;
+        Completer completerSession = Completer();
+        clientB.onSessionExpire.subscribe((args) {
+          counterSession++;
+          completerSession.complete();
         });
         expect(
           () async => await clientB.extendSession(
@@ -799,7 +876,10 @@ void signingEngineTests({
           ),
         );
 
-        await Future.delayed(Duration(milliseconds: 150));
+        // await Future.delayed(Duration(milliseconds: 150));
+        await completer.future;
+        await completerSession.future;
+
         expect(
           clientB.sessions.has(
             TEST_SESSION_EXPIRED_TOPIC,
@@ -807,7 +887,9 @@ void signingEngineTests({
           false,
         );
         expect(counter, 1);
+        expect(counterSession, 1);
         clientB.core.expirer.onExpire.unsubscribeAll();
+        clientB.onSessionExpire.unsubscribeAll();
       });
     });
 
@@ -871,7 +953,7 @@ void signingEngineTests({
           expect(false, true);
         }
 
-        await Future.delayed(Duration(milliseconds: 150));
+        await Future.delayed(Duration(milliseconds: 150)); // TODO: remove
         expect(clientB.getPendingSessionRequests().length, 1);
 
         /// Event driven, null handler ///
@@ -989,8 +1071,16 @@ void signingEngineTests({
         );
 
         int counter = 0;
+        Completer completer = Completer();
         clientA.core.expirer.onExpire.subscribe((args) {
           counter++;
+          completer.complete();
+        });
+        int counterSession = 0;
+        Completer completerSession = Completer();
+        clientA.onSessionExpire.subscribe((args) {
+          counterSession++;
+          completerSession.complete();
         });
         // print(
         //     'clientA.session exiry: ${clientA.sessions.get(TEST_SESSION_EXPIRED_TOPIC)!.expiry}');
@@ -1012,7 +1102,10 @@ void signingEngineTests({
           ),
         );
 
-        await Future.delayed(Duration(milliseconds: 150));
+        // await Future.delayed(Duration(milliseconds: 150));
+        await completer.future;
+        await completerSession.future;
+
         expect(
           clientA.sessions.has(
             TEST_SESSION_EXPIRED_TOPIC,
@@ -1020,7 +1113,9 @@ void signingEngineTests({
           false,
         );
         expect(counter, 1);
+        expect(counterSession, 1);
         clientA.core.expirer.onExpire.unsubscribeAll();
+        clientB.onSessionExpire.unsubscribeAll();
       });
 
       test('invalid chains or methods', () async {
@@ -1087,10 +1182,12 @@ void signingEngineTests({
           );
         }
 
+        final completer = Completer<void>();
         clientA.onSessionEvent.subscribe((SessionEvent? session) {
           expect(session != null, true);
           expect(session!.topic, sessionTopic);
           expect(session.data, TEST_MESSAGE_1);
+          completer.complete();
         });
 
         final requestHandler = (topic, request) async {
@@ -1122,7 +1219,7 @@ void signingEngineTests({
         }
 
         // Wait a second for the event to fire
-        await Future.delayed(const Duration(milliseconds: 100));
+        await completer.future;
 
         clientA.onSessionEvent.unsubscribeAll();
       });
@@ -1162,8 +1259,16 @@ void signingEngineTests({
         );
 
         int counter = 0;
+        Completer completer = Completer<void>();
         clientB.core.expirer.onExpire.subscribe((args) {
           counter++;
+          completer.complete();
+        });
+        int counterSession = 0;
+        Completer completerSession = Completer();
+        clientB.onSessionExpire.subscribe((args) {
+          counterSession++;
+          completerSession.complete();
         });
         expect(
           () async => await clientB.emitSessionEvent(
@@ -1182,7 +1287,11 @@ void signingEngineTests({
             ),
           ),
         );
-        await Future.delayed(Duration(milliseconds: 150));
+
+        // await Future.delayed(Duration(milliseconds: 150));
+        await completer.future;
+        await completerSession.future;
+
         expect(
           clientB.sessions.has(
             TEST_SESSION_EXPIRED_TOPIC,
@@ -1190,7 +1299,9 @@ void signingEngineTests({
           false,
         );
         expect(counter, 1);
+        expect(counterSession, 1);
         clientB.core.expirer.onExpire.unsubscribeAll();
+        clientB.onSessionExpire.unsubscribeAll();
       });
 
       test('invalid chains or events', () async {
@@ -1240,23 +1351,28 @@ void signingEngineTests({
         final sessionTopic = connectionInfo.session.topic;
         final pairingTopic = connectionInfo.pairing.topic;
 
+        Completer completerA = Completer<void>();
+        Completer completerB = Completer<void>();
         int counterAP = 0;
         int counterBP = 0;
-        clientA.core.pairing.onPairingPing.subscribe((PairingEvent? pairing) {
-          expect(pairing != null, true);
-          expect(pairing!.topic, pairingTopic);
+        clientB.onSessionPing.subscribe((SessionPing? ping) {
+          expect(ping != null, true);
+          expect(ping!.topic, sessionTopic);
           counterAP++;
+          completerA.complete();
         });
         clientB.core.pairing.onPairingPing.subscribe((PairingEvent? pairing) {
           expect(pairing != null, true);
           expect(pairing!.topic, pairingTopic);
           counterBP++;
+          completerB.complete();
         });
 
         await clientA.ping(topic: sessionTopic);
         await clientA.ping(topic: pairingTopic);
 
-        await Future.delayed(Duration(milliseconds: 150));
+        await completerA.future;
+        await completerB.future;
 
         expect(counterAP, 1);
         expect(counterBP, 1);
@@ -1296,8 +1412,16 @@ void signingEngineTests({
         );
 
         int counter = 0;
+        Completer completer = Completer<void>();
         clientA.core.expirer.onExpire.subscribe((args) {
           counter++;
+          completer.complete();
+        });
+        int counterSession = 0;
+        Completer completerSession = Completer();
+        clientA.onSessionExpire.subscribe((args) {
+          counterSession++;
+          completerSession.complete();
         });
         expect(
           () async => await clientA.ping(
@@ -1311,7 +1435,11 @@ void signingEngineTests({
             ),
           ),
         );
-        await Future.delayed(Duration(milliseconds: 150));
+
+        // await Future.delayed(Duration(milliseconds: 150));
+        await completer.future;
+        await completerSession.future;
+
         expect(
           clientA.sessions.has(
             TEST_SESSION_EXPIRED_TOPIC,
@@ -1319,7 +1447,9 @@ void signingEngineTests({
           false,
         );
         expect(counter, 1);
+        expect(counterSession, 1);
         clientA.core.expirer.onExpire.unsubscribeAll();
+        clientA.onSessionExpire.unsubscribeAll();
       });
     });
 
@@ -1332,17 +1462,21 @@ void signingEngineTests({
         );
         String pairingATopic = connectionInfo.pairing.topic;
 
+        Completer completerA = Completer<void>();
+        Completer completerB = Completer<void>();
         int counterA = 0;
         int counterB = 0;
         clientA.core.pairing.onPairingDelete.subscribe((PairingEvent? e) {
           expect(e != null, true);
           expect(e!.topic, pairingATopic);
           counterA++;
+          completerA.complete();
         });
         clientB.core.pairing.onPairingDelete.subscribe((PairingEvent? e) {
           expect(e != null, true);
           expect(e!.topic, pairingATopic);
           counterB++;
+          completerB.complete();
         });
 
         WalletConnectError reason =
@@ -1355,13 +1489,13 @@ void signingEngineTests({
           ),
         );
 
-        await Future.delayed(Duration(milliseconds: 150));
+        // await Future.delayed(Duration(milliseconds: 150));
+        await completerB.future;
 
         // TODO: See if this should delete the session as well
         expect(clientA.pairings.get(pairingATopic), null);
         expect(clientB.pairings.get(pairingATopic), null);
 
-        expect(counterA, 1);
         expect(counterB, 1);
 
         connectionInfo = await SignClientHelpers.testConnectPairApprove(
@@ -1379,14 +1513,15 @@ void signingEngineTests({
           ),
         );
 
-        await Future.delayed(Duration(milliseconds: 150));
+        // await Future.delayed(Duration(milliseconds: 150));
+        await completerA.future;
+        await completerB.future;
 
         // TODO: See if this should delete the session as well
         expect(clientA.pairings.get(pairingATopic), null);
         expect(clientB.pairings.get(pairingATopic), null);
 
-        expect(counterA, 2);
-        expect(counterB, 2);
+        expect(counterA, 1);
 
         clientA.core.pairing.onPairingDelete.unsubscribeAll();
         clientB.core.pairing.onPairingDelete.unsubscribeAll();
@@ -1400,17 +1535,21 @@ void signingEngineTests({
         );
         String sessionATopic = connectionInfo.session.topic;
 
+        Completer completerA = Completer<void>();
+        Completer completerB = Completer<void>();
         int counterA = 0;
         int counterB = 0;
         clientA.onSessionDelete.subscribe((SessionDelete? e) {
           expect(e != null, true);
           expect(e!.topic, sessionATopic);
           counterA++;
+          completerA.complete();
         });
         clientB.onSessionDelete.subscribe((SessionDelete? e) {
           expect(e != null, true);
           expect(e!.topic, sessionATopic);
           counterB++;
+          completerB.complete();
         });
 
         WalletConnectError reason =
@@ -1423,7 +1562,9 @@ void signingEngineTests({
           ),
         );
 
-        await Future.delayed(Duration(milliseconds: 250));
+        // await Future.delayed(Duration(milliseconds: 250));
+        // await completerA.future;
+        await completerB.future;
 
         expect(clientA.sessions.get(sessionATopic), null);
         expect(clientB.sessions.get(sessionATopic), null);
@@ -1445,7 +1586,8 @@ void signingEngineTests({
           ),
         );
 
-        await Future.delayed(Duration(milliseconds: 150));
+        // await Future.delayed(Duration(milliseconds: 150));
+        await completerA.future;
 
         // TODO: See if this should delete the session as well
         expect(clientA.pairings.get(sessionATopic), null);
@@ -1493,8 +1635,16 @@ void signingEngineTests({
           );
 
           int counter = 0;
+          Completer completer = Completer<void>();
           client.core.expirer.onExpire.subscribe((e) {
             counter++;
+            completer.complete();
+          });
+          int counterSession = 0;
+          Completer completerSession = Completer();
+          client.onSessionExpire.subscribe((args) {
+            counterSession++;
+            completerSession.complete();
           });
           expect(
             () async => await client.disconnectSession(
@@ -1513,7 +1663,10 @@ void signingEngineTests({
             ),
           );
 
-          await Future.delayed(Duration(milliseconds: 150));
+          // await Future.delayed(Duration(milliseconds: 150));
+          await completer.future;
+          await completerSession.future;
+
           expect(
             client.sessions.has(
               TEST_SESSION_EXPIRED_TOPIC,
@@ -1521,7 +1674,9 @@ void signingEngineTests({
             false,
           );
           expect(counter, 1);
+          expect(counterSession, 1);
           client.core.expirer.onExpire.unsubscribeAll();
+          client.onSessionExpire.unsubscribeAll();
         });
       }
     });

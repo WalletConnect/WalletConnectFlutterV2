@@ -12,6 +12,7 @@ import 'package:walletconnect_flutter_v2/apis/sign_api/models/sign_client_models
 abstract class ISignEngineWallet extends ISignEngineCommon {
   abstract final Event<SessionProposalEvent> onSessionProposal;
   abstract final Event<SessionRequestEvent> onSessionRequest;
+  abstract final Event<SessionProposalEvent> onProposalExpire;
 
   Future<PairingInfo> pair({
     required Uri uri,
