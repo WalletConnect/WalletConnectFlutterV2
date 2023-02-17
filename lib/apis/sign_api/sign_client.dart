@@ -20,7 +20,6 @@ import 'package:walletconnect_flutter_v2/apis/sign_api/models/sign_client_events
 import 'package:walletconnect_flutter_v2/apis/sign_api/models/session_models.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/sessions.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/utils/sign_constants.dart';
-import 'package:walletconnect_flutter_v2/apis/utils/method_constants.dart';
 
 class SignClient implements ISignClient {
   bool _initialized = false;
