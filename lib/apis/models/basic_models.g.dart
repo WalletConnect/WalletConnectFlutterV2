@@ -6,19 +6,19 @@ part of 'basic_models.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-WalletConnectError _$WCErrorFromJson(Map<String, dynamic> json) =>
+WalletConnectError _$WalletConnectErrorFromJson(Map<String, dynamic> json) =>
     WalletConnectError(
       code: json['code'] as int,
       message: json['message'] as String,
     );
 
-Map<String, dynamic> _$WCErrorToJson(WalletConnectError instance) =>
+Map<String, dynamic> _$WalletConnectErrorToJson(WalletConnectError instance) =>
     <String, dynamic>{
       'code': instance.code,
       'message': instance.message,
     };
 
-WalletConnectErrorResponse _$WCErrorResponseFromJson(
+WalletConnectErrorResponse _$WalletConnectErrorResponseFromJson(
         Map<String, dynamic> json) =>
     WalletConnectErrorResponse(
       code: json['code'] as int,
@@ -26,7 +26,7 @@ WalletConnectErrorResponse _$WCErrorResponseFromJson(
       data: json['data'] as String?,
     );
 
-Map<String, dynamic> _$WCErrorResponseToJson(
+Map<String, dynamic> _$WalletConnectErrorResponseToJson(
         WalletConnectErrorResponse instance) =>
     <String, dynamic>{
       'code': instance.code,
