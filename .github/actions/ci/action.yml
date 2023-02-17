@@ -7,7 +7,7 @@ inputs:
   relay-endpoint:
     description: 'The endpoint of the relay e.g. relay.walletconnect.com'
     required: false
-    default: 'relay.walletconnect.com'
+    default: 'wss://relay.walletconnect.com'
   project-id:
     description: 'WalletConnect project id'
     required: true
@@ -17,30 +17,23 @@ runs:
   steps:
     # General Tests
     - name: Install packages
+      shell: bash
       run: flutter pub get
 
-    - name: Verify formatting
+    - name: Verify formatting and analyze project source
+      shell: bash
       run: dart format --output=none --set-exit-if-changed .
-    
 
     - name: Analyze project source
+      shell: bash
       run: flutter analyze
 
     # Unit and Integration Tests
     - name: Run tests
       if: inputs.type == 'integration-tests'
+      shell: bash
       env:
         RELAY_ENDPOINT: ${{ inputs.relay-endpoint }}
         PROJECT_ID: ${{ inputs.project-id }}
       run: flutter test --dart-define=RELAY_ENDPOINT=$RELAY_ENDPOINT --dart-define=PROJECT_ID=$PROJECT_ID
-
-    # Uncomment this step to verify the use of 'dart format' on each commit.
-    
-
-    # Consider passing '--fatal-infos' for slightly stricter analysis.
-    
-
-    # Your project will need to have tests in test/ and a dependency on
-    # package:test for this step to succeed. Note that Flutter projects will
-    # want to change this to 'flutter test'.
     

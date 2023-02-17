@@ -73,8 +73,8 @@ class WcSessionProposeResponse {
 class WcSessionSettleRequest {
   final Relay relay;
   final Map<String, Namespace> namespaces;
-  final Map<String, RequiredNamespace> requiredNamespaces;
-  final Map<String, RequiredNamespace> optionalNamespaces;
+  final Map<String, RequiredNamespace>? requiredNamespaces;
+  final Map<String, RequiredNamespace>? optionalNamespaces;
   final Map<String, String>? sessionProperties;
   final int expiry;
   final ConnectionMetadata controller;

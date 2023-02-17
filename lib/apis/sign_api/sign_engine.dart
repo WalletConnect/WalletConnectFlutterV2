@@ -1382,7 +1382,7 @@ class SignEngine implements ISignEngine {
     final SessionData session = sessions.get(topic)!;
 
     SignApiValidatorUtils.isConformingNamespaces(
-      requiredNamespaces: session.requiredNamespaces,
+      requiredNamespaces: session.requiredNamespaces ?? {},
       namespaces: namespaces,
       context: 'update()',
     );
