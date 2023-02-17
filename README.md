@@ -1,6 +1,6 @@
 # Overview
 
-WalletConnect Dart v2 library for Flutter, heavily inspired by the WalletConnect V2 Javacript Monorepo.  
+WalletConnect Dart v2 library for Flutter, heavily inspired by the WalletConnect V2 Javascript Monorepo.  
 
 Original work for this library is attributed to [Eucalyptus Labs](https://eucalyptuslabs.com/) and Sterling Long for [Koala Wallet](https://koalawallet.io/), a wallet built for the Kadena blockchain.
 
