@@ -33,6 +33,9 @@ class SignEngine implements ISignEngine {
   final Event<SessionProposalEvent> onSessionProposal =
       Event<SessionProposalEvent>();
   @override
+  final Event<SessionProposalEvent> onProposalExpire =
+      Event<SessionProposalEvent>();
+  @override
   final Event<SessionUpdate> onSessionUpdate = Event<SessionUpdate>();
   @override
   final Event<SessionExtend> onSessionExtend = Event<SessionExtend>();
@@ -958,13 +961,13 @@ class SignEngine implements ISignEngine {
         MethodConstants.WC_SESSION_DELETE,
         true,
       );
+      await _deleteSession(topic);
       onSessionDelete.broadcast(
         SessionDelete(
           payload.id,
           topic,
         ),
       );
-      await _deleteSession(topic);
     } on WalletConnectError catch (err) {
       await core.pairing.sendError(
         payload.id,
@@ -1165,9 +1168,16 @@ class SignEngine implements ISignEngine {
         ),
       );
     } else if (proposals.has(event.target)) {
+      ProposalData proposal = proposals.get(event.target)!;
       await _deleteProposal(
         int.parse(event.target),
         expirerHasDeleted: true,
+      );
+      onProposalExpire.broadcast(
+        SessionProposalEvent(
+          int.parse(event.target),
+          proposal,
+        ),
       );
     } else if (pendingRequests.has(event.target)) {
       await _deletePendingRequest(

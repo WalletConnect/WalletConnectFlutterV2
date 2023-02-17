@@ -265,18 +265,19 @@ class Pairing implements IPairing {
           MethodConstants.WC_PAIRING_PING,
           {},
         );
-        onPairingPing.broadcast(
-          PairingEvent(
-            topic: topic,
-          ),
-        );
+        // onPairingPing.broadcast(
+        //   PairingEvent(
+        //     topic: topic,
+        //   ),
+        // );
       } on JsonRpcError catch (e) {
-        onPairingPing.broadcast(
-          PairingEvent(
-            topic: topic,
-            error: e,
-          ),
-        );
+        // onPairingPing.broadcast(
+        //   PairingEvent(
+        //     topic: topic,
+        //     error: e,
+        //   ),
+        // );
+        rethrow;
       }
     }
   }
@@ -294,18 +295,19 @@ class Pairing implements IPairing {
           Errors.getSdkError(Errors.USER_DISCONNECTED).toJson(),
         );
         await pairings!.delete(topic);
-        onPairingDelete.broadcast(
-          PairingEvent(
-            topic: topic,
-          ),
-        );
+        // onPairingDelete.broadcast(
+        //   PairingEvent(
+        //     topic: topic,
+        //   ),
+        // );
       } on JsonRpcError catch (e) {
-        onPairingDelete.broadcast(
-          PairingEvent(
-            topic: topic,
-            error: e,
-          ),
-        );
+        rethrow;
+        // onPairingDelete.broadcast(
+        //   PairingEvent(
+        //     topic: topic,
+        //     error: e,
+        //   ),
+        // );
       }
     }
   }

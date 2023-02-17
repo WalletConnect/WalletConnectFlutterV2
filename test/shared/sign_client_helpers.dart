@@ -45,6 +45,7 @@ class SignClientHelpers {
     SessionData? sessionB;
 
     // Listen for a proposal via connect to avoid race conditions
+    Completer sessionBCompleter = Completer();
     final f = (SessionProposalEvent? args) async {
       // print('B Session Proposal');
 
@@ -60,9 +61,7 @@ class SignClientHelpers {
         namespaces: workingNamespaces,
       );
       sessionB = response.session;
-      if (sessionB == null) {
-        print('session b was set to null');
-      }
+      sessionBCompleter.complete();
 
       // print('B Session assigned: $sessionB');
       // expect(b.core.expirer.has(args.params.id.toString()), true);
@@ -134,9 +133,9 @@ class SignClientHelpers {
         start -
         (qrCodeScanLatencyMs ?? 0);
 
-    await Future.delayed(Duration(milliseconds: 200));
+    // await Future.delayed(Duration(milliseconds: 200));
+    await sessionBCompleter.future;
 
-    if (sessionB == null) print(sessionB);
     if (sessionA == null) throw Exception("expect session A to be defined");
     if (sessionB == null) throw Exception("expect session B to be defined");
 

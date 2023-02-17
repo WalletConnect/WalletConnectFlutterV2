@@ -44,6 +44,8 @@ class SignClient implements ISignClient {
   @override
   Event<SessionProposalEvent> get onSessionProposal => engine.onSessionProposal;
   @override
+  Event<SessionProposalEvent> get onProposalExpire => engine.onProposalExpire;
+  @override
   Event<SessionRequestEvent> get onSessionRequest => engine.onSessionRequest;
   @override
   Event<SessionUpdate> get onSessionUpdate => engine.onSessionUpdate;

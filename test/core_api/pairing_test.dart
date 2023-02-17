@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:walletconnect_flutter_v2/apis/core/core.dart';
 import 'package:walletconnect_flutter_v2/apis/core/i_core.dart';
@@ -157,17 +159,18 @@ void main() {
     test("clients can ping each other", () async {
       final CreateResponse response = await coreA.pairing.create();
       // await coreB.pairing.pair(uri: response.uri);
-      bool gotPing = false;
 
+      Completer completer = Completer();
       coreB.pairing.onPairingPing.subscribe((args) {
-        gotPing = true;
+        expect(args != null, true);
+        completer.complete();
       });
 
       await coreB.pairing.pair(uri: response.uri, activatePairing: true);
       await coreA.pairing.activate(topic: response.topic);
       await coreA.pairing.ping(topic: response.topic);
-      await Future.delayed(Duration(milliseconds: 500));
-      expect(gotPing, true);
+
+      await completer.future;
     });
 
     test("can disconnect from a known pairing", () async {
@@ -178,25 +181,27 @@ void main() {
       expect(coreA.pairing.getStore().getAll().length, 1);
       expect(coreB.pairing.getStore().getAll().length, 1);
       bool hasDeletedA = false;
-      bool hasDeletedB = false;
 
+      Completer completer = Completer();
       coreA.pairing.onPairingDelete.subscribe((args) {
         expect(args != null, true);
         expect(args!.topic != null, true);
         expect(args.error == null, true);
         hasDeletedA = true;
+        completer.complete();
       });
-      coreB.pairing.onPairingDelete.subscribe((args) {
-        expect(args != null, true);
-        expect(args!.topic != null, true);
-        expect(args.error == null, true);
-        hasDeletedB = true;
-      });
+      // coreB.pairing.onPairingDelete.subscribe((args) {
+      //   expect(args != null, true);
+      //   expect(args!.topic != null, true);
+      //   expect(args.error == null, true);
+      //   hasDeletedB = true;
+      // });
 
       await coreB.pairing.disconnect(topic: response.topic);
-      await Future.delayed(Duration(milliseconds: 500));
+
+      await completer.future;
+
       expect(hasDeletedA, true);
-      expect(hasDeletedB, true);
       expect(coreA.pairing.getStore().getAll().length, 0);
       expect(coreB.pairing.getStore().getAll().length, 0);
     });

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 
@@ -213,6 +214,10 @@ void runTests({
         );
         final String pairingTopic = response.pairingTopic;
 
+        Completer completerAPairing = Completer();
+        Completer completerBPairing = Completer();
+        Completer completerA = Completer();
+        Completer completerB = Completer();
         int counterAPairing = 0;
         int counterBPairing = 0;
         int counterA = 0;
@@ -221,14 +226,17 @@ void runTests({
           expect(pairing != null, true);
           expect(pairing!.topic, pairingTopic);
           counterAPairing++;
+          completerAPairing.complete();
         });
         clientB.core.pairing.onPairingPing.subscribe((PairingEvent? pairing) {
           expect(pairing != null, true);
           expect(pairing!.topic, pairingTopic);
           counterBPairing++;
+          completerBPairing.complete();
         });
         clientA.onAuthResponse.subscribe((AuthResponse? args) {
           counterA++;
+          completerA.complete();
         });
         clientB.onAuthRequest.subscribe((AuthRequest? args) async {
           counterB++;
@@ -257,6 +265,8 @@ void runTests({
           );
 
           expect(clientB.getPendingAuthRequests().length, currReqCount - 1);
+
+          completerB.complete();
         });
 
         expect(response.uri != null, true);
@@ -269,16 +279,23 @@ void runTests({
         await clientA.core.pairing.ping(topic: pairingTopic);
         await clientB.core.pairing.ping(topic: pairingTopic);
 
-        await Future.delayed(Duration(milliseconds: 100));
+        // await Future.delayed(Duration(milliseconds: 100));
+        await completerAPairing.future;
+        await completerBPairing.future;
+        await completerA.future;
+        await completerB.future;
 
         AuthResponse authResponse = await response.completer.future;
         expect(authResponse.result != null, true);
 
-        expect(counterAPairing, 2);
-        expect(counterBPairing, 2);
+        expect(counterAPairing, 1);
+        expect(counterBPairing, 1);
 
         expect(counterA, 1);
         expect(counterB, 1);
+
+        completerA = Completer();
+        completerB = Completer();
 
         response = await clientA.requestAuth(
           params: defaultRequestParams,
@@ -287,7 +304,9 @@ void runTests({
 
         expect(response.uri == null, true);
 
-        await Future.delayed(Duration(milliseconds: 100));
+        // await Future.delayed(Duration(milliseconds: 100));
+        await completerA.future;
+        await completerB.future;
 
         authResponse = await response.completer.future;
         expect(authResponse.result != null, true);
@@ -310,21 +329,27 @@ void runTests({
 
         await clientB.core.pairing.pair(uri: response.uri!);
 
-        // clientB.onAuthRequest.subscribe((AuthRequest? args) async {
-        //   print('got here');
-        //   print(clientB.getPendingAuthRequests().length);
-        // });
+        Completer completerA = Completer();
+        clientB.onAuthRequest.subscribe((AuthRequest? args) async {
+          // print('got here');
+          // print(clientB.getPendingAuthRequests().length);
+          completerA.complete();
+        });
 
-        await Future.delayed(Duration(milliseconds: 1000));
+        // await Future.delayed(Duration(milliseconds: 1000));
+        await completerA.future;
 
         expect(clientB.getPendingAuthRequests().length, 1);
+
+        completerA = Completer();
 
         response = await clientA.requestAuth(
           params: defaultRequestParams,
           pairingTopic: pairingTopic,
         );
 
-        await Future.delayed(Duration(milliseconds: 1000));
+        // await Future.delayed(Duration(milliseconds: 1000));
+        await completerA.future;
 
         expect(clientB.getPendingAuthRequests().length, 2);
       });
