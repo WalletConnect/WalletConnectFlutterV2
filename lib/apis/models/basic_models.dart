@@ -16,9 +16,9 @@ class WalletConnectError {
   });
 
   factory WalletConnectError.fromJson(Map<String, dynamic> json) =>
-      _$WCErrorFromJson(json);
+      _$WalletConnectErrorFromJson(json);
 
-  Map<String, dynamic> toJson() => _$WCErrorToJson(this);
+  Map<String, dynamic> toJson() => _$WalletConnectErrorToJson(this);
 }
 
 @JsonSerializable()
@@ -32,9 +32,9 @@ class WalletConnectErrorResponse extends WalletConnectError {
   });
 
   factory WalletConnectErrorResponse.fromJson(Map<String, dynamic> json) =>
-      _$WCErrorResponseFromJson(json);
+      _$WalletConnectErrorResponseFromJson(json);
 
-  Map<String, dynamic> toJson() => _$WCErrorResponseToJson(this);
+  Map<String, dynamic> toJson() => _$WalletConnectErrorResponseToJson(this);
 }
 
 class RpcOptions {
