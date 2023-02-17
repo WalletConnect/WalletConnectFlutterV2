@@ -131,11 +131,15 @@ class WalletConnectUtils {
     required String topic,
     required String symKey,
     required Relay relay,
-    required List<List<String>> methods,
+    required List<List<String>>? methods,
   }) {
     Map<String, String> params = formatRelayParams(relay);
     params['symKey'] = symKey;
-    params['methods'] = methods.map((e) => jsonEncode(e)).join(',');
+    if (methods != null) {
+      params['methods'] = methods.map((e) => jsonEncode(e)).join(',');
+    } else {
+      params['methods'] = '[]';
+    }
 
     return Uri(
       scheme: protocol,

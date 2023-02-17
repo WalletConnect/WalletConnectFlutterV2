@@ -25,6 +25,13 @@ import 'package:walletconnect_flutter_v2/apis/utils/method_constants.dart';
 import 'package:walletconnect_flutter_v2/apis/utils/walletconnect_utils.dart';
 
 class SignEngine implements ISignEngine {
+  static const List<List<String>> DEFAULT_METHODS = [
+    [
+      MethodConstants.WC_SESSION_PROPOSE,
+      MethodConstants.WC_SESSION_REQUEST,
+    ],
+  ];
+
   bool _initialized = false;
 
   @override
@@ -97,6 +104,7 @@ class SignEngine implements ISignEngine {
     Map<String, String>? sessionProperties,
     String? pairingTopic,
     List<Relay>? relays,
+    List<List<String>>? methods = DEFAULT_METHODS,
   }) async {
     _checkInitialized();
 
@@ -111,7 +119,9 @@ class SignEngine implements ISignEngine {
     Uri? uri;
 
     if (pTopic == null) {
-      final CreateResponse newTopicAndUri = await core.pairing.create();
+      final CreateResponse newTopicAndUri = await core.pairing.create(
+        methods: methods,
+      );
       pTopic = newTopicAndUri.topic;
       uri = newTopicAndUri.uri;
       // print('connect generated topic: $topic');

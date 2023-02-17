@@ -11,6 +11,16 @@ import 'package:walletconnect_flutter_v2/apis/sign_api/utils/sign_constants.dart
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 
 class Web3App implements IWeb3App {
+  static const List<List<String>> DEFAULT_METHODS = [
+    [
+      MethodConstants.WC_SESSION_PROPOSE,
+      MethodConstants.WC_SESSION_REQUEST,
+    ],
+    [
+      MethodConstants.WC_AUTH_REQUEST,
+    ]
+  ];
+
   bool _initialized = false;
 
   static Future<Web3App> createInstance({
@@ -168,6 +178,7 @@ class Web3App implements IWeb3App {
     Map<String, String>? sessionProperties,
     String? pairingTopic,
     List<Relay>? relays,
+    List<List<String>>? methods = DEFAULT_METHODS,
   }) async {
     try {
       return await signEngine.connect(
@@ -176,6 +187,7 @@ class Web3App implements IWeb3App {
         sessionProperties: sessionProperties,
         pairingTopic: pairingTopic,
         relays: relays,
+        methods: methods,
       );
     } catch (e) {
       // print(e);
@@ -274,11 +286,13 @@ class Web3App implements IWeb3App {
   Future<AuthRequestResponse> requestAuth({
     required AuthRequestParams params,
     String? pairingTopic,
+    List<List<String>>? methods = DEFAULT_METHODS,
   }) async {
     try {
       return authEngine.requestAuth(
         params: params,
         pairingTopic: pairingTopic,
+        methods: methods,
       );
     } catch (e) {
       rethrow;

@@ -12,6 +12,8 @@ export 'apis/utils/walletconnect_utils.dart';
 export 'apis/models/json_rpc_error.dart';
 export 'apis/models/json_rpc_response.dart';
 export 'apis/utils/constants.dart';
+export 'apis/models/uri_parse_result.dart';
+export 'apis/utils/method_constants.dart';
 
 // Sign API
 export 'apis/sign_api/i_sign_engine.dart';

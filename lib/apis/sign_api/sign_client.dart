@@ -129,6 +129,7 @@ class SignClient implements ISignClient {
     Map<String, String>? sessionProperties,
     String? pairingTopic,
     List<Relay>? relays,
+    List<List<String>>? methods = SignEngine.DEFAULT_METHODS,
   }) async {
     try {
       return await engine.connect(
@@ -137,6 +138,7 @@ class SignClient implements ISignClient {
         sessionProperties: sessionProperties,
         pairingTopic: pairingTopic,
         relays: relays,
+        methods: methods,
       );
     } catch (e) {
       // print(e);

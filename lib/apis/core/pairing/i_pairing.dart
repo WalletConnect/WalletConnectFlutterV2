@@ -16,7 +16,9 @@ abstract class IPairing {
     required Uri uri,
     bool activatePairing,
   });
-  Future<CreateResponse> create({List<List<String>> methods});
+  Future<CreateResponse> create({
+    List<List<String>>? methods,
+  });
   Future<void> activate({required String topic});
   void register({
     required String method,
