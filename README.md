@@ -227,6 +227,11 @@ await wcClient.disconnectSession(
 Run tests using `flutter test`.
 Expected flutter version is: >`3.3.10`
 
+# Commands Run in CI
+
+* `flutter analyze`
+* `dart format --output=none --set-exit-if-changed .`
+
 # Useful Commands
 
 * `flutter pub run build_runner build --delete-conflicting-outputs` - Regenerates JSON Generators
