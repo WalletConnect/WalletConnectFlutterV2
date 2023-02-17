@@ -279,7 +279,6 @@ void runTests({
         await clientA.core.pairing.ping(topic: pairingTopic);
         await clientB.core.pairing.ping(topic: pairingTopic);
 
-        // await Future.delayed(Duration(milliseconds: 100));
         await completerAPairing.future;
         await completerBPairing.future;
         await completerA.future;
@@ -304,7 +303,6 @@ void runTests({
 
         expect(response.uri == null, true);
 
-        // await Future.delayed(Duration(milliseconds: 100));
         await completerA.future;
         await completerB.future;
 
@@ -336,7 +334,6 @@ void runTests({
           completerA.complete();
         });
 
-        // await Future.delayed(Duration(milliseconds: 1000));
         await completerA.future;
 
         expect(clientB.getPendingAuthRequests().length, 1);
@@ -348,7 +345,6 @@ void runTests({
           pairingTopic: pairingTopic,
         );
 
-        // await Future.delayed(Duration(milliseconds: 1000));
         await completerA.future;
 
         expect(clientB.getPendingAuthRequests().length, 2);
