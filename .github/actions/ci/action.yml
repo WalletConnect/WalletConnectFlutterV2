@@ -21,6 +21,7 @@ runs:
 
     - name: Verify formatting
       run: dart format --output=none --set-exit-if-changed .
+    
 
     - name: Analyze project source
       run: flutter analyze
