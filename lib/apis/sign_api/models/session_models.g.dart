@@ -31,12 +31,12 @@ SessionData _$SessionDataFromJson(Map<String, dynamic> json) => SessionData(
         (k, e) => MapEntry(k, Namespace.fromJson(e as Map<String, dynamic>)),
       ),
       requiredNamespaces:
-          (json['requiredNamespaces'] as Map<String, dynamic>).map(
+          (json['requiredNamespaces'] as Map<String, dynamic>?)?.map(
         (k, e) =>
             MapEntry(k, RequiredNamespace.fromJson(e as Map<String, dynamic>)),
       ),
       optionalNamespaces:
-          (json['optionalNamespaces'] as Map<String, dynamic>).map(
+          (json['optionalNamespaces'] as Map<String, dynamic>?)?.map(
         (k, e) =>
             MapEntry(k, RequiredNamespace.fromJson(e as Map<String, dynamic>)),
       ),
@@ -48,20 +48,29 @@ SessionData _$SessionDataFromJson(Map<String, dynamic> json) => SessionData(
       peer: ConnectionMetadata.fromJson(json['peer'] as Map<String, dynamic>),
     );
 
-Map<String, dynamic> _$SessionDataToJson(SessionData instance) =>
-    <String, dynamic>{
-      'topic': instance.topic,
-      'relay': instance.relay,
-      'expiry': instance.expiry,
-      'acknowledged': instance.acknowledged,
-      'controller': instance.controller,
-      'namespaces': instance.namespaces,
-      'requiredNamespaces': instance.requiredNamespaces,
-      'optionalNamespaces': instance.optionalNamespaces,
-      'sessionProperties': instance.sessionProperties,
-      'self': instance.self,
-      'peer': instance.peer,
-    };
+Map<String, dynamic> _$SessionDataToJson(SessionData instance) {
+  final val = <String, dynamic>{
+    'topic': instance.topic,
+    'relay': instance.relay,
+    'expiry': instance.expiry,
+    'acknowledged': instance.acknowledged,
+    'controller': instance.controller,
+    'namespaces': instance.namespaces,
+  };
+
+  void writeNotNull(String key, dynamic value) {
+    if (value != null) {
+      val[key] = value;
+    }
+  }
+
+  writeNotNull('requiredNamespaces', instance.requiredNamespaces);
+  writeNotNull('optionalNamespaces', instance.optionalNamespaces);
+  writeNotNull('sessionProperties', instance.sessionProperties);
+  val['self'] = instance.self;
+  val['peer'] = instance.peer;
+  return val;
+}
 
 SessionRequest _$SessionRequestFromJson(Map<String, dynamic> json) =>
     SessionRequest(
