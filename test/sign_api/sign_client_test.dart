@@ -17,6 +17,8 @@ import '../shared/sign_client_helpers.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  print('test proj id: $TEST_PROJECT_ID');
+  print('test relay id: $TEST_RELAY_URL');
 
   final List<Future<ISignEngineApp> Function(ICore, PairingMetadata)>
       signAppCreators = [

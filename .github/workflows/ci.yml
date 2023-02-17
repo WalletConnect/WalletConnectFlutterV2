@@ -1,0 +1,45 @@
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+
+name: ci
+description: Executes Dart specific CI steps.
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+
+concurrency:
+  # Support push/pr as event types with different behaviors each:
+  # 1. push: queue up builds by branch
+  # 2. pr: only allow one run per PR
+  group: ${{ github.workflow }}-${{ github.event_name == 'pull_request' && github.event.pull_request.number || github.ref_name }}
+  # If there is already a workflow running for the same pull request, cancel it
+  # For non-PR triggers queue up builds
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        test-type: [integration-tests]
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Install and set Flutter version
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: '3.3.10'
+
+    - uses: ./.github/actions/ci 
+      with:
+        type: 
+          type: ${{ matrix.test-type }}
+          project-id: ${{ secrets.PROJECT_ID }}
