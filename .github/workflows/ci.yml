@@ -25,6 +25,8 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-latest
+    env:
+      PROJECT_ID: ${{ secrets.PROJECT_ID }}
     strategy:
       matrix:
         test-type: [integration-tests]
@@ -40,4 +42,4 @@ jobs:
     - uses: ./.github/actions/ci 
       with:
         type: ${{ matrix.test-type }}
-        project-id: ${{ secrets.PROJECT_ID }}
+        project-id: ${PROJECT_ID}
