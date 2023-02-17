@@ -39,6 +39,5 @@ jobs:
 
     - uses: ./.github/actions/ci 
       with:
-        type: 
-          type: ${{ matrix.test-type }}
-          project-id: ${{ secrets.PROJECT_ID }}
+        type: ${{ matrix.test-type }}
+        project-id: ${{ secrets.PROJECT_ID }}
