@@ -166,13 +166,13 @@ final walletNamespaces = {
     events: ['kadena_transaction_updated'],
   ),
 }
-await wcClient.approve(
+await wcClient.approveSession(
   id: id,
   namespaces: walletNamespaces // This will have the accounts requested in params
 );
 // Or to reject...
 // Error codes and reasons can be found here: https://docs.walletconnect.com/2.0/specs/clients/sign/error-codes
-await wcClient.reject(
+await wcClient.rejectSession(
   id: id,
   reason: ErrorResponse(
     code: 4001,

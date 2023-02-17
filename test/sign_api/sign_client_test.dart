@@ -13,7 +13,7 @@ import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 import '../shared/shared_test_values.dart';
 import 'utils/engine_constants.dart';
 import 'utils/sign_client_constants.dart';
-import '../shared/sign_client_helpers.dart';
+import 'sign_client_helpers.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
