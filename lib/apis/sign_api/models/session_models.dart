@@ -65,7 +65,7 @@ class Namespace {
       );
 }
 
-@JsonSerializable()
+@JsonSerializable(includeIfNull: false)
 class SessionData {
   final String topic;
   final Relay relay;
@@ -73,8 +73,8 @@ class SessionData {
   bool acknowledged;
   final String controller;
   Map<String, Namespace> namespaces;
-  final Map<String, RequiredNamespace> requiredNamespaces;
-  final Map<String, RequiredNamespace> optionalNamespaces;
+  final Map<String, RequiredNamespace>? requiredNamespaces;
+  final Map<String, RequiredNamespace>? optionalNamespaces;
   final Map<String, String>? sessionProperties;
   final ConnectionMetadata self;
   final ConnectionMetadata peer;

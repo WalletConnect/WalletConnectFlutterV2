@@ -2,7 +2,7 @@ import 'package:walletconnect_flutter_v2/apis/core/crypto/crypto_models.dart';
 
 const TEST_RELAY_URL = String.fromEnvironment(
   'RELAY_ENDPOINT',
-  defaultValue: 'relay.walletconnect.com',
+  defaultValue: 'wss://relay.walletconnect.com',
 );
 const TEST_PROJECT_ID = String.fromEnvironment(
   'PROJECT_ID',
