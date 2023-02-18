@@ -1,3 +1,8 @@
+## 1.0.2
+
+- Removed HEX dependency
+- Upgraded websocket dependency to 2.3.0, so that the `ready` property exists
+
 ## 1.0.1
 
 - Fixed issues with Session Settle Request not allowing null required and optional namespaces
