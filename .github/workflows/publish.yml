@@ -7,6 +7,38 @@ on:
 
 jobs:
   publish:
-    uses: dart-lang/setup-dart/.github/workflows/publish.yml@main
-    # with:
-    #   working-directory: path/to/package/within/repository
+    name: Publish to pub.dev
+    permissions:
+      id-token: write
+    runs-on: ubuntu-latest
+    steps:
+    # Checkout the repo
+    - uses: actions/checkout@v3
+
+    # Install Flutter
+    - name: Install and set Flutter version
+      uses: subosito/flutter-action@v2
+      with:
+        flutter-version: ${{ env.FLUTTER_VERSION }}
+    
+    # Setup Dart SDK
+    - uses: dart-lang/setup-dart@v1
+    
+    # Install dependencies
+    - name: Install packages
+      shell: bash
+      run: flutter pub get
+    - name: Verify formatting and analyze project source
+      shell: bash
+      run: dart format --output=none --set-exit-if-changed .
+    - name: Analyze project source
+      shell: bash
+      run: flutter analyze
+
+    # Publish
+    - name: Check Publish Warnings
+      shell: bash
+      run: flutter pub publish --dry-run
+    - name: Publish Package
+      shell: bash
+      run: flutter pub publish -f
