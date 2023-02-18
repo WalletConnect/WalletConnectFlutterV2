@@ -7,6 +7,6 @@ on:
 
 jobs:
   publish:
-    uses: dart-lang/setup-dart/.github/workflows/publish.yml
+    uses: dart-lang/setup-dart/.github/workflows/publish.yml@main
     # with:
     #   working-directory: path/to/package/within/repository
