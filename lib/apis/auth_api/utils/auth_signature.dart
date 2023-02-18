@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'dart:typed_data';
+import 'package:convert/convert.dart';
 import 'package:http/http.dart' as http;
 
-import 'package:hex/hex.dart';
 import 'package:pointycastle/digests/keccak.dart';
 import 'package:walletconnect_flutter_v2/apis/auth_api/models/auth_client_models.dart';
 import 'package:walletconnect_flutter_v2/apis/auth_api/utils/auth_constants.dart';
@@ -47,14 +47,14 @@ class AuthSignature {
   ) {
     // Get the sig bytes
     final sigBytes = Uint8List.fromList(
-      HEX.decode(
+      hex.decode(
         sig.substring(2),
       ),
     );
 
     // Get the r and s values from the sig bytes
     final r = BigInt.parse(
-      HEX.encode(
+      hex.encode(
         sigBytes.sublist(0, 32),
       ),
       radix: 16,
@@ -67,11 +67,11 @@ class AuthSignature {
       Uint8List sBytes = sigBytes.sublist(32, 64);
       sBytes[0] &= 0x7f;
       v = (sBytes[0] & 0x80 == 0) ? 27 : 28;
-      s = BigInt.parse(HEX.encode(sBytes), radix: 16);
+      s = BigInt.parse(hex.encode(sBytes), radix: 16);
     } else {
       Uint8List sBytes = sigBytes.sublist(32, 64);
       v = getNormalizedV(sigBytes[64]);
-      s = BigInt.parse(HEX.encode(sBytes), radix: 16);
+      s = BigInt.parse(hex.encode(sBytes), radix: 16);
     }
 
     // Recover the public key from the signature
@@ -90,7 +90,7 @@ class AuthSignature {
     // Convert the public key to an address
     final hashedPubKeyBytes = keccak256(publicKeyBytes);
     final addressBytes = hashedPubKeyBytes.sublist(12, 32);
-    final recoveredAddress = '0x${HEX.encode(addressBytes)}';
+    final recoveredAddress = '0x${hex.encode(addressBytes)}';
 
     return recoveredAddress.toLowerCase() == address.toLowerCase();
   }
@@ -110,7 +110,7 @@ class AuthSignature {
           "0000000000000000000000000000000000000000000000000000000000000041";
       final String nonPrefixedSignature = cacaoSignature.substring(2);
       final String nonPrefixedHashedMessage =
-          HEX.encode(hashMessage(reconstructedMessage)).substring(2);
+          hex.encode(hashMessage(reconstructedMessage)).substring(2);
 
       final String data = eip1271MagicValue +
           nonPrefixedHashedMessage +

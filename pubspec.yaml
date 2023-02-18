@@ -9,8 +9,7 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  hex: ^0.2.0
-  web_socket_channel: ^2.2.0
+  web_socket_channel: ^2.3.0
   http: ^0.13.5
   cryptography: ^2.0.5
   convert: ^3.0.1

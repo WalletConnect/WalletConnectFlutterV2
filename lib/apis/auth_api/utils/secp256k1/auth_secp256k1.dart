@@ -1,7 +1,7 @@
 import 'dart:math';
 import 'dart:typed_data';
 
-import 'package:hex/hex.dart';
+import 'package:convert/convert.dart';
 import 'package:pointycastle/ecc/api.dart';
 import 'package:pointycastle/ecc/curves/secp256k1.dart';
 
@@ -21,8 +21,11 @@ class AuthSecp256k1 {
     return result;
   }
 
-  static Uint8List encodeBigInt(BigInt input,
-      {Endian endian = Endian.be, int length = 0}) {
+  static Uint8List encodeBigInt(
+    BigInt input, {
+    Endian endian = Endian.be,
+    int length = 0,
+  }) {
     int byteLength = (input.bitLength + 7) >> 3;
     int reqLength = length > 0 ? length : max(1, byteLength);
     assert(byteLength <= reqLength, 'byte array longer than desired length');
@@ -46,7 +49,7 @@ class AuthSecp256k1 {
   static ECPoint _decompressKey(BigInt xBN, bool yBit, ECCurve c) {
     List<int> x9IntegerToBytes(BigInt s, int qLength) {
       //https://github.com/bcgit/bc-java/blob/master/core/src/main/java/org/bouncycastle/asn1/x9/X9IntegerConverter.java#L45
-      final bytes = HEX.decode(s.toRadixString(16));
+      final bytes = hex.decode(s.toRadixString(16));
 
       if (qLength < bytes.length) {
         return bytes.sublist(0, bytes.length - qLength);
