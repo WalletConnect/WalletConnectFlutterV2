@@ -210,7 +210,7 @@ await wcClient.emitSessionEvent(
 await wcClient.disconnectSession(
   topic: pairing.topic,
   reason: WalletConnectErrorResponse(
-    code: 4001,
+    code: 6000,
     message: 'User disconnected session',
   ),
 );
