@@ -18,7 +18,7 @@ abstract class IAuthEngineWallet extends IAuthEngineCommon {
     required int id,
     required String iss,
     CacaoSignature? signature,
-    WalletConnectErrorResponse? error,
+    WalletConnectError? error,
   });
 
   // query all pending requests
