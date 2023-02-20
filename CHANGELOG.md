@@ -1,3 +1,8 @@
+## 1.0.3
+
+- Added more WalletConnect error codes to Errors static class
+- Remove WalletConnectErrorReason, just use `WalletConnectError.copyWith` if you need to provide data to an error.
+
 ## 1.0.2
 
 - Removed HEX dependency

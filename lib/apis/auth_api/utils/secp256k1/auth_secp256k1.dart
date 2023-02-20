@@ -49,7 +49,11 @@ class AuthSecp256k1 {
   static ECPoint _decompressKey(BigInt xBN, bool yBit, ECCurve c) {
     List<int> x9IntegerToBytes(BigInt s, int qLength) {
       //https://github.com/bcgit/bc-java/blob/master/core/src/main/java/org/bouncycastle/asn1/x9/X9IntegerConverter.java#L45
-      final bytes = hex.decode(s.toRadixString(16));
+      String hexString = s.toRadixString(16);
+      if (hexString.length % 2 == 1) {
+        hexString = '0' + hexString;
+      }
+      final bytes = hex.decode(hexString);
 
       if (qLength < bytes.length) {
         return bytes.sublist(0, bytes.length - qLength);
