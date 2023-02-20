@@ -154,7 +154,7 @@ class SignEngine implements ISignEngine {
       relays: request.relays,
       proposer: request.proposer,
       requiredNamespaces: request.requiredNamespaces,
-      optionalNamespaces: request.optionalNamespaces,
+      optionalNamespaces: request.optionalNamespaces ?? {},
       sessionProperties: request.sessionProperties,
       pairingTopic: pTopic,
     );
@@ -171,7 +171,7 @@ class SignEngine implements ISignEngine {
         selfPublicKey: publicKey,
         pairingTopic: pTopic,
         requiredNamespaces: request.requiredNamespaces,
-        optionalNamespaces: request.optionalNamespaces,
+        optionalNamespaces: request.optionalNamespaces ?? {},
         sessionProperties: request.sessionProperties,
         completer: completer,
       ),
@@ -766,7 +766,7 @@ class SignEngine implements ISignEngine {
         relays: proposeRequest.relays,
         proposer: proposeRequest.proposer,
         requiredNamespaces: proposeRequest.requiredNamespaces,
-        optionalNamespaces: proposeRequest.optionalNamespaces,
+        optionalNamespaces: proposeRequest.optionalNamespaces ?? {},
         sessionProperties: proposeRequest.sessionProperties,
         pairingTopic: topic,
       );
