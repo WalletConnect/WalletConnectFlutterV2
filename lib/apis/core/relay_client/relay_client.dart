@@ -182,6 +182,12 @@ class RelayClient implements IRelayClient {
     _checkInitialized();
 
     jsonRPC = await _createJsonRPCProvider();
+    if (!jsonRPC.isClosed) {
+      onRelayClientConnect.broadcast();
+      jsonRPC.done.then((value) {
+        onRelayClientDisconnect.broadcast();
+      });      
+    }
   }
 
   @override
