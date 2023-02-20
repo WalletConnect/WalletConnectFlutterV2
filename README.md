@@ -174,10 +174,7 @@ await wcClient.approveSession(
 // Error codes and reasons can be found here: https://docs.walletconnect.com/2.0/specs/clients/sign/error-codes
 await wcClient.rejectSession(
   id: id,
-  reason: ErrorResponse(
-    code: 4001,
-    message: "User rejected request",
-  ),
+  reason: Errors.getSdkError(Errors.USER_REJECTED_SIGN),
 );
 
 // For auth, you can do the same thing: Present the UI to them, and have them approve the signature.
@@ -192,8 +189,7 @@ await wcClient.respondAuthRequest(
 // Error codes and reasons can be found here: https://docs.walletconnect.com/2.0/specs/clients/sign/error-codes
 await wcClient.respondAuthRequest(
   id: args.id,
-  iss: 'did:pkh:eip155:1:0x06C6A22feB5f8CcEDA0db0D593e6F26A3611d5fa',
-  error: WalletConnectErrorResponse(code: 12001, message: 'User rejected the signature request'),
+  error: Errors.getSdkError(Errors.USER_REJECTED_AUTH),
 );
 
 // You can also emit events for the dApp
@@ -209,10 +205,7 @@ await wcClient.emitSessionEvent(
 // Finally, you can disconnect
 await wcClient.disconnectSession(
   topic: pairing.topic,
-  reason: WalletConnectErrorResponse(
-    code: 4001,
-    message: 'User disconnected session',
-  ),
+  reason: Errors.getSdkError(Errors.USER_DISCONNECTED),
 );
 ```
 

@@ -24,7 +24,7 @@ abstract class ISignEngineWallet extends ISignEngineCommon {
   });
   Future<void> rejectSession({
     required int id,
-    required WalletConnectErrorResponse reason,
+    required WalletConnectError reason,
   });
   Future<void> updateSession({
     required String topic,

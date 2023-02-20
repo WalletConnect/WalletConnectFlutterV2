@@ -11,6 +11,7 @@ class Errors {
   static const UNAUTHORIZED_EVENT = 'UNAUTHORIZED_EVENT';
   static const UNAUTHORIZED_UPDATE_REQUEST = 'UNAUTHORIZED_UPDATE_REQUEST';
   static const UNAUTHORIZED_EXTEND_REQUEST = 'UNAUTHORIZED_EXTEND_REQUEST';
+  static const USER_REJECTED_SIGN = 'USER_REJECTED_SIGN';
   static const USER_REJECTED = 'USER_REJECTED';
   static const USER_REJECTED_CHAINS = 'USER_REJECTED_CHAINS';
   static const USER_REJECTED_METHODS = 'USER_REJECTED_METHODS';
@@ -22,7 +23,19 @@ class Errors {
   static const UNSUPPORTED_NAMESPACE_KEY = 'UNSUPPORTED_NAMESPACE_KEY';
   static const USER_DISCONNECTED = 'USER_DISCONNECTED';
   static const SESSION_SETTLEMENT_FAILED = 'SESSION_SETTLEMENT_FAILED';
+  static const NO_SESSION_FOR_TOPIC = 'NO_SESSION_FOR_TOPIC';
+  static const REQUEST_EXPIRED_SESSION = 'SESSION_REQUEST_EXPIRED';
   static const WC_METHOD_UNSUPPORTED = 'WC_METHOD_UNSUPPORTED';
+
+  // AUTH
+  static const MALFORMED_RESPONSE_PARAMS = 'MALFORMED_RESPONSE_PARAMS';
+  static const MALFORMED_REQUEST_PARAMS = 'MALFORMED_REQUEST_PARAMS';
+  static const MESSAGE_COMPROMISED = 'MESSAGE_COMPROMISED';
+  static const SIGNATURE_VERIFICATION_FAILED = 'SIGNATURE_VERIFICATION_FAILED';
+  static const REQUEST_EXPIRED_AUTH = 'AUTH_REQUEST_EXPIRED';
+  static const MISSING_ISSUER_AUTH = 'AUTH_MISSING_ISSUER';
+  static const USER_REJECTED_AUTH = 'AUTH_USER_REJECTED';
+  static const USER_DISCONNECTED_AUTH = 'AUTH_USER_DISCONNECTED';
 
   static const SDK_ERRORS = {
     /* ----- INVALID (1xxx) ----- */
@@ -62,6 +75,11 @@ class Errors {
     UNAUTHORIZED_EXTEND_REQUEST: {
       'message': "Unauthorized extend request.",
       'code': 3004,
+    },
+    /* ----- REJECTED (5xxx) ----- */
+    USER_REJECTED_SIGN: {
+      'message': "User rejected.",
+      'code': 4001,
     },
     /* ----- REJECTED (5xxx) ----- */
     USER_REJECTED: {
@@ -110,10 +128,53 @@ class Errors {
       'message': "Session settlement failed.",
       'code': 7000,
     },
+    NO_SESSION_FOR_TOPIC: {
+      'message': "No session for topic.",
+      'code': 7001,
+    },
+    /* ----- FAILURE (8xxx) ----- */
+    REQUEST_EXPIRED_SESSION: {
+      'message': "Session request expired.",
+      'code': 8000,
+    },
     /* ----- PAIRING (10xxx) ----- */
     WC_METHOD_UNSUPPORTED: {
       'message': "Unsupported wc_ method.",
       'code': 10001,
+    },
+    /* ----- AUTH VALIDATION (11xxx) ----- */
+    MALFORMED_RESPONSE_PARAMS: {
+      'message': "Malformed response parameters.",
+      'code': 11001,
+    },
+    MALFORMED_REQUEST_PARAMS: {
+      'message': "Malformed request parameters.",
+      'code': 11002,
+    },
+    MESSAGE_COMPROMISED: {
+      'message': "Message compromised.",
+      'code': 11003,
+    },
+    SIGNATURE_VERIFICATION_FAILED: {
+      'message': "Signature verification failed.",
+      'code': 11004,
+    },
+    REQUEST_EXPIRED_AUTH: {
+      'message': "Auth request expired.",
+      'code': 11005,
+    },
+    MISSING_ISSUER_AUTH: {
+      'message': "Missing Issuer.",
+      'code': 11006,
+    },
+    /* ----- AUTH REJECTED (12xxx) ----- */
+    USER_REJECTED_AUTH: {
+      'message': "User rejected auth request.",
+      'code': 12001,
+    },
+    USER_DISCONNECTED_AUTH: {
+      'message': "User disconnect auth.",
+      'code': 12002,
     },
   };
 

@@ -5,36 +5,34 @@ part 'basic_models.g.dart';
 
 /// ERRORS
 
-@JsonSerializable()
+@JsonSerializable(includeIfNull: false)
 class WalletConnectError {
   int code;
   String message;
+  String? data;
 
   WalletConnectError({
     required this.code,
     required this.message,
+    this.data,
   });
+
+  WalletConnectError copyWith({
+    int? code,
+    String? message,
+    String? data,
+  }) {
+    return WalletConnectError(
+      code: code ?? this.code,
+      message: message ?? this.message,
+      data: data ?? this.data,
+    );
+  }
 
   factory WalletConnectError.fromJson(Map<String, dynamic> json) =>
       _$WalletConnectErrorFromJson(json);
 
   Map<String, dynamic> toJson() => _$WalletConnectErrorToJson(this);
-}
-
-@JsonSerializable()
-class WalletConnectErrorResponse extends WalletConnectError {
-  String? data;
-
-  WalletConnectErrorResponse({
-    required super.code,
-    required super.message,
-    this.data,
-  });
-
-  factory WalletConnectErrorResponse.fromJson(Map<String, dynamic> json) =>
-      _$WalletConnectErrorResponseFromJson(json);
-
-  Map<String, dynamic> toJson() => _$WalletConnectErrorResponseToJson(this);
 }
 
 class RpcOptions {
