@@ -333,7 +333,7 @@ class AuthRequestCompleter {
 class RespondParams {
   final int id;
   final CacaoSignature? signature;
-  final WalletConnectErrorResponse? error;
+  final WalletConnectError? error;
 
   RespondParams({
     required this.id,

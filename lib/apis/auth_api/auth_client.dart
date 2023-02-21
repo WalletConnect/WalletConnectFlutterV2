@@ -145,7 +145,7 @@ class AuthClient implements IAuthClient {
     required int id,
     required String iss,
     CacaoSignature? signature,
-    WalletConnectErrorResponse? error,
+    WalletConnectError? error,
   }) async {
     try {
       return engine.respondAuthRequest(

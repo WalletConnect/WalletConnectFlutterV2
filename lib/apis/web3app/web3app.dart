@@ -243,7 +243,7 @@ class Web3App implements IWeb3App {
   @override
   Future<void> disconnectSession({
     required String topic,
-    required WalletConnectErrorResponse reason,
+    required WalletConnectError reason,
   }) async {
     try {
       return await signEngine.disconnectSession(

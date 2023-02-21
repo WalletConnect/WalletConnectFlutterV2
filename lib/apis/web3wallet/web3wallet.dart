@@ -193,7 +193,7 @@ class Web3Wallet implements IWeb3Wallet {
   @override
   Future<void> rejectSession({
     required int id,
-    required WalletConnectErrorResponse reason,
+    required WalletConnectError reason,
   }) async {
     try {
       return await signEngine.rejectSession(
@@ -284,7 +284,7 @@ class Web3Wallet implements IWeb3Wallet {
   @override
   Future<void> disconnectSession({
     required String topic,
-    required WalletConnectErrorResponse reason,
+    required WalletConnectError reason,
   }) async {
     try {
       return await signEngine.disconnectSession(
@@ -359,7 +359,7 @@ class Web3Wallet implements IWeb3Wallet {
     required int id,
     required String iss,
     CacaoSignature? signature,
-    WalletConnectErrorResponse? error,
+    WalletConnectError? error,
   }) async {
     try {
       return authEngine.respondAuthRequest(

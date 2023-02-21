@@ -23,7 +23,7 @@ abstract class ISignEngineCommon {
   Future<void> init();
   Future<void> disconnectSession({
     required String topic,
-    required WalletConnectErrorResponse reason,
+    required WalletConnectError reason,
   });
   Map<String, SessionData> getActiveSessions();
   abstract final IPairingStore pairings;

@@ -585,7 +585,7 @@ void signingEngineTests({
 
         await clientB.rejectSession(
           id: TEST_PROPOSAL_VALID_ID,
-          reason: WalletConnectErrorResponse(code: -1, message: 'reason'),
+          reason: WalletConnectError(code: -1, message: 'reason'),
         );
 
         expect(
@@ -600,7 +600,7 @@ void signingEngineTests({
         expect(
           () async => await clientB.rejectSession(
             id: TEST_APPROVE_ID_INVALID,
-            reason: WalletConnectErrorResponse(code: -1, message: 'reason'),
+            reason: WalletConnectError(code: -1, message: 'reason'),
           ),
           throwsA(
             isA<WalletConnectError>().having(
@@ -626,7 +626,7 @@ void signingEngineTests({
         expect(
           () async => await clientB.rejectSession(
             id: TEST_PROPOSAL_EXPIRED_ID,
-            reason: WalletConnectErrorResponse(code: -1, message: 'reason'),
+            reason: WalletConnectError(code: -1, message: 'reason'),
           ),
           throwsA(
             isA<WalletConnectError>().having(
@@ -1516,7 +1516,7 @@ void signingEngineTests({
             Errors.getSdkError(Errors.USER_DISCONNECTED);
         await clientA.disconnectSession(
           topic: pairingATopic,
-          reason: WalletConnectErrorResponse(
+          reason: WalletConnectError(
             code: reason.code,
             message: reason.message,
           ),
@@ -1540,7 +1540,7 @@ void signingEngineTests({
         reason = Errors.getSdkError(Errors.USER_DISCONNECTED);
         await clientB.disconnectSession(
           topic: pairingATopic,
-          reason: WalletConnectErrorResponse(
+          reason: WalletConnectError(
             code: reason.code,
             message: reason.message,
           ),
@@ -1589,7 +1589,7 @@ void signingEngineTests({
             Errors.getSdkError(Errors.USER_DISCONNECTED);
         await clientA.disconnectSession(
           topic: sessionATopic,
-          reason: WalletConnectErrorResponse(
+          reason: WalletConnectError(
             code: reason.code,
             message: reason.message,
           ),
@@ -1613,7 +1613,7 @@ void signingEngineTests({
         reason = Errors.getSdkError(Errors.USER_DISCONNECTED);
         await clientB.disconnectSession(
           topic: sessionATopic,
-          reason: WalletConnectErrorResponse(
+          reason: WalletConnectError(
             code: reason.code,
             message: reason.message,
           ),
@@ -1653,7 +1653,7 @@ void signingEngineTests({
           expect(
             () async => await client.disconnectSession(
               topic: TEST_SESSION_INVALID_TOPIC,
-              reason: WalletConnectErrorResponse(
+              reason: WalletConnectError(
                 code: reason.code,
                 message: reason.message,
               ),
@@ -1682,7 +1682,7 @@ void signingEngineTests({
           expect(
             () async => await client.disconnectSession(
               topic: TEST_SESSION_EXPIRED_TOPIC,
-              reason: WalletConnectErrorResponse(
+              reason: WalletConnectError(
                 code: reason.code,
                 message: reason.message,
               ),

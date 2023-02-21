@@ -229,7 +229,7 @@ class AuthEngine implements IAuthEngine {
       final resp = AuthResponse(
         id: id,
         topic: responseTopic,
-        error: WalletConnectErrorResponse(
+        error: WalletConnectError(
           code: -1,
           message: 'Invalid signature',
         ),
@@ -252,7 +252,7 @@ class AuthEngine implements IAuthEngine {
     required int id,
     required String iss,
     CacaoSignature? signature,
-    WalletConnectErrorResponse? error,
+    WalletConnectError? error,
   }) async {
     _checkInitialized();
 

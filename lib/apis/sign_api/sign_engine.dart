@@ -344,7 +344,7 @@ class SignEngine implements ISignEngine {
   @override
   Future<void> rejectSession({
     required int id,
-    required WalletConnectErrorResponse reason,
+    required WalletConnectError reason,
   }) async {
     _checkInitialized();
 
@@ -527,7 +527,7 @@ class SignEngine implements ISignEngine {
   @override
   Future<void> disconnectSession({
     required String topic,
-    required WalletConnectErrorResponse reason,
+    required WalletConnectError reason,
   }) async {
     _checkInitialized();
     await _isValidDisconnect(topic);
@@ -1355,7 +1355,7 @@ class SignEngine implements ISignEngine {
     return true;
   }
 
-  Future<bool> _isValidReject(int id, WalletConnectErrorResponse reason) async {
+  Future<bool> _isValidReject(int id, WalletConnectError reason) async {
     // No need to validate reason. Strict typing enforces ErrorResponse is valid
     await _isValidProposalId(id);
     return true;

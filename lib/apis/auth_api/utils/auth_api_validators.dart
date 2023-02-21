@@ -57,7 +57,7 @@ class AuthApiValidators {
     required int id,
     required Map<int, PendingAuthRequest> pendingRequests,
     CacaoSignature? signature,
-    WalletConnectErrorResponse? error,
+    WalletConnectError? error,
   }) {
     if (!pendingRequests.containsKey(id)) {
       throw Errors.getInternalError(

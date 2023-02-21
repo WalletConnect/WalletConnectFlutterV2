@@ -177,7 +177,7 @@ class SignClient implements ISignClient {
   @override
   Future<void> rejectSession({
     required int id,
-    required WalletConnectErrorResponse reason,
+    required WalletConnectError reason,
   }) async {
     try {
       return await engine.rejectSession(
@@ -313,7 +313,7 @@ class SignClient implements ISignClient {
   @override
   Future<void> disconnectSession({
     required String topic,
-    required WalletConnectErrorResponse reason,
+    required WalletConnectError reason,
   }) async {
     try {
       return await engine.disconnectSession(
