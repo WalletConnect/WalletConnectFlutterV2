@@ -32,6 +32,61 @@ void main() {
     });
   });
 
+  test('Relay client connect and disconnect events broadcast', () async {
+    ICore coreA = Core(
+      projectId: TEST_PROJECT_ID,
+      memoryStore: true,
+    );
+    ICore coreB = Core(
+      projectId: TEST_PROJECT_ID,
+      memoryStore: true,
+    );
+
+    int counterA = 0, counterB = 0, counterC = 0, counterD = 0;
+    Completer completerA = Completer(),
+        completerB = Completer(),
+        completerC = Completer(),
+        completerD = Completer();
+    coreA.relayClient.onRelayClientConnect.subscribe((args) {
+      expect(args, null);
+      counterA++;
+      completerA.complete();
+    });
+    coreA.relayClient.onRelayClientDisconnect.subscribe((args) {
+      expect(args, null);
+      counterB++;
+      completerB.complete();
+    });
+    coreB.relayClient.onRelayClientConnect.subscribe((args) {
+      expect(args, null);
+      counterC++;
+      completerC.complete();
+    });
+    coreB.relayClient.onRelayClientDisconnect.subscribe((args) {
+      expect(args, null);
+      counterD++;
+      completerD.complete();
+    });
+
+    await coreA.start();
+    await coreB.start();
+
+    await completerA.future;
+    await completerC.future;
+
+    expect(counterA, 1);
+    expect(counterC, 1);
+
+    await coreA.relayClient.disconnect();
+    await coreB.relayClient.disconnect();
+
+    await completerB.future;
+    await completerD.future;
+
+    expect(counterB, 1);
+    expect(counterD, 1);
+  });
+
   group('Relay Client', () {
     ICore core = Core(
       projectId: TEST_PROJECT_ID,
