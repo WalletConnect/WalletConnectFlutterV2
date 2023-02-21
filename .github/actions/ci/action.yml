@@ -16,8 +16,7 @@ runs:
   using: composite
   steps:
     # Setup Dependencies
-    - uses: actions/checkout@v3
-    - uses: ./.github/actions/ci/dependencies
+    - uses: ./.github/actions/dependencies
 
     # Unit and Integration Tests
     - name: Run tests

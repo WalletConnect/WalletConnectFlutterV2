@@ -25,7 +25,7 @@ jobs:
     - uses: dart-lang/setup-dart@v1
 
     # Setup Dependencies
-    - uses: ./.github/actions/ci/dependencies
+    - uses: ./.github/actions/dependencies
 
     # Publish
     - name: Check Publish Warnings
