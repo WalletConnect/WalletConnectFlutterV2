@@ -64,6 +64,15 @@ void main() {
     expect(parsed.symKey, 'xyz');
     expect(parsed.relay.protocol, 'irn');
     expect(parsed.methods.length, 0);
+
+    // Can parse URI with missing methods param
+    response = Uri.parse('wc:abc@2?relay-protocol=irn&symKey=xyz');
+    expect(parsed.protocol, 'wc');
+    expect(parsed.version, '2');
+    expect(parsed.topic, 'abc');
+    expect(parsed.symKey, 'xyz');
+    expect(parsed.relay.protocol, 'irn');
+    expect(parsed.methods.length, 0);
   });
 
   group('Pairing API', () {

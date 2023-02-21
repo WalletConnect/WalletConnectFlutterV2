@@ -80,10 +80,7 @@ class RelayClient implements IRelayClient {
 
     // Setup the json RPC server
     jsonRPC = await _createJsonRPCProvider();
-    // jsonRPC.registerMethod(
-    //   _buildMethod(JSON_RPC_PUBLISH),
-    //   _handlePublish,
-    // );
+
     jsonRPC.registerMethod(
       _buildMethod(JSON_RPC_SUBSCRIPTION),
       _handleSubscription,
@@ -98,11 +95,6 @@ class RelayClient implements IRelayClient {
     );
     jsonRPC.listen();
 
-    // Initialize all of our stores
-    // if (test) {
-    //   _initialized = true;
-    //   return;
-    // }
     messageTracker ??= MessageTracker(core);
     topicMap ??= TopicMap(core);
 
@@ -193,11 +185,6 @@ class RelayClient implements IRelayClient {
   /// PRIVATE FUNCTIONS ///
 
   Future<Peer> _createJsonRPCProvider() async {
-    // if (test) {
-    //   StreamController<String> data = StreamController.broadcast();
-    //   return Peer(StreamChannel(data.stream, data.sink));
-    // }
-
     var auth = await core.crypto.signJWT(core.relayUrl);
     try {
       socket = WebSocketChannel.connect(
@@ -215,7 +202,14 @@ class RelayClient implements IRelayClient {
 
       await socket.ready;
 
-      return Peer(socket.cast<String>());
+      onRelayClientConnect.broadcast();
+
+      final Peer p = Peer(socket.cast<String>());
+
+      // When p closes, emit the event
+      p.done.then((value) => onRelayClientDisconnect.broadcast());
+
+      return p;
     } catch (e) {
       onRelayClientError.broadcast(ErrorEvent(e));
       throw WalletConnectError(

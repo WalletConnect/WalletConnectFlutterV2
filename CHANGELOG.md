@@ -1,3 +1,9 @@
+## 1.0.4
+
+- Fixed bug when scanning URI with no `method` query parameter
+- Fixed relay not emiting connect or disconnect events when it should have
+- Added tests for both of the above
+
 ## 1.0.3
 
 - Added more WalletConnect error codes to Errors static class
