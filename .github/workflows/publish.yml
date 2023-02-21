@@ -23,17 +23,9 @@ jobs:
     
     # Setup Dart SDK
     - uses: dart-lang/setup-dart@v1
-    
-    # Install dependencies
-    - name: Install packages
-      shell: bash
-      run: flutter pub get
-    - name: Verify formatting and analyze project source
-      shell: bash
-      run: dart format --output=none --set-exit-if-changed .
-    - name: Analyze project source
-      shell: bash
-      run: flutter analyze
+
+    # Setup Dependencies
+    - uses: ./.github/actions/ci/dependencies
 
     # Publish
     - name: Check Publish Warnings
