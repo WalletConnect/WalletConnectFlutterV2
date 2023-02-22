@@ -1,12 +1,12 @@
 import 'package:flutter/services.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 import 'package:walletconnect_flutter_v2_dapp/models/chain_metadata.dart';
 import 'package:walletconnect_flutter_v2_dapp/pages/chain_page.dart';
 import 'package:walletconnect_flutter_v2_dapp/utils/constants.dart';
-import 'package:flutter/material.dart';
-import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 import 'package:walletconnect_flutter_v2_dapp/utils/crypto/helpers.dart';
 import 'package:walletconnect_flutter_v2_dapp/utils/string_constants.dart';
+import 'package:flutter/material.dart';
 
 void main() {
   runApp(const MyApp());
