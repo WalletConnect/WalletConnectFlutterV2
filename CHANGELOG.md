@@ -1,3 +1,7 @@
+## 1.0.5
+
+- Added generated files back in
+
 ## 1.0.4
 
 - Fixed bug when scanning URI with no `method` query parameter
