@@ -6,8 +6,8 @@ import 'package:walletconnect_flutter_v2/apis/core/i_core.dart';
 import 'package:walletconnect_flutter_v2/apis/core/pairing/utils/pairing_models.dart';
 import 'package:walletconnect_flutter_v2/apis/core/pairing/utils/pairing_utils.dart';
 import 'package:walletconnect_flutter_v2/apis/core/relay_client/relay_client_models.dart';
-import 'package:walletconnect_flutter_v2/apis/models/json_rpc_error.dart';
 import 'package:walletconnect_flutter_v2/apis/models/basic_models.dart';
+import 'package:walletconnect_flutter_v2/apis/models/json_rpc_error.dart';
 import 'package:walletconnect_flutter_v2/apis/models/uri_parse_result.dart';
 import 'package:walletconnect_flutter_v2/apis/utils/method_constants.dart';
 import 'package:walletconnect_flutter_v2/apis/utils/walletconnect_utils.dart';
@@ -30,7 +30,7 @@ void main() {
         ]);
     expect(
       Uri.decodeFull(response.toString()),
-      'wc:abc@2?relay-protocol=irn&symKey=xyz&methods=["wc_sessionPropose"],["wc_authRequest","wc_authBatchRequest"]',
+      'wc:abc@2?relay-protocol=irn&symKey=xyz&methods=[wc_sessionPropose],[wc_authRequest,wc_authBatchRequest]',
     );
 
     URIParseResult parsed = WalletConnectUtils.parseUri(response);
@@ -272,9 +272,7 @@ void main() {
             () async => await coreA.pairing.pair(uri: Uri.parse('')),
             throwsA(
               predicate(
-                (e) =>
-                    e is WalletConnectError &&
-                    e.message == 'Invalid URI: Missing @',
+                (e) => e is WalletConnectError && e.message == 'Invalid URI: Missing @',
               ),
             ),
           );
@@ -282,21 +280,16 @@ void main() {
             () async => await coreA.pairing.pair(uri: Uri.parse('wc:abc')),
             throwsA(
               predicate(
-                (e) =>
-                    e is WalletConnectError &&
-                    e.message == 'Invalid URI: Missing @',
+                (e) => e is WalletConnectError && e.message == 'Invalid URI: Missing @',
               ),
             ),
           );
         });
 
-        test("throws when required methods aren't contained in registered",
-            () async {
-          final String uriWithMethods =
-              '$TEST_URI&methods=[wc_sessionPropose],[wc_authRequest,wc_authBatchRequest]';
+        test("throws when required methods aren't contained in registered", () async {
+          final String uriWithMethods = '$TEST_URI&methods=[wc_sessionPropose],[wc_authRequest,wc_authBatchRequest]';
           expect(
-            () async =>
-                await coreA.pairing.pair(uri: Uri.parse(uriWithMethods)),
+            () async => await coreA.pairing.pair(uri: Uri.parse(uriWithMethods)),
             throwsA(
               predicate(
                 (e) =>
@@ -312,8 +305,7 @@ void main() {
             type: ProtocolType.Sign,
           );
           expect(
-            () async =>
-                await coreA.pairing.pair(uri: Uri.parse(uriWithMethods)),
+            () async => await coreA.pairing.pair(uri: Uri.parse(uriWithMethods)),
             throwsA(
               predicate(
                 (e) =>
@@ -329,8 +321,7 @@ void main() {
             type: ProtocolType.Auth,
           );
           expect(
-            () async =>
-                await coreA.pairing.pair(uri: Uri.parse(uriWithMethods)),
+            () async => await coreA.pairing.pair(uri: Uri.parse(uriWithMethods)),
             throwsA(
               predicate(
                 (e) =>
@@ -342,8 +333,7 @@ void main() {
           );
         });
 
-        test("succeeds when required methods are contained in registered",
-            () async {
+        test("succeeds when required methods are contained in registered", () async {
           List<RegisteredFunction> registeredFunctions = [
             RegisteredFunction(
               method: MethodConstants.WC_SESSION_PROPOSE,
@@ -390,10 +380,7 @@ void main() {
           expect(
             () async => await coreA.pairing.ping(topic: 'abc'),
             throwsA(
-              predicate((e) =>
-                  e is JsonRpcError &&
-                  e.message ==
-                      "No matching key. pairing topic doesn't exist: abc"),
+              predicate((e) => e is JsonRpcError && e.message == "No matching key. pairing topic doesn't exist: abc"),
             ),
           );
         });
@@ -404,10 +391,7 @@ void main() {
           expect(
             () async => await coreA.pairing.disconnect(topic: 'abc'),
             throwsA(
-              predicate((e) =>
-                  e is JsonRpcError &&
-                  e.message ==
-                      "No matching key. pairing topic doesn't exist: abc"),
+              predicate((e) => e is JsonRpcError && e.message == "No matching key. pairing topic doesn't exist: abc"),
             ),
           );
         });

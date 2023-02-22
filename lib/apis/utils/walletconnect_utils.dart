@@ -24,8 +24,7 @@ class WalletConnectUtils {
   }
 
   static String getOS() {
-    return <String>[Platform.operatingSystem, Platform.operatingSystemVersion]
-        .join('-');
+    return <String>[Platform.operatingSystem, Platform.operatingSystemVersion].join('-');
   }
 
   static String getId() {
@@ -103,9 +102,7 @@ class WalletConnectUtils {
       symKey: uri.queryParameters['symKey']!,
       relay: Relay(
         uri.queryParameters['relay-protocol']!,
-        data: uri.queryParameters.containsKey('relay-data')
-            ? uri.queryParameters['relay-data']
-            : null,
+        data: uri.queryParameters.containsKey('relay-data') ? uri.queryParameters['relay-data'] : null,
       ),
       methods: methods,
     );
@@ -136,7 +133,7 @@ class WalletConnectUtils {
     Map<String, String> params = formatRelayParams(relay);
     params['symKey'] = symKey;
     if (methods != null) {
-      params['methods'] = methods.map((e) => jsonEncode(e)).join(',');
+      params['methods'] = methods.map((e) => jsonEncode(e)).join(',').replaceAll('"', '');
     } else {
       params['methods'] = '[]';
     }
