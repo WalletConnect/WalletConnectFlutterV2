@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 
 class Constants {
-  static const projectId = '';
+  static const projectId = '7e984f90b95f0236d3c12d791537f233';
 }
 
 class StyleConstants {
-  static const Color primaryColor = Color(0xFF1A1A1A);
+  static const Color primaryColor = Color.fromARGB(255, 16, 165, 206);
   static const Color secondaryColor = Color(0xFF1A1A1A);
 
   // Linear
@@ -27,4 +27,21 @@ class StyleConstants {
 
   // Width
   static const double maxWidth = 400;
+
+  // Text styles
+  static const TextStyle titleText = TextStyle(
+    color: Colors.black,
+    fontSize: magic40,
+    fontWeight: FontWeight.w600,
+  );
+  static const TextStyle subtitleText = TextStyle(
+    color: Colors.black,
+    fontSize: linear24,
+    fontWeight: FontWeight.w600,
+  );
+  static const TextStyle buttonText = TextStyle(
+    color: Colors.black,
+    fontSize: magic14,
+    fontWeight: FontWeight.w600,
+  );
 }

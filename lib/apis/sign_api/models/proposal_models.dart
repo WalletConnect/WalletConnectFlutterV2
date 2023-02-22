@@ -4,7 +4,7 @@ import 'package:walletconnect_flutter_v2/apis/models/basic_models.dart';
 
 part 'proposal_models.g.dart';
 
-@JsonSerializable()
+@JsonSerializable(includeIfNull: false)
 class RequiredNamespace {
   final List<String>? chains;
   final List<String> methods;
@@ -60,7 +60,7 @@ class SessionProposal {
   Map<String, dynamic> toJson() => _$SessionProposalToJson(this);
 }
 
-@JsonSerializable()
+@JsonSerializable(includeIfNull: false)
 class ProposalData {
   final int id;
   final int expiry;
