@@ -9,9 +9,9 @@ runs:
       shell: bash
       run: flutter pub get
 
-    - name: Generate code
-      shell: bash
-      run: flutter pub run build_runner build --delete-conflicting-outputs
+    # - name: Generate code
+    #   shell: bash
+    #   run: flutter pub run build_runner build --delete-conflicting-outputs
 
     - name: Verify formatting and analyze project source
       shell: bash
