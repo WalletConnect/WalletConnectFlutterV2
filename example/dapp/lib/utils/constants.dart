@@ -24,4 +24,7 @@ class StyleConstants {
   static const double magic20 = 20;
   static const double magic40 = 40;
   static const double magic64 = 64;
+
+  // Width
+  static const double maxWidth = 400;
 }

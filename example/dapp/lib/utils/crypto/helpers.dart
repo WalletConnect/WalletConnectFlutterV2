@@ -1,5 +1,5 @@
-import 'package:dapp/utils/crypto/eip155_data.dart';
-import 'package:dapp/utils/crypto/solana_data.dart';
+import 'package:walletconnect_flutter_v2_dapp/utils/crypto/eip155_data.dart';
+import 'package:walletconnect_flutter_v2_dapp/utils/crypto/solana_data.dart';
 import 'package:flutter/material.dart';
 
 String getChainName(String value) {

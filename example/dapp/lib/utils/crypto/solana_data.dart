@@ -1,4 +1,4 @@
-import 'package:dapp/models/chain_metadata.dart';
+import 'package:walletconnect_flutter_v2_dapp/models/chain_metadata.dart';
 
 enum SolanaMethods { solanaSignTransaction, solanaSignMessage }
 

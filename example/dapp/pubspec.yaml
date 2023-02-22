@@ -1,5 +1,5 @@
-name: dapp
-description: A new Flutter project.
+name: walletconnect_flutter_v2_dapp
+description: An example project for wallet connect flutter v2
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
