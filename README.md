@@ -15,10 +15,8 @@ Original work for this library is attributed to [Eucalyptus Labs](https://eucaly
 // SignClient wcClient = await SignClient.createInstance(
 // AuthClient wcClient = await AuthClient.createInstance(
 Web3App wcClient = await Web3App.createInstance(
-  core: Core(
-    relayUrl: 'wss://relay.walletconnect.com', // The relay websocket URL
-    projectId: '123',
-  ),
+  relayUrl: 'wss://relay.walletconnect.com', // The relay websocket URL, leave blank to use the default
+  projectId: '123',
   metadata: PairingMetadata(
     name: 'dApp (Requester)',
     description: 'A dapp that can request that transactions be signed',
@@ -97,10 +95,8 @@ wcClient.registerEventHandler(
 ### Wallet Flow
 ```dart
 Web3Wallet wcClient = await Web3Wallet.createInstance(
-  core: Core(
-    relayUrl: 'wss://relay.walletconnect.com', // The relay websocket URL
-    projectId: '123',
-  ),
+  relayUrl: 'wss://relay.walletconnect.com', // The relay websocket URL, leave blank to use the default
+  projectId: '123',
   metadata: PairingMetadata(
     name: 'Wallet (Responder)',
     description: 'A wallet that can be requested to sign transactions',

@@ -14,11 +14,17 @@ class Web3Wallet implements IWeb3Wallet {
   bool _initialized = false;
 
   static Future<Web3Wallet> createInstance({
-    required ICore core,
+    required String projectId,
+    String relayUrl = WalletConnectConstants.DEFAULT_RELAY_URL,
     required PairingMetadata metadata,
+    bool memoryStore = false,
   }) async {
     final client = Web3Wallet(
-      core: core,
+      core: Core(
+        projectId: projectId,
+        relayUrl: relayUrl,
+        memoryStore: memoryStore,
+      ),
       metadata: metadata,
     );
     await client.init();

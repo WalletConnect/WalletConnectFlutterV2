@@ -11,6 +11,7 @@ import 'package:walletconnect_flutter_v2/apis/core/store/i_store.dart';
 import 'package:walletconnect_flutter_v2/apis/core/relay_client/i_relay_client.dart';
 import 'package:walletconnect_flutter_v2/apis/core/pairing/i_pairing.dart';
 import 'package:walletconnect_flutter_v2/apis/core/store/shared_prefs_store.dart';
+import 'package:walletconnect_flutter_v2/apis/utils/constants.dart';
 
 class Core implements ICore {
   @override
@@ -43,7 +44,7 @@ class Core implements ICore {
   late IStore<Map<String, dynamic>> storage;
 
   Core({
-    this.relayUrl = 'wss://relay.walletconnect.com',
+    this.relayUrl = WalletConnectConstants.DEFAULT_RELAY_URL,
     required this.projectId,
     bool memoryStore = false,
   }) {

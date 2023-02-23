@@ -18,14 +18,20 @@ import 'sign_client_helpers.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  final List<Future<ISignEngineApp> Function(ICore, PairingMetadata)>
-      signAppCreators = [
-    (ICore core, PairingMetadata metadata) async =>
-        await SignClient.createInstance(
-          core: core,
+  final List<Future<ISignEngineApp> Function(PairingMetadata)> signAppCreators =
+      [
+    (PairingMetadata metadata) async => await SignClient.createInstance(
+          projectId: TEST_PROJECT_ID,
+          relayUrl: TEST_RELAY_URL,
           metadata: metadata,
+          memoryStore: true,
         ),
-    (ICore core, PairingMetadata metadata) async {
+    (PairingMetadata metadata) async {
+      final core = Core(
+        projectId: TEST_PROJECT_ID,
+        relayUrl: TEST_RELAY_URL,
+        memoryStore: true,
+      );
       ISignEngine e = SignEngine(
         core: core,
         metadata: metadata,
@@ -58,21 +64,28 @@ void main() {
 
       return e;
     },
-    (ICore core, PairingMetadata metadata) async =>
-        await Web3App.createInstance(
-          core: core,
+    (PairingMetadata metadata) async => await Web3App.createInstance(
+          projectId: TEST_PROJECT_ID,
+          relayUrl: TEST_RELAY_URL,
           metadata: metadata,
+          memoryStore: true,
         ),
   ];
 
-  final List<Future<ISignEngineWallet> Function(ICore, PairingMetadata)>
+  final List<Future<ISignEngineWallet> Function(PairingMetadata)>
       signWalletCreators = [
-    (ICore core, PairingMetadata metadata) async =>
-        await SignClient.createInstance(
-          core: core,
+    (PairingMetadata metadata) async => await SignClient.createInstance(
+          projectId: TEST_PROJECT_ID,
+          relayUrl: TEST_RELAY_URL,
           metadata: metadata,
+          memoryStore: true,
         ),
-    (ICore core, PairingMetadata metadata) async {
+    (PairingMetadata metadata) async {
+      final core = Core(
+        projectId: TEST_PROJECT_ID,
+        relayUrl: TEST_RELAY_URL,
+        memoryStore: true,
+      );
       ISignEngine e = SignEngine(
         core: core,
         metadata: metadata,
@@ -105,10 +118,11 @@ void main() {
 
       return e;
     },
-    (ICore core, PairingMetadata metadata) async =>
-        await Web3Wallet.createInstance(
-          core: core,
+    (PairingMetadata metadata) async => await Web3Wallet.createInstance(
+          projectId: TEST_PROJECT_ID,
+          relayUrl: TEST_RELAY_URL,
           metadata: metadata,
+          memoryStore: true,
         ),
   ];
 
@@ -125,11 +139,9 @@ void main() {
   group('expiration', () {
     test('deletes session', () async {
       final client = await SignClient.createInstance(
-        core: Core(
-          relayUrl: TEST_RELAY_URL,
-          projectId: TEST_PROJECT_ID,
-          memoryStore: true,
-        ),
+        relayUrl: TEST_RELAY_URL,
+        projectId: TEST_PROJECT_ID,
+        memoryStore: true,
         metadata: PairingMetadata.empty(),
       );
 
@@ -157,11 +169,9 @@ void main() {
 
     test('deletes proposal', () async {
       final client = await SignClient.createInstance(
-        core: Core(
-          relayUrl: TEST_RELAY_URL,
-          projectId: TEST_PROJECT_ID,
-          memoryStore: true,
-        ),
+        relayUrl: TEST_RELAY_URL,
+        projectId: TEST_PROJECT_ID,
+        memoryStore: true,
         metadata: PairingMetadata.empty(),
       );
       await client.proposals.set(
@@ -191,10 +201,8 @@ void main() {
 
 void signingEngineTests({
   required String context,
-  required Future<ISignEngineApp> Function(ICore, PairingMetadata)
-      clientACreator,
-  required Future<ISignEngineWallet> Function(ICore, PairingMetadata)
-      clientBCreator,
+  required Future<ISignEngineApp> Function(PairingMetadata) clientACreator,
+  required Future<ISignEngineWallet> Function(PairingMetadata) clientBCreator,
 }) {
   group(context, () {
     late ISignEngineApp clientA;
@@ -203,11 +211,6 @@ void signingEngineTests({
 
     setUp(() async {
       clientA = await clientACreator(
-        Core(
-          relayUrl: TEST_RELAY_URL,
-          projectId: TEST_PROJECT_ID,
-          memoryStore: true,
-        ),
         PairingMetadata(
           name: 'App A (Proposer, dapp)',
           description: 'Description of Proposer App run by client A',
@@ -216,11 +219,6 @@ void signingEngineTests({
         ),
       );
       clientB = await clientBCreator(
-        Core(
-          relayUrl: TEST_RELAY_URL,
-          projectId: TEST_PROJECT_ID,
-          memoryStore: true,
-        ),
         PairingMetadata(
           name: 'App B (Responder, Wallet)',
           description: 'Description of Proposer App run by client B',
