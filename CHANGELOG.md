@@ -1,3 +1,7 @@
+## 1.0.8
+
+- Fixed an issue where pairings weren't getting persisted to storage
+
 ## 1.0.7
 
 - Removed " from methods in URL
