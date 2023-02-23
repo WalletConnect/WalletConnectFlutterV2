@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:event/event.dart';
 import 'package:json_rpc_2/json_rpc_2.dart';
@@ -173,7 +174,24 @@ class RelayClient implements IRelayClient {
   Future<void> connect({String? relayUrl}) async {
     _checkInitialized();
 
+    if (!jsonRPC.isClosed) {
+      return;
+    }
+
     jsonRPC = await _createJsonRPCProvider();
+    jsonRPC.registerMethod(
+      _buildMethod(JSON_RPC_SUBSCRIPTION),
+      _handleSubscription,
+    );
+    jsonRPC.registerMethod(
+      _buildMethod(JSON_RPC_SUBSCRIBE),
+      _handleSubscribe,
+    );
+    jsonRPC.registerMethod(
+      _buildMethod(JSON_RPC_UNSUBSCRIBE),
+      _handleUnsubscribe,
+    );
+    jsonRPC.listen();
   }
 
   @override

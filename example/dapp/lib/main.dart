@@ -1,6 +1,7 @@
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 import 'package:walletconnect_flutter_v2_dapp/models/page_data.dart';
 import 'package:walletconnect_flutter_v2_dapp/pages/connect_page.dart';
+import 'package:walletconnect_flutter_v2_dapp/pages/pairings_page.dart';
 import 'package:walletconnect_flutter_v2_dapp/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:walletconnect_flutter_v2_dapp/utils/string_constants.dart';
@@ -53,9 +54,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> initialize() async {
     _web3App = await Web3App.createInstance(
-      core: Core(
-        projectId: Constants.projectId,
-      ),
+      projectId: Constants.projectId,
       metadata: const PairingMetadata(
         name: 'Example Dapp',
         description: 'Example Dapp',
@@ -84,10 +83,15 @@ class _MyHomePageState extends State<MyHomePage> {
           icon: Icons.home,
         ),
         PageData(
-          page: const Text('Settings'),
-          title: StringConstants.connectPageTitle,
-          icon: Icons.settings,
+          page: PairingsPage(web3App: _web3App!),
+          title: StringConstants.pairingsPageTitle,
+          icon: Icons.connect_without_contact_sharp,
         ),
+        // PageData(
+        //   page: const Text('Settings'),
+        //   title: StringConstants.connectPageTitle,
+        //   icon: Icons.settings,
+        // ),
       ];
 
       _initializing = false;

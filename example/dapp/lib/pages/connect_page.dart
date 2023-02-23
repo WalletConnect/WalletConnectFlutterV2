@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:fl_toast/fl_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -25,6 +27,8 @@ class ConnectPage extends StatefulWidget {
 class ConnectPageState extends State<ConnectPage> {
   bool _testnetOnly = false;
   final List<ChainMetadata> _selectedChains = [];
+
+  bool _shouldDismissQrCode = true;
 
   void setTestnet(bool value) {
     if (value != _testnetOnly) {
@@ -174,14 +178,42 @@ class ConnectPageState extends State<ConnectPage> {
       requiredNamespaces: requiredNamespaces,
     );
     // print(res.uri!.toString());
-    await _showQrCode(res);
+    _showQrCode(res);
+
+    try {
+      final SessionData _ = await res.session.future;
+      if (_shouldDismissQrCode) {
+        // ignore: use_build_context_synchronously
+        Navigator.pop(context);
+      }
+
+      await showPlatformToast(
+        child: const Text(
+          StringConstants.connectionEstablished,
+        ),
+        context: context,
+      );
+    } catch (e) {
+      debugPrint(e.toString());
+      if (_shouldDismissQrCode) {
+        // ignore: use_build_context_synchronously
+        Navigator.pop(context);
+      }
+      await showPlatformToast(
+        child: const Text(
+          StringConstants.connectionEstablished,
+        ),
+        context: context,
+      );
+    }
   }
 
   Future<void> _showQrCode(
     ConnectResponse response,
   ) async {
     // Show the QR code
-    showDialog(
+    _shouldDismissQrCode = true;
+    await showDialog(
       context: context,
       builder: (context) {
         return AlertDialog(
@@ -227,23 +259,6 @@ class ConnectPageState extends State<ConnectPage> {
         );
       },
     );
-
-    try {
-      final SessionData _ = await response.session.future;
-      await showPlatformToast(
-        child: const Text(
-          StringConstants.connectionEstablished,
-        ),
-        context: context,
-      );
-    } catch (e) {
-      debugPrint(e.toString());
-      await showPlatformToast(
-        child: const Text(
-          StringConstants.connectionEstablished,
-        ),
-        context: context,
-      );
-    }
+    _shouldDismissQrCode = false;
   }
 }
