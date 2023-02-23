@@ -15,13 +15,13 @@ runs:
 
     - name: Install packages for example
       shell: bash
-      run: flutter pub get --path example
+      run: cd example/dapp && flutter pub get && cd ../..
 
     - name: Verify formatting and analyze project source
       shell: bash
       run: dart format --output=none --set-exit-if-changed .
 
-    # - name: Analyze project source
-    #   shell: bash
-    #   run: flutter analyze
+    - name: Analyze project source
+      shell: bash
+      run: flutter analyze
     
