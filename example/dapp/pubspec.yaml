@@ -38,6 +38,7 @@ dependencies:
   cupertino_icons: ^1.0.2
   qr_flutter: ^4.0.0
   walletconnect_flutter_v2: ^1.0.5
+  fl_toast: ^3.1.0
 
 dev_dependencies:
   flutter_test:

@@ -7,8 +7,6 @@ enum EIP155Methods {
   ethSignTypedDataV4,
   ethSendRawTransaction,
   ethSendTransaction,
-  solanaSignTransaction,
-  solanaSignMessage,
 }
 
 enum EIP155Events {
@@ -52,8 +50,6 @@ class EIP155Data {
     EIP155Methods.ethSignTypedDataV4: 'eth_signTypedData_v4',
     EIP155Methods.ethSendRawTransaction: 'eth_sendRawTransaction',
     EIP155Methods.ethSendTransaction: 'eth_sendTransaction',
-    EIP155Methods.solanaSignTransaction: 'solana_signTransaction',
-    EIP155Methods.solanaSignMessage: 'solana_signMessage'
   };
 
   static final Map<EIP155Events, String> events = {

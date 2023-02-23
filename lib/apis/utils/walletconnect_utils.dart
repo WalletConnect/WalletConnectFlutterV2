@@ -136,7 +136,15 @@ class WalletConnectUtils {
     Map<String, String> params = formatRelayParams(relay);
     params['symKey'] = symKey;
     if (methods != null) {
-      params['methods'] = methods.map((e) => jsonEncode(e)).join(',');
+      params['methods'] = methods
+          .map((e) => jsonEncode(e))
+          .join(
+            ',',
+          )
+          .replaceAll(
+            '"',
+            '',
+          );
     } else {
       params['methods'] = '[]';
     }

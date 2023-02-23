@@ -163,7 +163,7 @@ class SignEngine implements ISignEngine {
       proposal,
     );
 
-    Completer completer = Completer.sync();
+    Completer<SessionData> completer = Completer();
 
     pendingProposals.add(
       SessionProposalCompleter(
