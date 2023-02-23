@@ -136,7 +136,7 @@ class SignClientHelpers {
     // await Future.delayed(Duration(milliseconds: 200));
     await sessionBCompleter.future;
 
-    if (sessionA == null) throw Exception("expect session A to be defined");
+    // if (sessionA == null) throw Exception("expect session A to be defined");
     if (sessionB == null) throw Exception("expect session B to be defined");
 
     expect(sessionA.topic, sessionB!.topic);

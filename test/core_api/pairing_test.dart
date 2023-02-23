@@ -30,7 +30,7 @@ void main() {
         ]);
     expect(
       Uri.decodeFull(response.toString()),
-      'wc:abc@2?relay-protocol=irn&symKey=xyz&methods=["wc_sessionPropose"],["wc_authRequest","wc_authBatchRequest"]',
+      'wc:abc@2?relay-protocol=irn&symKey=xyz&methods=[wc_sessionPropose],[wc_authRequest,wc_authBatchRequest]',
     );
 
     URIParseResult parsed = WalletConnectUtils.parseUri(response);

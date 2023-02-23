@@ -18,14 +18,20 @@ import 'utils/signature_constants.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  final List<Future<IAuthEngineApp> Function(ICore, PairingMetadata)>
-      authAppCreators = [
-    (ICore core, PairingMetadata metadata) async =>
-        await AuthClient.createInstance(
-          core: core,
+  final List<Future<IAuthEngineApp> Function(PairingMetadata)> authAppCreators =
+      [
+    (PairingMetadata metadata) async => await AuthClient.createInstance(
+          projectId: TEST_PROJECT_ID,
+          relayUrl: TEST_RELAY_URL,
           metadata: metadata,
+          memoryStore: true,
         ),
-    (ICore core, PairingMetadata? self) async {
+    (PairingMetadata? self) async {
+      final core = Core(
+        projectId: TEST_PROJECT_ID,
+        relayUrl: TEST_RELAY_URL,
+        memoryStore: true,
+      );
       IAuthEngine e = AuthEngine(
         core: core,
         metadata: self ?? PairingMetadata.empty(),
@@ -79,21 +85,28 @@ void main() {
 
       return e;
     },
-    (ICore core, PairingMetadata metadata) async =>
-        await Web3App.createInstance(
-          core: core,
+    (PairingMetadata metadata) async => await AuthClient.createInstance(
+          projectId: TEST_PROJECT_ID,
+          relayUrl: TEST_RELAY_URL,
           metadata: metadata,
+          memoryStore: true,
         ),
   ];
 
-  final List<Future<IAuthEngineWallet> Function(ICore, PairingMetadata)>
+  final List<Future<IAuthEngineWallet> Function(PairingMetadata)>
       authWalletCreators = [
-    (ICore core, PairingMetadata metadata) async =>
-        await Web3Wallet.createInstance(
-          core: core,
+    (PairingMetadata metadata) async => await Web3Wallet.createInstance(
+          projectId: TEST_PROJECT_ID,
+          relayUrl: TEST_RELAY_URL,
           metadata: metadata,
+          memoryStore: true,
         ),
-    (ICore core, PairingMetadata metadata) async {
+    (PairingMetadata metadata) async {
+      final core = Core(
+        projectId: TEST_PROJECT_ID,
+        relayUrl: TEST_RELAY_URL,
+        memoryStore: true,
+      );
       IAuthEngine e = AuthEngine(
         core: core,
         metadata: metadata,
@@ -147,10 +160,11 @@ void main() {
 
       return e;
     },
-    (ICore core, PairingMetadata metadata) async =>
-        await Web3Wallet.createInstance(
-          core: core,
+    (PairingMetadata metadata) async => await Web3Wallet.createInstance(
+          projectId: TEST_PROJECT_ID,
+          relayUrl: TEST_RELAY_URL,
           metadata: metadata,
+          memoryStore: true,
         ),
   ];
 
@@ -167,9 +181,8 @@ void main() {
 
 void runTests({
   required String context,
-  required Future<IAuthEngineApp> Function(ICore, PairingMetadata)
-      engineAppCreator,
-  required Future<IAuthEngineWallet> Function(ICore, PairingMetadata)
+  required Future<IAuthEngineApp> Function(PairingMetadata) engineAppCreator,
+  required Future<IAuthEngineWallet> Function(PairingMetadata)
       engineWalletCreator,
 }) {
   group(context, () {
@@ -178,19 +191,9 @@ void runTests({
 
     setUp(() async {
       clientA = await engineAppCreator(
-        Core(
-          relayUrl: TEST_RELAY_URL,
-          projectId: TEST_PROJECT_ID,
-          memoryStore: true,
-        ),
         TEST_METADATA_REQUESTER,
       );
       clientB = await engineWalletCreator(
-        Core(
-          relayUrl: TEST_RELAY_URL,
-          projectId: TEST_PROJECT_ID,
-          memoryStore: true,
-        ),
         TEST_METADATA_RESPONDER,
       );
     });

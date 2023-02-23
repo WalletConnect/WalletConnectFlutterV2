@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:event/event.dart';
+import 'package:walletconnect_flutter_v2/apis/core/core.dart';
 import 'package:walletconnect_flutter_v2/apis/core/store/generic_store.dart';
 import 'package:walletconnect_flutter_v2/apis/core/store/i_generic_store.dart';
 import 'package:walletconnect_flutter_v2/apis/core/pairing/i_pairing_store.dart';
@@ -20,6 +21,7 @@ import 'package:walletconnect_flutter_v2/apis/sign_api/models/sign_client_events
 import 'package:walletconnect_flutter_v2/apis/sign_api/models/session_models.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/sessions.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/utils/sign_constants.dart';
+import 'package:walletconnect_flutter_v2/apis/utils/constants.dart';
 
 class SignClient implements ISignClient {
   bool _initialized = false;
@@ -65,11 +67,17 @@ class SignClient implements ISignClient {
   late ISignEngine engine;
 
   static Future<SignClient> createInstance({
-    required ICore core,
+    required String projectId,
+    String relayUrl = WalletConnectConstants.DEFAULT_RELAY_URL,
     required PairingMetadata metadata,
+    bool memoryStore = false,
   }) async {
     final client = SignClient(
-      core: core,
+      core: Core(
+        projectId: projectId,
+        relayUrl: relayUrl,
+        memoryStore: memoryStore,
+      ),
       metadata: metadata,
     );
     await client.init();

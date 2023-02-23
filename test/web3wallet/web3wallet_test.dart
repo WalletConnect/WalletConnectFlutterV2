@@ -6,18 +6,19 @@ import 'web3wallet_helpers.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
-  final List<Future<IWeb3App> Function(ICore, PairingMetadata)> appCreators = [
-    (ICore core, PairingMetadata metadata) async =>
-        await Web3App.createInstance(
-          core: core,
+  final List<Future<IWeb3App> Function(PairingMetadata)> appCreators = [
+    (PairingMetadata metadata) async => await Web3App.createInstance(
+          projectId: TEST_PROJECT_ID,
+          relayUrl: TEST_RELAY_URL,
+          memoryStore: true,
           metadata: metadata,
         ),
   ];
-  final List<Future<IWeb3Wallet> Function(ICore, PairingMetadata)>
-      walletCreators = [
-    (ICore core, PairingMetadata metadata) async =>
-        await Web3Wallet.createInstance(
-          core: core,
+  final List<Future<IWeb3Wallet> Function(PairingMetadata)> walletCreators = [
+    (PairingMetadata metadata) async => await Web3Wallet.createInstance(
+          projectId: TEST_PROJECT_ID,
+          relayUrl: TEST_RELAY_URL,
+          memoryStore: true,
           metadata: metadata,
         ),
   ];
@@ -35,9 +36,8 @@ void main() {
 
 void runTests({
   required String context,
-  required Future<IWeb3App> Function(ICore, PairingMetadata) web3appCreator,
-  required Future<IWeb3Wallet> Function(ICore, PairingMetadata)
-      web3walletCreator,
+  required Future<IWeb3App> Function(PairingMetadata) web3appCreator,
+  required Future<IWeb3Wallet> Function(PairingMetadata) web3walletCreator,
 }) {
   group(context, () {
     late IWeb3App clientA;
@@ -45,11 +45,6 @@ void runTests({
 
     setUp(() async {
       clientA = await web3appCreator(
-        Core(
-          relayUrl: TEST_RELAY_URL,
-          projectId: TEST_PROJECT_ID,
-          memoryStore: true,
-        ),
         PairingMetadata(
           name: 'App A (Proposer, dapp)',
           description: 'Description of Proposer App run by client A',
@@ -58,11 +53,6 @@ void runTests({
         ),
       );
       clientB = await web3walletCreator(
-        Core(
-          relayUrl: TEST_RELAY_URL,
-          projectId: TEST_PROJECT_ID,
-          memoryStore: true,
-        ),
         PairingMetadata(
           name: 'App B (Responder, Wallet)',
           description: 'Description of Proposer App run by client B',

@@ -21,7 +21,7 @@ class UriParameters {
 
 class ConnectResponse {
   final String pairingTopic;
-  final Completer session;
+  final Completer<SessionData> session;
   final Uri? uri;
 
   ConnectResponse({

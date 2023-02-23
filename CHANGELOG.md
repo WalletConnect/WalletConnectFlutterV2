@@ -1,3 +1,13 @@
+## 1.0.7
+
+- Removed " from methods in URL
+- Simplified using `createInstance` static functions
+- ConnectResponse completer now explicitly completes with a SessionData object
+
+## 1.0.6
+
+- RequiredNamespaces and ProposalData now exlude null fields in JSON
+
 ## 1.0.5
 
 - Added generated files back in
