@@ -38,6 +38,22 @@ void main() {
       );
     });
 
+    test('getAccount', () {
+      expect('invalid', 'invalid');
+      expect(
+        TEST_ACCOUNTS[0],
+        TEST_ACCOUNTS[0].split(':')[2],
+      );
+    });
+
+    test('getChainFromAccount', () {
+      expect('invalid', 'invalid');
+      expect(
+        TEST_ACCOUNTS[0],
+        TEST_CHAINS[0],
+      );
+    });
+
     test('getChainsFromAccounts', () {
       expect(NamespaceUtils.getChainsFromAccounts([]), []);
       expect(

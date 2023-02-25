@@ -1,21 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 
-class PairingItem extends StatelessWidget {
-  const PairingItem({
+class SessionItem extends StatelessWidget {
+  const SessionItem({
     required Key key,
-    required this.pairing,
+    required this.session,
     required this.onTap,
   }) : super(key: key);
 
-  final PairingInfo pairing;
+  final SessionData session;
   final void Function() onTap;
 
   @override
   Widget build(BuildContext context) {
     return ListTile(
-      title: Text(pairing.peerMetadata?.name ?? 'Unknown'),
-      subtitle: Text(pairing.peerMetadata?.url ?? 'Unknown'),
+      title: Text(session.peer.metadata.name),
+      subtitle: Text(session.peer.metadata.url),
       onTap: onTap,
     );
   }

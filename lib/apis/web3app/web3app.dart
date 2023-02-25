@@ -65,11 +65,11 @@ class Web3App implements IWeb3App {
         core: core,
         context: SignConstants.CONTEXT_PROPOSALS,
         version: SignConstants.VERSION_PROPOSALS,
-        toJsonString: (ProposalData value) {
-          return jsonEncode(value.toJson());
+        toJson: (ProposalData value) {
+          return value.toJson();
         },
-        fromJsonString: (String value) {
-          return ProposalData.fromJson(jsonDecode(value));
+        fromJson: (dynamic value) {
+          return ProposalData.fromJson(value);
         },
       ),
       sessions: Sessions(core),
@@ -77,11 +77,11 @@ class Web3App implements IWeb3App {
         core: core,
         context: SignConstants.CONTEXT_PENDING_REQUESTS,
         version: SignConstants.VERSION_PENDING_REQUESTS,
-        toJsonString: (SessionRequest value) {
-          return jsonEncode(value.toJson());
+        toJson: (SessionRequest value) {
+          return value.toJson();
         },
-        fromJsonString: (String value) {
-          return SessionRequest.fromJson(jsonDecode(value));
+        fromJson: (dynamic value) {
+          return SessionRequest.fromJson(value);
         },
       ),
     );
@@ -93,21 +93,21 @@ class Web3App implements IWeb3App {
         core: core,
         context: AuthConstants.CONTEXT_AUTH_KEYS,
         version: AuthConstants.VERSION_AUTH_KEYS,
-        toJsonString: (AuthPublicKey value) {
-          return jsonEncode(value.toJson());
+        toJson: (AuthPublicKey value) {
+          return value.toJson();
         },
-        fromJsonString: (String value) {
-          return AuthPublicKey.fromJson(jsonDecode(value));
+        fromJson: (dynamic value) {
+          return AuthPublicKey.fromJson(value);
         },
       ),
       pairingTopics: GenericStore(
         core: core,
         context: AuthConstants.CONTEXT_PAIRING_TOPICS,
         version: AuthConstants.VERSION_PAIRING_TOPICS,
-        toJsonString: (String value) {
+        toJson: (String value) {
           return value;
         },
-        fromJsonString: (String value) {
+        fromJson: (dynamic value) {
           return value;
         },
       ),
@@ -115,22 +115,22 @@ class Web3App implements IWeb3App {
         core: core,
         context: AuthConstants.CONTEXT_AUTH_REQUESTS,
         version: AuthConstants.VERSION_AUTH_REQUESTS,
-        toJsonString: (PendingAuthRequest value) {
-          return jsonEncode(value.toJson());
+        toJson: (PendingAuthRequest value) {
+          return value.toJson();
         },
-        fromJsonString: (String value) {
-          return PendingAuthRequest.fromJson(jsonDecode(value));
+        fromJson: (dynamic value) {
+          return PendingAuthRequest.fromJson(value);
         },
       ),
       completeRequests: GenericStore(
         core: core,
         context: AuthConstants.CONTEXT_COMPLETE_REQUESTS,
         version: AuthConstants.VERSION_COMPLETE_REQUESTS,
-        toJsonString: (StoredCacao value) {
-          return jsonEncode(value.toJson());
+        toJson: (StoredCacao value) {
+          return value.toJson();
         },
-        fromJsonString: (String value) {
-          return StoredCacao.fromJson(jsonDecode(value));
+        fromJson: (dynamic value) {
+          return StoredCacao.fromJson(value);
         },
       ),
     );

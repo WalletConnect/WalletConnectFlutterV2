@@ -9,6 +9,7 @@ class Constants {
 class StyleConstants {
   static const Color primaryColor = Color.fromARGB(255, 16, 165, 206);
   static const Color secondaryColor = Color(0xFF1A1A1A);
+  static const Color grayColor = Color.fromARGB(255, 180, 180, 180);
 
   // Linear
   static const double linear8 = 8;

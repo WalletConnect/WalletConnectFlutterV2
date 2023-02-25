@@ -41,9 +41,14 @@ class PairingsPageState extends State<PairingsPage> {
           (PairingInfo pairing) => PairingItem(
             key: ValueKey(pairing.topic),
             pairing: pairing,
-            onTap: () {
-              // widget.web3App.pairings.select(pairing.id);
-              // Navigator.of(context).pop();
+            onTap: () async {
+              try {
+                await widget.web3App.core.pairing.disconnect(
+                  topic: pairing.topic,
+                );
+              } catch (e) {
+                print(e);
+              }
             },
           ),
         )

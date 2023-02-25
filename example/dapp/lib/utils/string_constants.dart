@@ -1,4 +1,9 @@
 class StringConstants {
+  // General
+  static const String cancel = 'Cancel';
+  static const String close = 'Close';
+  static const String ok = 'OK';
+
   // Main Page
   static const String appTitle = 'Wallet Connect v2 Flutter dApp Demo';
   static const String connectPageTitle = 'Connect';
@@ -17,4 +22,11 @@ class StringConstants {
 
   // Pairings Page
   static const String pairings = 'Pairings';
+
+  // Sessions Page
+  static const String sessions = 'Sessions';
+  static const String noSessionSelected = 'No session selected';
+  static const String sessionTopic = 'Session Topic: ';
+  static const String methods = 'Methods';
+  static const String events = 'Events';
 }

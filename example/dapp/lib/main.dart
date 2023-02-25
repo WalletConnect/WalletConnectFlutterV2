@@ -2,6 +2,7 @@ import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 import 'package:walletconnect_flutter_v2_dapp/models/page_data.dart';
 import 'package:walletconnect_flutter_v2_dapp/pages/connect_page.dart';
 import 'package:walletconnect_flutter_v2_dapp/pages/pairings_page.dart';
+import 'package:walletconnect_flutter_v2_dapp/pages/sessions_page.dart';
 import 'package:walletconnect_flutter_v2_dapp/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:walletconnect_flutter_v2_dapp/utils/string_constants.dart';
@@ -65,18 +66,6 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     );
 
-    // Get the sessions and pairings, active session is just the first one
-    // _allSessions = _web3App!.sessions.getAll();
-    // if (_allSessions.isNotEmpty) {
-    //   _activeSession = _allSessions.first;
-    // }
-    // _allPairings = _web3App!.pairings
-    //     .getAll()
-    //     .where(
-    //       (e) => e.active,
-    //     )
-    //     .toList();
-
     setState(() {
       _pageDatas = [
         PageData(
@@ -89,11 +78,11 @@ class _MyHomePageState extends State<MyHomePage> {
           title: StringConstants.pairingsPageTitle,
           icon: Icons.connect_without_contact_sharp,
         ),
-        // PageData(
-        //   page: const Text('Settings'),
-        //   title: StringConstants.connectPageTitle,
-        //   icon: Icons.settings,
-        // ),
+        PageData(
+          page: SessionsPage(web3App: _web3App!),
+          title: StringConstants.sessionsPageTitle,
+          icon: Icons.confirmation_number_outlined,
+        ),
       ];
 
       _initializing = false;
@@ -124,6 +113,9 @@ class _MyHomePageState extends State<MyHomePage> {
     );
 
     return Scaffold(
+      appBar: AppBar(
+        title: Text(_pageDatas[_selectedIndex].title),
+      ),
       bottomNavigationBar:
           MediaQuery.of(context).size.width < Constants.smallScreen
               ? _buildBottomNavBar()

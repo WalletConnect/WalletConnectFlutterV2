@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 import 'package:walletconnect_flutter_v2_dapp/utils/constants.dart';
 import 'package:walletconnect_flutter_v2_dapp/utils/string_constants.dart';
-import 'package:walletconnect_flutter_v2_dapp/widgets/pairing_item.dart';
+import 'package:walletconnect_flutter_v2_dapp/widgets/session_item.dart';
+import 'package:walletconnect_flutter_v2_dapp/widgets/session_widget.dart';
 
-class PairingsPage extends StatefulWidget {
-  const PairingsPage({
+class SessionsPage extends StatefulWidget {
+  const SessionsPage({
     super.key,
     required this.web3App,
   });
@@ -13,80 +14,104 @@ class PairingsPage extends StatefulWidget {
   final Web3App web3App;
 
   @override
-  PairingsPageState createState() => PairingsPageState();
+  SessionsPageState createState() => SessionsPageState();
 }
 
-class PairingsPageState extends State<PairingsPage> {
-  List<PairingInfo> _pairings = [];
+class SessionsPageState extends State<SessionsPage> {
+  Map<String, SessionData> _activeSessions = {};
+  String _selectedSession = '';
 
   @override
   void initState() {
-    _pairings = widget.web3App.pairings.getAll();
-    // widget.web3App.onSessionDelete.subscribe(_onSessionDelete);
-    widget.web3App.core.pairing.onPairingDelete.subscribe(_onPairingDelete);
+    _activeSessions = widget.web3App.getActiveSessions();
+    widget.web3App.onSessionDelete.subscribe(_onSessionDelete);
     super.initState();
   }
 
   @override
   void dispose() {
-    // widget.web3App.onSessionDelete.unsubscribe(_onSessionDelete);
-    widget.web3App.core.pairing.onPairingDelete.unsubscribe(_onPairingDelete);
+    widget.web3App.onSessionDelete.unsubscribe(_onSessionDelete);
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    final List<PairingItem> pairingItems = _pairings
-        .map(
-          (PairingInfo pairing) => PairingItem(
-            key: ValueKey(pairing.topic),
-            pairing: pairing,
-            onTap: () {
-              // widget.web3App.pairings.select(pairing.id);
-              // Navigator.of(context).pop();
-            },
+    final List<SessionData> sessions = _activeSessions.values.toList();
+
+    return Row(
+      mainAxisSize: MainAxisSize.max,
+      children: [
+        Container(
+          constraints: const BoxConstraints(
+            maxWidth: 200,
+            minWidth: 150,
           ),
-        )
-        .toList();
-
-    final List<Widget> children = [
-      const SizedBox(
-        height: StyleConstants.linear48,
-      ),
-      const Text(
-        StringConstants.pairings,
-        style: StyleConstants.titleText,
-        textAlign: TextAlign.center,
-      ),
-      const SizedBox(
-        height: StyleConstants.linear48,
-      ),
-    ];
-    children.addAll(pairingItems);
-
-    return Center(
-      child: Container(
-        // color: StyleConstants.primaryColor,
-        padding: const EdgeInsets.all(
-          StyleConstants.linear8,
+          decoration: const BoxDecoration(
+            border: Border(
+              right: BorderSide(
+                color: StyleConstants.grayColor,
+              ),
+            ),
+          ),
+          padding: const EdgeInsets.only(
+            top: StyleConstants.linear8,
+            bottom: StyleConstants.linear8,
+          ),
+          child: ListView.separated(
+            itemBuilder: (BuildContext context, int index) {
+              return SessionItem(
+                key: ValueKey(sessions[index].topic),
+                session: sessions[index],
+                onTap: () {
+                  setState(() {
+                    _selectedSession = sessions[index].topic;
+                  });
+                },
+              );
+            },
+            separatorBuilder: (BuildContext context, int index) {
+              return const Divider();
+            },
+            itemCount: sessions.length,
+          ),
         ),
-        constraints: const BoxConstraints(
-          maxWidth: StyleConstants.maxWidth,
+        Expanded(
+          child: Container(
+            // color: StyleConstants.primaryColor,
+            padding: const EdgeInsets.all(
+              StyleConstants.linear8,
+            ),
+            child: _buildSessionView(),
+          ),
         ),
-        child: ListView(
-          children: children,
-        ),
-      ),
+      ],
     );
   }
 
-  void _onPairingDelete(PairingEvent? event) {
-    setState(() {
-      _pairings = widget.web3App.pairings.getAll();
-    });
+  Widget _buildSessionView() {
+    if (_selectedSession == '') {
+      return const Center(
+        child: Text(
+          StringConstants.noSessionSelected,
+          style: StyleConstants.titleText,
+        ),
+      );
+    }
+
+    final SessionData session = _activeSessions[_selectedSession]!;
+
+    return SessionWidget(
+      web3App: widget.web3App,
+      session: session,
+    );
   }
 
   void _onSessionDelete(SessionDelete? event) {
-    setState(() {});
+    setState(() {
+      if (event!.topic == _selectedSession) {
+        _selectedSession = '';
+      }
+      _activeSessions = widget.web3App.getActiveSessions();
+    });
   }
 }

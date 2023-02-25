@@ -94,6 +94,11 @@ class SignEngine implements ISignEngine {
     _registerRelayClientFunctions();
     await _cleanup();
 
+    // Subscribe to all the sessions
+    for (final SessionData session in sessions.getAll()) {
+      await core.relayClient.subscribe(topic: session.topic);
+    }
+
     _initialized = true;
   }
 

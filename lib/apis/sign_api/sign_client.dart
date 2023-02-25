@@ -96,11 +96,11 @@ class SignClient implements ISignClient {
         core: core,
         context: SignConstants.CONTEXT_PROPOSALS,
         version: SignConstants.VERSION_PROPOSALS,
-        toJsonString: (ProposalData value) {
-          return jsonEncode(value.toJson());
+        toJson: (ProposalData value) {
+          return value.toJson();
         },
-        fromJsonString: (String value) {
-          return ProposalData.fromJson(jsonDecode(value));
+        fromJson: (dynamic value) {
+          return ProposalData.fromJson(value);
         },
       ),
       sessions: Sessions(core),
@@ -108,11 +108,11 @@ class SignClient implements ISignClient {
         core: core,
         context: SignConstants.CONTEXT_PENDING_REQUESTS,
         version: SignConstants.VERSION_PENDING_REQUESTS,
-        toJsonString: (SessionRequest value) {
-          return jsonEncode(value.toJson());
+        toJson: (SessionRequest value) {
+          return value.toJson();
         },
-        fromJsonString: (String value) {
-          return SessionRequest.fromJson(jsonDecode(value));
+        fromJson: (dynamic value) {
+          return SessionRequest.fromJson(value);
         },
       ),
     );

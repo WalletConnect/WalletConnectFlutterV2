@@ -65,11 +65,11 @@ class Pairing implements IPairing {
       core: core,
       context: 'topicToReceiverPublicKey',
       version: '1.0',
-      toJsonString: (String value) {
+      toJson: (String value) {
         return value;
       },
-      fromJsonString: (String value) {
-        return value;
+      fromJson: (dynamic value) {
+        return value as String;
       },
     );
 
@@ -78,6 +78,14 @@ class Pairing implements IPairing {
     await topicToReceiverPublicKey.init();
 
     await _cleanup();
+
+    // Resubscribe to all active pairings
+    final List<PairingInfo> activePairings = pairings!.getAll();
+    for (final PairingInfo pairing in activePairings) {
+      if (pairing.active) {
+        await core.relayClient.subscribe(topic: pairing.topic);
+      }
+    }
 
     _initialized = true;
   }
