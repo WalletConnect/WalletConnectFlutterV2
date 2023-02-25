@@ -24,6 +24,7 @@ class PairingsPageState extends State<PairingsPage> {
     _pairings = widget.web3App.pairings.getAll();
     // widget.web3App.onSessionDelete.subscribe(_onSessionDelete);
     widget.web3App.core.pairing.onPairingDelete.subscribe(_onPairingDelete);
+    widget.web3App.core.pairing.onPairingExpire.subscribe(_onPairingDelete);
     super.initState();
   }
 
@@ -31,6 +32,7 @@ class PairingsPageState extends State<PairingsPage> {
   void dispose() {
     // widget.web3App.onSessionDelete.unsubscribe(_onSessionDelete);
     widget.web3App.core.pairing.onPairingDelete.unsubscribe(_onPairingDelete);
+    widget.web3App.core.pairing.onPairingExpire.unsubscribe(_onPairingDelete);
     super.dispose();
   }
 
@@ -42,13 +44,44 @@ class PairingsPageState extends State<PairingsPage> {
             key: ValueKey(pairing.topic),
             pairing: pairing,
             onTap: () async {
-              try {
-                await widget.web3App.core.pairing.disconnect(
-                  topic: pairing.topic,
-                );
-              } catch (e) {
-                print(e);
-              }
+              showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: const Text(
+                        StringConstants.deletePairing,
+                        style: StyleConstants.titleText,
+                      ),
+                      content: Text(
+                        pairing.topic,
+                      ),
+                      actions: [
+                        TextButton(
+                          child: const Text(
+                            StringConstants.cancel,
+                          ),
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                        ),
+                        TextButton(
+                          child: const Text(
+                            StringConstants.delete,
+                          ),
+                          onPressed: () async {
+                            try {
+                              widget.web3App.core.pairing.disconnect(
+                                topic: pairing.topic,
+                              );
+                              Navigator.of(context).pop();
+                            } catch (e) {
+                              print(e);
+                            }
+                          },
+                        ),
+                      ],
+                    );
+                  });
             },
           ),
         )
@@ -89,9 +122,5 @@ class PairingsPageState extends State<PairingsPage> {
     setState(() {
       _pairings = widget.web3App.pairings.getAll();
     });
-  }
-
-  void _onSessionDelete(SessionDelete? event) {
-    setState(() {});
   }
 }

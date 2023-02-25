@@ -58,6 +58,35 @@ class SessionWidgetState extends State<SessionWidget> {
       );
     }
 
+    // Add a delete button
+    children.add(
+      Container(
+        width: double.infinity,
+        height: StyleConstants.linear48,
+        margin: const EdgeInsets.symmetric(
+          vertical: StyleConstants.linear8,
+        ),
+        child: ElevatedButton(
+          onPressed: () async {
+            await widget.web3App.disconnectSession(
+                topic: widget.session.topic,
+                reason: Errors.getSdkError(
+                  Errors.USER_DISCONNECTED,
+                ));
+          },
+          style: ButtonStyle(
+            backgroundColor: MaterialStateProperty.all<Color>(
+              Colors.red,
+            ),
+          ),
+          child: const Text(
+            StringConstants.delete,
+            style: StyleConstants.buttonText,
+          ),
+        ),
+      ),
+    );
+
     return ListView(
       children: children,
     );
@@ -245,7 +274,7 @@ class SessionWidgetState extends State<SessionWidget> {
           topic: widget.session.topic,
           chainId: chainId,
           address: address,
-          data: TEST_SIGN_DATA,
+          data: testSignData,
         );
       case EIP155Methods.ethSign:
         return EIP155.ethSign(
@@ -253,7 +282,7 @@ class SessionWidgetState extends State<SessionWidget> {
           topic: widget.session.topic,
           chainId: chainId,
           address: address,
-          data: TEST_SIGN_DATA,
+          data: testSignData,
         );
       case EIP155Methods.ethSignTypedData:
         return EIP155.ethSignTypedData(
@@ -261,7 +290,7 @@ class SessionWidgetState extends State<SessionWidget> {
           topic: widget.session.topic,
           chainId: chainId,
           address: address,
-          data: TEST_SIGN_DATA,
+          data: testSignTypedData(address),
         );
       case EIP155Methods.ethSignTransaction:
         return EIP155.ethSignTransaction(

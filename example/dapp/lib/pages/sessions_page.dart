@@ -25,12 +25,14 @@ class SessionsPageState extends State<SessionsPage> {
   void initState() {
     _activeSessions = widget.web3App.getActiveSessions();
     widget.web3App.onSessionDelete.subscribe(_onSessionDelete);
+    widget.web3App.onSessionExpire.subscribe(_onSessionExpire);
     super.initState();
   }
 
   @override
   void dispose() {
     widget.web3App.onSessionDelete.unsubscribe(_onSessionDelete);
+    widget.web3App.onSessionExpire.unsubscribe(_onSessionExpire);
     super.dispose();
   }
 
@@ -107,6 +109,15 @@ class SessionsPageState extends State<SessionsPage> {
   }
 
   void _onSessionDelete(SessionDelete? event) {
+    setState(() {
+      if (event!.topic == _selectedSession) {
+        _selectedSession = '';
+      }
+      _activeSessions = widget.web3App.getActiveSessions();
+    });
+  }
+
+  void _onSessionExpire(SessionExpire? event) {
     setState(() {
       if (event!.topic == _selectedSession) {
         _selectedSession = '';

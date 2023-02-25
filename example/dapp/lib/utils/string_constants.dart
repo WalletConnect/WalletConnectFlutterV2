@@ -3,6 +3,7 @@ class StringConstants {
   static const String cancel = 'Cancel';
   static const String close = 'Close';
   static const String ok = 'OK';
+  static const String delete = 'Delete';
 
   // Main Page
   static const String appTitle = 'Wallet Connect v2 Flutter dApp Demo';
@@ -22,6 +23,7 @@ class StringConstants {
 
   // Pairings Page
   static const String pairings = 'Pairings';
+  static const String deletePairing = 'Delete Pairing?';
 
   // Sessions Page
   static const String sessions = 'Sessions';

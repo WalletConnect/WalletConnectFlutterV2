@@ -116,7 +116,7 @@ class EIP155 {
       chainId: chainId,
       request: SessionRequestParams(
         method: methods[EIP155Methods.ethSignTransaction]!,
-        params: transaction.toJson(),
+        params: [transaction.toJson()],
       ),
     );
   }
@@ -132,7 +132,7 @@ class EIP155 {
       chainId: chainId,
       request: SessionRequestParams(
         method: methods[EIP155Methods.ethSendTransaction]!,
-        params: transaction.toJson(),
+        params: [transaction.toJson()],
       ),
     );
   }
