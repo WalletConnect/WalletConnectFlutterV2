@@ -41,7 +41,7 @@ void main() {
     test('getAccount', () {
       expect('invalid', 'invalid');
       expect(
-        TEST_ACCOUNTS[0],
+        NamespaceUtils.getAccount(TEST_ACCOUNTS[0]),
         TEST_ACCOUNTS[0].split(':')[2],
       );
     });
@@ -49,7 +49,7 @@ void main() {
     test('getChainFromAccount', () {
       expect('invalid', 'invalid');
       expect(
-        TEST_ACCOUNTS[0],
+        NamespaceUtils.getChainFromAccount(TEST_ACCOUNTS[0]),
         TEST_CHAINS[0],
       );
     });

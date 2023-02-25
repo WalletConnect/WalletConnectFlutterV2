@@ -297,29 +297,23 @@ class Pairing implements IPairing {
 
     await _isValidDisconnect(topic);
     if (pairings!.has(topic)) {
-      // try {
-      await sendRequest(
-        topic,
-        MethodConstants.WC_PAIRING_DELETE,
-        Errors.getSdkError(Errors.USER_DISCONNECTED).toJson(),
-      );
+      // Send the request to delete the pairing, we don't care if it fails
+      try {
+        await sendRequest(
+          topic,
+          MethodConstants.WC_PAIRING_DELETE,
+          Errors.getSdkError(Errors.USER_DISCONNECTED).toJson(),
+        );
+      } catch (_) {}
+
+      // Delete the pairing
       await pairings!.delete(topic);
 
-      // onPairingDelete.broadcast(
-      //   PairingEvent(
-      //     topic: topic,
-      //   ),
-      // );
-      // }
-      //  on JsonRpcError catch (e) {
-      //   rethrow;
-      //   // onPairingDelete.broadcast(
-      //   //   PairingEvent(
-      //   //     topic: topic,
-      //   //     error: e,
-      //   //   ),
-      //   // );
-      // }
+      onPairingDelete.broadcast(
+        PairingEvent(
+          topic: topic,
+        ),
+      );
     }
   }
 

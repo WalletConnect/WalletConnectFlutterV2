@@ -64,6 +64,9 @@ class SharedPrefsStores implements IStore<Map<String, dynamic>> {
   @override
   bool has(String key) {
     final String keyWithPrefix = _addPrefix(key);
+    if (memoryStore) {
+      return _map.containsKey(keyWithPrefix);
+    }
     return prefs.containsKey(keyWithPrefix);
   }
 

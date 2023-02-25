@@ -1521,13 +1521,18 @@ void signingEngineTests({
         );
 
         // await Future.delayed(Duration(milliseconds: 150));
+        await completerA.future;
         await completerB.future;
 
         // TODO: See if this should delete the session as well
         expect(clientA.pairings.get(pairingATopic), null);
         expect(clientB.pairings.get(pairingATopic), null);
 
+        expect(counterA, 1);
         expect(counterB, 1);
+
+        completerA = Completer();
+        completerB = Completer();
 
         connectionInfo = await SignClientHelpers.testConnectPairApprove(
           clientA,
@@ -1552,7 +1557,8 @@ void signingEngineTests({
         expect(clientA.pairings.get(pairingATopic), null);
         expect(clientB.pairings.get(pairingATopic), null);
 
-        expect(counterA, 1);
+        expect(counterA, 2);
+        expect(counterB, 2);
 
         clientA.core.pairing.onPairingDelete.unsubscribeAll();
         clientB.core.pairing.onPairingDelete.unsubscribeAll();
@@ -1594,13 +1600,17 @@ void signingEngineTests({
         );
 
         // await Future.delayed(Duration(milliseconds: 250));
-        // await completerA.future;
+        await completerA.future;
         await completerB.future;
 
         expect(clientA.sessions.get(sessionATopic), null);
         expect(clientB.sessions.get(sessionATopic), null);
 
+        expect(counterA, 1);
         expect(counterB, 1);
+
+        completerA = Completer();
+        completerB = Completer();
 
         connectionInfo = await SignClientHelpers.testConnectPairApprove(
           clientA,
@@ -1624,7 +1634,8 @@ void signingEngineTests({
         expect(clientA.pairings.get(sessionATopic), null);
         expect(clientB.pairings.get(sessionATopic), null);
 
-        expect(counterA, 1);
+        expect(counterA, 2);
+        expect(counterB, 2);
 
         clientA.onSessionDelete.unsubscribeAll();
         clientB.onSessionDelete.unsubscribeAll();
