@@ -55,7 +55,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> initialize() async {
     // try {
-    print(Constants.projectId);
     _web3App = await Web3App.createInstance(
       projectId: Constants.projectId,
       metadata: const PairingMetadata(
