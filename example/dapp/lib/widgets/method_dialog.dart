@@ -40,7 +40,7 @@ class MethodDialogState extends State<MethodDialog> {
       content: FutureBuilder<dynamic>(
         future: widget.response,
         builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-          print(snapshot.data);
+          debugPrint(snapshot.data);
           if (snapshot.hasData) {
             return Text(snapshot.data.toString());
           } else if (snapshot.hasError) {

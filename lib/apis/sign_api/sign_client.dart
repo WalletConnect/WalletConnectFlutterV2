@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:event/event.dart';
 import 'package:walletconnect_flutter_v2/apis/core/core.dart';
 import 'package:walletconnect_flutter_v2/apis/core/store/generic_store.dart';

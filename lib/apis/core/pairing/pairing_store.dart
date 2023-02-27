@@ -1,10 +1,7 @@
-import 'dart:convert';
-
 import 'package:walletconnect_flutter_v2/apis/core/i_core.dart';
 import 'package:walletconnect_flutter_v2/apis/core/pairing/i_pairing_store.dart';
 import 'package:walletconnect_flutter_v2/apis/core/pairing/utils/pairing_models.dart';
 import 'package:walletconnect_flutter_v2/apis/utils/errors.dart';
-import 'package:walletconnect_flutter_v2/apis/utils/walletconnect_utils.dart';
 
 class PairingStore implements IPairingStore {
   static const CONTEXT = 'pairings';

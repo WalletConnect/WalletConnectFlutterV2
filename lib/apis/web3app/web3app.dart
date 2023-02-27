@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:event/event.dart';
 import 'package:walletconnect_flutter_v2/apis/auth_api/auth_engine.dart';
 import 'package:walletconnect_flutter_v2/apis/auth_api/utils/auth_constants.dart';

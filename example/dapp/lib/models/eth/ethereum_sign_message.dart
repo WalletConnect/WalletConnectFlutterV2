@@ -1,9 +1,9 @@
 enum WCSignType {
-  MESSAGE,
-  PERSONAL_MESSAGE,
-  TYPED_MESSAGE_V1,
-  TYPED_MESSAGE_V3,
-  TYPED_MESSAGE_V4
+  message,
+  personalMessage,
+  typedMessageV2,
+  typedMessageV3,
+  typedMessageV4,
 }
 
 class EthereumSignMessage {
