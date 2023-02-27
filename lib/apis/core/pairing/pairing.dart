@@ -65,11 +65,11 @@ class Pairing implements IPairing {
       core: core,
       context: 'topicToReceiverPublicKey',
       version: '1.0',
-      toJsonString: (String value) {
+      toJson: (String value) {
         return value;
       },
-      fromJsonString: (String value) {
-        return value;
+      fromJson: (dynamic value) {
+        return value as String;
       },
     );
 
@@ -78,6 +78,14 @@ class Pairing implements IPairing {
     await topicToReceiverPublicKey.init();
 
     await _cleanup();
+
+    // Resubscribe to all active pairings
+    final List<PairingInfo> activePairings = pairings!.getAll();
+    for (final PairingInfo pairing in activePairings) {
+      if (pairing.active) {
+        await core.relayClient.subscribe(topic: pairing.topic);
+      }
+    }
 
     _initialized = true;
   }
@@ -289,29 +297,23 @@ class Pairing implements IPairing {
 
     await _isValidDisconnect(topic);
     if (pairings!.has(topic)) {
-      // try {
-      await sendRequest(
-        topic,
-        MethodConstants.WC_PAIRING_DELETE,
-        Errors.getSdkError(Errors.USER_DISCONNECTED).toJson(),
-      );
+      // Send the request to delete the pairing, we don't care if it fails
+      try {
+        await sendRequest(
+          topic,
+          MethodConstants.WC_PAIRING_DELETE,
+          Errors.getSdkError(Errors.USER_DISCONNECTED).toJson(),
+        );
+      } catch (_) {}
+
+      // Delete the pairing
       await pairings!.delete(topic);
 
-      // onPairingDelete.broadcast(
-      //   PairingEvent(
-      //     topic: topic,
-      //   ),
-      // );
-      // }
-      //  on JsonRpcError catch (e) {
-      //   rethrow;
-      //   // onPairingDelete.broadcast(
-      //   //   PairingEvent(
-      //   //     topic: topic,
-      //   //     error: e,
-      //   //   ),
-      //   // );
-      // }
+      onPairingDelete.broadcast(
+        PairingEvent(
+          topic: topic,
+        ),
+      );
     }
   }
 

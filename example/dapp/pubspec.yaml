@@ -32,17 +32,23 @@ dependencies:
   flutter:
     sdk: flutter
 
-
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
   qr_flutter: ^4.0.0
-  walletconnect_flutter_v2: ^1.0.5
+  json_annotation: ^4.7.0
+  # walletconnect_flutter_v2: ^1.0.5
+  walletconnect_flutter_v2:
+    path: ../..
   fl_toast: ^3.1.0
+  kadena_dart_sdk: ^1.0.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  build_runner: ^2.0.0
+  json_serializable: ^6.5.3
+  dependency_validator: ^3.2.2
 
   # The "flutter_lints" package below contains a set of recommended lints to
   # encourage good coding practices. The lint set provided by the package is

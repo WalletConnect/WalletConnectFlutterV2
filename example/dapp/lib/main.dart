@@ -1,6 +1,8 @@
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 import 'package:walletconnect_flutter_v2_dapp/models/page_data.dart';
 import 'package:walletconnect_flutter_v2_dapp/pages/connect_page.dart';
+import 'package:walletconnect_flutter_v2_dapp/pages/pairings_page.dart';
+import 'package:walletconnect_flutter_v2_dapp/pages/sessions_page.dart';
 import 'package:walletconnect_flutter_v2_dapp/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:walletconnect_flutter_v2_dapp/utils/string_constants.dart';
@@ -18,7 +20,6 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: StringConstants.appTitle,
       theme: ThemeData(
-        backgroundColor: StyleConstants.primaryColor,
         primarySwatch: Colors.blue,
       ),
       home: const MyHomePage(),
@@ -52,10 +53,9 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> initialize() async {
+    // try {
     _web3App = await Web3App.createInstance(
-      core: Core(
-        projectId: Constants.projectId,
-      ),
+      projectId: Constants.projectId,
       metadata: const PairingMetadata(
         name: 'Example Dapp',
         description: 'Example Dapp',
@@ -63,18 +63,6 @@ class _MyHomePageState extends State<MyHomePage> {
         icons: ['https://walletconnect.com/walletconnect-logo.png'],
       ),
     );
-
-    // Get the sessions and pairings, active session is just the first one
-    // _allSessions = _web3App!.sessions.getAll();
-    // if (_allSessions.isNotEmpty) {
-    //   _activeSession = _allSessions.first;
-    // }
-    // _allPairings = _web3App!.pairings
-    //     .getAll()
-    //     .where(
-    //       (e) => e.active,
-    //     )
-    //     .toList();
 
     setState(() {
       _pageDatas = [
@@ -84,14 +72,22 @@ class _MyHomePageState extends State<MyHomePage> {
           icon: Icons.home,
         ),
         PageData(
-          page: const Text('Settings'),
-          title: StringConstants.connectPageTitle,
-          icon: Icons.settings,
+          page: PairingsPage(web3App: _web3App!),
+          title: StringConstants.pairingsPageTitle,
+          icon: Icons.connect_without_contact_sharp,
+        ),
+        PageData(
+          page: SessionsPage(web3App: _web3App!),
+          title: StringConstants.sessionsPageTitle,
+          icon: Icons.confirmation_number_outlined,
         ),
       ];
 
       _initializing = false;
     });
+    // } on WalletConnectError catch (e) {
+    //   print(e.message);
+    // }
   }
 
   @override
@@ -115,6 +111,9 @@ class _MyHomePageState extends State<MyHomePage> {
     );
 
     return Scaffold(
+      appBar: AppBar(
+        title: Text(_pageDatas[_selectedIndex].title),
+      ),
       bottomNavigationBar:
           MediaQuery.of(context).size.width < Constants.smallScreen
               ? _buildBottomNavBar()

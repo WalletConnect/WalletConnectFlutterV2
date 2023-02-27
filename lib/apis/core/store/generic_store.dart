@@ -1,7 +1,6 @@
 import 'package:walletconnect_flutter_v2/apis/core/store/i_generic_store.dart';
 import 'package:walletconnect_flutter_v2/apis/core/i_core.dart';
 import 'package:walletconnect_flutter_v2/apis/utils/errors.dart';
-import 'package:walletconnect_flutter_v2/apis/utils/walletconnect_utils.dart';
 
 class GenericStore<T> implements IGenericStore<T> {
   final String context;
@@ -18,19 +17,19 @@ class GenericStore<T> implements IGenericStore<T> {
   Map<String, T> data = {};
 
   /// Stores map of key to pairing info as json encoded string
-  Map<String, String> dataStrings = {};
+  // Map<String, String> dataStrings = {};
 
   @override
-  final String Function(T) toJsonString;
+  final dynamic Function(T) toJson;
   @override
-  final T Function(String) fromJsonString;
+  final T Function(dynamic) fromJson;
 
   GenericStore({
     required this.core,
     required this.context,
     required this.version,
-    required this.toJsonString,
-    required this.fromJsonString,
+    required this.toJson,
+    required this.fromJson,
   });
 
   @override
@@ -69,7 +68,7 @@ class GenericStore<T> implements IGenericStore<T> {
   Future<void> set(String key, T value) async {
     _checkInitialized();
     data[key] = value;
-    dataStrings[key] = toJsonString(value);
+    // dataStrings[key] = toJsonString(value);
     await persist();
   }
 
@@ -77,7 +76,7 @@ class GenericStore<T> implements IGenericStore<T> {
   Future<void> delete(String key) async {
     _checkInitialized();
     data.remove(key);
-    dataStrings.remove(key);
+    // dataStrings.remove(key);
     await persist();
   }
 
@@ -90,11 +89,8 @@ class GenericStore<T> implements IGenericStore<T> {
   @override
   Future<void> restore() async {
     if (core.storage.has(storageKey)) {
-      dataStrings = WalletConnectUtils.convertMapTo<String>(
-        core.storage.get(storageKey),
-      );
-      for (var entry in dataStrings.entries) {
-        data[entry.key] = fromJsonString(entry.value);
+      for (var entry in core.storage.get(storageKey).entries) {
+        data[entry.key] = fromJson(entry.value);
       }
     }
   }

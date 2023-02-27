@@ -12,6 +12,14 @@ on:
     branches: [ master ]
 
   workflow_dispatch:
+    inputs:
+      relay-endpoint:
+        description: 'The endpoint of the relay e.g. relay.walletconnect.com'
+        required: false
+        default: 'wss://relay.walletconnect.com'
+      project-id:
+        description: 'WalletConnect project id'
+        required: true
 
 
 concurrency:

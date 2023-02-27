@@ -94,6 +94,11 @@ class SignEngine implements ISignEngine {
     _registerRelayClientFunctions();
     await _cleanup();
 
+    // Subscribe to all the sessions
+    for (final SessionData session in sessions.getAll()) {
+      await core.relayClient.subscribe(topic: session.topic);
+    }
+
     _initialized = true;
   }
 
@@ -538,12 +543,27 @@ class SignEngine implements ISignEngine {
         message: reason.message,
         data: reason.data,
       ).toJson();
-      await core.pairing.sendRequest(
-        topic,
-        MethodConstants.WC_SESSION_DELETE,
-        payload,
-      );
+
+      int id = PairingUtils.payloadId();
+
+      // Send the request to delete the session, we don't care if it fails
+      try {
+        await core.pairing.sendRequest(
+          topic,
+          MethodConstants.WC_SESSION_DELETE,
+          payload,
+          id: id,
+        );
+      } catch (_) {}
+
       await _deleteSession(topic);
+
+      onSessionDelete.broadcast(
+        SessionDelete(
+          id,
+          topic,
+        ),
+      );
     } else {
       await core.pairing.disconnect(topic: topic);
     }

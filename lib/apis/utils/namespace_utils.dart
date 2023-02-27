@@ -16,7 +16,7 @@ class NamespaceUtils {
     if (value.contains(":")) {
       List<String> split = value.split(":");
       if (split.length == 3) {
-        String chainId = split[0] + ":" + split[1];
+        String chainId = '${split[0]}:${split[1]}';
         return split.length >= 2 && isValidChainId(chainId);
       }
     }
@@ -32,15 +32,33 @@ class NamespaceUtils {
     }
   }
 
+  static String getAccount(String namespaceAccount) {
+    if (isValidAccount(namespaceAccount)) {
+      return namespaceAccount.split(':')[2];
+    }
+    return namespaceAccount;
+  }
+
+  static String getChainFromAccount(String account) {
+    if (isValidAccount(account)) {
+      List<String> parts = account.split(":");
+      String chain = parts[0];
+      String chainId = parts[1];
+      return "$chain:$chainId";
+    }
+    return account;
+  }
+
   /// Gets all unique chainIds from the provided list of accounts
   /// This function assumes that all accounts are valid
   static List<String> getChainsFromAccounts(List<String> accounts) {
     Set<String> chains = {};
     accounts.forEach((account) {
-      List<String> parts = account.split(":");
-      String chain = parts[0];
-      String chainId = parts[1];
-      chains.add("$chain:$chainId");
+      chains.add(
+        getChainFromAccount(
+          account,
+        ),
+      );
     });
 
     return chains.toList();

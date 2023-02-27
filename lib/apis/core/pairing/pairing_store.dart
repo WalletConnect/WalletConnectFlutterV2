@@ -1,10 +1,7 @@
-import 'dart:convert';
-
 import 'package:walletconnect_flutter_v2/apis/core/i_core.dart';
 import 'package:walletconnect_flutter_v2/apis/core/pairing/i_pairing_store.dart';
 import 'package:walletconnect_flutter_v2/apis/core/pairing/utils/pairing_models.dart';
 import 'package:walletconnect_flutter_v2/apis/utils/errors.dart';
-import 'package:walletconnect_flutter_v2/apis/utils/walletconnect_utils.dart';
 
 class PairingStore implements IPairingStore {
   static const CONTEXT = 'pairings';
@@ -19,9 +16,6 @@ class PairingStore implements IPairingStore {
 
   /// Stores map of topic to pairing info
   Map<String, PairingInfo> pairings = {};
-
-  /// Stores map of topic to pairing info as json encoded string
-  Map<String, String> pairingStrings = {};
 
   PairingStore(this.core);
 
@@ -61,7 +55,6 @@ class PairingStore implements IPairingStore {
   Future<void> set(String topic, PairingInfo value) async {
     _checkInitialized();
     pairings[topic] = value;
-    pairingStrings[topic] = jsonEncode(value.toJson());
     await persist();
   }
 
@@ -96,25 +89,22 @@ class PairingStore implements IPairingStore {
   Future<void> delete(String topic) async {
     _checkInitialized();
     pairings.remove(topic);
-    pairingStrings.remove(topic);
     await persist();
   }
 
   @override
   Future<void> persist() async {
     _checkInitialized();
-    await core.storage.set(storageKey, pairingStrings);
+    await core.storage.set(storageKey, pairings);
   }
 
   @override
   Future<void> restore() async {
     if (core.storage.has(storageKey)) {
-      pairingStrings = WalletConnectUtils.convertMapTo<String>(
-        core.storage.get(storageKey),
-      );
-      for (var entry in pairingStrings.entries) {
+      Map<String, dynamic> data = core.storage.get(storageKey);
+      for (var entry in data.entries) {
         pairings[entry.key] = PairingInfo.fromJson(
-          jsonDecode(entry.value),
+          entry.value,
         );
       }
     }

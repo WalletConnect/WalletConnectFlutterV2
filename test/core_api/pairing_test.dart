@@ -227,27 +227,32 @@ void main() {
       expect(coreA.pairing.getStore().getAll().length, 1);
       expect(coreB.pairing.getStore().getAll().length, 1);
       bool hasDeletedA = false;
+      bool hasDeletedB = false;
 
-      Completer completer = Completer();
+      Completer completerA = Completer();
+      Completer completerB = Completer();
       coreA.pairing.onPairingDelete.subscribe((args) {
         expect(args != null, true);
         expect(args!.topic != null, true);
         expect(args.error == null, true);
         hasDeletedA = true;
-        completer.complete();
+        completerA.complete();
       });
-      // coreB.pairing.onPairingDelete.subscribe((args) {
-      //   expect(args != null, true);
-      //   expect(args!.topic != null, true);
-      //   expect(args.error == null, true);
-      //   hasDeletedB = true;
-      // });
+      coreB.pairing.onPairingDelete.subscribe((args) {
+        expect(args != null, true);
+        expect(args!.topic != null, true);
+        expect(args.error == null, true);
+        hasDeletedB = true;
+        completerB.complete();
+      });
 
       await coreB.pairing.disconnect(topic: response.topic);
 
-      await completer.future;
+      await completerA.future;
+      await completerB.future;
 
       expect(hasDeletedA, true);
+      expect(hasDeletedB, true);
       expect(coreA.pairing.getStore().getAll().length, 0);
       expect(coreB.pairing.getStore().getAll().length, 0);
     });

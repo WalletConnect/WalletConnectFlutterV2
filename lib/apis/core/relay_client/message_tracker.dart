@@ -55,9 +55,12 @@ class MessageTracker implements IMessageTracker {
   @override
   Future<void> restore() async {
     if (core.storage.has(storageKey)) {
-      messageRecords = WalletConnectUtils.convertMapTo<Map<String, String>>(
-        core.storage.get(storageKey),
-      );
+      Map<String, dynamic> data = core.storage.get(storageKey);
+      for (var entry in data.entries) {
+        Map<String, dynamic> records = entry.value;
+        messageRecords[entry.key] =
+            WalletConnectUtils.convertMapTo<String>(records);
+      }
     }
   }
 }
