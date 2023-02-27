@@ -1,3 +1,8 @@
+## 1.1.0
+
+- Added reconnect and event information to readme
+- Pairing and Sessions now resubscribe to events when the relay is created
+
 ## 1.0.8
 
 - Fixed an issue where pairings weren't getting persisted to storage

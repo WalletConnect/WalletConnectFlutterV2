@@ -205,6 +205,25 @@ await wcClient.disconnectSession(
 );
 ```
 
+### Reconnecting the WebSocket
+
+```dart
+// If your WebSocket dies, you can reconnect it the with the following method
+wcClient.core.relayClient.connect();
+```
+
+### Responding to Data Changes (Event Handling)
+
+The dart library has all of the events listed in the [specification](https://docs.walletconnect.com/2.0/specs/clients/sign/session-events).
+
+However, instead of using strings to identify the events, each event has it's own dedicated object like so:
+
+```dart
+wcClient.onSessionEvent.subscribe((SessionEvent? session) {
+  // Do something with the event
+});
+```
+
 # To Build
 
 - Example project and dapp
