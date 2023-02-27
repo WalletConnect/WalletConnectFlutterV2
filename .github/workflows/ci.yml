@@ -45,7 +45,7 @@ jobs:
     - name: Install and set Flutter version
       uses: subosito/flutter-action@v2
       with:
-        flutter-version: ${{ env.FLUTTER_VERSION }}
+        flutter-version: '3.3.10'
 
     - uses: ./.github/actions/ci 
       with:
