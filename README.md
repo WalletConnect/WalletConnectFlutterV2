@@ -38,7 +38,7 @@ ConnectResponse resp = await wcClient.connect(
       methods: ['kadena_quicksign_v1'], // Requestable Methods
     ),
   }
-)
+);
 Uri? uri = resp.uri;
 
 // Once you've display the URI, you can wait for the future, and hide the QR code once you've received session data

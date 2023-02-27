@@ -171,7 +171,7 @@ class ConnectPageState extends State<ConnectPage> {
       requiredNamespaces[chain.chainId.split(':')[0]] = rNamespace;
       data[chain.chainId] = rNamespace.toJson();
     }
-    debugPrint(data.toString());
+    // debugPrint(data.toString());
 
     // Send off a connect
     final ConnectResponse res = await widget.web3App.connect(
@@ -194,7 +194,7 @@ class ConnectPageState extends State<ConnectPage> {
         context: context,
       );
     } catch (e) {
-      debugPrint(e.toString());
+      // debugPrint(e.toString());
       if (_shouldDismissQrCode) {
         // ignore: use_build_context_synchronously
         Navigator.pop(context);
