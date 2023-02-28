@@ -35,7 +35,7 @@ class WcPairingPingRequest {
 class WcSessionProposeRequest {
   final List<Relay> relays;
   final Map<String, RequiredNamespace> requiredNamespaces;
-  final Map<String, RequiredNamespace> optionalNamespaces;
+  final Map<String, RequiredNamespace>? optionalNamespaces;
   final Map<String, String>? sessionProperties;
   final ConnectionMetadata proposer;
 
