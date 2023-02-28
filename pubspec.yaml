@@ -13,7 +13,7 @@ dependencies:
   http: ^0.13.5
   cryptography: ^2.0.5
   convert: ^3.0.1
-  json_annotation: ^4.7.0
+  json_annotation: ^4.8.0
   pointycastle: ^3.6.2
   x25519: ^0.1.1
   bs58: ^1.0.2
