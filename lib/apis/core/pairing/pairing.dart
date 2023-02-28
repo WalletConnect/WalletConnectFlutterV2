@@ -299,7 +299,7 @@ class Pairing implements IPairing {
     if (pairings!.has(topic)) {
       // Send the request to delete the pairing, we don't care if it fails
       try {
-        await sendRequest(
+        sendRequest(
           topic,
           MethodConstants.WC_PAIRING_DELETE,
           Errors.getSdkError(Errors.USER_DISCONNECTED).toJson(),
@@ -376,7 +376,7 @@ class Pairing implements IPairing {
       ttl: opts.ttl,
       tag: opts.tag,
     );
-    final Completer completer = Completer.sync();
+    final Completer completer = Completer();
     pendingRequests[payload['id']] = completer;
 
     // Get the result from the completer, if it's an error, throw it

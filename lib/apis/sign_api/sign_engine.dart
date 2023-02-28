@@ -548,7 +548,7 @@ class SignEngine implements ISignEngine {
 
       // Send the request to delete the session, we don't care if it fails
       try {
-        await core.pairing.sendRequest(
+        core.pairing.sendRequest(
           topic,
           MethodConstants.WC_SESSION_DELETE,
           payload,

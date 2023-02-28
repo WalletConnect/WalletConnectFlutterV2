@@ -4,6 +4,9 @@ class Constants {
   static const projectId = '7e984f90b95f0236d3c12d791537f233';
 
   static const smallScreen = 640;
+
+  static const String aud = 'https://walletconnect.org/login';
+  static const String domain = 'walletconnect.org';
 }
 
 class StyleConstants {

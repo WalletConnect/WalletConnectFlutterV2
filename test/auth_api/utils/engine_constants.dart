@@ -3,10 +3,11 @@ import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 import '../../shared/shared_test_values.dart';
 import 'signature_constants.dart';
 
-const TEST_DOMAIN = 'localhost:3000';
-const TEST_DOMAIN_INVALID = 'example.com:3000';
 const TEST_AUD = 'http://localhost:3000/login';
 const TEST_AUD_INVALID = '<>:http://localhost:3000/login';
+const TEST_DOMAIN = 'localhost:3000';
+// Invliad because it isn't contained in the audience (aud)
+const TEST_DOMAIN_INVALID = 'example.com:3000';
 
 const TEST_PUBLIC_KEY_A = '0x123';
 const TEST_PUBLIC_KEY_B = '0xxyz';
@@ -31,26 +32,22 @@ const TEST_CONNECTION_METADATA_REQUESTER = ConnectionMetadata(
 final defaultRequestParams = AuthRequestParams(
   chainId: TEST_ETHEREUM_CHAIN,
   domain: 'localhost:3000',
-  nonce: AuthUtils.generateNonce(),
   aud: TEST_AUD,
 );
 
 final testAuthRequestParamsValid = AuthRequestParams(
   chainId: TEST_ETHEREUM_CHAIN,
   domain: TEST_DOMAIN,
-  nonce: AuthUtils.generateNonce(),
   aud: TEST_AUD,
 );
 final testAuthRequestParamsInvalidAud = AuthRequestParams(
   chainId: TEST_ETHEREUM_CHAIN,
   domain: TEST_DOMAIN,
-  nonce: AuthUtils.generateNonce(),
   aud: TEST_AUD_INVALID,
 );
 final testAuthRequestParamsInvalidDomain = AuthRequestParams(
   chainId: TEST_ETHEREUM_CHAIN,
   domain: TEST_DOMAIN_INVALID,
-  nonce: AuthUtils.generateNonce(),
   aud: TEST_AUD,
 );
 final testAuthRequestParamsInvalidNonce = AuthRequestParams(
@@ -62,14 +59,12 @@ final testAuthRequestParamsInvalidNonce = AuthRequestParams(
 final testAuthRequestParamsInvalidType = AuthRequestParams(
   chainId: TEST_ETHEREUM_CHAIN,
   domain: TEST_DOMAIN,
-  nonce: AuthUtils.generateNonce(),
   aud: TEST_AUD,
   type: 'abc',
 );
 final testAuthRequestParamsInvalidExpiry = AuthRequestParams(
   chainId: TEST_ETHEREUM_CHAIN,
   domain: TEST_DOMAIN,
-  nonce: AuthUtils.generateNonce(),
   aud: TEST_AUD,
   expiry: 0,
 );
