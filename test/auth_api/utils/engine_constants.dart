@@ -96,6 +96,7 @@ const TEST_PENDING_REQUEST_ID_INVALID = -1;
 final testPendingRequests = {
   TEST_PENDING_REQUEST_ID: PendingAuthRequest(
     id: TEST_PENDING_REQUEST_ID,
+    pairingTopic: TEST_PAIRING_TOPIC,
     metadata: TEST_CONNECTION_METADATA_REQUESTER,
     cacaoPayload: testCacaoRequestPayload,
   )

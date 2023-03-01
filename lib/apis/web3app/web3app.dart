@@ -156,6 +156,9 @@ class Web3App implements IWeb3App {
   @override
   Event<SessionExpire> get onSessionExpire => signEngine.onSessionExpire;
   @override
+  Event<SessionProposalEvent> get onProposalExpire =>
+      signEngine.onProposalExpire;
+  @override
   Event<SessionExtend> get onSessionExtend => signEngine.onSessionExtend;
   @override
   Event<SessionPing> get onSessionPing => signEngine.onSessionPing;
@@ -269,6 +272,28 @@ class Web3App implements IWeb3App {
   }
 
   @override
+  Map<String, SessionData> getSessionsForPairing({
+    required String pairingTopic,
+  }) {
+    try {
+      return signEngine.getSessionsForPairing(
+        pairingTopic: pairingTopic,
+      );
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Map<String, ProposalData> getPendingSessionProposals() {
+    try {
+      return signEngine.getPendingSessionProposals();
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
   IPairingStore get pairings => core.pairing.getStore();
 
   ///---------- AUTH ENGINE ----------///
@@ -297,6 +322,19 @@ class Web3App implements IWeb3App {
         params: params,
         pairingTopic: pairingTopic,
         methods: methods,
+      );
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Map<int, StoredCacao> getCompletedRequestsForPairing({
+    required String pairingTopic,
+  }) {
+    try {
+      return authEngine.getCompletedRequestsForPairing(
+        pairingTopic: pairingTopic,
       );
     } catch (e) {
       rethrow;

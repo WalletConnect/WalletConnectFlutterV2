@@ -146,18 +146,15 @@ class MockKeyChain extends _i1.Mock implements _i5.KeyChain {
         returnValue: false,
       ) as bool);
   @override
-  String get(
+  String? get(
     String? tag, {
     dynamic options,
   }) =>
-      (super.noSuchMethod(
-        Invocation.method(
-          #get,
-          [tag],
-          {#options: options},
-        ),
-        returnValue: '',
-      ) as String);
+      (super.noSuchMethod(Invocation.method(
+        #get,
+        [tag],
+        {#options: options},
+      )) as String?);
   @override
   _i6.Future<void> set(
     String? tag,
@@ -544,7 +541,7 @@ class MockCrypto extends _i1.Mock implements _i9.Crypto {
         returnValueForMissingStub: _i6.Future<void>.value(),
       ) as _i6.Future<void>);
   @override
-  _i6.Future<String> encode(
+  _i6.Future<String?> encode(
     String? topic,
     Map<String, dynamic>? payload, {
     _i3.EncodeOptions? options,
@@ -558,10 +555,10 @@ class MockCrypto extends _i1.Mock implements _i9.Crypto {
           ],
           {#options: options},
         ),
-        returnValue: _i6.Future<String>.value(''),
-      ) as _i6.Future<String>);
+        returnValue: _i6.Future<String?>.value(),
+      ) as _i6.Future<String?>);
   @override
-  _i6.Future<String> decode(
+  _i6.Future<String?> decode(
     String? topic,
     String? encoded, {
     _i3.DecodeOptions? options,
@@ -575,8 +572,8 @@ class MockCrypto extends _i1.Mock implements _i9.Crypto {
           ],
           {#options: options},
         ),
-        returnValue: _i6.Future<String>.value(''),
-      ) as _i6.Future<String>);
+        returnValue: _i6.Future<String?>.value(),
+      ) as _i6.Future<String?>);
   @override
   _i6.Future<String> signJWT(String? aud) => (super.noSuchMethod(
         Invocation.method(

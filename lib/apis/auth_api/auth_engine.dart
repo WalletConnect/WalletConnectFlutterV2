@@ -191,8 +191,9 @@ class AuthEngine implements IAuthEngine {
     await completeRequests.set(
       id.toString(),
       StoredCacao.fromCacao(
-        cacao,
-        id.toString(),
+        id: id,
+        pairingTopic: pairingTopic,
+        cacao: cacao,
       ),
     );
 
@@ -307,8 +308,9 @@ class AuthEngine implements IAuthEngine {
       await completeRequests.set(
         id.toString(),
         StoredCacao.fromCacao(
-          cacao,
-          id.toString(),
+          id: id,
+          pairingTopic: pendingRequest.pairingTopic,
+          cacao: cacao,
         ),
       );
     }
@@ -321,6 +323,22 @@ class AuthEngine implements IAuthEngine {
       pendingRequests[key.id] = key;
     });
     return pendingRequests;
+  }
+
+  @override
+  Map<int, StoredCacao> getCompletedRequestsForPairing({
+    required String pairingTopic,
+  }) {
+    Map<int, StoredCacao> completedRequests = {};
+    completeRequests
+        .getAll()
+        .where(
+          (e) => e.pairingTopic == pairingTopic,
+        )
+        .forEach((key) {
+      completedRequests[key.id] = key;
+    });
+    return completedRequests;
   }
 
   @override
@@ -392,6 +410,7 @@ class AuthEngine implements IAuthEngine {
         payload.id.toString(),
         PendingAuthRequest(
           id: payload.id,
+          pairingTopic: topic,
           metadata: request.requester,
           cacaoPayload: cacaoPayload,
         ),

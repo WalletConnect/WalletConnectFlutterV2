@@ -321,6 +321,19 @@ class Web3Wallet implements IWeb3Wallet {
   }
 
   @override
+  Map<String, SessionData> getSessionsForPairing({
+    required String pairingTopic,
+  }) {
+    try {
+      return signEngine.getSessionsForPairing(
+        pairingTopic: pairingTopic,
+      );
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
   Map<String, ProposalData> getPendingSessionProposals() {
     try {
       return signEngine.getPendingSessionProposals();
@@ -381,6 +394,19 @@ class Web3Wallet implements IWeb3Wallet {
   Map<int, PendingAuthRequest> getPendingAuthRequests() {
     try {
       return authEngine.getPendingAuthRequests();
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Map<int, StoredCacao> getCompletedRequestsForPairing({
+    required String pairingTopic,
+  }) {
+    try {
+      return authEngine.getCompletedRequestsForPairing(
+        pairingTopic: pairingTopic,
+      );
     } catch (e) {
       rethrow;
     }

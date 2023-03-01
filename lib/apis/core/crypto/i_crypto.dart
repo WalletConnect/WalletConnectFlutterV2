@@ -23,12 +23,12 @@ abstract class ICrypto {
   });
   Future<void> deleteKeyPair(String publicKey);
   Future<void> deleteSymKey(String topic);
-  Future<String> encode(
+  Future<String?> encode(
     String topic,
     Map<String, dynamic> payload, {
     EncodeOptions? options,
   });
-  Future<String> decode(
+  Future<String?> decode(
     String topic,
     String encoded, {
     DecodeOptions? options,

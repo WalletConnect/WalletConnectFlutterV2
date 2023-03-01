@@ -52,10 +52,13 @@ class SessionPing extends EventArgs {
 }
 
 class SessionDelete extends EventArgs {
-  int id;
   String topic;
+  int? id;
 
-  SessionDelete(this.id, this.topic);
+  SessionDelete(
+    this.topic, {
+    this.id,
+  });
 }
 
 class SessionExpire extends EventArgs {

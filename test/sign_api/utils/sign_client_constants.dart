@@ -165,6 +165,7 @@ const TEST_SESSION_VALID_TOPIC = 'abc';
 const TEST_SESSION_EXPIRED_TOPIC = 'expired';
 final testSessionValid = SessionData(
   topic: TEST_SESSION_VALID_TOPIC,
+  pairingTopic: TEST_PAIRING_TOPIC,
   relay: Relay('irn'),
   expiry: 1000000000000,
   acknowledged: true,
@@ -185,6 +186,7 @@ final testSessionValid = SessionData(
 );
 final testSessionExpired = SessionData(
   topic: TEST_SESSION_EXPIRED_TOPIC,
+  pairingTopic: TEST_PAIRING_TOPIC,
   relay: Relay('irn'),
   expiry: -1,
   acknowledged: true,

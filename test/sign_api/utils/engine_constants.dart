@@ -2,6 +2,7 @@
 
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 
+import '../../shared/shared_test_values.dart';
 import 'sign_client_constants.dart';
 
 const TEST_TOPIC_INVALID = 'abc';
@@ -31,6 +32,7 @@ const TEST_PROPOSAL_VALID = ProposalData(
   proposer: TEST_CONNECTION_METADATA_A,
   requiredNamespaces: TEST_REQUIRED_NAMESPACES,
   optionalNamespaces: {},
+  pairingTopic: TEST_PAIRING_TOPIC,
 );
 const TEST_PROPOSAL_EXPIRED = ProposalData(
   id: TEST_PROPOSAL_EXPIRED_ID,
@@ -39,6 +41,7 @@ const TEST_PROPOSAL_EXPIRED = ProposalData(
   proposer: TEST_CONNECTION_METADATA_A,
   requiredNamespaces: TEST_REQUIRED_NAMESPACES,
   optionalNamespaces: {},
+  pairingTopic: TEST_PAIRING_TOPIC,
 );
 const TEST_PROPOSAL_INVALID_REQUIRED_NAMESPACES = ProposalData(
   id: TEST_PROPOSAL_INVALID_REQUIRED_NAMESPACES_ID,
@@ -47,6 +50,7 @@ const TEST_PROPOSAL_INVALID_REQUIRED_NAMESPACES = ProposalData(
   proposer: TEST_CONNECTION_METADATA_A,
   requiredNamespaces: TEST_REQUIRED_NAMESPACES_INVALID_CHAINS_1,
   optionalNamespaces: {},
+  pairingTopic: TEST_PAIRING_TOPIC,
 );
 const TEST_PROPOSAL_INVALID_OPTIONAL_NAMESPACES = ProposalData(
   id: TEST_PROPOSAL_INVALID_OPTIONAL_NAMESPACES_ID,
@@ -55,4 +59,5 @@ const TEST_PROPOSAL_INVALID_OPTIONAL_NAMESPACES = ProposalData(
   proposer: TEST_CONNECTION_METADATA_A,
   requiredNamespaces: {},
   optionalNamespaces: TEST_REQUIRED_NAMESPACES_INVALID_CHAINS_1,
+  pairingTopic: TEST_PAIRING_TOPIC,
 );

@@ -61,11 +61,11 @@ ProposalData _$ProposalDataFromJson(Map<String, dynamic> json) => ProposalData(
         (k, e) =>
             MapEntry(k, RequiredNamespace.fromJson(e as Map<String, dynamic>)),
       ),
+      pairingTopic: json['pairingTopic'] as String,
       sessionProperties:
           (json['sessionProperties'] as Map<String, dynamic>?)?.map(
         (k, e) => MapEntry(k, e as String),
       ),
-      pairingTopic: json['pairingTopic'] as String?,
     );
 
 Map<String, dynamic> _$ProposalDataToJson(ProposalData instance) {
@@ -85,6 +85,6 @@ Map<String, dynamic> _$ProposalDataToJson(ProposalData instance) {
   }
 
   writeNotNull('sessionProperties', instance.sessionProperties);
-  writeNotNull('pairingTopic', instance.pairingTopic);
+  val['pairingTopic'] = instance.pairingTopic;
   return val;
 }

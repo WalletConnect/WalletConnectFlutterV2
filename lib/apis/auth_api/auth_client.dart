@@ -174,6 +174,19 @@ class AuthClient implements IAuthClient {
   }
 
   @override
+  Map<int, StoredCacao> getCompletedRequestsForPairing({
+    required String pairingTopic,
+  }) {
+    try {
+      return engine.getCompletedRequestsForPairing(
+        pairingTopic: pairingTopic,
+      );
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
   String formatAuthMessage({
     required String iss,
     required CacaoRequestPayload cacaoPayload,

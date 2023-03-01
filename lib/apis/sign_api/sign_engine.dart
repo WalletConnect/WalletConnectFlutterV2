@@ -90,7 +90,7 @@ class SignEngine implements ISignEngine {
     await sessions.init();
     await pendingRequests.init();
 
-    _registerExpirerEvents();
+    _registerInternalEvents();
     _registerRelayClientFunctions();
     await _cleanup();
 
@@ -283,33 +283,27 @@ class SignEngine implements ISignEngine {
       ),
     );
 
-    // If we received this request from somewhere, respond with the sessionTopic
-    // so they can update their listener.
-    // print('approve requestId: ${id}');
+    // Respond to the proposal
+    await core.pairing.sendResult(
+      id,
+      proposal.pairingTopic,
+      MethodConstants.WC_SESSION_PROPOSE,
+      WcSessionProposeResponse(
+        relay: Relay(
+          relayProtocol != null
+              ? relayProtocol
+              : WalletConnectConstants.RELAYER_DEFAULT_PROTOCOL,
+        ),
+        responderPublicKey: selfPubKey,
+      ).toJson(),
+    );
+    await _deleteProposal(id);
+    await core.pairing.activate(topic: proposal.pairingTopic);
 
-    if (proposal.pairingTopic != null && id > 0) {
-      // print('approve proposal topic: ${proposal.pairingTopic!}');
-      await core.pairing.sendResult(
-        id,
-        proposal.pairingTopic!,
-        MethodConstants.WC_SESSION_PROPOSE,
-        WcSessionProposeResponse(
-          relay: Relay(
-            relayProtocol != null
-                ? relayProtocol
-                : WalletConnectConstants.RELAYER_DEFAULT_PROTOCOL,
-          ),
-          responderPublicKey: selfPubKey,
-        ).toJson(),
-      );
-      await _deleteProposal(id);
-      await core.pairing.activate(topic: proposal.pairingTopic!);
-
-      await core.pairing.updateMetadata(
-        topic: proposal.pairingTopic!,
-        metadata: proposal.proposer.metadata,
-      );
-    }
+    await core.pairing.updateMetadata(
+      topic: proposal.pairingTopic,
+      metadata: proposal.proposer.metadata,
+    );
 
     await core.relayClient.subscribe(topic: sessionTopic);
     bool acknowledged = await core.pairing.sendRequest(
@@ -320,6 +314,7 @@ class SignEngine implements ISignEngine {
 
     SessionData session = SessionData(
       topic: sessionTopic,
+      pairingTopic: proposal.pairingTopic,
       relay: relay,
       expiry: expiry,
       acknowledged: acknowledged,
@@ -337,9 +332,6 @@ class SignEngine implements ISignEngine {
     await sessions.set(sessionTopic, session);
     await _setExpiry(sessionTopic, expiry);
 
-    // If we have a pairing topic, update its metadata with the peer
-    if (proposal.pairingTopic != null) {}
-
     return ApproveResponse(
       topic: sessionTopic,
       session: session,
@@ -356,13 +348,19 @@ class SignEngine implements ISignEngine {
     await _isValidReject(id, reason);
 
     ProposalData? proposal = proposals.get(id.toString());
-    if (proposal != null && proposal.pairingTopic != null) {
-      await core.pairing.sendError(
-        id,
-        proposal.pairingTopic!,
-        MethodConstants.WC_SESSION_PROPOSE,
-        JsonRpcError.serverError('User rejected request'),
-      );
+    if (proposal != null) {
+      // Attempt to send a response, if the pairing is not active, this will fail
+      // but we don't care
+      try {
+        core.pairing.sendError(
+          id,
+          proposal.pairingTopic,
+          MethodConstants.WC_SESSION_PROPOSE,
+          JsonRpcError.serverError('User rejected request'),
+        );
+      } catch (_) {
+        print('got here');
+      }
     }
     await _deleteProposal(id);
   }
@@ -557,13 +555,6 @@ class SignEngine implements ISignEngine {
       } catch (_) {}
 
       await _deleteSession(topic);
-
-      onSessionDelete.broadcast(
-        SessionDelete(
-          id,
-          topic,
-        ),
-      );
     } else {
       await core.pairing.disconnect(topic: topic);
     }
@@ -594,6 +585,23 @@ class SignEngine implements ISignEngine {
     });
 
     return activeSessions;
+  }
+
+  @override
+  Map<String, SessionData> getSessionsForPairing({
+    required String pairingTopic,
+  }) {
+    _checkInitialized();
+
+    Map<String, SessionData> pairingSessions = {};
+    sessions
+        .getAll()
+        .where((session) => session.pairingTopic == pairingTopic)
+        .forEach((session) {
+      pairingSessions[session.topic] = session;
+    });
+
+    return pairingSessions;
   }
 
   @override
@@ -650,6 +658,12 @@ class SignEngine implements ISignEngine {
     if (expirerHasDeleted) {
       await core.expirer.delete(topic);
     }
+
+    onSessionDelete.broadcast(
+      SessionDelete(
+        topic,
+      ),
+    );
   }
 
   Future<void> _deleteProposal(
@@ -824,6 +838,7 @@ class SignEngine implements ISignEngine {
       // Create the session
       final SessionData session = SessionData(
         topic: topic,
+        pairingTopic: sProposalCompleter.pairingTopic,
         relay: request.relay,
         expiry: request.expiry,
         acknowledged: true,
@@ -992,12 +1007,6 @@ class SignEngine implements ISignEngine {
         true,
       );
       await _deleteSession(topic);
-      onSessionDelete.broadcast(
-        SessionDelete(
-          payload.id,
-          topic,
-        ),
-      );
     } on WalletConnectError catch (err) {
       await core.pairing.sendError(
         payload.id,
@@ -1178,8 +1187,47 @@ class SignEngine implements ISignEngine {
 
   /// ---- Event Registers ---- ///
 
-  void _registerExpirerEvents() {
+  void _registerInternalEvents() {
     core.expirer.onExpire.subscribe(_onExpired);
+    core.pairing.onPairingDelete.subscribe(_onPairingDelete);
+    core.pairing.onPairingExpire.subscribe(_onPairingDelete);
+  }
+
+  // void _deregisterInternalEvents() {
+  //   core.expirer.onExpire.unsubscribe(_onExpired);
+  //   core.pairing.onPairingDelete.unsubscribe(_onPairingDelete);
+  //   core.pairing.onPairingExpire.unsubscribe(_onPairingDelete);
+  // }
+
+  Future<void> _onPairingDelete(PairingEvent? event) async {
+    // Delete all the sessions associated with the pairing
+    if (event == null) {
+      return;
+    }
+
+    // Delete the proposals
+    final List<ProposalData> proposalsToDelete = proposals
+        .getAll()
+        .where((proposal) => proposal.pairingTopic == event.topic)
+        .toList();
+
+    for (final proposal in proposalsToDelete) {
+      await _deleteProposal(
+        proposal.id,
+      );
+    }
+
+    // Delete the sessions
+    final List<SessionData> sessionsToDelete = sessions
+        .getAll()
+        .where((session) => session.pairingTopic == event.topic)
+        .toList();
+
+    for (final session in sessionsToDelete) {
+      await _deleteSession(
+        session.topic,
+      );
+    }
   }
 
   Future<void> _onExpired(ExpirationEvent? event) async {

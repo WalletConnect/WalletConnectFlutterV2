@@ -282,18 +282,25 @@ class Cacao {
 
 @JsonSerializable(includeIfNull: false)
 class StoredCacao extends Cacao {
-  final String id;
+  final int id;
+  final String pairingTopic;
 
   StoredCacao({
     required this.id,
+    required this.pairingTopic,
     required CacaoHeader h,
     required CacaoPayload p,
     required CacaoSignature s,
   }) : super(h: h, p: p, s: s);
 
-  factory StoredCacao.fromCacao(Cacao cacao, String id) {
+  factory StoredCacao.fromCacao({
+    required int id,
+    required String pairingTopic,
+    required Cacao cacao,
+  }) {
     return StoredCacao(
       id: id,
+      pairingTopic: pairingTopic,
       h: cacao.h,
       p: cacao.p,
       s: cacao.s,
@@ -309,11 +316,13 @@ class StoredCacao extends Cacao {
 @JsonSerializable(includeIfNull: false)
 class PendingAuthRequest {
   final int id;
+  final String pairingTopic;
   final ConnectionMetadata metadata;
   final CacaoRequestPayload cacaoPayload;
 
   PendingAuthRequest({
     required this.id,
+    required this.pairingTopic,
     required this.metadata,
     required this.cacaoPayload,
   });

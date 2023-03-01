@@ -1,3 +1,9 @@
+## 1.1.1
+
+- Sessions are deleted when their pairing is deleted
+- 
+- Pairing and Sessions now resubscribe to events when the relay is created
+
 ## 1.1.0
 
 - Added reconnect and event information to readme

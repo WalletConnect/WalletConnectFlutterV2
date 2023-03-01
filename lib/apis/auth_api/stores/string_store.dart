@@ -5,7 +5,7 @@ import 'package:walletconnect_flutter_v2/apis/utils/walletconnect_utils.dart';
 
 class AuthKeys implements IStringStore {
   static const CONTEXT = 'authKeys';
-  static const VERSION = '1.0';
+  static const VERSION = '1.1';
 
   @override
   String get storageKey => '$VERSION//$CONTEXT';

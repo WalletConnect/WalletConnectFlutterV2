@@ -19,4 +19,8 @@ abstract class IAuthEngineCommon {
     required String iss,
     required CacaoRequestPayload cacaoPayload,
   });
+
+  Map<int, StoredCacao> getCompletedRequestsForPairing({
+    required String pairingTopic,
+  });
 }
