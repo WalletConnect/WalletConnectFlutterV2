@@ -75,7 +75,6 @@ class PairingsPageState extends State<PairingsPage> {
                               );
                               Navigator.of(context).pop();
                             } catch (e) {
-                              print('expired');
                               debugPrint(e.toString());
                             }
                           },
