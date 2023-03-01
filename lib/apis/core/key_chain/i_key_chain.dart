@@ -11,7 +11,7 @@ abstract class IKeyChain extends IStoreUser {
     String key, {
     dynamic options,
   });
-  String get(
+  String? get(
     String tag, {
     dynamic options,
   });

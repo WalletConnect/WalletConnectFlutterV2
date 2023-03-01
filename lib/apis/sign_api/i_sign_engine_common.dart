@@ -13,6 +13,7 @@ abstract class ISignEngineCommon {
   abstract final Event<SessionDelete> onSessionDelete;
   abstract final Event<SessionExpire> onSessionExpire;
   abstract final Event<SessionPing> onSessionPing;
+  abstract final Event<SessionProposalEvent> onProposalExpire;
 
   abstract final ICore core;
   abstract final PairingMetadata metadata;
@@ -26,5 +27,9 @@ abstract class ISignEngineCommon {
     required WalletConnectError reason,
   });
   Map<String, SessionData> getActiveSessions();
+  Map<String, SessionData> getSessionsForPairing({
+    required String pairingTopic,
+  });
+  Map<String, ProposalData> getPendingSessionProposals();
   abstract final IPairingStore pairings;
 }

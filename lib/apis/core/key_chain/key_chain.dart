@@ -42,15 +42,12 @@ class KeyChain implements IKeyChain {
 
   /// Gets the key associated with the provided tag
   @override
-  String get(
+  String? get(
     String tag, {
     dynamic options,
   }) {
     _checkInitialized();
-    if (keyChain.containsKey(tag)) {
-      return keyChain[tag]!;
-    }
-    return '';
+    return keyChain[tag];
   }
 
   /// Sets the value with the given key

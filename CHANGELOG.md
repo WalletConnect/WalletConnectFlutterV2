@@ -1,3 +1,11 @@
+## 1.1.1
+
+- Sessions are deleted when their pairing is deleted
+- Get Sessions for a Pairing using `getSessionsForPairing`
+- Get completed Auth Requests for a Pairing using `getCompletedAuthRequestsForPairing`
+- Optional value for WcSessionProposeRequest `optionalNamespaces`
+- Other bug fixes
+
 ## 1.1.0
 
 - Added reconnect and event information to readme

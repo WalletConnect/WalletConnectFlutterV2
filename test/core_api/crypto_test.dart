@@ -232,17 +232,30 @@ void main() {
       });
 
       test(
-        'encrypts payload is the passed topic is known',
+        'encrypts payload if the passed topic is known',
         () async {
           final topic = await cryptoAPI.setSymKey(SYM_KEY);
           when(keyChain.get(topic)).thenReturn(SYM_KEY);
-          final String encoded = await cryptoAPI.encode(topic, PAYLOAD);
+          final String? encoded = await cryptoAPI.encode(topic, PAYLOAD);
 
-          final String decoded = await cryptoAPI.decode(topic, encoded);
+          final String? decoded = await cryptoAPI.decode(topic, encoded!);
           expect(decoded, jsonEncode(PAYLOAD));
 
-          final String decoded2 = await cryptoAPI.decode(topic, ENCODED);
+          final String? decoded2 = await cryptoAPI.decode(topic, ENCODED);
           expect(decoded2, jsonEncode(PAYLOAD));
+        },
+      );
+
+      test(
+        'returns null if the passed topic is known',
+        () async {
+          final topic = await cryptoAPI.setSymKey(SYM_KEY);
+          when(keyChain.get(topic)).thenReturn(null);
+          final String? encoded = await cryptoAPI.encode(topic, PAYLOAD);
+          expect(encoded, null);
+
+          final String? decoded = await cryptoAPI.decode(topic, ENCODED);
+          expect(decoded, null);
         },
       );
     });

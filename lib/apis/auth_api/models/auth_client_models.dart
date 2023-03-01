@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:json_annotation/json_annotation.dart';
 import 'package:walletconnect_flutter_v2/apis/auth_api/models/auth_client_events.dart';
+import 'package:walletconnect_flutter_v2/apis/auth_api/utils/auth_utils.dart';
 import 'package:walletconnect_flutter_v2/apis/models/basic_models.dart';
 
 part 'auth_client_models.g.dart';
@@ -35,10 +36,19 @@ class AuthPublicKey {
 }
 
 class AuthRequestParams {
+  /// The Chain ID.
+  /// Examples: eip155:1 (Eth Mainnet), eip155:43114 (Avalanche)
   final String chainId;
+
+  /// The complete URL you are logging into.
+  /// Example: https://example.com/login
+  final String aud;
+
+  /// The domain you are logging in to.
+  /// Example: example.com
+  /// Domain must exist within the aud, or validation will fail
   final String domain;
   final String nonce;
-  final String aud;
   final String? type;
   final String? nbf;
   final String? exp;
@@ -47,11 +57,11 @@ class AuthRequestParams {
   final List<String>? resources;
   final int? expiry;
 
-  const AuthRequestParams({
+  AuthRequestParams({
     required this.chainId,
     required this.domain,
-    required this.nonce,
     required this.aud,
+    String? nonce,
     this.type = CacaoHeader.EIP4361,
     this.nbf,
     this.exp,
@@ -59,7 +69,7 @@ class AuthRequestParams {
     this.requestId,
     this.resources,
     this.expiry,
-  });
+  }) : nonce = nonce ?? AuthUtils.generateNonce();
 }
 
 @JsonSerializable(includeIfNull: false)
@@ -272,18 +282,25 @@ class Cacao {
 
 @JsonSerializable(includeIfNull: false)
 class StoredCacao extends Cacao {
-  final String id;
+  final int id;
+  final String pairingTopic;
 
   StoredCacao({
     required this.id,
+    required this.pairingTopic,
     required CacaoHeader h,
     required CacaoPayload p,
     required CacaoSignature s,
   }) : super(h: h, p: p, s: s);
 
-  factory StoredCacao.fromCacao(Cacao cacao, String id) {
+  factory StoredCacao.fromCacao({
+    required int id,
+    required String pairingTopic,
+    required Cacao cacao,
+  }) {
     return StoredCacao(
       id: id,
+      pairingTopic: pairingTopic,
       h: cacao.h,
       p: cacao.p,
       s: cacao.s,
@@ -299,11 +316,13 @@ class StoredCacao extends Cacao {
 @JsonSerializable(includeIfNull: false)
 class PendingAuthRequest {
   final int id;
+  final String pairingTopic;
   final ConnectionMetadata metadata;
   final CacaoRequestPayload cacaoPayload;
 
   PendingAuthRequest({
     required this.id,
+    required this.pairingTopic,
     required this.metadata,
     required this.cacaoPayload,
   });

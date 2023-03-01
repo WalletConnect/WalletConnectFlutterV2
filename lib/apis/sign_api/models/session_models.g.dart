@@ -23,6 +23,7 @@ Map<String, dynamic> _$NamespaceToJson(Namespace instance) => <String, dynamic>{
 
 SessionData _$SessionDataFromJson(Map<String, dynamic> json) => SessionData(
       topic: json['topic'] as String,
+      pairingTopic: json['pairingTopic'] as String,
       relay: Relay.fromJson(json['relay'] as Map<String, dynamic>),
       expiry: json['expiry'] as int,
       acknowledged: json['acknowledged'] as bool,
@@ -51,6 +52,7 @@ SessionData _$SessionDataFromJson(Map<String, dynamic> json) => SessionData(
 Map<String, dynamic> _$SessionDataToJson(SessionData instance) {
   final val = <String, dynamic>{
     'topic': instance.topic,
+    'pairingTopic': instance.pairingTopic,
     'relay': instance.relay,
     'expiry': instance.expiry,
     'acknowledged': instance.acknowledged,

@@ -1,5 +1,6 @@
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 import 'package:walletconnect_flutter_v2_dapp/models/page_data.dart';
+import 'package:walletconnect_flutter_v2_dapp/pages/auth_page.dart';
 import 'package:walletconnect_flutter_v2_dapp/pages/connect_page.dart';
 import 'package:walletconnect_flutter_v2_dapp/pages/pairings_page.dart';
 import 'package:walletconnect_flutter_v2_dapp/pages/sessions_page.dart';
@@ -80,6 +81,11 @@ class _MyHomePageState extends State<MyHomePage> {
           page: SessionsPage(web3App: _web3App!),
           title: StringConstants.sessionsPageTitle,
           icon: Icons.confirmation_number_outlined,
+        ),
+        PageData(
+          page: AuthPage(web3App: _web3App!),
+          title: StringConstants.authPageTitle,
+          icon: Icons.lock,
         ),
       ];
 

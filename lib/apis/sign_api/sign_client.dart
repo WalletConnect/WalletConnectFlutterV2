@@ -352,6 +352,19 @@ class SignClient implements ISignClient {
   }
 
   @override
+  Map<String, SessionData> getSessionsForPairing({
+    required String pairingTopic,
+  }) {
+    try {
+      return engine.getSessionsForPairing(
+        pairingTopic: pairingTopic,
+      );
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
   Map<String, ProposalData> getPendingSessionProposals() {
     try {
       return engine.getPendingSessionProposals();

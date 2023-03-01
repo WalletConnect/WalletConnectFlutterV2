@@ -8,7 +8,7 @@ import 'package:walletconnect_flutter_v2/apis/utils/walletconnect_utils.dart';
 
 class Proposals implements IProposals {
   static const CONTEXT = 'proposals';
-  static const VERSION = '1.0';
+  static const VERSION = '1.1';
 
   @override
   String get storageKey => '$VERSION//$CONTEXT';

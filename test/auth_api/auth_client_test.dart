@@ -167,7 +167,7 @@ void main() {
         ),
   ];
 
-  final List<String> contexts = ['SignClient', 'SignEngine', 'Web3App/Wallet'];
+  final List<String> contexts = ['AuthClient', 'AuthEngine', 'Web3App/Wallet'];
 
   for (int i = 0; i < authAppCreators.length; i++) {
     runTests(
@@ -295,6 +295,23 @@ void runTests({
         expect(counterA, 1);
         expect(counterB, 1);
 
+        expect(
+          clientA
+              .getCompletedRequestsForPairing(
+                pairingTopic: pairingTopic,
+              )
+              .length,
+          1,
+        );
+        expect(
+          clientB
+              .getCompletedRequestsForPairing(
+                pairingTopic: pairingTopic,
+              )
+              .length,
+          1,
+        );
+
         completerA = Completer();
         completerB = Completer();
 
@@ -314,6 +331,23 @@ void runTests({
         // Got the second request and response
         expect(counterA, 2);
         expect(counterB, 2);
+
+        expect(
+          clientA
+              .getCompletedRequestsForPairing(
+                pairingTopic: pairingTopic,
+              )
+              .length,
+          2,
+        );
+        expect(
+          clientB
+              .getCompletedRequestsForPairing(
+                pairingTopic: pairingTopic,
+              )
+              .length,
+          2,
+        );
 
         clientA.onAuthResponse.unsubscribeAll();
         clientB.onAuthRequest.unsubscribeAll();

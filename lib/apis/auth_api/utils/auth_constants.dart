@@ -15,5 +15,5 @@ class AuthConstants {
   static const CONTEXT_AUTH_REQUESTS = 'authRequests';
   static const VERSION_AUTH_REQUESTS = '2.0';
   static const CONTEXT_COMPLETE_REQUESTS = 'completeRequests';
-  static const VERSION_COMPLETE_REQUESTS = '2.0';
+  static const VERSION_COMPLETE_REQUESTS = '2.1';
 }

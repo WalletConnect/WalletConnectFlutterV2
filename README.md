@@ -63,7 +63,6 @@ final AuthRequestResponse authReq = await wcClient.requestAuth(
     aud: 'http://localhost:3000/login',
     domain: 'localhost:3000',
     chainId: 'eip155:1',
-    nonce: AuthUtils.generateNonce(),
     statement: 'Sign in with your wallet!',
   ),
   pairingTopic: resp.pairingTopic,

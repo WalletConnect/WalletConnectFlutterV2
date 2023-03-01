@@ -74,7 +74,7 @@ class Web3WalletHelpers {
     // Listen for a auth request
     Completer authCompleter = Completer();
     final authHandler = (AuthRequest? args) async {
-      // print('B Session Proposal');
+      // print('B Auth Request');
 
       expect(b.getPendingAuthRequests().length, 1);
 
@@ -110,6 +110,7 @@ class Web3WalletHelpers {
     Uri? uri = connectResponse.uri;
 
     // Send an auth request as well
+    // print('requesting auth');
     AuthRequestResponse authReqResponse = await a.requestAuth(
       params: testAuthRequestParamsValid,
       pairingTopic: connectResponse.pairingTopic,
@@ -167,6 +168,7 @@ class Web3WalletHelpers {
     // Assign session now that we have paired
     // print('Waiting for connect response');
     sessionA = await connectResponse.session.future;
+    // print('Waiting for auth response');
     authResponse = await authReqResponse.completer.future;
 
     final settlePairingLatencyMs = DateTime.now().millisecondsSinceEpoch -

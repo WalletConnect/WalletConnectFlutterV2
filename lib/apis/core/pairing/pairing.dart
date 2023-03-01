@@ -299,7 +299,7 @@ class Pairing implements IPairing {
     if (pairings!.has(topic)) {
       // Send the request to delete the pairing, we don't care if it fails
       try {
-        await sendRequest(
+        sendRequest(
           topic,
           MethodConstants.WC_PAIRING_DELETE,
           Errors.getSdkError(Errors.USER_DISCONNECTED).toJson(),
@@ -356,11 +356,17 @@ class Pairing implements IPairing {
       id: id,
     );
     final JsonRpcRequest request = JsonRpcRequest.fromJson(payload);
-    final String message = await core.crypto.encode(
+
+    final String? message = await core.crypto.encode(
       topic,
       payload,
       options: encodeOptions,
     );
+
+    if (message == null) {
+      return;
+    }
+
     RpcOptions opts = MethodConstants.RPC_OPTS[method]!['req']!;
     if (ttl != null) {
       opts = opts.copyWith(ttl: ttl);
@@ -376,7 +382,7 @@ class Pairing implements IPairing {
       ttl: opts.ttl,
       tag: opts.tag,
     );
-    final Completer completer = Completer.sync();
+    final Completer completer = Completer();
     pendingRequests[payload['id']] = completer;
 
     // Get the result from the completer, if it's an error, throw it
@@ -400,15 +406,16 @@ class Pairing implements IPairing {
       id,
       result,
     );
-    final String message = await core.crypto.encode(
+    final String? message = await core.crypto.encode(
       topic,
       payload,
       options: encodeOptions,
     );
-    // final JsonRpcRecord? record = core.history.get(id);
-    // if (record == null) {
-    //   return;
-    // }
+
+    if (message == null) {
+      return;
+    }
+
     final RpcOptions opts = MethodConstants.RPC_OPTS[method]!['res']!;
     await core.relayClient.publish(
       topic: topic,
@@ -430,11 +437,16 @@ class Pairing implements IPairing {
       id,
       error,
     );
-    final String message = await core.crypto.encode(
+    final String? message = await core.crypto.encode(
       topic,
       payload,
       options: encodeOptions,
     );
+
+    if (message == null) {
+      return;
+    }
+
     final RpcOptions opts = MethodConstants.RPC_OPTS.containsKey(method)
         ? MethodConstants.RPC_OPTS[method]!['res']!
         : MethodConstants
@@ -518,13 +530,18 @@ class Pairing implements IPairing {
     }
 
     // Decode the message
-    String payloadString = await core.crypto.decode(
+    String? payloadString = await core.crypto.decode(
       event.topic,
       event.message,
       options: DecodeOptions(
         receiverPublicKey: receiverPublicKey,
       ),
     );
+
+    if (payloadString == null) {
+      return;
+    }
+
     Map<String, dynamic> data = jsonDecode(payloadString);
 
     // If it's an rpc request, handle it

@@ -181,7 +181,8 @@ Map<String, dynamic> _$CacaoToJson(Cacao instance) => <String, dynamic>{
     };
 
 StoredCacao _$StoredCacaoFromJson(Map<String, dynamic> json) => StoredCacao(
-      id: json['id'] as String,
+      id: json['id'] as int,
+      pairingTopic: json['pairingTopic'] as String,
       h: CacaoHeader.fromJson(json['h'] as Map<String, dynamic>),
       p: CacaoPayload.fromJson(json['p'] as Map<String, dynamic>),
       s: CacaoSignature.fromJson(json['s'] as Map<String, dynamic>),
@@ -193,11 +194,13 @@ Map<String, dynamic> _$StoredCacaoToJson(StoredCacao instance) =>
       'p': instance.p,
       's': instance.s,
       'id': instance.id,
+      'pairingTopic': instance.pairingTopic,
     };
 
 PendingAuthRequest _$PendingAuthRequestFromJson(Map<String, dynamic> json) =>
     PendingAuthRequest(
       id: json['id'] as int,
+      pairingTopic: json['pairingTopic'] as String,
       metadata:
           ConnectionMetadata.fromJson(json['metadata'] as Map<String, dynamic>),
       cacaoPayload: CacaoRequestPayload.fromJson(
@@ -207,6 +210,7 @@ PendingAuthRequest _$PendingAuthRequestFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$PendingAuthRequestToJson(PendingAuthRequest instance) =>
     <String, dynamic>{
       'id': instance.id,
+      'pairingTopic': instance.pairingTopic,
       'metadata': instance.metadata,
       'cacaoPayload': instance.cacaoPayload,
     };

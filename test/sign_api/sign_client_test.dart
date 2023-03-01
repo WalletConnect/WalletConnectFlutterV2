@@ -284,13 +284,23 @@ void signingEngineTests({
           clientA.pairings.getAll().length,
           clientB.pairings.getAll().length,
         );
+        expect(clientA.getActiveSessions().length, 1);
+        expect(clientB.getActiveSessions().length, 1);
         expect(
-          clientA.getActiveSessions().length,
+          clientA
+              .getSessionsForPairing(
+                pairingTopic: connectionInfo.pairing.topic,
+              )
+              .length,
           1,
         );
         expect(
-          clientA.getActiveSessions().length,
-          clientB.getActiveSessions().length,
+          clientB
+              .getSessionsForPairing(
+                pairingTopic: connectionInfo.pairing.topic,
+              )
+              .length,
+          1,
         );
         final _ = await SignClientHelpers.testConnectPairApprove(
           clientA,
@@ -575,11 +585,6 @@ void signingEngineTests({
       });
 
       test('deletes the proposal', () async {
-        await clientB.proposals.set(
-          TEST_PROPOSAL_VALID_ID.toString(),
-          TEST_PROPOSAL_VALID,
-        );
-
         await clientB.rejectSession(
           id: TEST_PROPOSAL_VALID_ID,
           reason: WalletConnectError(code: -1, message: 'reason'),
@@ -1491,11 +1496,23 @@ void signingEngineTests({
           clientB,
         );
         String pairingATopic = connectionInfo.pairing.topic;
+        String sessionATopic = connectionInfo.session.topic;
+
+        // Create another proposal that we will check is deleted on disconnect
+        await clientA.connect(
+          requiredNamespaces: TEST_REQUIRED_NAMESPACES,
+          pairingTopic: pairingATopic,
+        );
+        expect(clientA.getPendingSessionProposals().length, 1);
 
         Completer completerA = Completer<void>();
         Completer completerB = Completer<void>();
+        Completer completerSessionA = Completer<void>();
+        Completer completerSessionB = Completer<void>();
         int counterA = 0;
         int counterB = 0;
+        int counterSessionA = 0;
+        int counterSessionB = 0;
         clientA.core.pairing.onPairingDelete.subscribe((PairingEvent? e) {
           expect(e != null, true);
           expect(e!.topic, pairingATopic);
@@ -1508,9 +1525,22 @@ void signingEngineTests({
           counterB++;
           completerB.complete();
         });
+        clientA.onSessionDelete.subscribe((SessionDelete? e) {
+          expect(e != null, true);
+          expect(e!.topic, sessionATopic);
+          counterSessionA++;
+          completerSessionA.complete();
+        });
+        clientB.onSessionDelete.subscribe((SessionDelete? e) {
+          expect(e != null, true);
+          expect(e!.topic, sessionATopic);
+          counterSessionB++;
+          completerSessionB.complete();
+        });
 
-        WalletConnectError reason =
-            Errors.getSdkError(Errors.USER_DISCONNECTED);
+        WalletConnectError reason = Errors.getSdkError(
+          Errors.USER_DISCONNECTED,
+        );
         await clientA.disconnectSession(
           topic: pairingATopic,
           reason: WalletConnectError(
@@ -1522,22 +1552,31 @@ void signingEngineTests({
         // await Future.delayed(Duration(milliseconds: 150));
         await completerA.future;
         await completerB.future;
+        await completerSessionA.future;
+        await completerSessionB.future;
 
-        // TODO: See if this should delete the session as well
         expect(clientA.pairings.get(pairingATopic), null);
         expect(clientB.pairings.get(pairingATopic), null);
+        expect(clientA.sessions.get(sessionATopic), null);
+        expect(clientB.sessions.get(sessionATopic), null);
+        expect(clientA.getPendingSessionProposals().length, 0);
 
         expect(counterA, 1);
         expect(counterB, 1);
+        expect(counterSessionA, 1);
+        expect(counterSessionB, 1);
 
         completerA = Completer();
         completerB = Completer();
+        completerSessionA = Completer();
+        completerSessionB = Completer();
 
         connectionInfo = await SignClientHelpers.testConnectPairApprove(
           clientA,
           clientB,
         );
         pairingATopic = connectionInfo.pairing.topic;
+        sessionATopic = connectionInfo.session.topic;
 
         reason = Errors.getSdkError(Errors.USER_DISCONNECTED);
         await clientB.disconnectSession(
@@ -1551,16 +1590,23 @@ void signingEngineTests({
         // await Future.delayed(Duration(milliseconds: 150));
         await completerA.future;
         await completerB.future;
+        await completerSessionA.future;
+        await completerSessionB.future;
 
-        // TODO: See if this should delete the session as well
         expect(clientA.pairings.get(pairingATopic), null);
         expect(clientB.pairings.get(pairingATopic), null);
+        expect(clientA.sessions.get(sessionATopic), null);
+        expect(clientB.sessions.get(sessionATopic), null);
 
         expect(counterA, 2);
         expect(counterB, 2);
+        expect(counterSessionA, 2);
+        expect(counterSessionB, 2);
 
         clientA.core.pairing.onPairingDelete.unsubscribeAll();
         clientB.core.pairing.onPairingDelete.unsubscribeAll();
+        clientA.onSessionDelete.unsubscribeAll();
+        clientB.onSessionDelete.unsubscribeAll();
       });
 
       test("using session works", () async {
@@ -1626,10 +1672,8 @@ void signingEngineTests({
           ),
         );
 
-        // await Future.delayed(Duration(milliseconds: 150));
         await completerA.future;
 
-        // TODO: See if this should delete the session as well
         expect(clientA.pairings.get(sessionATopic), null);
         expect(clientB.pairings.get(sessionATopic), null);
 

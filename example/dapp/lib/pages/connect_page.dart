@@ -177,22 +177,43 @@ class ConnectPageState extends State<ConnectPage> {
     final ConnectResponse res = await widget.web3App.connect(
       requiredNamespaces: requiredNamespaces,
     );
+
     // print(res.uri!.toString());
     _showQrCode(res);
 
     try {
-      final SessionData _ = await res.session.future;
-      if (_shouldDismissQrCode) {
-        // ignore: use_build_context_synchronously
-        Navigator.pop(context);
-      }
+      await res.session.future;
 
-      await showPlatformToast(
+      showPlatformToast(
         child: const Text(
           StringConstants.connectionEstablished,
         ),
         context: context,
       );
+
+      // Send off an auth request now that the pairing/session is established
+      final AuthRequestResponse authRes = await widget.web3App.requestAuth(
+        pairingTopic: res.pairingTopic,
+        params: AuthRequestParams(
+          chainId: chains[0].chainId,
+          domain: Constants.domain,
+          aud: Constants.aud,
+        ),
+      );
+
+      await authRes.completer.future;
+
+      showPlatformToast(
+        child: const Text(
+          StringConstants.authSucceeded,
+        ),
+        context: context,
+      );
+
+      if (_shouldDismissQrCode) {
+        // ignore: use_build_context_synchronously
+        Navigator.pop(context);
+      }
     } catch (e) {
       // debugPrint(e.toString());
       if (_shouldDismissQrCode) {
@@ -201,7 +222,7 @@ class ConnectPageState extends State<ConnectPage> {
       }
       await showPlatformToast(
         child: const Text(
-          StringConstants.connectionEstablished,
+          StringConstants.connectionFailed,
         ),
         context: context,
       );

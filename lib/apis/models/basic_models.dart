@@ -33,6 +33,11 @@ class WalletConnectError {
       _$WalletConnectErrorFromJson(json);
 
   Map<String, dynamic> toJson() => _$WalletConnectErrorToJson(this);
+
+  @override
+  String toString() {
+    return 'WalletConnectError(code: $code, message: $message, data: $data)';
+  }
 }
 
 class RpcOptions {
@@ -56,6 +61,11 @@ class RpcOptions {
       prompt ?? this.prompt,
       tag ?? this.tag,
     );
+  }
+
+  @override
+  String toString() {
+    return 'RpcOptions(ttl: $ttl, prompt: $prompt, tag: $tag)';
   }
 }
 
@@ -81,4 +91,9 @@ class ConnectionMetadata {
 
   @override
   int get hashCode => publicKey.hashCode + metadata.hashCode;
+
+  @override
+  String toString() {
+    return 'ConnectionMetadata(publicKey: $publicKey, metadata: $metadata)';
+  }
 }

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 
@@ -69,17 +71,23 @@ void runTests({
 
     group('happy path', () {
       test('connects, reconnects, and emits proper events', () async {
+        Completer completer = Completer();
+        Completer completerBSign = Completer();
+        Completer completerBAuth = Completer();
         int counterA = 0;
         int counterBSign = 0;
         int counterBAuth = 0;
         clientA.onSessionConnect.subscribe((args) {
           counterA++;
+          completer.complete();
         });
         clientB.onSessionProposal.subscribe((args) {
           counterBSign++;
+          completerBSign.complete();
         });
         clientB.onAuthRequest.subscribe((args) {
           counterBAuth++;
+          completerBAuth.complete();
         });
 
         final connectionInfo = await Web3WalletHelpers.testWeb3Wallet(
@@ -87,7 +95,9 @@ void runTests({
           clientB,
         );
 
-        await Future.delayed(Duration(milliseconds: 100));
+        await completer.future;
+        await completerBSign.future;
+        await completerBAuth.future;
 
         expect(counterA, 1);
         expect(counterBSign, 1);
@@ -105,13 +115,20 @@ void runTests({
           clientA.getActiveSessions().length,
           clientB.getActiveSessions().length,
         );
+
+        completer = Completer();
+        completerBSign = Completer();
+        completerBAuth = Completer();
+
         final _ = await Web3WalletHelpers.testWeb3Wallet(
           clientA,
           clientB,
           pairingTopic: connectionInfo.pairing.topic,
         );
 
-        await Future.delayed(Duration(milliseconds: 100));
+        await completer.future;
+        await completerBSign.future;
+        await completerBAuth.future;
 
         expect(counterA, 2);
         expect(counterBSign, 2);

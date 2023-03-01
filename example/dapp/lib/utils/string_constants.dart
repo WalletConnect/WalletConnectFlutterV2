@@ -10,6 +10,7 @@ class StringConstants {
   static const String connectPageTitle = 'Connect';
   static const String pairingsPageTitle = 'Pairings';
   static const String sessionsPageTitle = 'Sessions';
+  static const String authPageTitle = 'Auth';
   static const String settingsPageTitle = 'Settings';
 
   // Connect Page
@@ -18,8 +19,10 @@ class StringConstants {
   static const String scanQrCode = 'Scan QR Code';
   static const String urlCopiedToClipboard = 'URL copied to clipboard';
   static const String connect = 'Connect';
-  static const String connectionEstablished = 'Connection established';
-  static const String connectionFailed = 'Connection failed';
+  static const String connectionEstablished = 'Session established';
+  static const String connectionFailed = 'Session setup failed';
+  static const String authSucceeded = 'Authentication Successful';
+  static const String authFailed = 'Authentication Failed';
 
   // Pairings Page
   static const String pairings = 'Pairings';

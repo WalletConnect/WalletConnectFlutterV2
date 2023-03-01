@@ -69,7 +69,7 @@ class ProposalData {
   final Map<String, RequiredNamespace> requiredNamespaces;
   final Map<String, RequiredNamespace> optionalNamespaces;
   final Map<String, String>? sessionProperties;
-  final String? pairingTopic;
+  final String pairingTopic;
 
   const ProposalData({
     required this.id,
@@ -78,8 +78,8 @@ class ProposalData {
     required this.proposer,
     required this.requiredNamespaces,
     required this.optionalNamespaces,
+    required this.pairingTopic,
     this.sessionProperties,
-    this.pairingTopic,
   });
 
   factory ProposalData.fromJson(Map<String, dynamic> json) =>
