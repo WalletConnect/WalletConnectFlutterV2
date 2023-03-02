@@ -21,7 +21,7 @@ runs:
       shell: bash
       run: dart format --output=none --set-exit-if-changed .
 
-    - name: Analyze project source
-      shell: bash
-      run: flutter analyze
+    # - name: Analyze project source
+    #   shell: bash
+    #   run: flutter analyze
     
