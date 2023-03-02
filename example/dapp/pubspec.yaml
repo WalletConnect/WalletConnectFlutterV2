@@ -1,5 +1,5 @@
 name: walletconnect_flutter_v2_dapp
-description: An example project for wallet connect flutter v2
+description: An example dApp for WalletConnect v2 built with Flutter.
 
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -37,7 +37,6 @@ dependencies:
   cupertino_icons: ^1.0.2
   qr_flutter: ^4.0.0
   json_annotation: ^4.8.0
-  # walletconnect_flutter_v2: ^1.0.5
   walletconnect_flutter_v2:
     path: ../..
   fl_toast: ^3.1.0

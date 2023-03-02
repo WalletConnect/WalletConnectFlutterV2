@@ -1,3 +1,8 @@
+## 1.1.2
+
+- Fixed an issue with requests crashing if an error was thrown
+- Updated README to use function handlers for the request example
+
 ## 1.1.1
 
 - Sessions are deleted when their pairing is deleted

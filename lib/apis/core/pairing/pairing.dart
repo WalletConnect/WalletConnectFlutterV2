@@ -555,7 +555,7 @@ class Pairing implements IPairing {
       }
     }
     // Otherwise handle it as a response
-    else if (data.containsKey('result')) {
+    else {
       final response = JsonRpcResponse.fromJson(data);
       final JsonRpcRecord? record = core.history.get(response.id);
       if (record == null) {
@@ -564,17 +564,12 @@ class Pairing implements IPairing {
 
       // print('got here');
       if (pendingRequests.containsKey(response.id)) {
-        pendingRequests.remove(response.id)!.complete(response.result);
+        if (response.error != null) {
+          pendingRequests.remove(response.id)!.completeError(response.error!);
+        } else {
+          pendingRequests.remove(response.id)!.complete(response.result);
+        }
       }
-
-      // if (routerMapRequest.containsKey(record.method)) {
-      //   routerMapRequest[record.method]!(event.topic, response);
-      // } else {
-      //   _onUnkownRpcMethodResponse(record.method);
-      // }
-    } else if (data.containsKey('error')) {
-      final err = JsonRpcError.fromJson(data['error']);
-      pendingRequests.remove(data['id'])!.completeError(err);
     }
   }
 

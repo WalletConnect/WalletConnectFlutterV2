@@ -110,22 +110,53 @@ wcClient.onSessionProposal.subscribe((SessionProposal? args) async {
   // Handle UI updates using the args.params
   // Keep track of the args.id for the approval response
   id = args!.id;
-})
+});
 
 // Also setup the methods and chains that your wallet supports
-wcClient.onSessionRequest.subscribe((SessionRequestEvent? request) async {
-  // You can respond to requests in this manner
-  await clientB.respondSessionRequest(
-    topic: request.topic,
-    response: JsonRpcResponse<String>(
-      id: request.id,
-      result: 'Signed!',
-    ),
+final kadenaSignV1RequestHandler = (String topic, dynamic parameters) async {
+  // Handling Steps
+  // 1. Parse the request, if there are any errors thrown while trying to parse
+  // the client will automatically respond to the requester with a 
+  // JsonRpcError.invalidParams error
+  final parsedResponse = parameters;
+
+  // 2. Show a modal to the user with the signature info: Allow approval/rejection
+  bool userApproved = await showDialog( // This is an example, you will have to make your own changes to make it work.
+    context: context,
+    builder: (context) {
+      return AlertDialog(
+        title: const Text('Sign Transaction'),
+        content: SizedBox(
+          width: 300,
+          height: 350,
+          child: Text(parsedResponse.toString()),
+        ),
+        actions: [
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: Text('Accept'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: Text('Reject'),
+          ),
+        ],
+      );
+    },
   );
-});
+
+  // 3. Respond to the dApp based on user response
+  if (userApproved) {
+    return 'Signed!';
+  }
+  else {
+    return 'User Rejected!';
+  }
+}
 wcClient.registerRequestHandler(
-  namespace: 'kadena',
-  method: 'kadena_sign',
+  namespace: 'kadena:mainnet01',
+  method: 'kadena_sign_v1',
+  handler: kadenaSignV1RequestHandler,
 );
 
 // Setup the auth handling
