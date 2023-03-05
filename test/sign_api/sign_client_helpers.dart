@@ -30,7 +30,6 @@ class SignClientHelpers {
     List<Relay>? relays,
     String? pairingTopic,
     int? qrCodeScanLatencyMs,
-    bool testFailure = false,
   }) async {
     final start = DateTime.now().millisecondsSinceEpoch;
     final Map<String, RequiredNamespace> reqNamespaces =
@@ -56,11 +55,19 @@ class SignClientHelpers {
 
       expect(b.getPendingSessionProposals().length, 1);
 
+      Completer completer = Completer();
+      b.onSessionConnect.subscribe((args) {
+        expect(args != null, true);
+        completer.complete();
+      });
+
       ApproveResponse response = await b.approveSession(
         id: args.id,
         namespaces: workingNamespaces,
       );
       sessionB = response.session;
+      await completer.future;
+      b.onSessionConnect.unsubscribeAll();
       sessionBCompleter.complete();
 
       // print('B Session assigned: $sessionB');
@@ -207,5 +214,123 @@ class SignClientHelpers {
       clientAConnectLatencyMs,
       settlePairingLatencyMs,
     );
+  }
+
+  static Future<void> testConnectPairReject(
+    ISignEngineApp a,
+    ISignEngineWallet b, {
+    Map<String, Namespace>? namespaces,
+    Map<String, RequiredNamespace>? requiredNamespaces,
+    List<Relay>? relays,
+    String? pairingTopic,
+    int? qrCodeScanLatencyMs,
+  }) async {
+    final start = DateTime.now().millisecondsSinceEpoch;
+    final Map<String, RequiredNamespace> reqNamespaces =
+        requiredNamespaces != null
+            ? requiredNamespaces
+            : TEST_REQUIRED_NAMESPACES;
+
+    Map<String, Namespace> workingNamespaces =
+        namespaces != null ? namespaces : TEST_NAMESPACES;
+
+    SessionData? sessionA;
+
+    // Listen for a proposal via connect to avoid race conditions
+    Completer sessionBCompleter = Completer();
+    final f = (SessionProposalEvent? args) async {
+      // print('B Session Proposal');
+
+      expect(
+        args!.params.requiredNamespaces,
+        reqNamespaces,
+      );
+
+      // expect(b.getPendingSessionProposals().length, 1);
+
+      await b.rejectSession(
+        id: args.id,
+        reason: Errors.getSdkError(
+          Errors.USER_REJECTED,
+        ),
+      );
+      sessionBCompleter.complete();
+
+      // print('B Session assigned: $sessionB');
+      // expect(b.core.expirer.has(args.params.id.toString()), true);
+    };
+    b.onSessionProposal.subscribe(f);
+
+    // Connect to client b from a, this will trigger the above event
+    // print('connecting');
+    ConnectResponse connectResponse = await a.connect(
+      requiredNamespaces: reqNamespaces,
+      pairingTopic: pairingTopic,
+      relays: relays,
+    );
+    Uri? uri = connectResponse.uri;
+
+    // Track latency
+    final clientAConnectLatencyMs =
+        DateTime.now().millisecondsSinceEpoch - start;
+
+    // Track pairings from "QR Scans"
+    PairingInfo? pairingA;
+    PairingInfo? pairingB;
+
+    if (pairingTopic == null) {
+      // Simulate qr code scan latency if we want
+      if (uri == null) {
+        throw Exception('uri is missing');
+      }
+      if (qrCodeScanLatencyMs != null) {
+        await Future.delayed(
+          Duration(
+            milliseconds: qrCodeScanLatencyMs,
+          ),
+        );
+      }
+
+      final uriParams = WalletConnectUtils.parseUri(connectResponse.uri!);
+      pairingA = a.pairings.get(uriParams.topic);
+      expect(pairingA != null, true);
+      expect(pairingA!.topic, uriParams.topic);
+      expect(pairingA.relay.protocol, uriParams.relay.protocol);
+
+      // If we recieved no pairing topic, then we want to create one
+      // e.g. we pair from b to a using the uri created from the connect
+      // params (The QR code).
+      final pairTimeoutMs = 15000;
+      final timeout = Timer(Duration(milliseconds: pairTimeoutMs), () {
+        throw Exception("Pair timed out after $pairTimeoutMs ms");
+      });
+      // print('pairing B -> A');
+      pairingB = await b.pair(uri: uri);
+      timeout.cancel();
+      expect(pairingA.topic, pairingB.topic);
+      expect(pairingA.relay.protocol, pairingB.relay.protocol);
+    } else {
+      pairingA = a.pairings.get(pairingTopic);
+      pairingB = b.pairings.get(pairingTopic);
+    }
+
+    if (pairingA == null) {
+      throw Exception('expect pairing A to be defined');
+    }
+
+    // Assign session now that we have paired
+    // print('Waiting for connect response');
+    try {
+      await connectResponse.session.future;
+      await sessionBCompleter.future;
+    } catch (e) {
+      b.onSessionProposal.unsubscribe(f);
+      expect(e is JsonRpcError, true);
+      final e2 = e as JsonRpcError;
+      expect(e2.code, Errors.getSdkError(Errors.USER_REJECTED).code);
+      expect(e2.message, Errors.getSdkError(Errors.USER_REJECTED).message);
+    }
+
+    // expect(true, false);
   }
 }
