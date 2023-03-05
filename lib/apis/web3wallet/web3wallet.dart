@@ -151,6 +151,8 @@ class Web3Wallet implements IWeb3Wallet {
   ///---------- SIGN ENGINE ----------///
 
   @override
+  Event<SessionConnect> get onSessionConnect => signEngine.onSessionConnect;
+  @override
   Event<SessionDelete> get onSessionDelete => signEngine.onSessionDelete;
   @override
   Event<SessionExpire> get onSessionExpire => signEngine.onSessionExpire;

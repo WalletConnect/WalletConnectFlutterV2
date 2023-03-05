@@ -6,6 +6,8 @@ import 'package:walletconnect_flutter_v2/apis/models/json_rpc_error.dart';
 import 'package:walletconnect_flutter_v2/apis/models/json_rpc_request.dart';
 
 abstract class IPairing {
+  abstract final Event<PairingEvent> onPairingCreate;
+  abstract final Event<PairingActivateEvent> onPairingActivate;
   abstract final Event<PairingEvent> onPairingPing;
   abstract final Event<PairingInvalidEvent> onPairingInvalid;
   abstract final Event<PairingEvent> onPairingDelete;

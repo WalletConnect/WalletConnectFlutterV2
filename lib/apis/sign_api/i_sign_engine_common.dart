@@ -10,6 +10,7 @@ import 'package:walletconnect_flutter_v2/apis/sign_api/models/session_models.dar
 import 'package:walletconnect_flutter_v2/apis/sign_api/models/sign_client_events.dart';
 
 abstract class ISignEngineCommon {
+  abstract final Event<SessionConnect> onSessionConnect;
   abstract final Event<SessionDelete> onSessionDelete;
   abstract final Event<SessionExpire> onSessionExpire;
   abstract final Event<SessionPing> onSessionPing;

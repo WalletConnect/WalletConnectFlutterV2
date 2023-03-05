@@ -26,6 +26,11 @@ class Pairing implements IPairing {
   bool _initialized = false;
 
   @override
+  final Event<PairingEvent> onPairingCreate = Event<PairingEvent>();
+  @override
+  final Event<PairingActivateEvent> onPairingActivate =
+      Event<PairingActivateEvent>();
+  @override
   final Event<PairingEvent> onPairingPing = Event<PairingEvent>();
   @override
   final Event<PairingInvalidEvent> onPairingInvalid =
@@ -115,6 +120,13 @@ class Pairing implements IPairing {
       relay: relay,
       methods: methods,
     );
+
+    onPairingCreate.broadcast(
+      PairingEvent(
+        topic: topic,
+      ),
+    );
+
     await pairings!.set(topic, pairing);
     await core.relayClient.subscribe(topic: topic);
     await core.expirer.set(topic, expiry);
@@ -122,6 +134,7 @@ class Pairing implements IPairing {
     return CreateResponse(
       topic: topic,
       uri: uri,
+      pairingInfo: pairing,
     );
   }
 
@@ -174,6 +187,12 @@ class Pairing implements IPairing {
     await core.relayClient.subscribe(topic: topic);
     await core.expirer.set(topic, expiry);
 
+    onPairingCreate.broadcast(
+      PairingEvent(
+        topic: topic,
+      ),
+    );
+
     if (activatePairing) {
       await activate(topic: topic);
     }
@@ -187,6 +206,7 @@ class Pairing implements IPairing {
     final int expiry = WalletConnectUtils.calculateExpiry(
       WalletConnectConstants.THIRTY_DAYS,
     );
+
     await pairings!.update(
       topic,
       expiry: expiry,
@@ -237,9 +257,32 @@ class Pairing implements IPairing {
     required int expiry,
   }) async {
     _checkInitialized();
+
+    // Validate the expiry is less than 30 days
+    if (expiry >
+        WalletConnectUtils.calculateExpiry(
+          WalletConnectConstants.THIRTY_DAYS,
+        )) {
+      throw WalletConnectError(
+        code: -1,
+        message: 'Expiry cannot be more than 30 days away',
+      );
+    }
+
+    onPairingActivate.broadcast(
+      PairingActivateEvent(
+        topic: topic,
+        expiry: expiry,
+      ),
+    );
+
     await pairings!.update(
       topic,
       expiry: expiry,
+    );
+    await core.expirer.set(
+      topic,
+      expiry,
     );
   }
 
@@ -273,21 +316,6 @@ class Pairing implements IPairing {
         MethodConstants.WC_PAIRING_PING,
         {},
       );
-      // onPairingPing.broadcast(
-      //   PairingEvent(
-      //     topic: topic,
-      //   ),
-      // );
-      // }
-      //  on JsonRpcError catch (e) {
-      //   // onPairingPing.broadcast(
-      //   //   PairingEvent(
-      //   //     topic: topic,
-      //   //     error: e,
-      //   //   ),
-      //   // );
-      //   rethrow;
-      // }
     }
   }
 
@@ -324,19 +352,17 @@ class Pairing implements IPairing {
 
   Future<void> isValidPairingTopic({required String topic}) async {
     if (!pairings!.has(topic)) {
-      String message = Errors.getInternalError(
+      throw Errors.getInternalError(
         Errors.NO_MATCHING_KEY,
         context: "pairing topic doesn't exist: $topic",
-      ).message;
-      throw JsonRpcError.invalidParams(message);
+      );
     }
 
     if (await core.expirer.checkAndExpire(topic)) {
-      String message = Errors.getInternalError(
+      throw Errors.getInternalError(
         Errors.EXPIRED,
         context: "pairing topic: $topic",
-      ).message;
-      throw JsonRpcError.invalidParams(message);
+      );
     }
   }
 
@@ -386,12 +412,16 @@ class Pairing implements IPairing {
     pendingRequests[payload['id']] = completer;
 
     // Get the result from the completer, if it's an error, throw it
-    final result = await completer.future;
-    if (result is JsonRpcError) {
-      throw result;
-    }
+    try {
+      final result = await completer.future;
+      // if (result is JsonRpcError) {
+      //   throw result;
+      // }
 
-    return result;
+      return result;
+    } catch (e) {
+      rethrow;
+    }
   }
 
   Future<void> sendResult(

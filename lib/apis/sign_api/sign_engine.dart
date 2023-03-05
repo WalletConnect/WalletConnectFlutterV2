@@ -203,28 +203,33 @@ class SignEngine implements ISignEngine {
   ) async {
     // print("sending proposal for $topic");
     // print('connectResponseHandler requestId: $requestId');
-    final Map<String, dynamic> resp = await core.pairing.sendRequest(
-      topic,
-      MethodConstants.WC_SESSION_PROPOSE,
-      request.toJson(),
-      id: requestId,
-    );
-    final String peerPublicKey = resp['responderPublicKey'];
+    try {
+      final Map<String, dynamic> resp = await core.pairing.sendRequest(
+        topic,
+        MethodConstants.WC_SESSION_PROPOSE,
+        request.toJson(),
+        id: requestId,
+      );
+      final String peerPublicKey = resp['responderPublicKey'];
 
-    final ProposalData proposal = proposals.get(
-      requestId.toString(),
-    )!;
-    final String sessionTopic = await core.crypto.generateSharedKey(
-      proposal.proposer.publicKey,
-      peerPublicKey,
-    );
-    // print('connectResponseHandler session topic: $sessionTopic');
+      final ProposalData proposal = proposals.get(
+        requestId.toString(),
+      )!;
+      final String sessionTopic = await core.crypto.generateSharedKey(
+        proposal.proposer.publicKey,
+        peerPublicKey,
+      );
+      // print('connectResponseHandler session topic: $sessionTopic');
 
-    // Delete the proposal, we are done with it
-    await _deleteProposal(requestId);
+      // Delete the proposal, we are done with it
+      await _deleteProposal(requestId);
 
-    await core.relayClient.subscribe(topic: sessionTopic);
-    await core.pairing.activate(topic: topic);
+      await core.relayClient.subscribe(topic: sessionTopic);
+      await core.pairing.activate(topic: topic);
+    } catch (e) {
+      // Get the completer and finish it with an error
+      pendingProposals.removeLast().completer.completeError(e);
+    }
   }
 
   @override
@@ -233,7 +238,9 @@ class SignEngine implements ISignEngine {
   }) async {
     _checkInitialized();
 
-    return await core.pairing.pair(uri: uri);
+    return await core.pairing.pair(
+      uri: uri,
+    );
   }
 
   /// Approves a proposal with the id provided in the parameters.
@@ -253,6 +260,7 @@ class SignEngine implements ISignEngine {
       sessionProperties: sessionProperties,
       relayProtocol: relayProtocol,
     );
+
     final ProposalData proposal = proposals.get(
       id.toString(),
     )!;
@@ -329,6 +337,12 @@ class SignEngine implements ISignEngine {
       peer: proposal.proposer,
     );
 
+    onSessionConnect.broadcast(
+      SessionConnect(
+        session,
+      ),
+    );
+
     await sessions.set(sessionTopic, session);
     await _setExpiry(sessionTopic, expiry);
 
@@ -352,11 +366,13 @@ class SignEngine implements ISignEngine {
       // Attempt to send a response, if the pairing is not active, this will fail
       // but we don't care
       try {
-        core.pairing.sendError(
+        await core.pairing.sendError(
           id,
           proposal.pairingTopic,
           MethodConstants.WC_SESSION_PROPOSE,
-          JsonRpcError.serverError('User rejected request'),
+          JsonRpcError.fromJson(
+            reason.toJson(),
+          ),
         );
       } catch (_) {
         print('got here');
@@ -1308,7 +1324,7 @@ class SignEngine implements ISignEngine {
     if (sessions.has(topic)) {
       await _isValidSessionTopic(topic);
     } else if (core.pairing.getStore().has(topic)) {
-      await _isValidPairingTopic(topic);
+      await core.pairing.isValidPairingTopic(topic: topic);
     } else {
       throw Errors.getInternalError(
         Errors.NO_MATCHING_KEY,
@@ -1367,7 +1383,9 @@ class SignEngine implements ISignEngine {
     // No need to validate sessionProperties. Strict typing enforces Strings are valid
     // No need to see if the relays are a valid array and whatnot. Strict typing enforces that.
     if (pairingTopic != null) {
-      await _isValidPairingTopic(pairingTopic);
+      await core.pairing.isValidPairingTopic(
+        topic: pairingTopic,
+      );
     }
 
     if (requiredNamespaces != null) {

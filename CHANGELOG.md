@@ -1,3 +1,9 @@
+## 1.1.3
+
+- Fixed a bug with sendError not causing an error to be thrown on the client side
+- Added `onPairingCreate` event. It is emitted when pair and create are called
+- Added `pairing.updateExpiry` time validation.
+
 ## 1.1.2
 
 - Fixed an issue with requests crashing if an error was thrown

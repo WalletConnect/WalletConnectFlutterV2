@@ -124,10 +124,12 @@ class Redirect {
 class CreateResponse {
   String topic;
   Uri uri;
+  PairingInfo pairingInfo;
 
   CreateResponse({
     required this.topic,
     required this.uri,
+    required this.pairingInfo,
   });
 
   @override
@@ -189,6 +191,21 @@ class PairingEvent extends EventArgs {
   @override
   String toString() {
     return 'PairingEvent(id: $id, topic: $topic, error: $error)';
+  }
+}
+
+class PairingActivateEvent extends EventArgs {
+  String topic;
+  int expiry;
+
+  PairingActivateEvent({
+    required this.topic,
+    required this.expiry,
+  });
+
+  @override
+  String toString() {
+    return 'PairingActivateEvent(topic: $topic, expiry: $expiry)';
   }
 }
 

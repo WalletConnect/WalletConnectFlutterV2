@@ -9,7 +9,6 @@ import 'package:walletconnect_flutter_v2/apis/sign_api/models/sign_client_events
 import 'package:walletconnect_flutter_v2/apis/sign_api/models/sign_client_models.dart';
 
 abstract class ISignEngineApp extends ISignEngineCommon {
-  abstract final Event<SessionConnect> onSessionConnect;
   abstract final Event<SessionUpdate> onSessionUpdate;
   abstract final Event<SessionExtend> onSessionExtend;
   abstract final Event<SessionEvent> onSessionEvent;
