@@ -584,7 +584,7 @@ void signingEngineTests({
         );
       });
 
-      test('received correctly', () async {
+      test('throws catchable error properly', () async {
         await SignClientHelpers.testConnectPairReject(
           clientA,
           clientB,
