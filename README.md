@@ -72,6 +72,9 @@ final AuthRequestResponse authReq = await wcClient.requestAuth(
 final AuthResponse authResponse = await authResponse.completer.future;
 if (authResponse.result != null) {
   // Having a result means you have the signature and it is verified.
+
+  // Retrieve the wallet address from a successful response
+  final walletAddress = AddressUtils.getDidAddress(authResponse.result!.p.iss);
 }
 else {
   // Otherwise, you might have gotten a WalletConnectError if there was un issue verifying the signature.
@@ -87,7 +90,7 @@ wcClient.onSessionEvent.subscribe((SessionEvent? session) {
 });
 wcClient.registerEventHandler(
   namespace: 'kadena',
-  method: 'kadena_transaction_updated',
+  event: 'kadena_transaction_updated',
 );
 ```
 
@@ -204,11 +207,15 @@ await wcClient.rejectSession(
 );
 
 // For auth, you can do the same thing: Present the UI to them, and have them approve the signature.
-// Then respond with that signature
-String sig = 'your sig here';
+// Then respond with that signature. In this example I use EthSigUtil, but you can use any library that can perform
+// a personal eth sign.
+String sig = EthSigUtil.signPersonalMessage(
+  message: Uint8List.fromList(message.codeUnits),
+  privateKey: 'PRIVATE_KEY',
+);
 await wcClient.respondAuthRequest(
   id: args.id,
-  iss: 'did:pkh:eip155:1:0x06C6A22feB5f8CcEDA0db0D593e6F26A3611d5fa',
+  iss: 'did:pkh:eip155:1:ETH_ADDRESS',
   signature: CacaoSignature(t: CacaoSignature.EIP191, s: sig),
 );
 // Or rejected
@@ -254,11 +261,16 @@ wcClient.onSessionEvent.subscribe((SessionEvent? session) {
 });
 ```
 
-# To Build
+# Platform Permissions
 
-- Example project and dapp
-- Reduce number of crypto libraries used for encryption, shared key, etc.
-- Additional APIs defined by WalletConnect
+## MacOS
+
+This library requires that you add the following to your `DebugProfile.entitlements` and `Release.entitlements` files so that it can connect to the WebSocket server.
+
+```xml
+<key>com.apple.security.network.client</key>
+<true/>
+```
 
 # To Test
 
