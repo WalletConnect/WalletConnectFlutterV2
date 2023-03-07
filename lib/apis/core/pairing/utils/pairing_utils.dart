@@ -6,8 +6,8 @@ import 'package:walletconnect_flutter_v2/apis/utils/errors.dart';
 
 class PairingUtils {
   static int payloadId() {
-    int date = DateTime.now().millisecondsSinceEpoch;
-    int extra = Random().nextInt(1000) * 1000;
+    int date = DateTime.now().millisecondsSinceEpoch * 1000;
+    int extra = (Random().nextDouble() * 1000).floor();
     return date + extra;
   }
 
