@@ -1094,7 +1094,7 @@ void signingEngineTests({
 
           expect(true, false);
         } on JsonRpcError catch (e) {
-          print(e);
+          // print(e);
           expect(
             e.code,
             JsonRpcError.invalidParams('swag').code,

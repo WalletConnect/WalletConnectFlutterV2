@@ -17,7 +17,7 @@ class PairingUtils {
     int? id,
   }) {
     return {
-      'id': id == null ? payloadId() : id,
+      'id': id ??= payloadId(),
       'jsonrpc': '2.0',
       'method': method,
       'params': params,
