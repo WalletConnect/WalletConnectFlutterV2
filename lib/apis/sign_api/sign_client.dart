@@ -275,7 +275,7 @@ class SignClient implements ISignClient {
   void registerEventHandler({
     required String chainId,
     required String event,
-    void Function(String, dynamic)? handler,
+    dynamic Function(String, dynamic)? handler,
   }) {
     try {
       return engine.registerEventHandler(

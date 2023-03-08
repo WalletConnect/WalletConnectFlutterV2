@@ -242,7 +242,7 @@ class Web3Wallet implements IWeb3Wallet {
   void registerRequestHandler({
     required String chainId,
     required String method,
-    void Function(String, dynamic)? handler,
+    dynamic Function(String, dynamic)? handler,
   }) {
     try {
       return signEngine.registerRequestHandler(
