@@ -558,15 +558,12 @@ class SignEngine implements ISignEngine {
         data: reason.data,
       ).toJson();
 
-      int id = PairingUtils.payloadId();
-
       // Send the request to delete the session, we don't care if it fails
       try {
         core.pairing.sendRequest(
           topic,
           MethodConstants.WC_SESSION_DELETE,
           payload,
-          id: id,
         );
       } catch (_) {}
 
@@ -1082,6 +1079,15 @@ class SignEngine implements ISignEngine {
               topic,
               MethodConstants.WC_SESSION_REQUEST,
               result,
+            );
+          } on WalletConnectError catch (e) {
+            await core.pairing.sendError(
+              payload.id,
+              topic,
+              payload.method,
+              JsonRpcError.fromJson(
+                e.toJson(),
+              ),
             );
           } catch (err) {
             await core.pairing.sendError(

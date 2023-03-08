@@ -1,3 +1,8 @@
+## 1.1.4
+
+- Throw a WalletConnectError in a sign request function handler to return a JsonRpcError to the dApp
+- Fixed a bug where function handlers for Web3Wallet and SignClient required returning void
+
 ## 1.1.3
 
 - Fixed a bug with sendError not causing an error to be thrown on the client side
