@@ -149,12 +149,13 @@ final kadenaSignV1RequestHandler = (String topic, dynamic parameters) async {
   );
 
   // 3. Respond to the dApp based on user response
-  // Returned value must by a primitive, or a JSON serializable object: Map, List, etc.
   if (userApproved) {
+    // Returned value must by a primitive, or a JSON serializable object: Map, List, etc.
     return 'Signed!';
   }
   else {
-    return 'User Rejected!';
+    // Throw an error if the user rejects the request
+    throw Errors.getSdkError(Errors.USER_REJECTED_SIGN);
   }
 }
 wcClient.registerRequestHandler(

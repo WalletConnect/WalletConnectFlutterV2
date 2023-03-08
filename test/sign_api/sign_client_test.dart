@@ -998,12 +998,16 @@ void signingEngineTests({
           expect(false, true);
         }
 
-        // Valid handler
+        // Valid handler that throws an error
         requestHandler = (
           String topic,
           dynamic request,
         ) async {
-          throw WalletConnectError(code: -1, message: request.toString());
+          if (request is String) {
+            throw Errors.getSdkError(Errors.USER_REJECTED_SIGN);
+          } else {
+            return request['try'];
+          }
         };
         clientB.registerRequestHandler(
           chainId: TEST_ETHEREUM_CHAIN,
@@ -1023,9 +1027,28 @@ void signingEngineTests({
         } on JsonRpcError catch (e) {
           expect(
             e.code,
+            Errors.getSdkError(Errors.USER_REJECTED_SIGN).code,
+          );
+          expect(
+            e.message,
+            Errors.getSdkError(Errors.USER_REJECTED_SIGN).message,
+          );
+        }
+
+        try {
+          await clientA.request(
+            topic: connectionInfo.session.topic,
+            chainId: TEST_ETHEREUM_CHAIN,
+            request: SessionRequestParams(
+              method: TEST_METHOD_1,
+              params: {'test': 'swag'},
+            ),
+          );
+        } on JsonRpcError catch (e) {
+          expect(
+            e.code,
             JsonRpcError.invalidParams('swag').code,
           );
-          expect(e.message.contains(TEST_MESSAGE_1), true);
         }
 
         await Future.delayed(Duration(milliseconds: 500)); // TODO: remove
@@ -1607,14 +1630,10 @@ void signingEngineTests({
           completerSessionB.complete();
         });
 
-        WalletConnectError reason = Errors.getSdkError(
-          Errors.USER_DISCONNECTED,
-        );
         await clientA.disconnectSession(
           topic: pairingATopic,
-          reason: WalletConnectError(
-            code: reason.code,
-            message: reason.message,
+          reason: Errors.getSdkError(
+            Errors.USER_DISCONNECTED,
           ),
         );
 
@@ -1647,13 +1666,9 @@ void signingEngineTests({
         pairingATopic = connectionInfo.pairing.topic;
         sessionATopic = connectionInfo.session.topic;
 
-        reason = Errors.getSdkError(Errors.USER_DISCONNECTED);
         await clientB.disconnectSession(
           topic: pairingATopic,
-          reason: WalletConnectError(
-            code: reason.code,
-            message: reason.message,
-          ),
+          reason: Errors.getSdkError(Errors.USER_DISCONNECTED),
         );
 
         // await Future.delayed(Duration(milliseconds: 150));
@@ -1703,14 +1718,9 @@ void signingEngineTests({
           completerB.complete();
         });
 
-        WalletConnectError reason =
-            Errors.getSdkError(Errors.USER_DISCONNECTED);
         await clientA.disconnectSession(
           topic: sessionATopic,
-          reason: WalletConnectError(
-            code: reason.code,
-            message: reason.message,
-          ),
+          reason: Errors.getSdkError(Errors.USER_DISCONNECTED),
         );
 
         // await Future.delayed(Duration(milliseconds: 250));
@@ -1732,13 +1742,9 @@ void signingEngineTests({
         );
         sessionATopic = connectionInfo.session.topic;
 
-        reason = Errors.getSdkError(Errors.USER_DISCONNECTED);
         await clientB.disconnectSession(
           topic: sessionATopic,
-          reason: WalletConnectError(
-            code: reason.code,
-            message: reason.message,
-          ),
+          reason: Errors.getSdkError(Errors.USER_DISCONNECTED),
         );
 
         await completerA.future;
