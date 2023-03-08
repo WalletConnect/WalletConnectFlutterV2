@@ -1,4 +1,8 @@
+import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
+import 'package:walletconnect_flutter_v2_wallet/models/page_data.dart';
+import 'package:walletconnect_flutter_v2_wallet/utils/constants.dart';
 import 'package:flutter/material.dart';
+import 'package:walletconnect_flutter_v2_wallet/utils/string_constants.dart';
 
 void main() {
   runApp(const MyApp());
@@ -11,96 +15,158 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: StringConstants.appTitle,
       theme: ThemeData(
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const MyHomePage(),
     );
   }
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
+  const MyHomePage({super.key});
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+  bool _initializing = true;
 
-  void _incrementCounter() {
+  Web3App? _web3App;
+
+  List<PageData> _pageDatas = [];
+  int _selectedIndex = 0;
+
+  // SessionData? _selectedSession;
+  // List<SessionData> _allSessions = [];
+  // List<PairingInfo> _allPairings = [];
+
+  @override
+  void initState() {
+    initialize();
+    super.initState();
+  }
+
+  Future<void> initialize() async {
+    // try {
+    _web3App = await Web3App.createInstance(
+      projectId: Constants.projectId,
+      metadata: const PairingMetadata(
+        name: 'Example Dapp',
+        description: 'Example Dapp',
+        url: 'https://walletconnect.com/',
+        icons: ['https://walletconnect.com/walletconnect-logo.png'],
+      ),
+    );
+
     setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
+      // _pageDatas = [
+      //   PageData(
+      //     page: ConnectPage(web3App: _web3App!),
+      //     title: StringConstants.connectPageTitle,
+      //     icon: Icons.home,
+      //   ),
+      //   PageData(
+      //     page: PairingsPage(web3App: _web3App!),
+      //     title: StringConstants.pairingsPageTitle,
+      //     icon: Icons.connect_without_contact_sharp,
+      //   ),
+      //   PageData(
+      //     page: SessionsPage(web3App: _web3App!),
+      //     title: StringConstants.sessionsPageTitle,
+      //     icon: Icons.confirmation_number_outlined,
+      //   ),
+      //   PageData(
+      //     page: AuthPage(web3App: _web3App!),
+      //     title: StringConstants.authPageTitle,
+      //     icon: Icons.lock,
+      //   ),
+      // ];
+
+      _initializing = false;
     });
+    // } on WalletConnectError catch (e) {
+    //   print(e.message);
+    // }
   }
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
+    if (_initializing) {
+      return const Center(
+        child: CircularProgressIndicator(
+          color: StyleConstants.primaryColor,
+        ),
+      );
+    }
+
+    final List<Widget> navRail = [];
+    if (MediaQuery.of(context).size.width >= Constants.smallScreen) {
+      navRail.add(_buildNavigationRail());
+    }
+    navRail.add(
+      Expanded(
+        child: _pageDatas[_selectedIndex].page,
+      ),
+    );
+
     return Scaffold(
       appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
+        title: Text(_pageDatas[_selectedIndex].title),
       ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
-        child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug painting" (press "p" in the console, choose the
-          // "Toggle Debug Paint" action from the Flutter Inspector in Android
-          // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-          // to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headline4,
-            ),
-          ],
-        ),
+      bottomNavigationBar:
+          MediaQuery.of(context).size.width < Constants.smallScreen
+              ? _buildBottomNavBar()
+              : null,
+      body: Row(
+        mainAxisSize: MainAxisSize.max,
+        children: navRail,
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+    );
+  }
+
+  Widget _buildBottomNavBar() {
+    return BottomNavigationBar(
+      currentIndex: _selectedIndex,
+      unselectedItemColor: Colors.grey,
+      selectedItemColor: Colors.indigoAccent,
+      // called when one tab is selected
+      onTap: (int index) {
+        setState(() {
+          _selectedIndex = index;
+        });
+      },
+      // bottom tab items
+      items: _pageDatas
+          .map(
+            (e) => BottomNavigationBarItem(
+              icon: Icon(e.icon),
+              label: e.title,
+            ),
+          )
+          .toList(),
+    );
+  }
+
+  Widget _buildNavigationRail() {
+    return NavigationRail(
+      selectedIndex: _selectedIndex,
+      onDestinationSelected: (int index) {
+        setState(() {
+          _selectedIndex = index;
+        });
+      },
+      labelType: NavigationRailLabelType.selected,
+      destinations: _pageDatas
+          .map(
+            (e) => NavigationRailDestination(
+              icon: Icon(e.icon),
+              label: Text(e.title),
+            ),
+          )
+          .toList(),
     );
   }
 }
