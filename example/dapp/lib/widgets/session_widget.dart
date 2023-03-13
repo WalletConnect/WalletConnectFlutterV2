@@ -6,6 +6,7 @@ import 'package:walletconnect_flutter_v2_dapp/models/eth/ethereum_transaction.da
 import 'package:walletconnect_flutter_v2_dapp/utils/constants.dart';
 import 'package:walletconnect_flutter_v2_dapp/utils/crypto/eip155.dart';
 import 'package:walletconnect_flutter_v2_dapp/utils/crypto/helpers.dart';
+import 'package:walletconnect_flutter_v2_dapp/utils/crypto/kadena.dart';
 import 'package:walletconnect_flutter_v2_dapp/utils/string_constants.dart';
 import 'package:walletconnect_flutter_v2_dapp/utils/test_data.dart';
 import 'package:walletconnect_flutter_v2_dapp/widgets/method_dialog.dart';
@@ -186,10 +187,11 @@ class SessionWidgetState extends State<SessionWidget> {
           ),
           child: ElevatedButton(
             onPressed: () async {
-              Future<dynamic> future = _callEthMethod(
-                method: method.toEip155Method()!,
-                chainId: chainMetadata.chainId,
-                address: address.toLowerCase(),
+              Future<dynamic> future = callChainMethod(
+                chainMetadata.type,
+                method,
+                chainMetadata,
+                address,
               );
               // print('got here');
               // print(await future);
@@ -262,58 +264,31 @@ class SessionWidgetState extends State<SessionWidget> {
     return values;
   }
 
-  Future<dynamic> _callEthMethod({
-    required EIP155Methods method,
-    required String chainId,
-    required String address,
-  }) {
-    switch (method) {
-      case EIP155Methods.personalSign:
-        return EIP155.personalSign(
+  Future<dynamic> callChainMethod(
+    ChainType type,
+    String method,
+    ChainMetadata chainMetadata,
+    String address,
+  ) {
+    switch (type) {
+      case ChainType.eip155:
+        return EIP155.callMethod(
           web3App: widget.web3App,
           topic: widget.session.topic,
-          chainId: chainId,
-          address: address,
-          data: testSignData,
+          method: method.toEip155Method()!,
+          chainId: chainMetadata.chainId,
+          address: address.toLowerCase(),
         );
-      case EIP155Methods.ethSign:
-        return EIP155.ethSign(
+      case ChainType.kadena:
+        return Kadena.callMethod(
           web3App: widget.web3App,
           topic: widget.session.topic,
-          chainId: chainId,
-          address: address,
-          data: testSignData,
+          method: method.toKadenaMethod()!,
+          chainId: chainMetadata.chainId,
+          address: address.toLowerCase(),
         );
-      case EIP155Methods.ethSignTypedData:
-        return EIP155.ethSignTypedData(
-          web3App: widget.web3App,
-          topic: widget.session.topic,
-          chainId: chainId,
-          address: address,
-          data: testSignTypedData(address),
-        );
-      case EIP155Methods.ethSignTransaction:
-        return EIP155.ethSignTransaction(
-          web3App: widget.web3App,
-          topic: widget.session.topic,
-          chainId: chainId,
-          transaction: EthereumTransaction(
-            from: address,
-            to: address,
-            value: '0x01',
-          ),
-        );
-      case EIP155Methods.ethSendTransaction:
-        return EIP155.ethSendTransaction(
-          web3App: widget.web3App,
-          topic: widget.session.topic,
-          chainId: chainId,
-          transaction: EthereumTransaction(
-            from: address,
-            to: address,
-            value: '0x01',
-          ),
-        );
+      default:
+        return Future<dynamic>.value();
     }
   }
 }

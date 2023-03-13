@@ -1,5 +1,6 @@
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 import 'package:walletconnect_flutter_v2_dapp/models/eth/ethereum_transaction.dart';
+import 'package:walletconnect_flutter_v2_dapp/utils/test_data.dart';
 
 enum EIP155Methods {
   personalSign,
@@ -53,6 +54,63 @@ class EIP155 {
     EIP155Events.chainChanged: 'eth_chainsChanged',
     EIP155Events.accountsChanged: 'eth_accountsChanged',
   };
+
+  static Future<dynamic> callMethod({
+    required Web3App web3App,
+    required String topic,
+    required EIP155Methods method,
+    required String chainId,
+    required String address,
+  }) {
+    switch (method) {
+      case EIP155Methods.personalSign:
+        return personalSign(
+          web3App: web3App,
+          topic: topic,
+          chainId: chainId,
+          address: address,
+          data: testSignData,
+        );
+      case EIP155Methods.ethSign:
+        return ethSign(
+          web3App: web3App,
+          topic: topic,
+          chainId: chainId,
+          address: address,
+          data: testSignData,
+        );
+      case EIP155Methods.ethSignTypedData:
+        return ethSignTypedData(
+          web3App: web3App,
+          topic: topic,
+          chainId: chainId,
+          address: address,
+          data: testSignTypedData(address),
+        );
+      case EIP155Methods.ethSignTransaction:
+        return ethSignTransaction(
+          web3App: web3App,
+          topic: topic,
+          chainId: chainId,
+          transaction: EthereumTransaction(
+            from: address,
+            to: address,
+            value: '0x01',
+          ),
+        );
+      case EIP155Methods.ethSendTransaction:
+        return ethSendTransaction(
+          web3App: web3App,
+          topic: topic,
+          chainId: chainId,
+          transaction: EthereumTransaction(
+            from: address,
+            to: address,
+            value: '0x01',
+          ),
+        );
+    }
+  }
 
   static Future<dynamic> personalSign({
     required Web3App web3App,
