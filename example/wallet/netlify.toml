@@ -1,0 +1,11 @@
+[[plugins]]
+
+  package = "netlify-plugin-flutter"
+
+   [plugins.inputs]
+    channel = "stable"
+
+[build]
+
+command = "flutter build web --release"
+publish = "build/web"

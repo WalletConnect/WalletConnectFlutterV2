@@ -10,10 +10,11 @@ class Constants {
 }
 
 class StyleConstants {
+  static const Color backgroundColor = Colors.black;
   static const Color primaryColor = Color(0xFF3396FF);
 
   static const Color darkGray = Color(0xFF141414);
-  static const Color lightGray = Color(0xFF141414);
+  static const Color lightGray = Color.fromARGB(255, 196, 196, 196);
 
   static const Color layerColor0 = Color(0xFF000000);
   static const Color layerColor1 = Color(0x99141415);
@@ -62,14 +63,18 @@ class StyleConstants {
     fontWeight: FontWeight.w600,
   );
   static const TextStyle buttonText = TextStyle(
-    color: Colors.black,
+    color: Colors.white,
     fontSize: magic14,
     fontWeight: FontWeight.w600,
   );
   static const TextStyle bodyText = TextStyle(
-    color: Colors.black,
+    color: Colors.white,
     fontSize: magic14,
     fontWeight: FontWeight.w400,
+  );
+  static const TextStyle bodyLightGray = TextStyle(
+    color: lightGray,
+    fontSize: magic14,
   );
   static const TextStyle layerTextStyle3 = TextStyle(
     color: layerTextColor3,

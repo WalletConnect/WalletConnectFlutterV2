@@ -11,6 +11,20 @@ class StringConstants {
   static const String wouldLikeToConnect = 'would like to connect';
   static const String message = 'Message';
 
+  // Apps Pages
+  static const String apps = 'Apps';
+  static const String noApps =
+      'Apps you connect with will appear here.\nTo connect, scan a QR code or paste the code that\'s displayed on the app.';
+
+  // QR Code Scanning
+  static const String scanPairing = 'Scan the code';
+
+  // Uri Input Popup
+  static const String enterUri = 'Enter a WalletConnect URI';
+  static const String enterUriMessage =
+      'To get the URI press the copy to clipboard button in the wallet connection interface';
+  static const String textFieldPlaceholder = 'wc://a13aef...';
+
   // Session Proposal
   static const String chains = 'Chains';
   static const String methods = 'Methods';

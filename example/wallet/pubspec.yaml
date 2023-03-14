@@ -42,6 +42,7 @@ dependencies:
     path: ../..
   fl_toast: ^3.1.0
   kadena_dart_sdk: ^1.0.0
+  mobile_scanner: ^3.0.0
 
 dev_dependencies:
   flutter_test:

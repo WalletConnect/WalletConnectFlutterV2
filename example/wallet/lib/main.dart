@@ -1,5 +1,6 @@
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 import 'package:walletconnect_flutter_v2_wallet/models/page_data.dart';
+import 'package:walletconnect_flutter_v2_wallet/pages/apps_page.dart';
 import 'package:walletconnect_flutter_v2_wallet/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:walletconnect_flutter_v2_wallet/utils/string_constants.dart';
@@ -17,6 +18,17 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: StringConstants.appTitle,
       theme: ThemeData(
+        scaffoldBackgroundColor: StyleConstants.backgroundColor,
+        bottomAppBarColor: StyleConstants.backgroundColor,
+        navigationRailTheme: const NavigationRailThemeData(
+          backgroundColor: StyleConstants.backgroundColor,
+          unselectedLabelTextStyle: StyleConstants.bodyLightGray,
+          unselectedIconTheme: IconThemeData(
+            color: StyleConstants.lightGray,
+          ),
+        ),
+        canvasColor: StyleConstants.backgroundColor,
+        backgroundColor: StyleConstants.backgroundColor,
         primarySwatch: Colors.blue,
       ),
       home: const MyHomePage(),
@@ -34,7 +46,7 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   bool _initializing = true;
 
-  Web3App? _web3App;
+  Web3Wallet? _web3Wallet;
 
   List<PageData> _pageDatas = [];
   int _selectedIndex = 0;
@@ -51,39 +63,44 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> initialize() async {
     // try {
-    _web3App = await Web3App.createInstance(
+    _web3Wallet = await Web3Wallet.createInstance(
       projectId: Constants.projectId,
       metadata: const PairingMetadata(
-        name: 'Example Dapp',
-        description: 'Example Dapp',
+        name: 'Example Wallet',
+        description: 'Example Wallet',
         url: 'https://walletconnect.com/',
         icons: ['https://walletconnect.com/walletconnect-logo.png'],
       ),
     );
 
     setState(() {
-      // _pageDatas = [
-      //   PageData(
-      //     page: ConnectPage(web3App: _web3App!),
-      //     title: StringConstants.connectPageTitle,
-      //     icon: Icons.home,
-      //   ),
-      //   PageData(
-      //     page: PairingsPage(web3App: _web3App!),
-      //     title: StringConstants.pairingsPageTitle,
-      //     icon: Icons.connect_without_contact_sharp,
-      //   ),
-      //   PageData(
-      //     page: SessionsPage(web3App: _web3App!),
-      //     title: StringConstants.sessionsPageTitle,
-      //     icon: Icons.confirmation_number_outlined,
-      //   ),
-      //   PageData(
-      //     page: AuthPage(web3App: _web3App!),
-      //     title: StringConstants.authPageTitle,
-      //     icon: Icons.lock,
-      //   ),
-      // ];
+      _pageDatas = [
+        PageData(
+          page: AppsPage(web3Wallet: _web3Wallet!),
+          title: StringConstants.connectPageTitle,
+          icon: Icons.home,
+        ),
+        PageData(
+          page: const Center(
+            child: Text(
+              'Notifications (Not Implemented)',
+              style: StyleConstants.bodyText,
+            ),
+          ),
+          title: StringConstants.pairingsPageTitle,
+          icon: Icons.notifications,
+        ),
+        // PageData(
+        //   page: SessionsPage(web3App: _web3App!),
+        //   title: StringConstants.sessionsPageTitle,
+        //   icon: Icons.confirmation_number_outlined,
+        // ),
+        // PageData(
+        //   page: AuthPage(web3App: _web3App!),
+        //   title: StringConstants.authPageTitle,
+        //   icon: Icons.lock,
+        // ),
+      ];
 
       _initializing = false;
     });
@@ -152,6 +169,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Widget _buildNavigationRail() {
     return NavigationRail(
+      // backgroundColor: StyleConstants.backgroundColor,
       selectedIndex: _selectedIndex,
       onDestinationSelected: (int index) {
         setState(() {
