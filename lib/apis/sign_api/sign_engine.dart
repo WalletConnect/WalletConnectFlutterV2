@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:event/event.dart';
+import 'package:json_rpc_2/error_code.dart';
 import 'package:walletconnect_flutter_v2/apis/core/store/i_generic_store.dart';
 import 'package:walletconnect_flutter_v2/apis/core/pairing/i_pairing_store.dart';
 import 'package:walletconnect_flutter_v2/apis/core/pairing/utils/pairing_utils.dart';
@@ -22,6 +23,7 @@ import 'package:walletconnect_flutter_v2/apis/sign_api/utils/sign_api_validator_
 import 'package:walletconnect_flutter_v2/apis/utils/constants.dart';
 import 'package:walletconnect_flutter_v2/apis/utils/errors.dart';
 import 'package:walletconnect_flutter_v2/apis/utils/method_constants.dart';
+import 'package:walletconnect_flutter_v2/apis/utils/namespace_utils.dart';
 import 'package:walletconnect_flutter_v2/apis/utils/walletconnect_utils.dart';
 
 class SignEngine implements ISignEngine {
@@ -39,6 +41,9 @@ class SignEngine implements ISignEngine {
   @override
   final Event<SessionProposalEvent> onSessionProposal =
       Event<SessionProposalEvent>();
+  @override
+  final Event<SessionProposalErrorEvent> onSessionProposalError =
+      Event<SessionProposalErrorEvent>();
   @override
   final Event<SessionProposalEvent> onProposalExpire =
       Event<SessionProposalEvent>();
@@ -434,7 +439,7 @@ class SignEngine implements ISignEngine {
     dynamic Function(String, dynamic)? handler,
   }) {
     _checkInitialized();
-    _methodHandlers[getRegisterKey(chainId, method)] = handler;
+    _methodHandlers[_getRegisterKey(chainId, method)] = handler;
   }
 
   @override
@@ -493,13 +498,14 @@ class SignEngine implements ISignEngine {
   /// Maps a request using chainId:event to its handler
   Map<String, dynamic Function(String, dynamic)?> _eventHandlers = {};
 
+  @override
   void registerEventHandler({
     required String chainId,
     required String event,
     dynamic Function(String, dynamic)? handler,
   }) {
     _checkInitialized();
-    _eventHandlers[getRegisterKey(chainId, event)] = handler;
+    _eventHandlers[_getRegisterKey(chainId, event)] = handler;
   }
 
   @override
@@ -644,6 +650,37 @@ class SignEngine implements ISignEngine {
   @override
   IPairingStore get pairings => core.pairing.getStore();
 
+  Map<String, Set<String>> _eventEmitters = {};
+  Map<String, Set<String>> _accounts = {};
+
+  @override
+  void registerEventEmitters({
+    required String namespaceOrChainId,
+    required List<String> events,
+  }) {
+    if (_eventEmitters[namespaceOrChainId] == null) {
+      _eventEmitters[namespaceOrChainId] = {};
+    }
+    _eventEmitters[namespaceOrChainId]!.addAll(events);
+  }
+
+  @override
+  void registerAccounts({
+    required String namespaceOrChainId,
+    required List<String> accounts,
+  }) {
+    // Validate the accounts
+    SignApiValidatorUtils.isValidAccounts(
+      accounts: accounts,
+      context: 'registerAccounts',
+    );
+
+    if (_accounts[namespaceOrChainId] == null) {
+      _accounts[namespaceOrChainId] = {};
+    }
+    _accounts[namespaceOrChainId]!.addAll(accounts);
+  }
+
   /// ---- PRIVATE HELPERS ---- ////
   void _checkInitialized() {
     if (!_initialized) {
@@ -651,7 +688,7 @@ class SignEngine implements ISignEngine {
     }
   }
 
-  String getRegisterKey(String namespace, String method) {
+  String _getRegisterKey(String namespace, String method) {
     return '$namespace:$method';
   }
 
@@ -804,6 +841,51 @@ class SignEngine implements ISignEngine {
         pairingTopic: topic,
         relays: proposeRequest.relays,
       );
+
+      // If there are accounts and event emitters, then handle the Namespace generate automatically
+      Map<String, Namespace>? namespaces;
+      if (_accounts.isNotEmpty || _eventEmitters.isNotEmpty) {
+        namespaces = NamespaceUtils.constructNamespaces(
+          availableAccounts: _accounts,
+          availableMethods: _methodHandlers.keys.toList(),
+          availableEvents: _eventEmitters,
+          requiredNamespaces: proposeRequest.requiredNamespaces,
+          optionalNamespaces: proposeRequest.optionalNamespaces,
+        );
+        // print(namespaces);
+        // print(proposeRequest.requiredNamespaces);
+
+        // Check that the namespaces are conforming
+        try {
+          SignApiValidatorUtils.isConformingNamespaces(
+            requiredNamespaces: proposeRequest.requiredNamespaces,
+            namespaces: namespaces,
+            context: 'onSessionProposeRequest',
+          );
+        } on WalletConnectError catch (err) {
+          // If they aren't, send an error
+          await core.pairing.sendError(
+            payload.id,
+            topic,
+            payload.method,
+            JsonRpcError.fromJson(
+              err.toJson(),
+            ),
+          );
+
+          // Broadcast that a session proposal error has occurred
+          onSessionProposalError.broadcast(
+            SessionProposalErrorEvent(
+              payload.id,
+              proposeRequest.requiredNamespaces,
+              namespaces,
+              err,
+            ),
+          );
+          return;
+        }
+      }
+
       final expiry = WalletConnectUtils.calculateExpiry(
         WalletConnectConstants.FIVE_MINUTES,
       );
@@ -816,6 +898,7 @@ class SignEngine implements ISignEngine {
         optionalNamespaces: proposeRequest.optionalNamespaces ?? {},
         sessionProperties: proposeRequest.sessionProperties,
         pairingTopic: topic,
+        generatedNamespaces: namespaces,
       );
 
       await _setProposal(payload.id, proposal);
@@ -828,8 +911,8 @@ class SignEngine implements ISignEngine {
         payload.id,
         topic,
         payload.method,
-        JsonRpcError.invalidParams(
-          err.message,
+        JsonRpcError.fromJson(
+          err.toJson(),
         ),
       );
     }
@@ -1061,7 +1144,7 @@ class SignEngine implements ISignEngine {
         sessionRequest,
       );
 
-      final String methodKey = getRegisterKey(
+      final String methodKey = _getRegisterKey(
         request.chainId,
         request.request.method,
       );
@@ -1154,7 +1237,7 @@ class SignEngine implements ISignEngine {
         ),
       );
 
-      final String eventKey = getRegisterKey(
+      final String eventKey = _getRegisterKey(
         request.chainId,
         request.event.name,
       );

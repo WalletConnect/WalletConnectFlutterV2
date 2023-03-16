@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:walletconnect_flutter_v2_wallet/utils/constants.dart';
-import 'package:walletconnect_flutter_v2_wallet/widgets/wc_connection_view/wc_connection_model.dart';
+import 'package:walletconnect_flutter_v2_wallet/widgets/wc_connection_widget/wc_connection_model.dart';
 
-class WCConnectionInfo extends StatelessWidget {
-  const WCConnectionInfo({
+class WCConnectionWidgetInfo extends StatelessWidget {
+  const WCConnectionWidgetInfo({
     Key? key,
     required this.model,
   }) : super(key: key);

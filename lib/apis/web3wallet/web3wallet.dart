@@ -160,6 +160,9 @@ class Web3Wallet implements IWeb3Wallet {
   Event<SessionProposalEvent> get onSessionProposal =>
       signEngine.onSessionProposal;
   @override
+  Event<SessionProposalErrorEvent> get onSessionProposalError =>
+      signEngine.onSessionProposalError;
+  @override
   Event<SessionProposalEvent> get onProposalExpire =>
       signEngine.onProposalExpire;
   @override
@@ -264,6 +267,36 @@ class Web3Wallet implements IWeb3Wallet {
       return signEngine.respondSessionRequest(
         topic: topic,
         response: response,
+      );
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  void registerEventEmitters({
+    required String namespaceOrChainId,
+    required List<String> events,
+  }) {
+    try {
+      return signEngine.registerEventEmitters(
+        namespaceOrChainId: namespaceOrChainId,
+        events: events,
+      );
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  void registerAccounts({
+    required String namespaceOrChainId,
+    required List<String> accounts,
+  }) {
+    try {
+      return signEngine.registerAccounts(
+        namespaceOrChainId: namespaceOrChainId,
+        accounts: accounts,
       );
     } catch (e) {
       rethrow;

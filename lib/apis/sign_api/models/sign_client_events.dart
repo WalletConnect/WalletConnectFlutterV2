@@ -1,4 +1,5 @@
 import 'package:event/event.dart';
+import 'package:walletconnect_flutter_v2/apis/models/basic_models.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/models/proposal_models.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/models/session_models.dart';
 
@@ -15,6 +16,20 @@ class SessionProposalEvent extends EventArgs {
     SessionProposal proposal,
   )   : id = proposal.id,
         params = proposal.params;
+}
+
+class SessionProposalErrorEvent extends EventArgs {
+  int id;
+  Map<String, RequiredNamespace> requiredNamespaces;
+  Map<String, Namespace> namespaces;
+  WalletConnectError error;
+
+  SessionProposalErrorEvent(
+    this.id,
+    this.requiredNamespaces,
+    this.namespaces,
+    this.error,
+  );
 }
 
 class SessionConnect extends EventArgs {

@@ -30,6 +30,10 @@ class StringConstants {
   static const String methods = 'Methods';
   static const String events = 'Events';
 
+  // Request
+  static const String approve = 'Approve';
+  static const String reject = 'Reject';
+
   // Main Page
   static const String appTitle = 'Wallet Connect v2 Flutter Wallet Demo';
   static const String connectPageTitle = 'Connect';

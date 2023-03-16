@@ -4,23 +4,21 @@ import 'package:walletconnect_flutter_v2_wallet/utils/constants.dart';
 import 'package:walletconnect_flutter_v2_wallet/utils/string_constants.dart';
 import 'package:walletconnect_flutter_v2_wallet/widgets/wc_connection_request/wc_auth_request_model.dart';
 import 'package:walletconnect_flutter_v2_wallet/widgets/wc_connection_request/wc_session_request_model.dart';
-import 'package:walletconnect_flutter_v2_wallet/widgets/wc_connection_view/wc_connection_view.dart';
+import 'package:walletconnect_flutter_v2_wallet/widgets/wc_connection_widget/wc_connection_widget.dart';
 
-import '../wc_connection_view/wc_connection_model.dart';
+import '../wc_connection_widget/wc_connection_model.dart';
 
-class WCConnectionRequest extends StatelessWidget {
-  const WCConnectionRequest({
+class WCConnectionRequestWidget extends StatelessWidget {
+  const WCConnectionRequestWidget({
     Key? key,
     required this.wallet,
     required this.title,
-    required this.accounts,
     this.authRequest,
     this.sessionProposal,
   }) : super(key: key);
 
   final Web3Wallet wallet;
   final String title;
-  final List<String> accounts;
   final WCAuthRequestModel? authRequest;
   final WCSessionRequestModel? sessionProposal;
 
@@ -83,7 +81,7 @@ class WCConnectionRequest extends StatelessWidget {
       ),
     );
 
-    return WCConnectionView(
+    return WCConnectionWidget(
       title: StringConstants.message,
       info: [model],
     );
@@ -92,7 +90,7 @@ class WCConnectionRequest extends StatelessWidget {
   Widget _buildSessionProposal() {
     // Create the connection models using the required and optional namespaces provided by the proposal data
     // The key is the title and the list of values is the data
-    final List<WCConnectionView> views = [];
+    final List<WCConnectionWidget> views = [];
     for (final key in sessionProposal!.request.requiredNamespaces.keys) {
       RequiredNamespace ns = sessionProposal!.request.requiredNamespaces[key]!;
       final List<WCConnectionModel> models = [];
@@ -115,7 +113,7 @@ class WCConnectionRequest extends StatelessWidget {
       ));
 
       views.add(
-        WCConnectionView(
+        WCConnectionWidget(
           title: key,
           info: models,
         ),
@@ -128,6 +126,21 @@ class WCConnectionRequest extends StatelessWidget {
         height: StyleConstants.linear8,
       ),
       itemCount: views.length,
+    );
+  }
+
+  Widget _buildButton(
+    String text,
+    VoidCallback onPressed, {
+    bool isPrimary = false,
+  }) {
+    return ElevatedButton(
+      onPressed: onPressed,
+      // style: ButtonStyle(),
+      child: Text(
+        text,
+        style: StyleConstants.buttonText,
+      ),
     );
   }
 }

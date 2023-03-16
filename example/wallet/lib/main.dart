@@ -1,3 +1,4 @@
+import 'package:get_it_mixin/get_it_mixin.dart';
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 import 'package:walletconnect_flutter_v2_wallet/models/page_data.dart';
 import 'package:walletconnect_flutter_v2_wallet/pages/apps_page.dart';
@@ -31,19 +32,19 @@ class MyApp extends StatelessWidget {
         backgroundColor: StyleConstants.backgroundColor,
         primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(),
+      home: MyHomePage(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key});
+class MyHomePage extends StatefulWidget with GetItStatefulWidgetMixin {
+  MyHomePage({super.key});
 
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
+class _MyHomePageState extends State<MyHomePage> with GetItStateMixin {
   bool _initializing = true;
 
   Web3Wallet? _web3Wallet;
@@ -58,7 +59,17 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     initialize();
+
+    // _web3Wallet!.onSessionConnect.subscribe(_onSessionConnect);
+
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    // _web3Wallet!.onSessionConnect.unsubscribe(_onSessionConnect);
+
+    super.dispose();
   }
 
   Future<void> initialize() async {

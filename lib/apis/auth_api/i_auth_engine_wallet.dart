@@ -10,9 +10,6 @@ abstract class IAuthEngineWallet extends IAuthEngineCommon {
 
   abstract final IGenericStore<PendingAuthRequest> authRequests;
 
-  // initializes the client with persisted storage and a network connection
-  Future<void> init();
-
   /// respond wallet authentication
   Future<void> respondAuthRequest({
     required int id,

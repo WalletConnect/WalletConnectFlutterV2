@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:walletconnect_flutter_v2_wallet/utils/constants.dart';
-import 'package:walletconnect_flutter_v2_wallet/widgets/wc_connection_view/wc_connection_info.dart';
-import 'package:walletconnect_flutter_v2_wallet/widgets/wc_connection_view/wc_connection_model.dart';
+import 'package:walletconnect_flutter_v2_wallet/widgets/wc_connection_widget/wc_connection_widget_info.dart';
+import 'package:walletconnect_flutter_v2_wallet/widgets/wc_connection_widget/wc_connection_model.dart';
 
-class WCConnectionView extends StatelessWidget {
-  const WCConnectionView({
+class WCConnectionWidget extends StatelessWidget {
+  const WCConnectionWidget({
     super.key,
     required this.title,
     required this.info,
@@ -28,7 +28,7 @@ class WCConnectionView extends StatelessWidget {
           _buildTitle(title),
           const SizedBox(height: 8),
           ...info.map(
-            (e) => WCConnectionInfo(
+            (e) => WCConnectionWidgetInfo(
               model: e,
             ),
           ),

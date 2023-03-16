@@ -4,7 +4,6 @@ import 'package:walletconnect_flutter_v2/apis/core/relay_client/relay_client_mod
 import 'package:walletconnect_flutter_v2/apis/sign_api/i_sign_engine_common.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/models/json_rpc_models.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/models/proposal_models.dart';
-import 'package:walletconnect_flutter_v2/apis/sign_api/models/session_models.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/models/sign_client_events.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/models/sign_client_models.dart';
 
@@ -34,6 +33,5 @@ abstract class ISignEngineApp extends ISignEngineCommon {
   Future<void> ping({
     required String topic,
   });
-  Map<String, SessionData> getActiveSessions();
   abstract final IPairingStore pairings;
 }

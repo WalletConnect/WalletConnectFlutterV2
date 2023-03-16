@@ -32,5 +32,6 @@ abstract class ISignEngineCommon {
     required String pairingTopic,
   });
   Map<String, ProposalData> getPendingSessionProposals();
+
   abstract final IPairingStore pairings;
 }
