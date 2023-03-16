@@ -13,13 +13,15 @@ import '../shared/shared_test_values.dart';
 import 'utils/engine_constants.dart';
 import 'utils/sign_client_constants.dart';
 import 'sign_client_helpers.dart';
+import 'utils/sign_client_test_wrapper.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   final List<Future<ISignEngineApp> Function(PairingMetadata)> signAppCreators =
       [
-    (PairingMetadata metadata) async => await SignClient.createInstance(
+    (PairingMetadata metadata) async =>
+        await SignClientTestWrapper.createInstance(
           projectId: TEST_PROJECT_ID,
           relayUrl: TEST_RELAY_URL,
           metadata: metadata,
@@ -73,7 +75,8 @@ void main() {
 
   final List<Future<ISignEngineWallet> Function(PairingMetadata)>
       signWalletCreators = [
-    (PairingMetadata metadata) async => await SignClient.createInstance(
+    (PairingMetadata metadata) async =>
+        await SignClientTestWrapper.createInstance(
           projectId: TEST_PROJECT_ID,
           relayUrl: TEST_RELAY_URL,
           metadata: metadata,
@@ -553,7 +556,7 @@ void signingEngineTests({
             isA<WalletConnectError>().having(
               (e) => e.message,
               'message',
-              'Non conforming namespaces. approve() namespaces keys don\'t satisfy requiredNamespaces',
+              'Unsupported namespace key. approve() namespaces keys don\'t satisfy requiredNamespaces',
             ),
           ),
         );
@@ -670,6 +673,17 @@ void signingEngineTests({
           clientB,
           requiredNamespaces: {
             EVM_NAMESPACE: TEST_ETH_ARB_REQUIRED_NAMESPACE,
+          },
+          accounts: {
+            EVM_NAMESPACE: TEST_ACCOUNTS,
+          },
+          methods: {
+            TEST_ETHEREUM_CHAIN: TEST_METHODS_1,
+            TEST_ARBITRUM_CHAIN: TEST_METHODS_1,
+          },
+          events: {
+            EVM_NAMESPACE: [TEST_EVENT_1],
+            TEST_AVALANCHE_CHAIN: [TEST_EVENT_2],
           },
         );
 
@@ -793,7 +807,7 @@ void signingEngineTests({
             isA<WalletConnectError>().having(
               (e) => e.message,
               'message',
-              'Non conforming namespaces. update() namespaces accounts don\'t satisfy requiredNamespaces chains for eip155',
+              'Unsupported chains. update() namespaces chains don\'t satisfy requiredNamespaces chains for eip155',
             ),
           ),
         );
@@ -950,19 +964,17 @@ void signingEngineTests({
             topic: connectionInfo.session.topic,
             chainId: TEST_ETHEREUM_CHAIN,
             request: SessionRequestParams(
-              method: TEST_METHOD_1,
+              method: 'nonexistant',
               params: TEST_MESSAGE_1,
             ),
           );
-        } on JsonRpcError catch (e) {
+        } on WalletConnectError catch (e) {
           expect(
             e.toString(),
-            JsonRpcError.methodNotFound(
-              'No handler found for chainId:method -> $TEST_ETHEREUM_CHAIN:$TEST_METHOD_1',
-            ).toString(),
+            'WalletConnectError(code: 5101, message: Unsupported methods. The method nonexistant is not supported, data: null)',
           );
         }
-        expect(clientB.getPendingSessionRequests().length, 1);
+        expect(clientB.getPendingSessionRequests().length, 0);
 
         // Valid handler
         Future<dynamic> Function(String, dynamic) requestHandler = (
@@ -972,7 +984,7 @@ void signingEngineTests({
           expect(topic, sessionTopic);
           expect(request, TEST_MESSAGE_1);
 
-          expect(clientB.getPendingSessionRequests().length, 2);
+          expect(clientB.getPendingSessionRequests().length, 1);
 
           return request;
         };
@@ -1052,7 +1064,7 @@ void signingEngineTests({
         }
 
         await Future.delayed(Duration(milliseconds: 500)); // TODO: remove
-        expect(clientB.getPendingSessionRequests().length, 1);
+        expect(clientB.getPendingSessionRequests().length, 0);
 
         /// Event driven, null handler ///
         clientB.registerRequestHandler(
@@ -1072,7 +1084,7 @@ void signingEngineTests({
 
           if (request.method == TEST_METHOD_1) {
             expect(clientB.pendingRequests.has(request.id.toString()), true);
-            expect(clientB.getPendingSessionRequests().length, 2);
+            expect(clientB.getPendingSessionRequests().length, 1);
 
             await clientB.respondSessionRequest(
               topic: request.topic,
@@ -1865,6 +1877,24 @@ void signingEngineTests({
       test('works', () async {
         expect(clientA.pairings, clientA.core.pairing.getStore());
         expect(clientB.pairings, clientB.core.pairing.getStore());
+      });
+    });
+
+    group('registerAccounts', () {
+      test('fails properly', () {
+        expect(
+          () => clientB.registerAccounts(
+            namespaceOrChainId: TEST_ETHEREUM_CHAIN,
+            accounts: [TEST_ACCOUNT_INVALID_1],
+          ),
+          throwsA(
+            isA<WalletConnectError>().having(
+              (e) => e.message,
+              'message',
+              'Unsupported accounts. registerAccounts, account swag should conform to "namespace:chainId:address" format',
+            ),
+          ),
+        );
       });
     });
   });

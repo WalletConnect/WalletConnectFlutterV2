@@ -1,3 +1,8 @@
+## 1.2.0
+
+- AuthClient and SignClient changed to match the WalletConnect Documentation Specifications
+- Added `registerAccounts` and `registerEventEmitters` to the SignClient, if there are accounts or events registered, they will be used to automatically create a Namespaces object and validate the session proposal.
+
 ## 1.1.4
 
 - Throw a WalletConnectError in a sign request function handler to return a JsonRpcError to the dApp

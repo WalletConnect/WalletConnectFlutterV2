@@ -1,79 +1,57 @@
 import 'package:event/event.dart';
-import 'package:walletconnect_flutter_v2/apis/core/core.dart';
-import 'package:walletconnect_flutter_v2/apis/core/store/generic_store.dart';
 import 'package:walletconnect_flutter_v2/apis/core/store/i_generic_store.dart';
-import 'package:walletconnect_flutter_v2/apis/core/pairing/i_pairing_store.dart';
-import 'package:walletconnect_flutter_v2/apis/core/relay_client/relay_client_models.dart';
-import 'package:walletconnect_flutter_v2/apis/models/basic_models.dart';
-import 'package:walletconnect_flutter_v2/apis/models/json_rpc_response.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/sign_engine.dart';
-import 'package:walletconnect_flutter_v2/apis/sign_api/i_sign_engine.dart';
-import 'package:walletconnect_flutter_v2/apis/core/pairing/utils/pairing_models.dart';
-import 'package:walletconnect_flutter_v2/apis/core/i_core.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/i_sessions.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/i_sign_client.dart';
-import 'package:walletconnect_flutter_v2/apis/sign_api/models/json_rpc_models.dart';
-import 'package:walletconnect_flutter_v2/apis/sign_api/models/proposal_models.dart';
-import 'package:walletconnect_flutter_v2/apis/sign_api/models/sign_client_models.dart';
-import 'package:walletconnect_flutter_v2/apis/sign_api/models/sign_client_events.dart';
-import 'package:walletconnect_flutter_v2/apis/sign_api/models/session_models.dart';
-import 'package:walletconnect_flutter_v2/apis/sign_api/sessions.dart';
-import 'package:walletconnect_flutter_v2/apis/sign_api/utils/sign_constants.dart';
-import 'package:walletconnect_flutter_v2/apis/utils/constants.dart';
+import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 
-class SignClient implements ISignClient {
+class SignClientTestWrapper implements ISignEngine {
   bool _initialized = false;
 
   @override
-  final String protocol = 'wc';
+  Event<SessionDelete> get onSessionDelete => client.onSessionDelete;
   @override
-  final int version = 2;
-
+  Event<SessionConnect> get onSessionConnect => client.onSessionConnect;
   @override
-  Event<SessionDelete> get onSessionDelete => engine.onSessionDelete;
+  Event<SessionEvent> get onSessionEvent => client.onSessionEvent;
   @override
-  Event<SessionConnect> get onSessionConnect => engine.onSessionConnect;
+  Event<SessionExpire> get onSessionExpire => client.onSessionExpire;
   @override
-  Event<SessionEvent> get onSessionEvent => engine.onSessionEvent;
+  Event<SessionExtend> get onSessionExtend => client.onSessionExtend;
   @override
-  Event<SessionExpire> get onSessionExpire => engine.onSessionExpire;
+  Event<SessionPing> get onSessionPing => client.onSessionPing;
   @override
-  Event<SessionExtend> get onSessionExtend => engine.onSessionExtend;
-  @override
-  Event<SessionPing> get onSessionPing => engine.onSessionPing;
-  @override
-  Event<SessionProposalEvent> get onSessionProposal => engine.onSessionProposal;
+  Event<SessionProposalEvent> get onSessionProposal => client.onSessionProposal;
   @override
   Event<SessionProposalErrorEvent> get onSessionProposalError =>
-      engine.onSessionProposalError;
+      client.onSessionProposalError;
   @override
-  Event<SessionProposalEvent> get onProposalExpire => engine.onProposalExpire;
+  Event<SessionProposalEvent> get onProposalExpire => client.onProposalExpire;
   @override
-  Event<SessionRequestEvent> get onSessionRequest => engine.onSessionRequest;
+  Event<SessionRequestEvent> get onSessionRequest => client.onSessionRequest;
   @override
-  Event<SessionUpdate> get onSessionUpdate => engine.onSessionUpdate;
+  Event<SessionUpdate> get onSessionUpdate => client.onSessionUpdate;
 
   @override
-  ICore get core => engine.core;
+  ICore get core => client.core;
   @override
-  PairingMetadata get metadata => engine.metadata;
+  PairingMetadata get metadata => client.metadata;
   @override
-  IGenericStore<ProposalData> get proposals => engine.proposals;
+  IGenericStore<ProposalData> get proposals => client.proposals;
   @override
-  ISessions get sessions => engine.sessions;
+  ISessions get sessions => client.sessions;
   @override
-  IGenericStore<SessionRequest> get pendingRequests => engine.pendingRequests;
+  IGenericStore<SessionRequest> get pendingRequests => client.pendingRequests;
 
-  @override
-  late ISignEngine engine;
+  late ISignClient client;
 
-  static Future<SignClient> createInstance({
+  static Future<SignClientTestWrapper> createInstance({
     required String projectId,
     String relayUrl = WalletConnectConstants.DEFAULT_RELAY_URL,
     required PairingMetadata metadata,
     bool memoryStore = false,
   }) async {
-    final client = SignClient(
+    final client = SignClientTestWrapper(
       core: Core(
         projectId: projectId,
         relayUrl: relayUrl,
@@ -86,36 +64,13 @@ class SignClient implements ISignClient {
     return client;
   }
 
-  SignClient({
+  SignClientTestWrapper({
     required ICore core,
     required PairingMetadata metadata,
   }) {
-    engine = SignEngine(
+    client = SignClient(
       core: core,
       metadata: metadata,
-      proposals: GenericStore(
-        core: core,
-        context: SignConstants.CONTEXT_PROPOSALS,
-        version: SignConstants.VERSION_PROPOSALS,
-        toJson: (ProposalData value) {
-          return value.toJson();
-        },
-        fromJson: (dynamic value) {
-          return ProposalData.fromJson(value);
-        },
-      ),
-      sessions: Sessions(core),
-      pendingRequests: GenericStore(
-        core: core,
-        context: SignConstants.CONTEXT_PENDING_REQUESTS,
-        version: SignConstants.VERSION_PENDING_REQUESTS,
-        toJson: (SessionRequest value) {
-          return value.toJson();
-        },
-        fromJson: (dynamic value) {
-          return SessionRequest.fromJson(value);
-        },
-      ),
     );
   }
 
@@ -126,7 +81,7 @@ class SignClient implements ISignClient {
     }
 
     await core.start();
-    await engine.init();
+    await client.init();
 
     _initialized = true;
   }
@@ -141,7 +96,7 @@ class SignClient implements ISignClient {
     List<List<String>>? methods = SignEngine.DEFAULT_METHODS,
   }) async {
     try {
-      return await engine.connect(
+      return await client.connect(
         requiredNamespaces: requiredNamespaces,
         optionalNamespaces: optionalNamespaces,
         sessionProperties: sessionProperties,
@@ -160,20 +115,20 @@ class SignClient implements ISignClient {
     required Uri uri,
   }) async {
     try {
-      return await engine.pair(uri: uri);
+      return await client.pair(uri: uri);
     } catch (e) {
       rethrow;
     }
   }
 
   @override
-  Future<ApproveResponse> approve({
+  Future<ApproveResponse> approveSession({
     required int id,
     required Map<String, Namespace> namespaces,
     String? relayProtocol,
   }) async {
     try {
-      return await engine.approveSession(
+      return await client.approve(
         id: id,
         namespaces: namespaces,
         relayProtocol: relayProtocol,
@@ -184,12 +139,12 @@ class SignClient implements ISignClient {
   }
 
   @override
-  Future<void> reject({
+  Future<void> rejectSession({
     required int id,
     required WalletConnectError reason,
   }) async {
     try {
-      return await engine.rejectSession(
+      return await client.reject(
         id: id,
         reason: reason,
       );
@@ -199,12 +154,12 @@ class SignClient implements ISignClient {
   }
 
   @override
-  Future<void> update({
+  Future<void> updateSession({
     required String topic,
     required Map<String, Namespace> namespaces,
   }) async {
     try {
-      return await engine.updateSession(
+      return await client.update(
         topic: topic,
         namespaces: namespaces,
       );
@@ -215,11 +170,11 @@ class SignClient implements ISignClient {
   }
 
   @override
-  Future<void> extend({
+  Future<void> extendSession({
     required String topic,
   }) async {
     try {
-      return await engine.extendSession(topic: topic);
+      return await client.extend(topic: topic);
     } catch (e) {
       rethrow;
     }
@@ -232,7 +187,7 @@ class SignClient implements ISignClient {
     void Function(String, dynamic)? handler,
   }) {
     try {
-      return engine.registerRequestHandler(
+      return client.registerRequestHandler(
         chainId: chainId,
         method: method,
         handler: handler,
@@ -249,7 +204,7 @@ class SignClient implements ISignClient {
     required SessionRequestParams request,
   }) async {
     try {
-      return await engine.request(
+      return await client.request(
         topic: topic,
         chainId: chainId,
         request: request,
@@ -260,12 +215,12 @@ class SignClient implements ISignClient {
   }
 
   @override
-  Future<void> respond({
+  Future<void> respondSessionRequest({
     required String topic,
     required JsonRpcResponse response,
   }) {
     try {
-      return engine.respondSessionRequest(
+      return client.respond(
         topic: topic,
         response: response,
       );
@@ -281,7 +236,7 @@ class SignClient implements ISignClient {
     dynamic Function(String, dynamic)? handler,
   }) {
     try {
-      return engine.registerEventHandler(
+      return client.registerEventHandler(
         chainId: chainId,
         event: event,
         handler: handler,
@@ -297,7 +252,7 @@ class SignClient implements ISignClient {
     required List<String> events,
   }) {
     try {
-      return engine.registerEventEmitters(
+      return client.registerEventEmitters(
         namespaceOrChainId: namespaceOrChainId,
         events: events,
       );
@@ -312,7 +267,7 @@ class SignClient implements ISignClient {
     required List<String> accounts,
   }) {
     try {
-      return engine.registerAccounts(
+      return client.registerAccounts(
         namespaceOrChainId: namespaceOrChainId,
         accounts: accounts,
       );
@@ -322,13 +277,13 @@ class SignClient implements ISignClient {
   }
 
   @override
-  Future<void> emit({
+  Future<void> emitSessionEvent({
     required String topic,
     required String chainId,
     required SessionEventParams event,
   }) async {
     try {
-      return await engine.emitSessionEvent(
+      return await client.emit(
         topic: topic,
         chainId: chainId,
         event: event,
@@ -343,19 +298,19 @@ class SignClient implements ISignClient {
     required String topic,
   }) async {
     try {
-      return await engine.ping(topic: topic);
+      return await client.ping(topic: topic);
     } catch (e) {
       rethrow;
     }
   }
 
   @override
-  Future<void> disconnect({
+  Future<void> disconnectSession({
     required String topic,
     required WalletConnectError reason,
   }) async {
     try {
-      return await engine.disconnectSession(
+      return await client.disconnect(
         topic: topic,
         reason: reason,
       );
@@ -369,7 +324,7 @@ class SignClient implements ISignClient {
     required Map<String, RequiredNamespace> requiredNamespaces,
   }) {
     try {
-      return engine.find(requiredNamespaces: requiredNamespaces);
+      return client.find(requiredNamespaces: requiredNamespaces);
     } catch (e) {
       rethrow;
     }
@@ -378,7 +333,7 @@ class SignClient implements ISignClient {
   @override
   Map<String, SessionData> getActiveSessions() {
     try {
-      return engine.getActiveSessions();
+      return client.getActiveSessions();
     } catch (e) {
       rethrow;
     }
@@ -389,7 +344,7 @@ class SignClient implements ISignClient {
     required String pairingTopic,
   }) {
     try {
-      return engine.getSessionsForPairing(
+      return client.getSessionsForPairing(
         pairingTopic: pairingTopic,
       );
     } catch (e) {
@@ -400,7 +355,7 @@ class SignClient implements ISignClient {
   @override
   Map<String, ProposalData> getPendingSessionProposals() {
     try {
-      return engine.getPendingSessionProposals();
+      return client.getPendingSessionProposals();
     } catch (e) {
       rethrow;
     }
@@ -409,7 +364,7 @@ class SignClient implements ISignClient {
   @override
   Map<String, SessionRequest> getPendingSessionRequests() {
     try {
-      return engine.getPendingSessionRequests();
+      return client.getPendingSessionRequests();
     } catch (e) {
       rethrow;
     }

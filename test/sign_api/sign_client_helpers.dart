@@ -5,6 +5,7 @@ import 'package:walletconnect_flutter_v2/apis/sign_api/i_sign_engine_app.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/i_sign_engine_wallet.dart';
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 
+import '../shared/shared_test_values.dart';
 import 'utils/sign_client_constants.dart';
 
 class TestConnectMethodReturn {
@@ -27,6 +28,9 @@ class SignClientHelpers {
     ISignEngineWallet b, {
     Map<String, Namespace>? namespaces,
     Map<String, RequiredNamespace>? requiredNamespaces,
+    Map<String, List<String>>? accounts,
+    Map<String, List<String>>? methods,
+    Map<String, List<String>>? events,
     List<Relay>? relays,
     String? pairingTopic,
     int? qrCodeScanLatencyMs,
@@ -39,6 +43,47 @@ class SignClientHelpers {
 
     Map<String, Namespace> workingNamespaces =
         namespaces != null ? namespaces : TEST_NAMESPACES;
+
+    Map<String, List<String>> workingAccounts = accounts != null
+        ? accounts
+        : {
+            EVM_NAMESPACE: TEST_ACCOUNTS,
+            TEST_AVALANCHE_CHAIN: [TEST_AVALANCHE_ACCOUNT],
+          };
+
+    Map<String, List<String>> workingMethods = methods != null
+        ? methods
+        : {
+            TEST_ETHEREUM_CHAIN: TEST_METHODS_1,
+            TEST_ARBITRUM_CHAIN: TEST_METHODS_1,
+            TEST_AVALANCHE_CHAIN: TEST_METHODS_2,
+          };
+
+    Map<String, List<String>> workingEvents = events != null
+        ? events
+        : {
+            EVM_NAMESPACE: [TEST_EVENT_1],
+            TEST_AVALANCHE_CHAIN: [TEST_EVENT_2],
+          };
+
+    // Register the data: accounts, methods, events
+    for (final nsOrChainId in workingAccounts.keys) {
+      b.registerAccounts(
+        namespaceOrChainId: nsOrChainId,
+        accounts: workingAccounts[nsOrChainId]!,
+      );
+    }
+    for (final chainId in workingMethods.keys) {
+      for (final method in workingMethods[chainId]!) {
+        b.registerRequestHandler(chainId: chainId, method: method);
+      }
+    }
+    for (final nsOrChainId in workingEvents.keys) {
+      b.registerEventEmitters(
+        namespaceOrChainId: nsOrChainId,
+        events: workingEvents[nsOrChainId]!,
+      );
+    }
 
     SessionData? sessionA;
     SessionData? sessionB;
@@ -60,6 +105,8 @@ class SignClientHelpers {
         expect(args != null, true);
         completer.complete();
       });
+
+      workingNamespaces = args.params.generatedNamespaces ?? workingNamespaces;
 
       ApproveResponse response = await b.approveSession(
         id: args.id,

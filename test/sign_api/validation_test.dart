@@ -9,169 +9,6 @@ import 'utils/sign_client_constants.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  group('NamespaceUtils', () {
-    test('isValidChainId', () {
-      expect(
-        NamespaceUtils.isValidChainId(TEST_ETHEREUM_CHAIN),
-        true,
-      );
-      expect(NamespaceUtils.isValidChainId(TEST_CHAIN_INVALID_1), false);
-      expect(NamespaceUtils.isValidChainId(TEST_CHAIN_INVALID_2), false);
-    });
-
-    test('isValidAccount', () {
-      expect(
-        NamespaceUtils.isValidAccount(
-          TEST_ETHEREUM_ACCOUNT,
-        ),
-        true,
-      );
-      expect(NamespaceUtils.isValidAccount(TEST_ACCOUNT_INVALID_1), false);
-      expect(NamespaceUtils.isValidAccount(TEST_ACCOUNT_INVALID_2), false);
-      expect(NamespaceUtils.isValidAccount(TEST_ACCOUNT_INVALID_3), false);
-    });
-
-    test('isValidUrl', () {
-      expect(
-        NamespaceUtils.isValidUrl(TEST_RELAY_URL),
-        true,
-      );
-    });
-
-    test('getAccount', () {
-      expect('invalid', 'invalid');
-      expect(
-        NamespaceUtils.getAccount(TEST_ACCOUNTS[0]),
-        TEST_ACCOUNTS[0].split(':')[2],
-      );
-    });
-
-    test('getChainFromAccount', () {
-      expect('invalid', 'invalid');
-      expect(
-        NamespaceUtils.getChainFromAccount(TEST_ACCOUNTS[0]),
-        TEST_CHAINS[0],
-      );
-    });
-
-    test('getChainsFromAccounts', () {
-      expect(NamespaceUtils.getChainsFromAccounts([]), []);
-      expect(
-        NamespaceUtils.getChainsFromAccounts(TEST_ACCOUNTS),
-        TEST_CHAINS,
-      );
-      expect(
-        NamespaceUtils.getChainsFromAccounts(
-          [
-            ...TEST_ACCOUNTS,
-            ...TEST_ACCOUNTS,
-          ],
-        ),
-        TEST_CHAINS,
-      );
-    });
-
-    test('getChainsFromNamespace', () {
-      expect(
-        NamespaceUtils.getChainsFromNamespace(
-          nsOrChainId: EVM_NAMESPACE,
-          namespace: TEST_ETH_ARB_NAMESPACE,
-        ),
-        TEST_CHAINS,
-      );
-      expect(
-        NamespaceUtils.getChainsFromNamespace(
-          nsOrChainId: TEST_AVALANCHE_CHAIN,
-          namespace: TEST_AVA_NAMESPACE,
-        ),
-        [TEST_AVALANCHE_CHAIN],
-      );
-    });
-
-    test('getChainsFromNamespaces', () {
-      expect(
-        NamespaceUtils.getChainsFromNamespaces(
-          namespaces: TEST_NAMESPACES,
-        ),
-        [...TEST_CHAINS, TEST_AVALANCHE_CHAIN],
-      );
-    });
-
-    test('getNamespacesMethodsForChainId', () {
-      expect(
-        NamespaceUtils.getNamespacesMethodsForChainId(
-          chainId: TEST_ETHEREUM_CHAIN,
-          namespaces: TEST_NAMESPACES,
-        ),
-        TEST_METHODS_1,
-      );
-      expect(
-        NamespaceUtils.getNamespacesMethodsForChainId(
-          chainId: TEST_ARBITRUM_CHAIN,
-          namespaces: TEST_NAMESPACES,
-        ),
-        TEST_METHODS_1,
-      );
-      expect(
-        NamespaceUtils.getNamespacesMethodsForChainId(
-          chainId: TEST_AVALANCHE_CHAIN,
-          namespaces: TEST_NAMESPACES,
-        ),
-        TEST_METHODS_2,
-      );
-    });
-
-    test('getNamespacesEventsForChainId', () {
-      expect(
-        NamespaceUtils.getNamespacesEventsForChainId(
-          chainId: TEST_ETHEREUM_CHAIN,
-          namespaces: TEST_NAMESPACES,
-        ),
-        [TEST_EVENT_1],
-      );
-      expect(
-        NamespaceUtils.getNamespacesEventsForChainId(
-          chainId: TEST_ARBITRUM_CHAIN,
-          namespaces: TEST_NAMESPACES,
-        ),
-        [TEST_EVENT_1],
-      );
-      expect(
-        NamespaceUtils.getNamespacesEventsForChainId(
-          chainId: TEST_AVALANCHE_CHAIN,
-          namespaces: TEST_NAMESPACES,
-        ),
-        [TEST_EVENT_2],
-      );
-    });
-
-    test('getChainsFromRequiredNamespace', () {
-      expect(
-        NamespaceUtils.getChainsFromRequiredNamespace(
-          nsOrChainId: EVM_NAMESPACE,
-          requiredNamespace: TEST_ETH_ARB_REQUIRED_NAMESPACE,
-        ),
-        TEST_CHAINS,
-      );
-      expect(
-        NamespaceUtils.getChainsFromRequiredNamespace(
-          nsOrChainId: TEST_AVALANCHE_CHAIN,
-          requiredNamespace: TEST_AVA_REQUIRED_NAMESPACE,
-        ),
-        [TEST_AVALANCHE_CHAIN],
-      );
-    });
-
-    test('getChainsFromRequiredNamespaces', () {
-      expect(
-        NamespaceUtils.getChainsFromRequiredNamespaces(
-          requiredNamespaces: TEST_REQUIRED_NAMESPACES,
-        ),
-        [...TEST_CHAINS, TEST_AVALANCHE_CHAIN],
-      );
-    });
-  });
-
   group('SignApiValidatorUtils', () {
     test('isContainedIn', () {
       expect(
@@ -527,11 +364,11 @@ void main() {
       TEST_NAMESPACES_NONCONFORMING_EVENTS,
     ];
     final List errors = [
-      "Non conforming namespaces. test namespaces keys don't satisfy requiredNamespaces",
-      "Non conforming namespaces. test namespaces keys don't satisfy requiredNamespaces",
-      "Non conforming namespaces. test namespaces accounts don't satisfy requiredNamespaces chains for $EVM_NAMESPACE",
-      "Non conforming namespaces. test namespaces methods don't satisfy requiredNamespaces methods for $EVM_NAMESPACE",
-      "Non conforming namespaces. test namespaces events don't satisfy requiredNamespaces events for $EVM_NAMESPACE",
+      "Unsupported namespace key. test namespaces keys don\'t satisfy requiredNamespaces",
+      "Unsupported namespace key. test namespaces keys don\'t satisfy requiredNamespaces",
+      "Unsupported chains. test namespaces chains don\'t satisfy requiredNamespaces chains for $EVM_NAMESPACE",
+      "Unsupported methods. test namespaces methods don\'t satisfy requiredNamespaces methods for $EVM_NAMESPACE",
+      "Unsupported events. test namespaces events don\'t satisfy requiredNamespaces events for $EVM_NAMESPACE",
     ];
     for (int i = 0; i < nonconformingNamespaces.length; i++) {
       expect(

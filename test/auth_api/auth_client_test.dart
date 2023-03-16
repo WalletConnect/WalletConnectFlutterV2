@@ -11,6 +11,7 @@ import 'package:walletconnect_flutter_v2/apis/auth_api/utils/auth_constants.dart
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 
 import '../shared/shared_test_values.dart';
+import 'utils/auth_client_test_wrapper.dart';
 import 'utils/engine_constants.dart';
 import 'utils/signature_constants.dart';
 
@@ -19,7 +20,8 @@ void main() {
 
   final List<Future<IAuthEngineApp> Function(PairingMetadata)> authAppCreators =
       [
-    (PairingMetadata metadata) async => await AuthClient.createInstance(
+    (PairingMetadata metadata) async =>
+        await AuthClientTestWrapper.createInstance(
           projectId: TEST_PROJECT_ID,
           relayUrl: TEST_RELAY_URL,
           metadata: metadata,
@@ -84,7 +86,8 @@ void main() {
 
       return e;
     },
-    (PairingMetadata metadata) async => await AuthClient.createInstance(
+    (PairingMetadata metadata) async =>
+        await AuthClientTestWrapper.createInstance(
           projectId: TEST_PROJECT_ID,
           relayUrl: TEST_RELAY_URL,
           metadata: metadata,

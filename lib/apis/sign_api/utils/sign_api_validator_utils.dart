@@ -215,8 +215,8 @@ class SignApiValidatorUtils {
     // If the namespaces doesn't have the correct keys, we can fail automatically
     if (!isContainedIn(
         container: namespaceKeys, contained: requiredNamespaceKeys)) {
-      throw Errors.getInternalError(
-        Errors.NON_CONFORMING_NAMESPACES,
+      throw Errors.getSdkError(
+        Errors.UNSUPPORTED_NAMESPACE_KEY,
         context: "$context namespaces keys don't satisfy requiredNamespaces",
       );
     } else {
@@ -247,20 +247,20 @@ class SignApiValidatorUtils {
         );
 
         if (!chainsOverlap) {
-          throw Errors.getInternalError(
-            Errors.NON_CONFORMING_NAMESPACES,
+          throw Errors.getSdkError(
+            Errors.UNSUPPORTED_CHAINS,
             context:
-                "$context namespaces accounts don't satisfy requiredNamespaces chains for $key",
+                "$context namespaces chains don't satisfy requiredNamespaces chains for $key",
           );
         } else if (!methodsOverlap) {
-          throw Errors.getInternalError(
-            Errors.NON_CONFORMING_NAMESPACES,
+          throw Errors.getSdkError(
+            Errors.UNSUPPORTED_METHODS,
             context:
                 "$context namespaces methods don't satisfy requiredNamespaces methods for $key",
           );
         } else if (!eventsOverlap) {
-          throw Errors.getInternalError(
-            Errors.NON_CONFORMING_NAMESPACES,
+          throw Errors.getSdkError(
+            Errors.UNSUPPORTED_EVENTS,
             context:
                 "$context namespaces events don't satisfy requiredNamespaces events for $key",
           );

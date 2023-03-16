@@ -11,6 +11,7 @@ import 'package:walletconnect_flutter_v2/apis/sign_api/models/sign_client_models
 
 abstract class ISignEngineWallet extends ISignEngineCommon {
   abstract final Event<SessionProposalEvent> onSessionProposal;
+  abstract final Event<SessionProposalErrorEvent> onSessionProposalError;
   abstract final Event<SessionRequestEvent> onSessionRequest;
 
   Future<PairingInfo> pair({
@@ -50,4 +51,28 @@ abstract class ISignEngineWallet extends ISignEngineCommon {
     required Map<String, RequiredNamespace> requiredNamespaces,
   });
   Map<String, SessionRequest> getPendingSessionRequests();
+
+  /// Register event emitters for a given namespace or chainId
+  /// Used to construct the Namespaces map for the session proposal
+  void registerEventEmitters({
+    required String namespaceOrChainId,
+    required List<String> events,
+  });
+
+  /// Register accounts for a given namespace or chainId.
+  /// Used to construct the Namespaces map for the session proposal.
+  /// Each account must follow the namespace:chainId:address format or this will throw an error.
+  void registerAccounts({
+    required String namespaceOrChainId,
+    required List<String> accounts,
+  });
+
+  /// Construct the Namespaces map for a session proposal.
+  /// Uses the registered methods, events, and keys to build them.
+  /// If the required namespaces is not satisfied, this function will throw a [WalletConnectError].
+  /// The optional namespaces are included if they exist in the registered information.
+  // Map<String, Namespace> constructNamespaces({
+  //   required Map<String, RequiredNamespace> requiredNamespaces,
+  //   Map<String, RequiredNamespace>? optionalNamespaces,
+  // });
 }
