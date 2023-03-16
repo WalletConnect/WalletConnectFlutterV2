@@ -12,6 +12,8 @@ class StringConstants {
   static const String sessionsPageTitle = 'Sessions';
   static const String authPageTitle = 'Auth';
   static const String settingsPageTitle = 'Settings';
+  static const String receivedPing = 'Received Ping';
+  static const String receivedEvent = 'Received Event';
 
   // Connect Page
   static const String selectChains = 'Select chains:';
