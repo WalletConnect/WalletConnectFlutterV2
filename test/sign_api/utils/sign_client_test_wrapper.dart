@@ -247,14 +247,14 @@ class SignClientTestWrapper implements ISignEngine {
   }
 
   @override
-  void registerEventEmitters({
-    required String namespaceOrChainId,
-    required List<String> events,
+  void registerEventEmitter({
+    required String chainId,
+    required String event,
   }) {
     try {
-      return client.registerEventEmitters(
-        namespaceOrChainId: namespaceOrChainId,
-        events: events,
+      return client.registerEventEmitter(
+        chainId: chainId,
+        event: event,
       );
     } catch (e) {
       rethrow;
@@ -262,14 +262,14 @@ class SignClientTestWrapper implements ISignEngine {
   }
 
   @override
-  void registerAccounts({
-    required String namespaceOrChainId,
-    required List<String> accounts,
+  void registerAccount({
+    required String chainId,
+    required String accountAddress,
   }) {
     try {
-      return client.registerAccounts(
-        namespaceOrChainId: namespaceOrChainId,
-        accounts: accounts,
+      return client.registerAccount(
+        chainId: chainId,
+        accountAddress: accountAddress,
       );
     } catch (e) {
       rethrow;

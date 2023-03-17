@@ -130,18 +130,64 @@ void signEngineTests({
       });
     });
 
-    group('registerAccounts', () {
+    group('registerEventEmitter', () {
       test('fails properly', () {
         expect(
-          () => clientB.registerAccounts(
-            namespaceOrChainId: TEST_ETHEREUM_CHAIN,
-            accounts: [TEST_ACCOUNT_INVALID_1],
+          () => clientB.registerEventEmitter(
+            chainId: TEST_CHAIN_INVALID_1,
+            event: TEST_EVENT_1,
           ),
           throwsA(
             isA<WalletConnectError>().having(
               (e) => e.message,
               'message',
-              'Unsupported accounts. registerAccounts, account swag should conform to "namespace:chainId:address" format',
+              'Unsupported chains. registerEventEmitter, chain $TEST_CHAIN_INVALID_1 should conform to "namespace:chainId" format',
+            ),
+          ),
+        );
+
+        expect(
+          () => clientB.registerEventEmitter(
+            chainId: TEST_ETHEREUM_CHAIN,
+            event: TEST_ACCOUNT_INVALID_2,
+          ),
+          throwsA(
+            isA<WalletConnectError>().having(
+              (e) => e.message,
+              'message',
+              'Unsupported accounts. registerEventEmitter, account $TEST_ETHEREUM_CHAIN:$TEST_ACCOUNT_INVALID_2 should conform to "namespace:chainId:address" format',
+            ),
+          ),
+        );
+      });
+    });
+
+    group('registerAccounts', () {
+      test('fails properly', () {
+        expect(
+          () => clientB.registerAccount(
+            chainId: TEST_CHAIN_INVALID_1,
+            accountAddress: TEST_ETHEREUM_ACCOUNT,
+          ),
+          throwsA(
+            isA<WalletConnectError>().having(
+              (e) => e.message,
+              'message',
+              'Unsupported chains. registerAccount, chain $TEST_CHAIN_INVALID_1 should conform to "namespace:chainId" format',
+            ),
+          ),
+        );
+
+        expect(
+          () => clientB.registerAccount(
+            chainId: TEST_ETHEREUM_CHAIN,
+            accountAddress: TEST_ACCOUNT_INVALID_2,
+          ),
+          throwsA(
+            isA<WalletConnectError>().having(
+              (e) => e.message,
+              'message',
+              'Unsupported accounts. registerAccount, account $TEST_ETHEREUM_CHAIN:$TEST_ACCOUNT_INVALID_2 should conform to "namespace:chainId:address" format',
             ),
           ),
         );

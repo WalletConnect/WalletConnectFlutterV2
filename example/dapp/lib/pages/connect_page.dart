@@ -164,12 +164,12 @@ class ConnectPageState extends State<ConnectPage> {
     final Map<String, dynamic> data = {};
     for (final chain in chains) {
       final RequiredNamespace rNamespace = RequiredNamespace(
-        chains: [chain.chainId],
+        chains: [chain.chain],
         methods: getChainMethods(chain.type),
         events: getChainEvents(chain.type),
       );
-      requiredNamespaces[chain.chainId.split(':')[0]] = rNamespace;
-      data[chain.chainId] = rNamespace.toJson();
+      requiredNamespaces[chain.chain.split(':')[0]] = rNamespace;
+      data[chain.chain] = rNamespace.toJson();
     }
     // debugPrint(data.toString());
 
@@ -195,7 +195,7 @@ class ConnectPageState extends State<ConnectPage> {
       final AuthRequestResponse authRes = await widget.web3App.requestAuth(
         pairingTopic: res.pairingTopic,
         params: AuthRequestParams(
-          chainId: chains[0].chainId,
+          chainId: chains[0].chain,
           domain: Constants.domain,
           aud: Constants.aud,
         ),

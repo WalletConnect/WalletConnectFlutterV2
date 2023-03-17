@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:event/event.dart';
-import 'package:json_rpc_2/error_code.dart';
 import 'package:walletconnect_flutter_v2/apis/core/store/i_generic_store.dart';
 import 'package:walletconnect_flutter_v2/apis/core/pairing/i_pairing_store.dart';
 import 'package:walletconnect_flutter_v2/apis/core/pairing/utils/pairing_utils.dart';
@@ -438,7 +437,6 @@ class SignEngine implements ISignEngine {
     required String method,
     dynamic Function(String, dynamic)? handler,
   }) {
-    _checkInitialized();
     _methodHandlers[_getRegisterKey(chainId, method)] = handler;
   }
 
@@ -650,35 +648,49 @@ class SignEngine implements ISignEngine {
   @override
   IPairingStore get pairings => core.pairing.getStore();
 
-  Map<String, Set<String>> _eventEmitters = {};
-  Map<String, Set<String>> _accounts = {};
+  Set<String> _eventEmitters = {};
+  Set<String> _accounts = {};
 
   @override
-  void registerEventEmitters({
-    required String namespaceOrChainId,
-    required List<String> events,
+  void registerEventEmitter({
+    required String chainId,
+    required String event,
   }) {
-    if (_eventEmitters[namespaceOrChainId] == null) {
-      _eventEmitters[namespaceOrChainId] = {};
+    final bool isChainId = NamespaceUtils.isValidChainId(chainId);
+    if (!isChainId) {
+      throw Errors.getSdkError(
+        Errors.UNSUPPORTED_CHAINS,
+        context:
+            'registerEventEmitter, chain $chainId should conform to "namespace:chainId" format',
+      );
     }
-    _eventEmitters[namespaceOrChainId]!.addAll(events);
+    final String value = _getRegisterKey(chainId, event);
+    SignApiValidatorUtils.isValidAccounts(
+      accounts: [value],
+      context: 'registerEventEmitter',
+    );
+    _eventEmitters.add(value);
   }
 
   @override
-  void registerAccounts({
-    required String namespaceOrChainId,
-    required List<String> accounts,
+  void registerAccount({
+    required String chainId,
+    required String accountAddress,
   }) {
-    // Validate the accounts
-    SignApiValidatorUtils.isValidAccounts(
-      accounts: accounts,
-      context: 'registerAccounts',
-    );
-
-    if (_accounts[namespaceOrChainId] == null) {
-      _accounts[namespaceOrChainId] = {};
+    final bool isChainId = NamespaceUtils.isValidChainId(chainId);
+    if (!isChainId) {
+      throw Errors.getSdkError(
+        Errors.UNSUPPORTED_CHAINS,
+        context:
+            'registerAccount, chain $chainId should conform to "namespace:chainId" format',
+      );
     }
-    _accounts[namespaceOrChainId]!.addAll(accounts);
+    final String value = _getRegisterKey(chainId, accountAddress);
+    SignApiValidatorUtils.isValidAccounts(
+      accounts: [value],
+      context: 'registerAccount',
+    );
+    _accounts.add(value);
   }
 
   /// ---- PRIVATE HELPERS ---- ////
@@ -688,8 +700,8 @@ class SignEngine implements ISignEngine {
     }
   }
 
-  String _getRegisterKey(String namespace, String method) {
-    return '$namespace:$method';
+  String _getRegisterKey(String chainId, String value) {
+    return '$chainId:$value';
   }
 
   Future<void> _deleteSession(
@@ -847,7 +859,7 @@ class SignEngine implements ISignEngine {
       if (_accounts.isNotEmpty || _eventEmitters.isNotEmpty) {
         namespaces = NamespaceUtils.constructNamespaces(
           availableAccounts: _accounts,
-          availableMethods: _methodHandlers.keys.toList(),
+          availableMethods: _methodHandlers.keys.toSet(),
           availableEvents: _eventEmitters,
           requiredNamespaces: proposeRequest.requiredNamespaces,
           optionalNamespaces: proposeRequest.optionalNamespaces,
@@ -1372,24 +1384,6 @@ class SignEngine implements ISignEngine {
   }
 
   /// ---- Validation Helpers ---- ///
-
-  Future<bool> _isValidPairingTopic(String topic) async {
-    if (!core.pairing.getStore().has(topic)) {
-      throw Errors.getInternalError(
-        Errors.NO_MATCHING_KEY,
-        context: "pairing topic doesn't exist: $topic",
-      );
-    }
-
-    if (await core.expirer.checkAndExpire(topic)) {
-      throw Errors.getInternalError(
-        Errors.EXPIRED,
-        context: "pairing topic: $topic",
-      );
-    }
-
-    return true;
-  }
 
   Future<bool> _isValidSessionTopic(String topic) async {
     if (!sessions.has(topic)) {

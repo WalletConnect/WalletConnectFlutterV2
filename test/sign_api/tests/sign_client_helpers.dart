@@ -47,8 +47,9 @@ class SignClientHelpers {
     Map<String, List<String>> workingAccounts = accounts != null
         ? accounts
         : {
-            EVM_NAMESPACE: TEST_ACCOUNTS,
-            TEST_AVALANCHE_CHAIN: [TEST_AVALANCHE_ACCOUNT],
+            TEST_ETHEREUM_CHAIN: [TEST_ETHEREUM_ADDRESS],
+            TEST_ARBITRUM_CHAIN: [TEST_ETHEREUM_ADDRESS],
+            TEST_AVALANCHE_CHAIN: [TEST_ETHEREUM_ADDRESS],
           };
 
     Map<String, List<String>> workingMethods = methods != null
@@ -62,27 +63,32 @@ class SignClientHelpers {
     Map<String, List<String>> workingEvents = events != null
         ? events
         : {
-            EVM_NAMESPACE: [TEST_EVENT_1],
+            TEST_ETHEREUM_CHAIN: [TEST_EVENT_1],
+            TEST_ARBITRUM_CHAIN: [TEST_EVENT_1],
             TEST_AVALANCHE_CHAIN: [TEST_EVENT_2],
           };
 
     // Register the data: accounts, methods, events
-    for (final nsOrChainId in workingAccounts.keys) {
-      b.registerAccounts(
-        namespaceOrChainId: nsOrChainId,
-        accounts: workingAccounts[nsOrChainId]!,
-      );
+    for (final chainId in workingAccounts.keys) {
+      for (final account in workingAccounts[chainId]!) {
+        b.registerAccount(
+          chainId: chainId,
+          accountAddress: account,
+        );
+      }
     }
     for (final chainId in workingMethods.keys) {
       for (final method in workingMethods[chainId]!) {
         b.registerRequestHandler(chainId: chainId, method: method);
       }
     }
-    for (final nsOrChainId in workingEvents.keys) {
-      b.registerEventEmitters(
-        namespaceOrChainId: nsOrChainId,
-        events: workingEvents[nsOrChainId]!,
-      );
+    for (final chainId in workingEvents.keys) {
+      for (final event in workingEvents[chainId]!) {
+        b.registerEventEmitter(
+          chainId: chainId,
+          event: event,
+        );
+      }
     }
 
     SessionData? sessionA;

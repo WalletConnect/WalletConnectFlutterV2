@@ -1,18 +1,21 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
+import 'package:walletconnect_flutter_v2_wallet/dependencies/i_bottom_sheet_service.dart';
+import 'package:walletconnect_flutter_v2_wallet/dependencies/i_web3wallet_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/utils/constants.dart';
 import 'package:walletconnect_flutter_v2_wallet/utils/string_constants.dart';
 import 'package:walletconnect_flutter_v2_wallet/widgets/pairing_item.dart';
 import 'package:walletconnect_flutter_v2_wallet/widgets/qr_scan_sheet.dart';
 import 'package:walletconnect_flutter_v2_wallet/widgets/uri_input_popup.dart';
+import 'package:walletconnect_flutter_v2_wallet/widgets/wc_connection_request/wc_connection_request_widget.dart';
+import 'package:walletconnect_flutter_v2_wallet/widgets/wc_connection_request/wc_session_request_model.dart';
+import 'package:walletconnect_flutter_v2_wallet/widgets/wc_request_widget.dart/wc_request_widget.dart';
 
 class AppsPage extends StatefulWidget {
   const AppsPage({
     Key? key,
-    required this.web3Wallet,
   }) : super(key: key);
-
-  final Web3Wallet web3Wallet;
 
   @override
   AppsPageState createState() => AppsPageState();
@@ -21,22 +24,22 @@ class AppsPage extends StatefulWidget {
 class AppsPageState extends State<AppsPage> {
   List<PairingInfo> _pairings = [];
 
+  final Web3Wallet web3Wallet = GetIt.I<IWeb3WalletService>().getWeb3Wallet();
+
   @override
   void initState() {
-    _pairings = widget.web3Wallet.pairings.getAll();
-    // widget.web3wallet.onSessionDelete.subscribe(_onSessionDelete);
-    widget.web3Wallet.core.pairing.onPairingDelete.subscribe(_onPairingDelete);
-    widget.web3Wallet.core.pairing.onPairingExpire.subscribe(_onPairingDelete);
+    _pairings = web3Wallet.pairings.getAll();
+    // web3wallet.onSessionDelete.subscribe(_onSessionDelete);
+    web3Wallet.core.pairing.onPairingDelete.subscribe(_onPairingDelete);
+    web3Wallet.core.pairing.onPairingExpire.subscribe(_onPairingDelete);
     super.initState();
   }
 
   @override
   void dispose() {
-    // widget.web3wallet.onSessionDelete.unsubscribe(_onSessionDelete);
-    widget.web3Wallet.core.pairing.onPairingDelete
-        .unsubscribe(_onPairingDelete);
-    widget.web3Wallet.core.pairing.onPairingExpire
-        .unsubscribe(_onPairingDelete);
+    // web3wallet.onSessionDelete.unsubscribe(_onSessionDelete);
+    web3Wallet.core.pairing.onPairingDelete.unsubscribe(_onPairingDelete);
+    web3Wallet.core.pairing.onPairingExpire.unsubscribe(_onPairingDelete);
     super.dispose();
   }
 
@@ -44,6 +47,7 @@ class AppsPageState extends State<AppsPage> {
   Widget build(BuildContext context) {
     return Stack(
       children: [
+        _pairings.isEmpty ? _buildNoPairingMessage() : _buildPairingList(),
         Positioned(
           bottom: StyleConstants.magic20,
           right: StyleConstants.magic20,
@@ -63,7 +67,6 @@ class AppsPageState extends State<AppsPage> {
             ],
           ),
         ),
-        _pairings.isEmpty ? _buildNoPairingMessage() : _buildPairingList()
       ],
     );
   }
@@ -111,12 +114,12 @@ class AppsPageState extends State<AppsPage> {
                         ),
                         onPressed: () async {
                           try {
-                            widget.web3Wallet.core.pairing.disconnect(
+                            web3Wallet.core.pairing.disconnect(
                               topic: pairing.topic,
                             );
                             Navigator.of(context).pop();
                           } catch (e) {
-                            debugPrint(e.toString());
+                            //debugPrint(e.toString());
                           }
                         },
                       ),
@@ -157,18 +160,56 @@ class AppsPageState extends State<AppsPage> {
   }
 
   Future _onCopyQrCode() async {
-    final String? uri = await showDialog<String>(
-      context: context,
-      builder: (BuildContext context) {
-        return UriInputPopup();
-      },
+    final Widget w = WCRequestWidget(
+      child: //Center(child: Text('swag')),
+          WCConnectionRequestWidget(
+        wallet: web3Wallet,
+        title: 'Sign',
+        sessionProposal: WCSessionRequestModel(
+          request: const ProposalData(
+            id: 0,
+            expiry: 0,
+            relays: [],
+            proposer: ConnectionMetadata(
+              publicKey: 'swag',
+              metadata: PairingMetadata(
+                name: 'A',
+                description: 'B',
+                url: 'abc.com',
+                icons: [],
+              ),
+            ),
+            requiredNamespaces: {
+              'kadena': RequiredNamespace(
+                methods: ['kadena_sign_v1'],
+                events: [],
+              ),
+            },
+            optionalNamespaces: {},
+            pairingTopic: 'abc',
+          ),
+        ),
+      ),
+    );
+    final bool? approved =
+        await GetIt.I<IBottomSheetService>().queueBottomSheet(
+      widget: w,
     );
 
-    if (uri != null && uri.isNotEmpty) {
-      await widget.web3Wallet.pair(
-        uri: Uri.parse(uri),
-      );
-    }
+    // final String? uri = await showDialog<String>(
+    //   context: context,
+    //   builder: (BuildContext context) {
+    //     return UriInputPopup();
+    //   },
+    // );
+
+    // print(uri);
+
+    // if (uri != null && uri.isNotEmpty) {
+    //   await web3Wallet.pair(
+    //     uri: Uri.parse(uri),
+    //   );
+    // }
   }
 
   Future _onScanQrCode() async {
@@ -182,7 +223,7 @@ class AppsPageState extends State<AppsPage> {
     );
 
     if (s != null) {
-      await widget.web3Wallet.pair(
+      await web3Wallet.pair(
         uri: Uri.parse(s),
       );
     }
@@ -190,7 +231,7 @@ class AppsPageState extends State<AppsPage> {
 
   void _onPairingDelete(PairingEvent? event) {
     setState(() {
-      _pairings = widget.web3Wallet.pairings.getAll();
+      _pairings = web3Wallet.pairings.getAll();
     });
   }
 }

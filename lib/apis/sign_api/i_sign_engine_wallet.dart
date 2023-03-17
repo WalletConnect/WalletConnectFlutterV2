@@ -54,17 +54,17 @@ abstract class ISignEngineWallet extends ISignEngineCommon {
 
   /// Register event emitters for a given namespace or chainId
   /// Used to construct the Namespaces map for the session proposal
-  void registerEventEmitters({
-    required String namespaceOrChainId,
-    required List<String> events,
+  void registerEventEmitter({
+    required String chainId,
+    required String event,
   });
 
   /// Register accounts for a given namespace or chainId.
   /// Used to construct the Namespaces map for the session proposal.
   /// Each account must follow the namespace:chainId:address format or this will throw an error.
-  void registerAccounts({
-    required String namespaceOrChainId,
-    required List<String> accounts,
+  void registerAccount({
+    required String chainId,
+    required String accountAddress,
   });
 
   /// Construct the Namespaces map for a session proposal.

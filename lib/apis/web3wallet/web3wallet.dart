@@ -274,14 +274,14 @@ class Web3Wallet implements IWeb3Wallet {
   }
 
   @override
-  void registerEventEmitters({
-    required String namespaceOrChainId,
-    required List<String> events,
+  void registerEventEmitter({
+    required String chainId,
+    required String event,
   }) {
     try {
-      return signEngine.registerEventEmitters(
-        namespaceOrChainId: namespaceOrChainId,
-        events: events,
+      return signEngine.registerEventEmitter(
+        chainId: chainId,
+        event: event,
       );
     } catch (e) {
       rethrow;
@@ -289,14 +289,14 @@ class Web3Wallet implements IWeb3Wallet {
   }
 
   @override
-  void registerAccounts({
-    required String namespaceOrChainId,
-    required List<String> accounts,
+  void registerAccount({
+    required String chainId,
+    required String accountAddress,
   }) {
     try {
-      return signEngine.registerAccounts(
-        namespaceOrChainId: namespaceOrChainId,
-        accounts: accounts,
+      return signEngine.registerAccount(
+        chainId: chainId,
+        accountAddress: accountAddress,
       );
     } catch (e) {
       rethrow;

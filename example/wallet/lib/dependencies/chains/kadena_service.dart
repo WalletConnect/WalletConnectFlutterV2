@@ -6,7 +6,8 @@ import 'package:walletconnect_flutter_v2_wallet/dependencies/bottom_sheet_servic
 import 'package:walletconnect_flutter_v2_wallet/dependencies/chains/i_chain.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/i_bottom_sheet_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/i_web3wallet_service.dart';
-import 'package:walletconnect_flutter_v2_wallet/dependencies/web3wallet_service.dart';
+import 'package:walletconnect_flutter_v2_wallet/dependencies/key_service/chain_key.dart';
+import 'package:walletconnect_flutter_v2_wallet/dependencies/key_service/i_key_service.dart';
 
 enum KadenaChainId {
   testnet04,
@@ -14,45 +15,43 @@ enum KadenaChainId {
   devnet,
 }
 
+extension KadenaChainIdX on KadenaChainId {
+  String get chain => '${KadenaService.namespace}:$name';
+}
+
 class KadenaService extends IChain {
+  static const namespace = 'kadena';
+  static const kadenaSignV1 = 'kadena_sign_v1';
+  static const kadenaQuicksignV1 = 'kadena_quicksign_v1';
+  static const kadenaGetAccountsV1 = 'kadena_getAccounts_v1';
+
   final ISigningApi _signingApi = SigningApi();
-  final IBottomSheetService _bottomSheetService = GetIt.I<BottomSheetService>();
-  final IWeb3WalletService _web3WalletService = GetIt.I<Web3WalletService>();
+  final IBottomSheetService _bottomSheetService =
+      GetIt.I<IBottomSheetService>();
+  final IWeb3WalletService _web3WalletService = GetIt.I<IWeb3WalletService>();
 
-  final String namespace = 'kadena';
   final KadenaChainId chainId;
-
-  static const KADENA_SIGN_V1 = 'kadena_sign_v1';
-  static const KADENA_QUICKSIGN_V1 = 'kadena_quicksign_v1';
-  static const KADENA_GET_ACCOUNTS_V1 = 'kadena_getAccounts_v1';
 
   KadenaService({
     required this.chainId,
   }) {
     final Web3Wallet wallet = _web3WalletService.getWeb3Wallet();
     wallet.registerRequestHandler(
-      chainId: getChainId(),
-      method: KADENA_SIGN_V1,
+      chainId: getChain(),
+      method: kadenaSignV1,
       handler: signV1,
     );
     wallet.registerRequestHandler(
-      chainId: getChainId(),
-      method: KADENA_QUICKSIGN_V1,
+      chainId: getChain(),
+      method: kadenaQuicksignV1,
       handler: quicksignV1,
     );
     wallet.registerRequestHandler(
-      chainId: getChainId(),
-      method: KADENA_GET_ACCOUNTS_V1,
+      chainId: getChain(),
+      method: kadenaGetAccountsV1,
       handler: getAccountsV1,
     );
   }
-
-  final KadenaSignKeyPair kadenaKeyPair = const KadenaSignKeyPair(
-    privateKey:
-        '7d54a79feeb95ac4efdc6cfd4b702da5ee5dc1c31781b76ea092301c266e2451',
-    publicKey:
-        'af242a8d963f184eca742271a5134ee3d3e006f0377d667510e15f6fc18e41d9',
-  );
 
   @override
   String getNamespace() {
@@ -60,7 +59,7 @@ class KadenaService extends IChain {
   }
 
   @override
-  String getChainId() {
+  String getChain() {
     switch (chainId) {
       case KadenaChainId.testnet04:
         return '$namespace:testnet04';
@@ -71,18 +70,12 @@ class KadenaService extends IChain {
     }
   }
 
-  @override
-  String getPublicKey() {
-    return kadenaKeyPair.publicKey;
-  }
-
   Widget getSignWidget() {
     return Container();
   }
 
   Future signV1(String topic, dynamic parameters) async {
     // Parse the request
-
     final SignRequest signRequest = _signingApi.parseSignRequest(
       request: parameters,
     );
@@ -92,11 +85,19 @@ class KadenaService extends IChain {
       widget: getSignWidget(),
     );
 
+    // Get the keys for the kadena chain
+    final List<ChainKey> keys = GetIt.I<IKeyService>().getKeysForChain(
+      getChain(),
+    );
+
     // If the user approved, sign the request
     if (approved != null && approved) {
       final SignResult signature = _signingApi.sign(
         request: signRequest,
-        keyPair: kadenaKeyPair,
+        keyPair: KadenaSignKeyPair(
+          privateKey: keys[0].privateKey,
+          publicKey: keys[0].publicKey,
+        ),
       );
 
       // Return the signature

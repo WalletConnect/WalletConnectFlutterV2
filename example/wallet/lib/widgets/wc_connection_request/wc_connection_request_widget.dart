@@ -44,6 +44,7 @@ class WCConnectionRequestWidget extends StatelessWidget {
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
         children: [
           _buildTitle(title),
           const Text(
@@ -57,7 +58,9 @@ class WCConnectionRequestWidget extends StatelessWidget {
             style: StyleConstants.bodyText,
           ),
           const SizedBox(height: 8),
-          authRequest != null ? _buildAuthRequest() : _buildSessionProposal(),
+          authRequest != null
+              ? _buildAuthRequest()
+              : _buildSessionProposal(context),
         ],
       ),
     );
@@ -87,7 +90,7 @@ class WCConnectionRequestWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildSessionProposal() {
+  Widget _buildSessionProposal(BuildContext context) {
     // Create the connection models using the required and optional namespaces provided by the proposal data
     // The key is the title and the list of values is the data
     final List<WCConnectionWidget> views = [];
@@ -120,12 +123,20 @@ class WCConnectionRequestWidget extends StatelessWidget {
       );
     }
 
-    return ListView.separated(
-      itemBuilder: (context, index) => views[index],
-      separatorBuilder: (context, index) => const SizedBox(
-        height: StyleConstants.linear8,
+    // return Column(
+    //   children: views,
+    // );
+    return Container(
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(context).size.height * 0.3,
       ),
-      itemCount: views.length,
+      child: ListView.separated(
+        itemBuilder: (context, index) => views[index],
+        separatorBuilder: (context, index) => const SizedBox(
+          height: StyleConstants.linear8,
+        ),
+        itemCount: views.length,
+      ),
     );
   }
 

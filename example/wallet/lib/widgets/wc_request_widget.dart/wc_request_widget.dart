@@ -35,7 +35,7 @@ class WCRequestWidget extends StatelessWidget {
               ),
               highlightColor: StyleConstants.successColor,
               child: const Text(
-                StringConstants.reject,
+                StringConstants.approve,
                 style: StyleConstants.buttonText,
               ),
             ),

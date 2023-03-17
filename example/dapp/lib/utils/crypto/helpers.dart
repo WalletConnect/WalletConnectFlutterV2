@@ -5,10 +5,10 @@ import 'package:walletconnect_flutter_v2_dapp/utils/crypto/eip155.dart';
 import 'package:walletconnect_flutter_v2_dapp/utils/crypto/kadena.dart';
 import 'package:walletconnect_flutter_v2_dapp/utils/crypto/solana_data.dart';
 
-String getChainName(String chainId) {
+String getChainName(String chain) {
   try {
     return ChainData.allChains
-        .where((element) => element.chainId == chainId)
+        .where((element) => element.chain == chain)
         .first
         .name;
   } catch (e) {
@@ -17,11 +17,9 @@ String getChainName(String chainId) {
   return 'Unknown';
 }
 
-ChainMetadata getChainMetadataFromChainId(String chainId) {
+ChainMetadata getChainMetadataFromChain(String chain) {
   try {
-    return ChainData.allChains
-        .where((element) => element.chainId == chainId)
-        .first;
+    return ChainData.allChains.where((element) => element.chain == chain).first;
   } catch (e) {
     debugPrint('Invalid chain');
   }

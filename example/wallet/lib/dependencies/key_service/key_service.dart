@@ -4,7 +4,7 @@ import 'package:walletconnect_flutter_v2_wallet/dependencies/key_service/i_key_s
 class KeyService extends IKeyService {
   final List<ChainKey> keys = [
     ChainKey(
-      chainIds: [
+      chains: [
         'kadena:mainnet01',
         'kadena:testnet04',
         'kadena:devnet',
@@ -17,10 +17,10 @@ class KeyService extends IKeyService {
   ];
 
   @override
-  List<String> getChainIds() {
+  List<String> getChains() {
     final List<String> chainIds = [];
     for (final ChainKey key in keys) {
-      chainIds.addAll(key.chainIds);
+      chainIds.addAll(key.chains);
     }
     return chainIds;
   }
@@ -31,7 +31,18 @@ class KeyService extends IKeyService {
   }
 
   @override
-  List<ChainKey> getKeysForChainId(String chainId) {
-    return keys.where((e) => e.chainIds.contains(chainId)).toList();
+  List<ChainKey> getKeysForChain(String chain) {
+    return keys.where((e) => e.chains.contains(chain)).toList();
+  }
+
+  @override
+  List<String> getAllAccounts() {
+    final List<String> accounts = [];
+    for (final ChainKey key in keys) {
+      for (final String chain in key.chains) {
+        accounts.add('$chain:${key.publicKey}');
+      }
+    }
+    return accounts;
   }
 }

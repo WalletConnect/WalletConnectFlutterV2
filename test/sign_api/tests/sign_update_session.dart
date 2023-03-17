@@ -54,14 +54,16 @@ void signUpdateSession({
           EVM_NAMESPACE: TEST_ETH_ARB_REQUIRED_NAMESPACE,
         },
         accounts: {
-          EVM_NAMESPACE: TEST_ACCOUNTS,
+          TEST_ETHEREUM_CHAIN: [TEST_ETHEREUM_ADDRESS],
+          TEST_ARBITRUM_CHAIN: [TEST_ETHEREUM_ADDRESS],
         },
         methods: {
           TEST_ETHEREUM_CHAIN: TEST_METHODS_1,
           TEST_ARBITRUM_CHAIN: TEST_METHODS_1,
         },
         events: {
-          EVM_NAMESPACE: [TEST_EVENT_1],
+          TEST_ETHEREUM_CHAIN: [TEST_EVENT_1],
+          TEST_ARBITRUM_CHAIN: [TEST_EVENT_1],
           TEST_AVALANCHE_CHAIN: [TEST_EVENT_2],
         },
       );

@@ -1,12 +1,23 @@
+import 'package:get_it/get_it.dart';
 import 'package:get_it_mixin/get_it_mixin.dart';
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
+import 'package:walletconnect_flutter_v2_wallet/dependencies/bottom_sheet_service.dart';
+import 'package:walletconnect_flutter_v2_wallet/dependencies/chains/i_chain.dart';
+import 'package:walletconnect_flutter_v2_wallet/dependencies/chains/kadena_service.dart';
+import 'package:walletconnect_flutter_v2_wallet/dependencies/i_bottom_sheet_service.dart';
+import 'package:walletconnect_flutter_v2_wallet/dependencies/i_web3wallet_service.dart';
+import 'package:walletconnect_flutter_v2_wallet/dependencies/key_service/i_key_service.dart';
+import 'package:walletconnect_flutter_v2_wallet/dependencies/key_service/key_service.dart';
+import 'package:walletconnect_flutter_v2_wallet/dependencies/web3wallet_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/models/page_data.dart';
 import 'package:walletconnect_flutter_v2_wallet/pages/apps_page.dart';
 import 'package:walletconnect_flutter_v2_wallet/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:walletconnect_flutter_v2_wallet/utils/string_constants.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
   runApp(const MyApp());
 }
 
@@ -18,21 +29,62 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: StringConstants.appTitle,
-      theme: ThemeData(
-        scaffoldBackgroundColor: StyleConstants.backgroundColor,
-        bottomAppBarColor: StyleConstants.backgroundColor,
-        navigationRailTheme: const NavigationRailThemeData(
-          backgroundColor: StyleConstants.backgroundColor,
-          unselectedLabelTextStyle: StyleConstants.bodyLightGray,
-          unselectedIconTheme: IconThemeData(
-            color: StyleConstants.lightGray,
-          ),
-        ),
-        canvasColor: StyleConstants.backgroundColor,
-        backgroundColor: StyleConstants.backgroundColor,
-        primarySwatch: Colors.blue,
-      ),
+      theme: _buildDarkTheme(),
       home: MyHomePage(),
+    );
+  }
+
+  ThemeData _buildDarkTheme() {
+    final baseTheme = ThemeData.dark();
+    final nearWhite = const Color(0xFFE0E0E0);
+
+    return baseTheme.copyWith(
+      backgroundColor: Colors.black,
+      scaffoldBackgroundColor: Colors.black,
+      textTheme: baseTheme.textTheme.apply(
+        bodyColor: nearWhite,
+        displayColor: nearWhite,
+      ),
+      inputDecorationTheme: InputDecorationTheme(
+        hintStyle: TextStyle(color: nearWhite.withOpacity(0.5)),
+        labelStyle: TextStyle(color: nearWhite),
+        enabledBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: nearWhite.withOpacity(0.5)),
+        ),
+        focusedBorder: OutlineInputBorder(
+          borderSide: BorderSide(color: nearWhite),
+        ),
+      ),
+      dialogTheme: DialogTheme(
+        backgroundColor: Colors.black,
+        titleTextStyle: TextStyle(color: nearWhite),
+        contentTextStyle: TextStyle(color: nearWhite),
+      ),
+      appBarTheme: AppBarTheme(
+        color: Colors.black,
+        brightness: Brightness.dark,
+        textTheme: TextTheme(
+          headline6: TextStyle(color: nearWhite),
+        ),
+        iconTheme: IconThemeData(color: nearWhite),
+      ),
+      bottomNavigationBarTheme: BottomNavigationBarThemeData(
+        backgroundColor: Colors.black,
+        selectedItemColor: nearWhite,
+        unselectedItemColor: nearWhite.withOpacity(0.5),
+      ),
+      navigationRailTheme: NavigationRailThemeData(
+        backgroundColor: Colors.black,
+        selectedIconTheme: IconThemeData(color: nearWhite),
+        unselectedIconTheme: IconThemeData(color: nearWhite.withOpacity(0.5)),
+        selectedLabelTextStyle: TextStyle(color: nearWhite),
+        unselectedLabelTextStyle: TextStyle(color: nearWhite.withOpacity(0.5)),
+      ),
+      cardColor: Color(0xFF1A1A1A),
+      cardTheme: CardTheme(
+        color: Color(0xFF1A1A1A),
+      ),
+      dividerColor: nearWhite.withOpacity(0.2),
     );
   }
 }
@@ -73,21 +125,26 @@ class _MyHomePageState extends State<MyHomePage> with GetItStateMixin {
   }
 
   Future<void> initialize() async {
-    // try {
-    _web3Wallet = await Web3Wallet.createInstance(
-      projectId: Constants.projectId,
-      metadata: const PairingMetadata(
-        name: 'Example Wallet',
-        description: 'Example Wallet',
-        url: 'https://walletconnect.com/',
-        icons: ['https://walletconnect.com/walletconnect-logo.png'],
-      ),
-    );
+    GetIt.I.registerSingleton<IBottomSheetService>(BottomSheetService(context));
+    GetIt.I.registerSingleton<IKeyService>(KeyService());
+
+    final IWeb3WalletService web3WalletService = Web3WalletService();
+    web3WalletService.create();
+    GetIt.I.registerSingleton<IWeb3WalletService>(web3WalletService);
+
+    for (final cId in KadenaChainId.values) {
+      GetIt.I.registerSingleton<IChain>(
+        KadenaService(chainId: cId),
+        instanceName: cId.chain,
+      );
+    }
+
+    await web3WalletService.init();
 
     setState(() {
       _pageDatas = [
         PageData(
-          page: AppsPage(web3Wallet: _web3Wallet!),
+          page: const AppsPage(),
           title: StringConstants.connectPageTitle,
           icon: Icons.home,
         ),
@@ -122,6 +179,8 @@ class _MyHomePageState extends State<MyHomePage> with GetItStateMixin {
 
   @override
   Widget build(BuildContext context) {
+    GetIt.I<IBottomSheetService>().setDefaultContext(context);
+
     if (_initializing) {
       return const Center(
         child: CircularProgressIndicator(

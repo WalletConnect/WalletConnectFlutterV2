@@ -292,14 +292,14 @@ class SignClient implements ISignClient {
   }
 
   @override
-  void registerEventEmitters({
-    required String namespaceOrChainId,
-    required List<String> events,
+  void registerEventEmitter({
+    required String chainId,
+    required String event,
   }) {
     try {
-      return engine.registerEventEmitters(
-        namespaceOrChainId: namespaceOrChainId,
-        events: events,
+      return engine.registerEventEmitter(
+        chainId: chainId,
+        event: event,
       );
     } catch (e) {
       rethrow;
@@ -307,14 +307,14 @@ class SignClient implements ISignClient {
   }
 
   @override
-  void registerAccounts({
-    required String namespaceOrChainId,
-    required List<String> accounts,
+  void registerAccount({
+    required String chainId,
+    required String accountAddress,
   }) {
     try {
-      return engine.registerAccounts(
-        namespaceOrChainId: namespaceOrChainId,
-        accounts: accounts,
+      return engine.registerAccount(
+        chainId: chainId,
+        accountAddress: accountAddress,
       );
     } catch (e) {
       rethrow;

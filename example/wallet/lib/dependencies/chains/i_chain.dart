@@ -1,5 +1,5 @@
 abstract class IChain {
   String getNamespace();
-  String getChainId();
+  String getChain();
   List<String> getEvents();
 }

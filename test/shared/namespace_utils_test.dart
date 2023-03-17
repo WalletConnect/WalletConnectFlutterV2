@@ -81,14 +81,14 @@ void main() {
 
     test('getChainsFromNamespace', () {
       expect(
-        NamespaceUtils.getChainsFromNamespace(
+        NamespaceUtils.getChainIdsFromNamespace(
           nsOrChainId: EVM_NAMESPACE,
           namespace: TEST_ETH_ARB_NAMESPACE,
         ),
         TEST_CHAINS,
       );
       expect(
-        NamespaceUtils.getChainsFromNamespace(
+        NamespaceUtils.getChainIdsFromNamespace(
           nsOrChainId: TEST_AVALANCHE_CHAIN,
           namespace: TEST_AVA_NAMESPACE,
         ),
@@ -98,7 +98,7 @@ void main() {
 
     test('getChainsFromNamespaces', () {
       expect(
-        NamespaceUtils.getChainsFromNamespaces(
+        NamespaceUtils.getChainIdsFromNamespaces(
           namespaces: TEST_NAMESPACES,
         ),
         [...TEST_CHAINS, TEST_AVALANCHE_CHAIN],
@@ -131,21 +131,21 @@ void main() {
 
     test('getNamespacesEventsForChainId', () {
       expect(
-        NamespaceUtils.getNamespacesEventsForChainId(
+        NamespaceUtils.getNamespacesEventsForChain(
           chainId: TEST_ETHEREUM_CHAIN,
           namespaces: TEST_NAMESPACES,
         ),
         [TEST_EVENT_1],
       );
       expect(
-        NamespaceUtils.getNamespacesEventsForChainId(
+        NamespaceUtils.getNamespacesEventsForChain(
           chainId: TEST_ARBITRUM_CHAIN,
           namespaces: TEST_NAMESPACES,
         ),
         [TEST_EVENT_1],
       );
       expect(
-        NamespaceUtils.getNamespacesEventsForChainId(
+        NamespaceUtils.getNamespacesEventsForChain(
           chainId: TEST_AVALANCHE_CHAIN,
           namespaces: TEST_NAMESPACES,
         ),
@@ -172,7 +172,7 @@ void main() {
 
     test('getChainsFromRequiredNamespaces', () {
       expect(
-        NamespaceUtils.getChainsFromRequiredNamespaces(
+        NamespaceUtils.getChainIdsFromRequiredNamespaces(
           requiredNamespaces: TEST_REQUIRED_NAMESPACES,
         ),
         [...TEST_CHAINS, TEST_AVALANCHE_CHAIN],
@@ -185,39 +185,83 @@ void main() {
           availableAccounts: availableAccounts,
           availableMethods: availableMethods,
           availableEvents: availableEvents,
-          requiredNamespaces: requiredNamespaces,
+          requiredNamespaces: requiredNamespacesInAvailable,
         );
 
-        // Expect 2 namespaces
-        expect(namespaces.keys.length, 2);
+        expect(namespaces.length, 2);
         expect(
           namespaces['namespace1:chain1']!.accounts,
-          availableAccounts['namespace1:chain1'],
+          ['namespace1:chain1:address1', 'namespace1:chain1:address2'],
+        );
+        expect(
+          namespaces['namespace1:chain1']!.methods,
+          ['method1'],
         );
         expect(
           namespaces['namespace1:chain1']!.events,
-          ['event1', 'event2'],
+          ['event1'],
+        );
+
+        expect(namespaces['namespace2']!.accounts, [
+          'namespace2:chain1:address3',
+          'namespace2:chain1:address4',
+          'namespace2:chain2:address5',
+        ]);
+        expect(
+          namespaces['namespace2']!.methods,
+          ['method3'],
+        );
+        expect(
+          namespaces['namespace2']!.events,
+          ['event3'],
+        );
+
+        expect(
+          SignApiValidatorUtils.isConformingNamespaces(
+            requiredNamespaces: requiredNamespacesInAvailable,
+            namespaces: namespaces,
+            context: '',
+          ),
+          true,
+        );
+
+        namespaces = NamespaceUtils.constructNamespaces(
+          availableAccounts: availableAccounts,
+          availableMethods: availableMethods,
+          availableEvents: availableEvents,
+          requiredNamespaces: requiredNamespacesMatchingAvailable1,
+        );
+
+        expect(namespaces.length, 2);
+        expect(
+          namespaces['namespace1:chain1']!.accounts,
+          ['namespace1:chain1:address1', 'namespace1:chain1:address2'],
         );
         expect(
           namespaces['namespace1:chain1']!.methods,
           ['method1', 'method2'],
         );
         expect(
-          namespaces['namespace2']!.accounts,
-          availableAccounts['namespace2'],
+          namespaces['namespace1:chain1']!.events,
+          ['event1', 'event2'],
+        );
+
+        expect(namespaces['namespace2']!.accounts, [
+          'namespace2:chain1:address3',
+          'namespace2:chain1:address4',
+        ]);
+        expect(
+          namespaces['namespace2']!.methods,
+          ['method3', 'method4'],
         );
         expect(
           namespaces['namespace2']!.events,
-          ['event5', 'event6'],
-        );
-        expect(
-          namespaces['namespace2']!.methods,
-          ['method6'],
+          ['event3', 'event4'],
         );
 
         expect(
           SignApiValidatorUtils.isConformingNamespaces(
-            requiredNamespaces: requiredNamespaces,
+            requiredNamespaces: requiredNamespacesMatchingAvailable1,
             namespaces: namespaces,
             context: '',
           ),
@@ -225,33 +269,98 @@ void main() {
         );
       });
 
+      test('nonconforming if available information does not satisfy required',
+          () {
+        final List nonconforming = [
+          requiredNamespacesNonconformingAccounts1,
+          requiredNamespacesNonconformingMethods1,
+          requiredNamespacesNonconformingMethods2,
+          requiredNamespacesNonconformingEvents1,
+          requiredNamespacesNonconformingEvents2,
+        ];
+        final List expected = [
+          Errors.getSdkError(
+            Errors.UNSUPPORTED_CHAINS,
+            context:
+                " namespaces chains don't satisfy requiredNamespaces chains for namespace3",
+          ).message,
+          Errors.getSdkError(
+            Errors.UNSUPPORTED_METHODS,
+            context:
+                " namespaces methods don't satisfy requiredNamespaces methods for namespace1:chain1",
+          ).message,
+          Errors.getSdkError(
+            Errors.UNSUPPORTED_METHODS,
+            context:
+                " namespaces methods don't satisfy requiredNamespaces methods for namespace2",
+          ).message,
+          Errors.getSdkError(
+            Errors.UNSUPPORTED_EVENTS,
+            context:
+                " namespaces events don't satisfy requiredNamespaces events for namespace1:chain1",
+          ).message,
+          Errors.getSdkError(
+            Errors.UNSUPPORTED_EVENTS,
+            context:
+                " namespaces events don't satisfy requiredNamespaces events for namespace2",
+          ).message,
+        ];
+
+        for (int i = 0; i < nonconforming.length; i++) {
+          Map<String, Namespace> namespaces =
+              NamespaceUtils.constructNamespaces(
+            availableAccounts: availableAccounts,
+            availableMethods: availableMethods,
+            availableEvents: availableEvents,
+            requiredNamespaces: nonconforming[i],
+          );
+
+          // Expect a thrown error
+          expect(
+            () => SignApiValidatorUtils.isConformingNamespaces(
+              requiredNamespaces: nonconforming[i],
+              namespaces: namespaces,
+              context: '',
+            ),
+            throwsA(
+              isA<WalletConnectError>().having(
+                (e) => e.message,
+                'message',
+                expected[i],
+              ),
+            ),
+          );
+        }
+      });
+
       test('constructs namespaces with optional namespaces', () {
         Map<String, Namespace> namespaces = NamespaceUtils.constructNamespaces(
           availableAccounts: availableAccounts,
           availableMethods: availableMethods,
           availableEvents: availableEvents,
-          requiredNamespaces: requiredNamespaces,
+          requiredNamespaces: requiredNamespacesInAvailable,
           optionalNamespaces: optionalNamespaces,
         );
 
         // print(namespaces);
         expect(namespaces.keys.length, 3);
+
         expect(
-          namespaces['namespace1:chain2']!.accounts,
-          availableAccounts['namespace1:chain2'],
+          namespaces['namespace4:chain1']!.accounts,
+          ['namespace4:chain1:address6'],
         );
         expect(
-          namespaces['namespace1:chain2']!.events,
-          availableEvents['namespace1:chain2'],
+          namespaces['namespace4:chain1']!.methods,
+          ['method5'],
         );
         expect(
-          namespaces['namespace1:chain2']!.methods,
-          ['method3', 'method4'],
+          namespaces['namespace4:chain1']!.events,
+          ['event5'],
         );
 
         expect(
           SignApiValidatorUtils.isConformingNamespaces(
-            requiredNamespaces: requiredNamespaces,
+            requiredNamespaces: requiredNamespacesInAvailable,
             namespaces: namespaces,
             context: '',
           ),

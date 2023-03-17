@@ -38,6 +38,7 @@ class UriInputPopup extends StatelessWidget {
                 hintStyle: StyleConstants.layerTextStyle3,
                 hintText: StringConstants.textFieldPlaceholder,
                 fillColor: StyleConstants.layerColor2,
+                labelStyle: StyleConstants.layerTextStyle3,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.all(
                     Radius.circular(

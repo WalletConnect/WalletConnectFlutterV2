@@ -19,4 +19,6 @@ abstract class IBottomSheetService {
     required Widget widget,
     BuildContext? context,
   });
+
+  void setDefaultContext(BuildContext context);
 }
