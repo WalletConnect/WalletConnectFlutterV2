@@ -22,8 +22,14 @@ class Web3WalletService extends IWeb3WalletService {
   /// The list of requests from the dapp
   /// Potential types include, but aren't limited to:
   /// [SessionProposalEvent], [AuthRequest]
-  final sessions = ValueNotifier<List<SessionData>>([]);
-  final auth = ValueNotifier<List<AuthRequest>>([]);
+  @override
+  ValueNotifier<List<PairingInfo>> pairings =
+      ValueNotifier<List<PairingInfo>>([]);
+  @override
+  ValueNotifier<List<SessionData>> sessions =
+      ValueNotifier<List<SessionData>>([]);
+  @override
+  ValueNotifier<List<AuthRequest>> auth = ValueNotifier<List<AuthRequest>>([]);
 
   @override
   void create() {
@@ -54,6 +60,7 @@ class Web3WalletService extends IWeb3WalletService {
 
     // Setup our listeners
     print('web3wallet create');
+    _web3Wallet!.core.pairing.onPairingCreate.subscribe(_onPairingProposal);
     _web3Wallet!.onSessionProposal.subscribe(_onSessionProposal);
     _web3Wallet!.onSessionProposalError.subscribe(_onSessionProposalError);
     _web3Wallet!.onSessionConnect.subscribe(_onSessionConnect);
@@ -83,36 +90,50 @@ class Web3WalletService extends IWeb3WalletService {
     return _web3Wallet!;
   }
 
+  void _onPairingProposal(PairingEvent? args) {
+    if (args != null) {
+      print(args);
+      // pairings.value.add(args.);
+    }
+  }
+
   void _onSessionProposalError(SessionProposalErrorEvent? args) {
     print(args);
   }
 
   void _onSessionProposal(SessionProposalEvent? args) async {
-    print('session proposal');
     if (args != null) {
       print(args);
 
       // Validate the
       // args.params.
 
-      // final Widget w = WCRequestWidget(
-      //   child: WCConnectionRequestWidget(
-      //     wallet: _web3Wallet!,
-      //     title: 'Sign',
-      //     sessionProposal: WCSessionRequestModel(
-      //       request: args.params,
-      //     ),
-      //   ),
-      // );
-      // final bool approved = await _bottomSheetHandler.queueBottomSheet(
-      //   widget: w,
-      // );
+      final Widget w = WCRequestWidget(
+        child: WCConnectionRequestWidget(
+          wallet: _web3Wallet!,
+          sessionProposal: WCSessionRequestModel(
+            request: args.params,
+          ),
+        ),
+      );
+      final bool? approved = await _bottomSheetHandler.queueBottomSheet(
+        widget: w,
+      );
+      print('approved: $approved');
 
-      // if (approved) {
-      //   // _web3Wallet!.approveSession(args.id);
-      // } else {
-      //   // _web3Wallet!.rejectSession(args.id);
-      // }
+      if (approved != null && approved) {
+        _web3Wallet!.approveSession(
+          id: args.id,
+          namespaces: args.params.generatedNamespaces!,
+        );
+      } else {
+        _web3Wallet!.rejectSession(
+          id: args.id,
+          reason: Errors.getSdkError(
+            Errors.USER_REJECTED,
+          ),
+        );
+      }
     }
   }
 
@@ -129,7 +150,6 @@ class Web3WalletService extends IWeb3WalletService {
       final Widget w = WCRequestWidget(
         child: WCConnectionRequestWidget(
           wallet: _web3Wallet!,
-          title: 'Auth',
           authRequest: WCAuthRequestModel(
             iss: '',
             request: args,

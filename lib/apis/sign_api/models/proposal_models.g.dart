@@ -66,6 +66,10 @@ ProposalData _$ProposalDataFromJson(Map<String, dynamic> json) => ProposalData(
           (json['sessionProperties'] as Map<String, dynamic>?)?.map(
         (k, e) => MapEntry(k, e as String),
       ),
+      generatedNamespaces:
+          (json['generatedNamespaces'] as Map<String, dynamic>?)?.map(
+        (k, e) => MapEntry(k, Namespace.fromJson(e as Map<String, dynamic>)),
+      ),
     );
 
 Map<String, dynamic> _$ProposalDataToJson(ProposalData instance) {
@@ -86,5 +90,6 @@ Map<String, dynamic> _$ProposalDataToJson(ProposalData instance) {
 
   writeNotNull('sessionProperties', instance.sessionProperties);
   val['pairingTopic'] = instance.pairingTopic;
+  writeNotNull('generatedNamespaces', instance.generatedNamespaces);
   return val;
 }

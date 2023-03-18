@@ -144,7 +144,7 @@ class _MyHomePageState extends State<MyHomePage> with GetItStateMixin {
     setState(() {
       _pageDatas = [
         PageData(
-          page: const AppsPage(),
+          page: AppsPage(),
           title: StringConstants.connectPageTitle,
           icon: Icons.home,
         ),

@@ -155,13 +155,12 @@ class ConnectPageState extends State<ConnectPage> {
     );
   }
 
-  void _onConnect(
+  Future<void> _onConnect(
     List<ChainMetadata> chains,
   ) async {
     // Use the chain metadata to build the required namespaces:
     // Get the methods, get the events
     final Map<String, RequiredNamespace> requiredNamespaces = {};
-    final Map<String, dynamic> data = {};
     for (final chain in chains) {
       final RequiredNamespace rNamespace = RequiredNamespace(
         chains: [chain.chain],
@@ -169,19 +168,21 @@ class ConnectPageState extends State<ConnectPage> {
         events: getChainEvents(chain.type),
       );
       requiredNamespaces[chain.chain.split(':')[0]] = rNamespace;
-      data[chain.chain] = rNamespace.toJson();
     }
-    // debugPrint(data.toString());
+    debugPrint('Required namespaces: $requiredNamespaces');
 
     // Send off a connect
+    debugPrint('Creating connection and session');
     final ConnectResponse res = await widget.web3App.connect(
       requiredNamespaces: requiredNamespaces,
     );
+    debugPrint('Connection created, connection response: ${res.uri}');
 
     // print(res.uri!.toString());
     _showQrCode(res);
 
     try {
+      debugPrint('Awaiting session proposal settlement');
       await res.session.future;
 
       showPlatformToast(
@@ -192,6 +193,7 @@ class ConnectPageState extends State<ConnectPage> {
       );
 
       // Send off an auth request now that the pairing/session is established
+      debugPrint('Requesting authentication');
       final AuthRequestResponse authRes = await widget.web3App.requestAuth(
         pairingTopic: res.pairingTopic,
         params: AuthRequestParams(
@@ -201,6 +203,7 @@ class ConnectPageState extends State<ConnectPage> {
         ),
       );
 
+      debugPrint('Awaiting authentication response');
       await authRes.completer.future;
 
       showPlatformToast(

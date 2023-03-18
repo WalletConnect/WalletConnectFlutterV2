@@ -9,6 +9,7 @@ import 'package:walletconnect_flutter_v2/apis/core/relay_client/i_topic_map.dart
 import 'package:walletconnect_flutter_v2/apis/core/relay_client/message_tracker.dart';
 import 'package:walletconnect_flutter_v2/apis/core/relay_client/relay_client_models.dart';
 import 'package:walletconnect_flutter_v2/apis/core/relay_client/topic_map.dart';
+import 'package:walletconnect_flutter_v2/apis/core/store/i_generic_store.dart';
 import 'package:walletconnect_flutter_v2/apis/models/basic_models.dart';
 import 'package:walletconnect_flutter_v2/apis/utils/constants.dart';
 import 'package:walletconnect_flutter_v2/apis/utils/errors.dart';
@@ -59,15 +60,15 @@ class RelayClient implements IRelayClient {
   /// Stores all the subs that haven't been completed
   Map<String, Future<dynamic>> pendingSubscriptions = {};
 
-  IMessageTracker? messageTracker;
-  ITopicMap? topicMap;
+  IMessageTracker messageTracker;
+  IGenericStore<String> topicMap;
 
   ICore core;
 
-  RelayClient(
-    this.core, {
-    this.messageTracker,
-    this.topicMap,
+  RelayClient({
+    required this.core,
+    required this.messageTracker,
+    required this.topicMap,
     // this.test = false,
     relayUrl = WalletConnectConstants.RELAYER_DEFAULT_PROTOCOL,
   });
@@ -95,11 +96,8 @@ class RelayClient implements IRelayClient {
     );
     jsonRPC.listen();
 
-    messageTracker ??= MessageTracker(core);
-    topicMap ??= TopicMap(core);
-
-    await messageTracker!.init();
-    await topicMap!.init();
+    await messageTracker.init();
+    await topicMap.init();
 
     _initialized = true;
   }
@@ -126,7 +124,7 @@ class RelayClient implements IRelayClient {
         data,
       );
       // print(value);
-      await messageTracker!.recordMessageEvent(topic, message);
+      await messageTracker.recordMessageEvent(topic, message);
     } catch (e) {
       // print(e);
       onRelayClientError.broadcast(ErrorEvent(e));
@@ -146,7 +144,7 @@ class RelayClient implements IRelayClient {
   Future<void> unsubscribe({required String topic}) async {
     _checkInitialized();
 
-    String id = topicMap!.get(topic);
+    String id = topicMap.get(topic) ?? '';
     // print('Unsub from id: $id');
 
     try {
@@ -163,10 +161,10 @@ class RelayClient implements IRelayClient {
 
     // Temove the subscription
     pendingSubscriptions.remove(topic);
-    await topicMap!.delete(topic);
+    await topicMap.delete(topic);
 
     // Delete all the messages
-    messageTracker!.deleteSubscriptionMessages(topic);
+    messageTracker.deleteSubscriptionMessages(topic);
   }
 
   @override
@@ -249,7 +247,7 @@ class RelayClient implements IRelayClient {
     if (await _shouldIgnoreMessageEvent(topic, message)) return false;
 
     // Record a message event
-    await messageTracker!.recordMessageEvent(topic, message);
+    await messageTracker.recordMessageEvent(topic, message);
 
     // Broadcast the message
     onRelayClientMessage.broadcast(
@@ -288,7 +286,7 @@ class RelayClient implements IRelayClient {
 
   Future<bool> _shouldIgnoreMessageEvent(String topic, String message) async {
     if (!await _isSubscribed(topic)) return true;
-    return messageTracker!.messageIsRecorded(topic, message);
+    return messageTracker.messageIsRecorded(topic, message);
   }
 
   /// SUBSCRIPTION HANDLING
@@ -312,20 +310,20 @@ class RelayClient implements IRelayClient {
       return '';
     }
 
-    await topicMap!.set(topic, requestId.toString());
+    await topicMap.set(topic, requestId.toString());
     pendingSubscriptions.remove(topic);
 
     return requestId;
   }
 
   Future<bool> _isSubscribed(String topic) async {
-    if (topicMap!.has(topic)) {
+    if (topicMap.has(topic)) {
       return true;
     }
 
     if (pendingSubscriptions.containsKey(topic)) {
       await pendingSubscriptions[topic];
-      return topicMap!.has(topic);
+      return topicMap.has(topic);
     }
 
     return false;

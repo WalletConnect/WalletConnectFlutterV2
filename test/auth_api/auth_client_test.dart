@@ -38,44 +38,32 @@ void main() {
         metadata: self ?? PairingMetadata.empty(),
         authKeys: GenericStore(
           core: core,
-          context: AuthConstants.CONTEXT_AUTH_KEYS,
-          version: AuthConstants.VERSION_AUTH_KEYS,
-          toJson: (AuthPublicKey value) {
-            return value.toJson();
-          },
+          context: StoreVersions.CONTEXT_AUTH_KEYS,
+          version: StoreVersions.VERSION_AUTH_KEYS,
           fromJson: (dynamic value) {
             return AuthPublicKey.fromJson(value);
           },
         ),
         pairingTopics: GenericStore(
           core: core,
-          context: AuthConstants.CONTEXT_PAIRING_TOPICS,
-          version: AuthConstants.VERSION_PAIRING_TOPICS,
-          toJson: (String value) {
-            return value;
-          },
+          context: StoreVersions.CONTEXT_PAIRING_TOPICS,
+          version: StoreVersions.VERSION_PAIRING_TOPICS,
           fromJson: (dynamic value) {
             return value;
           },
         ),
         authRequests: GenericStore(
           core: core,
-          context: AuthConstants.CONTEXT_AUTH_REQUESTS,
-          version: AuthConstants.VERSION_AUTH_REQUESTS,
-          toJson: (PendingAuthRequest value) {
-            return value.toJson();
-          },
+          context: StoreVersions.CONTEXT_AUTH_REQUESTS,
+          version: StoreVersions.VERSION_AUTH_REQUESTS,
           fromJson: (dynamic value) {
             return PendingAuthRequest.fromJson(value);
           },
         ),
         completeRequests: GenericStore(
           core: core,
-          context: AuthConstants.CONTEXT_COMPLETE_REQUESTS,
-          version: AuthConstants.VERSION_COMPLETE_REQUESTS,
-          toJson: (StoredCacao value) {
-            return value.toJson();
-          },
+          context: StoreVersions.CONTEXT_COMPLETE_REQUESTS,
+          version: StoreVersions.VERSION_COMPLETE_REQUESTS,
           fromJson: (dynamic value) {
             return StoredCacao.fromJson(value);
           },
@@ -114,44 +102,32 @@ void main() {
         metadata: metadata,
         authKeys: GenericStore(
           core: core,
-          context: AuthConstants.CONTEXT_AUTH_KEYS,
-          version: AuthConstants.VERSION_AUTH_KEYS,
-          toJson: (AuthPublicKey value) {
-            return value.toJson();
-          },
+          context: StoreVersions.CONTEXT_AUTH_KEYS,
+          version: StoreVersions.VERSION_AUTH_KEYS,
           fromJson: (dynamic value) {
             return AuthPublicKey.fromJson(value);
           },
         ),
         pairingTopics: GenericStore(
           core: core,
-          context: AuthConstants.CONTEXT_PAIRING_TOPICS,
-          version: AuthConstants.VERSION_PAIRING_TOPICS,
-          toJson: (String value) {
-            return value;
-          },
+          context: StoreVersions.CONTEXT_PAIRING_TOPICS,
+          version: StoreVersions.VERSION_PAIRING_TOPICS,
           fromJson: (dynamic value) {
             return value;
           },
         ),
         authRequests: GenericStore(
           core: core,
-          context: AuthConstants.CONTEXT_AUTH_REQUESTS,
-          version: AuthConstants.VERSION_AUTH_REQUESTS,
-          toJson: (PendingAuthRequest value) {
-            return value.toJson();
-          },
+          context: StoreVersions.CONTEXT_AUTH_REQUESTS,
+          version: StoreVersions.VERSION_AUTH_REQUESTS,
           fromJson: (dynamic value) {
             return PendingAuthRequest.fromJson(value);
           },
         ),
         completeRequests: GenericStore(
           core: core,
-          context: AuthConstants.CONTEXT_COMPLETE_REQUESTS,
-          version: AuthConstants.VERSION_COMPLETE_REQUESTS,
-          toJson: (StoredCacao value) {
-            return value.toJson();
-          },
+          context: StoreVersions.CONTEXT_COMPLETE_REQUESTS,
+          version: StoreVersions.VERSION_COMPLETE_REQUESTS,
           fromJson: (dynamic value) {
             return StoredCacao.fromJson(value);
           },

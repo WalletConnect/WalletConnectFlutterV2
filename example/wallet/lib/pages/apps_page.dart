@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
+import 'package:get_it_mixin/get_it_mixin.dart';
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/i_bottom_sheet_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/i_web3wallet_service.dart';
@@ -12,8 +13,8 @@ import 'package:walletconnect_flutter_v2_wallet/widgets/wc_connection_request/wc
 import 'package:walletconnect_flutter_v2_wallet/widgets/wc_connection_request/wc_session_request_model.dart';
 import 'package:walletconnect_flutter_v2_wallet/widgets/wc_request_widget.dart/wc_request_widget.dart';
 
-class AppsPage extends StatefulWidget {
-  const AppsPage({
+class AppsPage extends StatefulWidget with GetItStatefulWidgetMixin {
+  AppsPage({
     Key? key,
   }) : super(key: key);
 
@@ -21,7 +22,7 @@ class AppsPage extends StatefulWidget {
   AppsPageState createState() => AppsPageState();
 }
 
-class AppsPageState extends State<AppsPage> {
+class AppsPageState extends State<AppsPage> with GetItStateMixin {
   List<PairingInfo> _pairings = [];
 
   final Web3Wallet web3Wallet = GetIt.I<IWeb3WalletService>().getWeb3Wallet();
@@ -45,6 +46,10 @@ class AppsPageState extends State<AppsPage> {
 
   @override
   Widget build(BuildContext context) {
+    _pairings = watch(
+      target: GetIt.I<IWeb3WalletService>().pairings,
+    );
+
     return Stack(
       children: [
         _pairings.isEmpty ? _buildNoPairingMessage() : _buildPairingList(),
@@ -160,56 +165,57 @@ class AppsPageState extends State<AppsPage> {
   }
 
   Future _onCopyQrCode() async {
-    final Widget w = WCRequestWidget(
-      child: //Center(child: Text('swag')),
-          WCConnectionRequestWidget(
-        wallet: web3Wallet,
-        title: 'Sign',
-        sessionProposal: WCSessionRequestModel(
-          request: const ProposalData(
-            id: 0,
-            expiry: 0,
-            relays: [],
-            proposer: ConnectionMetadata(
-              publicKey: 'swag',
-              metadata: PairingMetadata(
-                name: 'A',
-                description: 'B',
-                url: 'abc.com',
-                icons: [],
-              ),
-            ),
-            requiredNamespaces: {
-              'kadena': RequiredNamespace(
-                methods: ['kadena_sign_v1'],
-                events: [],
-              ),
-            },
-            optionalNamespaces: {},
-            pairingTopic: 'abc',
-          ),
-        ),
-      ),
-    );
-    final bool? approved =
-        await GetIt.I<IBottomSheetService>().queueBottomSheet(
-      widget: w,
-    );
-
-    // final String? uri = await showDialog<String>(
-    //   context: context,
-    //   builder: (BuildContext context) {
-    //     return UriInputPopup();
-    //   },
+    // final Widget w = WCRequestWidget(
+    //   child: //Center(child: Text('swag')),
+    //       WCConnectionRequestWidget(
+    //     wallet: web3Wallet,
+    //     title: 'Sign',
+    //     sessionProposal: WCSessionRequestModel(
+    //       request: const ProposalData(
+    //         id: 0,
+    //         expiry: 0,
+    //         relays: [],
+    //         proposer: ConnectionMetadata(
+    //           publicKey: 'swag',
+    //           metadata: PairingMetadata(
+    //             name: 'A',
+    //             description: 'B',
+    //             url: 'abc.com',
+    //             icons: [],
+    //           ),
+    //         ),
+    //         requiredNamespaces: {
+    //           'kadena': RequiredNamespace(
+    //             methods: ['kadena_sign_v1'],
+    //             events: [],
+    //           ),
+    //         },
+    //         optionalNamespaces: {},
+    //         pairingTopic: 'abc',
+    //       ),
+    //     ),
+    //   ),
     // );
 
-    // print(uri);
+    // final bool? approved =
+    //     await GetIt.I<IBottomSheetService>().queueBottomSheet(
+    //   widget: w,
+    // );
 
-    // if (uri != null && uri.isNotEmpty) {
-    //   await web3Wallet.pair(
-    //     uri: Uri.parse(uri),
-    //   );
-    // }
+    final String? uri = await showDialog<String>(
+      context: context,
+      builder: (BuildContext context) {
+        return UriInputPopup();
+      },
+    );
+
+    print(uri);
+
+    if (uri != null && uri.isNotEmpty) {
+      await web3Wallet.pair(
+        uri: Uri.parse(uri),
+      );
+    }
   }
 
   Future _onScanQrCode() async {

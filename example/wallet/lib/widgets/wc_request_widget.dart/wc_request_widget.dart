@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:walletconnect_flutter_v2_wallet/utils/constants.dart';
 import 'package:walletconnect_flutter_v2_wallet/utils/string_constants.dart';
+import 'package:walletconnect_flutter_v2_wallet/widgets/custom_button.dart';
 
 class WCRequestWidget extends StatelessWidget {
   WCRequestWidget({
@@ -21,39 +22,40 @@ class WCRequestWidget extends StatelessWidget {
       children: [
         child,
         const SizedBox(
-          height: StyleConstants.linear8,
+          height: StyleConstants.linear16,
         ),
+        // Container(
+        //   constraints: const BoxConstraints(
+        //     minHeight: 50.0,
+        //   ),
+        // child:
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            InkWell(
+            CustomButton(
               onTap: onAccept ?? () => Navigator.of(context).pop(true),
-              borderRadius: const BorderRadius.all(
-                Radius.circular(
-                  StyleConstants.linear8,
-                ),
-              ),
-              highlightColor: StyleConstants.successColor,
+              type: CustomButtonType.valid,
               child: const Text(
                 StringConstants.approve,
                 style: StyleConstants.buttonText,
+                textAlign: TextAlign.center,
               ),
             ),
-            InkWell(
+            const SizedBox(
+              width: StyleConstants.linear16,
+            ),
+            CustomButton(
               onTap: onReject ?? () => Navigator.of(context).pop(false),
-              borderRadius: const BorderRadius.all(
-                Radius.circular(
-                  StyleConstants.linear8,
-                ),
-              ),
-              highlightColor: StyleConstants.errorColor,
+              type: CustomButtonType.invalid,
               child: const Text(
                 StringConstants.reject,
                 style: StyleConstants.buttonText,
+                textAlign: TextAlign.center,
               ),
             ),
           ],
         ),
+        // ),
       ],
     );
   }

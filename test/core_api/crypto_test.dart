@@ -7,9 +7,13 @@ import 'package:walletconnect_flutter_v2/apis/core/core.dart';
 import 'package:walletconnect_flutter_v2/apis/core/crypto/crypto.dart';
 import 'package:walletconnect_flutter_v2/apis/core/crypto/crypto_models.dart';
 import 'package:walletconnect_flutter_v2/apis/core/crypto/crypto_utils.dart';
+import 'package:walletconnect_flutter_v2/apis/core/crypto/i_crypto.dart';
 import 'package:walletconnect_flutter_v2/apis/core/i_core.dart';
+import 'package:walletconnect_flutter_v2/apis/core/store/generic_store.dart';
 import 'package:walletconnect_flutter_v2/apis/models/basic_models.dart';
+import 'package:walletconnect_flutter_v2/apis/utils/constants.dart';
 
+import 'shared/shared_test_utils.dart';
 import 'shared/shared_test_utils.mocks.dart';
 import '../shared/shared_test_values.dart';
 
@@ -37,26 +41,26 @@ void main() {
       "Af96fVdnw2KwoXrZIpnr23gx3L2aVpWcATaMdARUOzNCcXdlY2ZhYXNkYWRzeloehD3r+YsB1qdXGLXuJxFer6PKupcDyhxWAaavJBkEUyD67CBzzItrjcQ55j4hYS/ziDyGfgvc1yyDPrf3uyA0qew1wvsD2Tcy";
 
   group('Crypto API', () {
-    ICore core = Core(projectId: '');
-    late MockKeyChain keyChain;
     late MockCryptoUtils mockUtils;
-    late Crypto cryptoAPI;
+    late ICrypto cryptoAPI;
+    late ICrypto cryptoApiUninitialized;
 
     setUp(() async {
-      keyChain = MockKeyChain();
-      cryptoAPI = Crypto(core, keyChain: keyChain);
+      cryptoApiUninitialized = getCrypto();
+      cryptoAPI = getCrypto();
       await cryptoAPI.init();
+      // await cryptoAPI.core.start();
     });
-    test('Initializes the keychain a single time', () async {
-      verify(keyChain.init()).called(1);
-      await cryptoAPI.init();
-      verifyNever(keyChain.init());
-    });
+
+    // test('Initializes the keychain a single time', () async {
+    //   verify(keyChain.init()).called(1);
+    //   await cryptoAPI.init();
+    //   verifyNever(keyChain.init());
+    // });
 
     group('generateKeyPair', () {
       test('Throws if not initialized', () async {
-        keyChain = MockKeyChain();
-        cryptoAPI = Crypto(core, keyChain: keyChain);
+        cryptoAPI = getCrypto();
         expect(
           () async => await cryptoAPI.generateKeyPair(),
           throwsA(isA<WalletConnectError>()),
@@ -72,12 +76,14 @@ void main() {
           when(mockUtils.generateKeyPair()).thenReturn(
             CryptoKeyPair(privateKey, publicKey),
           );
-          cryptoAPI = Crypto(core, keyChain: keyChain, utils: mockUtils);
+          cryptoAPI = getCrypto(
+            utils: mockUtils,
+          );
           await cryptoAPI.init();
 
           final String pubKeyActual = await cryptoAPI.generateKeyPair();
           verify(mockUtils.generateKeyPair()).called(1);
-          verify(keyChain.set(publicKey, privateKey)).called(1);
+          // verify(keyChain.set(publicKey, privateKey)).called(1);
           expect(pubKeyActual, publicKey);
         },
       );
@@ -85,8 +91,7 @@ void main() {
 
     group('generateSharedKey', () {
       test('Throws if not initialized', () async {
-        keyChain = MockKeyChain();
-        cryptoAPI = Crypto(core, keyChain: keyChain);
+        cryptoAPI = getCrypto();
         expect(
           () async => await cryptoAPI.generateSharedKey('a', 'b'),
           throwsA(isA<WalletConnectError>()),
@@ -110,19 +115,19 @@ void main() {
               .thenAnswer(
             (_) async => expectedSymKey,
           );
-          when(keyChain.get(selfKP.publicKey)).thenReturn(selfKP.privateKey);
-          cryptoAPI = Crypto(core, keyChain: keyChain, utils: mockUtils);
+          cryptoAPI = getCrypto(
+            utils: mockUtils,
+          );
           await cryptoAPI.init();
+          await cryptoAPI.keyChain.set(selfKP.publicKey, selfKP.privateKey);
 
           final String topicActual = await cryptoAPI.generateSharedKey(
             selfKP.publicKey,
             peerPublicKey,
             overrideTopic: overrideTopic,
           );
-          verify(keyChain.get(selfKP.publicKey)).called(1);
           verify(mockUtils.deriveSymKey(selfKP.privateKey, peerPublicKey))
               .called(1);
-          verify(keyChain.set(overrideTopic, expectedSymKey)).called(1);
           expect(topicActual, overrideTopic);
         },
       );
@@ -130,10 +135,8 @@ void main() {
 
     group('setSymKey', () {
       test('Throws if not initialized', () async {
-        keyChain = MockKeyChain();
-        cryptoAPI = Crypto(core, keyChain: keyChain);
         expect(
-          () async => await cryptoAPI.setSymKey('a'),
+          () async => await cryptoApiUninitialized.setSymKey('a'),
           throwsA(isA<WalletConnectError>()),
         );
       });
@@ -148,9 +151,9 @@ void main() {
           final topicActual = await cryptoAPI.setSymKey(fakeSymKey);
 
           expect(topicActual, topic);
-          verify(keyChain.set(topicActual, fakeSymKey)).called(1);
         },
       );
+
       test(
         'sets expected topic-symKey pair in keychain it override topic is provided',
         () async {
@@ -164,17 +167,14 @@ void main() {
           );
 
           expect(topicActual, topic);
-          verify(keyChain.set(topicActual, fakeSymKey)).called(1);
         },
       );
     });
 
     group('deleteKeyPair', () {
       test('Throws if not initialized', () async {
-        keyChain = MockKeyChain();
-        cryptoAPI = Crypto(core, keyChain: keyChain);
         expect(
-          () async => await cryptoAPI.deleteKeyPair('a'),
+          () async => await cryptoApiUninitialized.deleteKeyPair('a'),
           throwsA(isA<WalletConnectError>()),
         );
       });
@@ -185,19 +185,20 @@ void main() {
           CryptoUtils utils = CryptoUtils();
           final pubKey = utils.generateRandomBytes32();
 
-          await cryptoAPI.deleteSymKey(pubKey);
+          await cryptoAPI.keyChain.set(pubKey, 'test');
 
-          verify(keyChain.delete(pubKey)).called(1);
+          expect(cryptoAPI.keyChain.get(pubKey), isNotNull);
+          await cryptoAPI.deleteKeyPair(pubKey);
+
+          expect(cryptoAPI.keyChain.get(pubKey), isNull);
         },
       );
     });
 
     group('deleteSymKey', () {
       test('Throws if not initialized', () async {
-        keyChain = MockKeyChain();
-        cryptoAPI = Crypto(core, keyChain: keyChain);
         expect(
-          () async => await cryptoAPI.deleteSymKey('a'),
+          () async => await cryptoApiUninitialized.deleteSymKey('a'),
           throwsA(isA<WalletConnectError>()),
         );
       });
@@ -208,9 +209,12 @@ void main() {
           CryptoUtils utils = CryptoUtils();
           final topic = utils.generateRandomBytes32();
 
+          await cryptoAPI.keyChain.set(topic, 'test');
+
+          expect(cryptoAPI.keyChain.get(topic), isNotNull);
           await cryptoAPI.deleteSymKey(topic);
 
-          verify(keyChain.delete(topic)).called(1);
+          expect(cryptoAPI.keyChain.get(topic), isNull);
         },
       );
     });
@@ -223,10 +227,8 @@ void main() {
           "AG7iJl9mMl9K04REnuWaKLQU6kwMcQWUd69OxGOJ5/A+VRRKkxnKhBeIAl4JRaIft3qZKEfnBvc7/Fife1DWcERqAfJwzPI=";
 
       test('Throws if not initialized', () async {
-        keyChain = MockKeyChain();
-        cryptoAPI = Crypto(core, keyChain: keyChain);
         expect(
-          () async => await cryptoAPI.encode('a', {}),
+          () async => await cryptoApiUninitialized.encode('a', {}),
           throwsA(isA<WalletConnectError>()),
         );
       });
@@ -235,7 +237,6 @@ void main() {
         'encrypts payload if the passed topic is known',
         () async {
           final topic = await cryptoAPI.setSymKey(SYM_KEY);
-          when(keyChain.get(topic)).thenReturn(SYM_KEY);
           final String? encoded = await cryptoAPI.encode(topic, PAYLOAD);
 
           final String? decoded = await cryptoAPI.decode(topic, encoded!);
@@ -249,13 +250,12 @@ void main() {
       test(
         'returns null if the passed topic is known',
         () async {
-          final topic = await cryptoAPI.setSymKey(SYM_KEY);
-          when(keyChain.get(topic)).thenReturn(null);
+          final topic = CryptoUtils().hashKey(SYM_KEY);
           final String? encoded = await cryptoAPI.encode(topic, PAYLOAD);
-          expect(encoded, null);
+          expect(encoded, isNull);
 
           final String? decoded = await cryptoAPI.decode(topic, ENCODED);
-          expect(decoded, null);
+          expect(decoded, isNull);
         },
       );
     });

@@ -10,6 +10,7 @@ import 'package:walletconnect_flutter_v2/apis/core/relay_client/relay_client_mod
 import 'package:walletconnect_flutter_v2/apis/models/basic_models.dart';
 
 import '../shared/shared_test_values.dart';
+import 'shared/shared_test_utils.dart';
 import 'shared/shared_test_utils.mocks.dart';
 
 void main() {
@@ -94,16 +95,13 @@ void main() {
     );
     late RelayClient relayClient;
     MockMessageTracker messageTracker = MockMessageTracker();
-    MockTopicMap topicMap = MockTopicMap();
 
     setUp(() async {
-      when(topicMap.has(TEST_TOPIC)).thenReturn(true);
-
       await core.start();
       relayClient = RelayClient(
-        core,
+        core: core,
         messageTracker: messageTracker,
-        topicMap: topicMap,
+        topicMap: getTopicMap(core: core),
       );
       await relayClient.init();
     });
@@ -113,6 +111,8 @@ void main() {
     // });
 
     test('Handle publish broadcasts and stores the message event', () async {
+      await relayClient.topicMap.set(TEST_TOPIC, 'test');
+
       int counter = 0;
       relayClient.onRelayClientMessage.subscribe((MessageEvent? args) {
         counter++;
@@ -157,8 +157,16 @@ void main() {
         );
         await coreA.start();
         await coreB.start();
-        coreA.relayClient = RelayClient(coreA);
-        coreB.relayClient = RelayClient(coreB);
+        coreA.relayClient = RelayClient(
+          core: coreA,
+          messageTracker: getMessageTracker(core: coreA),
+          topicMap: getTopicMap(core: coreA),
+        );
+        coreB.relayClient = RelayClient(
+          core: coreB,
+          messageTracker: getMessageTracker(core: coreB),
+          topicMap: getTopicMap(core: coreB),
+        );
         await coreA.relayClient.init();
         await coreB.relayClient.init();
       });

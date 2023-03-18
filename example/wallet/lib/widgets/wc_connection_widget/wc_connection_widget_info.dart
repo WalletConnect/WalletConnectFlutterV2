@@ -68,7 +68,7 @@ class WCConnectionWidgetInfo extends StatelessWidget {
     return Text(
       model.text!,
       style: StyleConstants.layerTextStyle3,
-      textAlign: TextAlign.center,
+      // textAlign: TextAlign.center,
     );
   }
 }

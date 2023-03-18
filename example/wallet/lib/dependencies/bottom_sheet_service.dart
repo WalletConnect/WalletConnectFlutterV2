@@ -67,7 +67,7 @@ class BottomSheetService extends IBottomSheetService {
             StyleConstants.linear16,
           ),
           constraints: BoxConstraints(
-            maxHeight: MediaQuery.of(context).size.height * 0.8,
+            maxHeight: MediaQuery.of(context).size.height * 1.8,
           ),
           child: queueItem.widget,
         );

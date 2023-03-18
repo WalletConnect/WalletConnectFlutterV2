@@ -65,14 +65,18 @@ class Pairing implements IPairing {
     _registerRelayEvents();
     _registerExpirerEvents();
 
-    pairings ??= PairingStore(core);
+    pairings ??= PairingStore(
+      core: core,
+      context: StoreVersions.CONTEXT_PAIRINGS,
+      version: StoreVersions.VERSION_PAIRINGS,
+      fromJson: (dynamic value) {
+        return PairingInfo.fromJson(value as Map<String, dynamic>);
+      },
+    );
     topicToReceiverPublicKey = GenericStore(
       core: core,
       context: 'topicToReceiverPublicKey',
       version: '1.0',
-      toJson: (String value) {
-        return value;
-      },
       fromJson: (dynamic value) {
         return value as String;
       },
@@ -397,9 +401,15 @@ class Pairing implements IPairing {
     if (ttl != null) {
       opts = opts.copyWith(ttl: ttl);
     }
+
     await core.history.set(
-      topic,
-      request,
+      payload['id'].toString(),
+      JsonRpcRecord(
+        id: payload['id'],
+        topic: topic,
+        method: method,
+        params: params,
+      ),
     );
     // print('sent request');
     await core.relayClient.publish(
@@ -514,7 +524,8 @@ class Pairing implements IPairing {
     // Cleanup all of the expired receiver public keys
     final List<String> expiredReceiverPublicKeys = topicToReceiverPublicKey
         .getAll()
-        .where((key) => WalletConnectUtils.isExpired(core.expirer.get(key)))
+        .where(
+            (key) => WalletConnectUtils.isExpired(core.expirer.get(key) ?? -1))
         .toList();
     expiredReceiverPublicKeys.map(
       (String key) async => await topicToReceiverPublicKey.delete(key),
@@ -587,7 +598,8 @@ class Pairing implements IPairing {
     // Otherwise handle it as a response
     else {
       final response = JsonRpcResponse.fromJson(data);
-      final JsonRpcRecord? record = core.history.get(response.id);
+      final JsonRpcRecord? record = core.history.get(response.id.toString());
+      // print(record);
       if (record == null) {
         return;
       }
