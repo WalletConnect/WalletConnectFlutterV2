@@ -29,7 +29,7 @@ class Web3WalletService extends IWeb3WalletService {
   ValueNotifier<List<SessionData>> sessions =
       ValueNotifier<List<SessionData>>([]);
   @override
-  ValueNotifier<List<AuthRequest>> auth = ValueNotifier<List<AuthRequest>>([]);
+  ValueNotifier<List<StoredCacao>> auth = ValueNotifier<List<StoredCacao>>([]);
 
   @override
   void create() {
@@ -50,17 +50,19 @@ class Web3WalletService extends IWeb3WalletService {
     List<ChainKey> chainKeys = GetIt.I<IKeyService>().getKeys();
     for (final chainKey in chainKeys) {
       for (final chainId in chainKey.chains) {
-        print('registering $chainId:${chainKey.publicKey}');
+        // print('registering $chainId:${chainKey.publicKey}');
         _web3Wallet!.registerAccount(
           chainId: chainId,
-          accountAddress: chainKey.publicKey,
+          accountAddress: 'k**${chainKey.publicKey}',
         );
       }
     }
 
     // Setup our listeners
     print('web3wallet create');
-    _web3Wallet!.core.pairing.onPairingCreate.subscribe(_onPairingProposal);
+    _web3Wallet!.core.pairing.onPairingInvalid.subscribe(_onPairingInvalid);
+    _web3Wallet!.core.pairing.onPairingCreate.subscribe(_onPairingCreate);
+    _web3Wallet!.pairings.onSync.subscribe(_onPairingsSync);
     _web3Wallet!.onSessionProposal.subscribe(_onSessionProposal);
     _web3Wallet!.onSessionProposalError.subscribe(_onSessionProposalError);
     _web3Wallet!.onSessionConnect.subscribe(_onSessionConnect);
@@ -73,11 +75,17 @@ class Web3WalletService extends IWeb3WalletService {
     // Await the initialization of the web3wallet
     print('web3wallet init');
     await _web3Wallet!.init();
+
+    pairings.value = _web3Wallet!.pairings.getAll();
+    sessions.value = _web3Wallet!.sessions.getAll();
+    auth.value = _web3Wallet!.completeRequests.getAll();
   }
 
   @override
   FutureOr onDispose() {
     print('web3wallet dispose');
+    _web3Wallet!.core.pairing.onPairingInvalid.unsubscribe(_onPairingInvalid);
+    _web3Wallet!.pairings.onSync.unsubscribe(_onPairingsSync);
     _web3Wallet!.onSessionProposal.unsubscribe(_onSessionProposal);
     _web3Wallet!.onSessionProposalError.unsubscribe(_onSessionProposalError);
     _web3Wallet!.onSessionConnect.unsubscribe(_onSessionConnect);
@@ -90,10 +98,9 @@ class Web3WalletService extends IWeb3WalletService {
     return _web3Wallet!;
   }
 
-  void _onPairingProposal(PairingEvent? args) {
+  void _onPairingsSync(StoreSyncEvent? args) {
     if (args != null) {
-      print(args);
-      // pairings.value.add(args.);
+      pairings.value = _web3Wallet!.pairings.getAll();
     }
   }
 
@@ -135,6 +142,14 @@ class Web3WalletService extends IWeb3WalletService {
         );
       }
     }
+  }
+
+  void _onPairingInvalid(PairingInvalidEvent? args) {
+    print('Pairing Invalid Event: $args');
+  }
+
+  void _onPairingCreate(PairingEvent? args) {
+    print('Pairing Create Event: $args');
   }
 
   void _onSessionConnect(SessionConnect? args) {

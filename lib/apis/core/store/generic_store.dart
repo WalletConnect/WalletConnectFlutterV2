@@ -23,7 +23,7 @@ class GenericStore<T> implements IGenericStore<T> {
   @override
   final Event<StoreDeleteEvent<T>> onDelete = Event();
   @override
-  final Event<StoreSyncEvent<T>> onSync = Event();
+  final Event<StoreSyncEvent> onSync = Event();
 
   bool _initialized = false;
 

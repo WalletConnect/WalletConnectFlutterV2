@@ -16,6 +16,11 @@ class SessionProposalEvent extends EventArgs {
     SessionProposal proposal,
   )   : id = proposal.id,
         params = proposal.params;
+
+  @override
+  String toString() {
+    return 'SessionProposalEvent(id: $id, params: $params)';
+  }
 }
 
 class SessionProposalErrorEvent extends EventArgs {
@@ -30,6 +35,11 @@ class SessionProposalErrorEvent extends EventArgs {
     this.namespaces,
     this.error,
   );
+
+  @override
+  String toString() {
+    return 'SessionProposalErrorEvent(id: $id, requiredNamespaces: $requiredNamespaces, namespaces: $namespaces, error: $error)';
+  }
 }
 
 class SessionConnect extends EventArgs {
@@ -38,6 +48,11 @@ class SessionConnect extends EventArgs {
   SessionConnect(
     this.session,
   );
+
+  @override
+  String toString() {
+    return 'SessionConnect(session: $session)';
+  }
 }
 
 class SessionUpdate extends EventArgs {
@@ -50,6 +65,11 @@ class SessionUpdate extends EventArgs {
     this.topic,
     this.namespaces,
   );
+
+  @override
+  String toString() {
+    return 'SessionUpdate(id: $id, topic: $topic, namespaces: $namespaces)';
+  }
 }
 
 class SessionExtend extends EventArgs {
@@ -57,6 +77,11 @@ class SessionExtend extends EventArgs {
   String topic;
 
   SessionExtend(this.id, this.topic);
+
+  @override
+  String toString() {
+    return 'SessionExtend(id: $id, topic: $topic)';
+  }
 }
 
 class SessionPing extends EventArgs {
@@ -64,6 +89,11 @@ class SessionPing extends EventArgs {
   String topic;
 
   SessionPing(this.id, this.topic);
+
+  @override
+  String toString() {
+    return 'SessionPing(id: $id, topic: $topic)';
+  }
 }
 
 class SessionDelete extends EventArgs {
@@ -74,12 +104,22 @@ class SessionDelete extends EventArgs {
     this.topic, {
     this.id,
   });
+
+  @override
+  String toString() {
+    return 'SessionDelete(topic: $topic, id: $id)';
+  }
 }
 
 class SessionExpire extends EventArgs {
   final String topic;
 
   SessionExpire(this.topic);
+
+  @override
+  String toString() {
+    return 'SessionExpire(topic: $topic)';
+  }
 }
 
 class SessionRequestEvent extends EventArgs {
@@ -108,6 +148,11 @@ class SessionRequestEvent extends EventArgs {
       request.params,
     );
   }
+
+  @override
+  String toString() {
+    return 'SessionRequestEvent(id: $id, topic: $topic, method: $method, chainId: $chainId, params: $params)';
+  }
 }
 
 class SessionEvent extends EventArgs {
@@ -124,10 +169,20 @@ class SessionEvent extends EventArgs {
     this.chainId,
     this.data,
   );
+
+  @override
+  String toString() {
+    return 'SessionEvent(id: $id, topic: $topic, name: $name, chainId: $chainId, data: $data)';
+  }
 }
 
 class ProposalExpire extends EventArgs {
   final int id;
 
   ProposalExpire(this.id);
+
+  @override
+  String toString() {
+    return 'ProposalExpire(id: $id)';
+  }
 }

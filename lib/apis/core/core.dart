@@ -6,6 +6,7 @@ import 'package:walletconnect_flutter_v2/apis/core/pairing/i_expirer.dart';
 import 'package:walletconnect_flutter_v2/apis/core/pairing/i_json_rpc_history.dart';
 import 'package:walletconnect_flutter_v2/apis/core/pairing/json_rpc_history.dart';
 import 'package:walletconnect_flutter_v2/apis/core/pairing/pairing.dart';
+import 'package:walletconnect_flutter_v2/apis/core/pairing/pairing_store.dart';
 import 'package:walletconnect_flutter_v2/apis/core/pairing/utils/pairing_models.dart';
 import 'package:walletconnect_flutter_v2/apis/core/relay_client/message_tracker.dart';
 import 'package:walletconnect_flutter_v2/apis/core/relay_client/relay_client.dart';
@@ -94,7 +95,25 @@ class Core implements ICore {
       version: StoreVersions.VERSION_JSON_RPC_HISTORY,
       fromJson: (dynamic value) => JsonRpcRecord.fromJson(value),
     );
-    pairing = Pairing(this);
+    pairing = Pairing(
+      core: this,
+      pairings: PairingStore(
+        core: this,
+        context: StoreVersions.CONTEXT_PAIRINGS,
+        version: StoreVersions.VERSION_PAIRINGS,
+        fromJson: (dynamic value) {
+          return PairingInfo.fromJson(value as Map<String, dynamic>);
+        },
+      ),
+      topicToReceiverPublicKey: GenericStore(
+        core: this,
+        context: StoreVersions.CONTEXT_TOPIC_TO_RECEIVER_PUBLIC_KEY,
+        version: StoreVersions.VERSION_TOPIC_TO_RECEIVER_PUBLIC_KEY,
+        fromJson: (dynamic value) {
+          return value as String;
+        },
+      ),
+    );
   }
 
   @override

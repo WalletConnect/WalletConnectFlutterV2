@@ -134,7 +134,7 @@ class _MyHomePageState extends State<MyHomePage> with GetItStateMixin {
 
     for (final cId in KadenaChainId.values) {
       GetIt.I.registerSingleton<IChain>(
-        KadenaService(chainId: cId),
+        KadenaService(reference: cId),
         instanceName: cId.chain,
       );
     }

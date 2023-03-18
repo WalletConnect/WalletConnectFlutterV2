@@ -176,7 +176,7 @@ class ConnectPageState extends State<ConnectPage> {
     final ConnectResponse res = await widget.web3App.connect(
       requiredNamespaces: requiredNamespaces,
     );
-    debugPrint('Connection created, connection response: ${res.uri}');
+    // debugPrint('Connection created, connection response: ${res.uri}');
 
     // print(res.uri!.toString());
     _showQrCode(res);
@@ -236,6 +236,8 @@ class ConnectPageState extends State<ConnectPage> {
     ConnectResponse response,
   ) async {
     // Show the QR code
+    debugPrint('Showing QR Code: ${response.uri}');
+
     _shouldDismissQrCode = true;
     await showDialog(
       context: context,
@@ -267,7 +269,7 @@ class ConnectPageState extends State<ConnectPage> {
                       );
                       await showPlatformToast(
                         child: const Text(
-                          StringConstants.urlCopiedToClipboard,
+                          StringConstants.copiedToClipboard,
                         ),
                         context: context,
                       );

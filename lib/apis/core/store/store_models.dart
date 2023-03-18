@@ -30,6 +30,6 @@ class StoreDeleteEvent<T> extends EventArgs {
   );
 }
 
-class StoreSyncEvent<T> extends EventArgs {
+class StoreSyncEvent extends EventArgs {
   StoreSyncEvent();
 }

@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:event/event.dart';
-import 'package:walletconnect_flutter_v2/apis/core/store/generic_store.dart';
 import 'package:walletconnect_flutter_v2/apis/core/store/i_generic_store.dart';
 import 'package:walletconnect_flutter_v2/apis/core/crypto/crypto_models.dart';
 import 'package:walletconnect_flutter_v2/apis/core/i_core.dart';
@@ -10,7 +9,6 @@ import 'package:walletconnect_flutter_v2/apis/core/pairing/i_pairing.dart';
 import 'package:walletconnect_flutter_v2/apis/core/pairing/i_pairing_store.dart';
 import 'package:walletconnect_flutter_v2/apis/models/uri_parse_result.dart';
 import 'package:walletconnect_flutter_v2/apis/core/pairing/utils/pairing_models.dart';
-import 'package:walletconnect_flutter_v2/apis/core/pairing/pairing_store.dart';
 import 'package:walletconnect_flutter_v2/apis/core/pairing/utils/pairing_utils.dart';
 import 'package:walletconnect_flutter_v2/apis/core/relay_client/relay_client_models.dart';
 import 'package:walletconnect_flutter_v2/apis/models/json_rpc_error.dart';
@@ -43,17 +41,18 @@ class Pairing implements IPairing {
   /// Stores all the pending requests
   Map<int, Completer> pendingRequests = {};
 
-  ICore core;
-  IPairingStore? pairings;
+  final ICore core;
+  final IPairingStore pairings;
 
   /// Stores the public key of Type 1 Envelopes for a topic
   /// Once a receiver public key has been used, it is removed from the store
   /// Thus, this store works under the assumption that a public key will only be used once
-  late IGenericStore<String> topicToReceiverPublicKey;
+  final IGenericStore<String> topicToReceiverPublicKey;
 
-  Pairing(
-    this.core, {
-    this.pairings,
+  Pairing({
+    required this.core,
+    required this.pairings,
+    required this.topicToReceiverPublicKey,
   });
 
   @override
@@ -65,33 +64,17 @@ class Pairing implements IPairing {
     _registerRelayEvents();
     _registerExpirerEvents();
 
-    pairings ??= PairingStore(
-      core: core,
-      context: StoreVersions.CONTEXT_PAIRINGS,
-      version: StoreVersions.VERSION_PAIRINGS,
-      fromJson: (dynamic value) {
-        return PairingInfo.fromJson(value as Map<String, dynamic>);
-      },
-    );
-    topicToReceiverPublicKey = GenericStore(
-      core: core,
-      context: 'topicToReceiverPublicKey',
-      version: '1.0',
-      fromJson: (dynamic value) {
-        return value as String;
-      },
-    );
-
     await core.expirer.init();
-    await pairings!.init();
+    await pairings.init();
     await topicToReceiverPublicKey.init();
 
     await _cleanup();
 
     // Resubscribe to all active pairings
-    final List<PairingInfo> activePairings = pairings!.getAll();
+    final List<PairingInfo> activePairings = pairings.getAll();
     for (final PairingInfo pairing in activePairings) {
       if (pairing.active) {
+        print('Resubscribing to topic: ${pairing.topic}');
         await core.relayClient.subscribe(topic: pairing.topic);
       }
     }
@@ -131,7 +114,7 @@ class Pairing implements IPairing {
       ),
     );
 
-    await pairings!.set(topic, pairing);
+    await pairings.set(topic, pairing);
     await core.relayClient.subscribe(topic: topic);
     await core.expirer.set(topic, expiry);
 
@@ -145,7 +128,7 @@ class Pairing implements IPairing {
   @override
   Future<PairingInfo> pair({
     required Uri uri,
-    bool activatePairing = false,
+    bool activatePairing = true,
   }) async {
     _checkInitialized();
 
@@ -186,7 +169,7 @@ class Pairing implements IPairing {
       rethrow;
     }
 
-    await pairings!.set(topic, pairing);
+    await pairings.set(topic, pairing);
     await core.crypto.setSymKey(symKey, overrideTopic: topic);
     await core.relayClient.subscribe(topic: topic);
     await core.expirer.set(topic, expiry);
@@ -210,8 +193,9 @@ class Pairing implements IPairing {
     final int expiry = WalletConnectUtils.calculateExpiry(
       WalletConnectConstants.THIRTY_DAYS,
     );
+    print('Activating pairing with topic: $topic');
 
-    await pairings!.update(
+    await pairings.update(
       topic,
       expiry: expiry,
       active: true,
@@ -280,7 +264,7 @@ class Pairing implements IPairing {
       ),
     );
 
-    await pairings!.update(
+    await pairings.update(
       topic,
       expiry: expiry,
     );
@@ -296,7 +280,7 @@ class Pairing implements IPairing {
     required PairingMetadata metadata,
   }) async {
     _checkInitialized();
-    await pairings!.update(
+    await pairings.update(
       topic,
       metadata: metadata,
     );
@@ -304,7 +288,7 @@ class Pairing implements IPairing {
 
   @override
   List<PairingInfo> getPairings() {
-    return pairings!.getAll();
+    return pairings.getAll();
   }
 
   @override
@@ -313,7 +297,7 @@ class Pairing implements IPairing {
 
     await _isValidPing(topic);
 
-    if (pairings!.has(topic)) {
+    if (pairings.has(topic)) {
       // try {
       final bool _ = await sendRequest(
         topic,
@@ -328,7 +312,7 @@ class Pairing implements IPairing {
     _checkInitialized();
 
     await _isValidDisconnect(topic);
-    if (pairings!.has(topic)) {
+    if (pairings.has(topic)) {
       // Send the request to delete the pairing, we don't care if it fails
       try {
         sendRequest(
@@ -339,7 +323,7 @@ class Pairing implements IPairing {
       } catch (_) {}
 
       // Delete the pairing
-      await pairings!.delete(topic);
+      await pairings.delete(topic);
 
       onPairingDelete.broadcast(
         PairingEvent(
@@ -351,11 +335,11 @@ class Pairing implements IPairing {
 
   @override
   IPairingStore getStore() {
-    return pairings!;
+    return pairings;
   }
 
   Future<void> isValidPairingTopic({required String topic}) async {
-    if (!pairings!.has(topic)) {
+    if (!pairings.has(topic)) {
       throw Errors.getInternalError(
         Errors.NO_MATCHING_KEY,
         context: "pairing topic doesn't exist: $topic",
@@ -504,7 +488,7 @@ class Pairing implements IPairing {
 
   Future<void> _deletePairing(String topic, bool expirerHasDeleted) async {
     await core.relayClient.unsubscribe(topic: topic);
-    await pairings!.delete(topic);
+    await pairings.delete(topic);
     await core.crypto.deleteSymKey(topic);
     if (expirerHasDeleted) {
       await core.expirer.delete(topic);
@@ -518,7 +502,7 @@ class Pairing implements IPairing {
         )
         .toList();
     expiredPairings.map(
-      (PairingInfo e) async => await pairings!.delete(e.topic),
+      (PairingInfo e) async => await pairings.delete(e.topic),
     );
 
     // Cleanup all of the expired receiver public keys
@@ -660,7 +644,7 @@ class Pairing implements IPairing {
         request.method,
         true,
       );
-      await pairings!.delete(topic);
+      await pairings.delete(topic);
       onPairingDelete.broadcast(
         PairingEvent(
           id: id,
@@ -713,7 +697,7 @@ class Pairing implements IPairing {
       return;
     }
 
-    if (pairings!.has(event.target)) {
+    if (pairings.has(event.target)) {
       // Clean up the pairing
       await _deletePairing(event.target, true);
       onPairingExpire.broadcast(

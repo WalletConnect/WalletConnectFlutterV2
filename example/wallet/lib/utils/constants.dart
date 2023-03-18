@@ -69,6 +69,11 @@ class StyleConstants {
     fontSize: linear16,
     fontWeight: FontWeight.w600,
   );
+  static const TextStyle bodyTextBold = TextStyle(
+    color: Colors.white,
+    fontSize: magic14,
+    fontWeight: FontWeight.w900,
+  );
   static const TextStyle bodyText = TextStyle(
     color: Colors.white,
     fontSize: magic14,
