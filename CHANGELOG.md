@@ -1,3 +1,7 @@
+## 1.2.1
+
+- Added `onCreate`, `onUpdate`, `onDelete`, `onSync` events to the Pairings, Sessions, and StoredCacao objects for easier state updates
+
 ## 1.2.0
 
 - AuthClient and SignClient changed to match the WalletConnect Documentation Specifications
