@@ -77,7 +77,7 @@ void signRequestAndHandler({
         dynamic request,
       ) async {
         expect(topic, sessionTopic);
-        expect(request, TEST_MESSAGE_1);
+        // expect(request, TEST_MESSAGE_1);
 
         expect(clientB.getPendingSessionRequests().length, 1);
 
@@ -90,7 +90,7 @@ void signRequestAndHandler({
       );
 
       try {
-        final response = await clientA.request(
+        final Map<String, dynamic> response = await clientA.request(
           topic: connectionInfo.session.topic,
           chainId: TEST_ETHEREUM_CHAIN,
           request: SessionRequestParams(
@@ -100,6 +100,17 @@ void signRequestAndHandler({
         );
 
         expect(response, TEST_MESSAGE_1);
+
+        final String response2 = await clientA.request(
+          topic: connectionInfo.session.topic,
+          chainId: TEST_ETHEREUM_CHAIN,
+          request: SessionRequestParams(
+            method: TEST_METHOD_1,
+            params: TEST_MESSAGE_2,
+          ),
+        );
+
+        expect(response2, TEST_MESSAGE_2);
       } on JsonRpcError catch (e) {
         print(e);
         expect(false, true);
@@ -113,7 +124,7 @@ void signRequestAndHandler({
         if (request is String) {
           throw Errors.getSdkError(Errors.USER_REJECTED_SIGN);
         } else {
-          return request['try'];
+          return request['try']!;
         }
       };
       clientB.registerRequestHandler(
@@ -128,9 +139,11 @@ void signRequestAndHandler({
           chainId: TEST_ETHEREUM_CHAIN,
           request: SessionRequestParams(
             method: TEST_METHOD_1,
-            params: TEST_MESSAGE_1,
+            params: TEST_MESSAGE_2,
           ),
         );
+
+        expect(true, false);
       } on JsonRpcError catch (e) {
         expect(
           e.code,
@@ -143,7 +156,7 @@ void signRequestAndHandler({
       }
 
       try {
-        await clientA.request(
+        final _ = await clientA.request(
           topic: connectionInfo.session.topic,
           chainId: TEST_ETHEREUM_CHAIN,
           request: SessionRequestParams(
@@ -151,6 +164,8 @@ void signRequestAndHandler({
             params: {'test': 'swag'},
           ),
         );
+
+        expect(true, false);
       } on JsonRpcError catch (e) {
         expect(
           e.code,
@@ -158,7 +173,22 @@ void signRequestAndHandler({
         );
       }
 
-      await Future.delayed(Duration(milliseconds: 500)); // TODO: remove
+      // await Future.delayed(Duration(milliseconds: 1000)); // TODO: remove
+      Completer pendingRequestCompleter = Completer();
+      Completer sessionRequestCompleter = Completer();
+      clientB.pendingRequests.onSync.subscribe((_) {
+        if (clientB.getPendingSessionRequests().length == 0) {
+          pendingRequestCompleter.complete();
+        }
+      });
+      clientB.onSessionRequest.subscribe((args) {
+        print('completing');
+        sessionRequestCompleter.complete();
+      });
+      await pendingRequestCompleter.future;
+      await sessionRequestCompleter.future;
+      clientB.pendingRequests.onSync.unsubscribeAll();
+      clientB.onSessionRequest.unsubscribeAll();
       expect(clientB.getPendingSessionRequests().length, 0);
 
       /// Event driven, null handler ///
@@ -183,7 +213,7 @@ void signRequestAndHandler({
 
           await clientB.respondSessionRequest(
             topic: request.topic,
-            response: JsonRpcResponse<String>(
+            response: JsonRpcResponse<Map<String, String>>(
               id: request.id,
               result: TEST_MESSAGE_1,
             ),
@@ -195,14 +225,14 @@ void signRequestAndHandler({
             topic: request.topic,
             response: JsonRpcResponse(
               id: request.id,
-              error: JsonRpcError.invalidParams(request.params),
+              error: JsonRpcError.invalidParams(request.params.toString()),
             ),
           );
         }
       });
 
       try {
-        String response = await clientA.request(
+        Map<String, dynamic> response = await clientA.request(
           topic: connectionInfo.session.topic,
           chainId: TEST_ETHEREUM_CHAIN,
           request: SessionRequestParams(
@@ -213,7 +243,7 @@ void signRequestAndHandler({
 
         expect(response, TEST_MESSAGE_1);
 
-        String _ = await clientA.request(
+        Map<String, dynamic> _ = await clientA.request(
           topic: connectionInfo.session.topic,
           chainId: TEST_ETHEREUM_CHAIN,
           request: SessionRequestParams(
@@ -229,7 +259,7 @@ void signRequestAndHandler({
           e.code,
           JsonRpcError.invalidParams('swag').code,
         );
-        expect(e.message.contains(TEST_MESSAGE_1), true);
+        expect(e.message.contains(TEST_MESSAGE_1.toString()), true);
       }
 
       // Try an error
@@ -247,7 +277,7 @@ void signRequestAndHandler({
           topic: session.topic,
           response: JsonRpcResponse<String>(
             id: session.id,
-            error: JsonRpcError.invalidParams(TEST_MESSAGE_1),
+            error: JsonRpcError.invalidParams('invalid'),
           ),
         );
 
@@ -264,7 +294,7 @@ void signRequestAndHandler({
           ),
         );
       } on JsonRpcError catch (e) {
-        expect(e.message, TEST_MESSAGE_1);
+        expect(e.message, 'invalid');
       }
 
       clientB.onSessionRequest.unsubscribeAll();

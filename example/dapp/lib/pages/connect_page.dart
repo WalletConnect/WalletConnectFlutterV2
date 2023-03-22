@@ -183,7 +183,8 @@ class ConnectPageState extends State<ConnectPage> {
 
     try {
       debugPrint('Awaiting session proposal settlement');
-      await res.session.future;
+      final sessionData = await res.session.future;
+      print(sessionData);
 
       showPlatformToast(
         child: const Text(

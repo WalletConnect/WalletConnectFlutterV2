@@ -74,7 +74,7 @@ class Pairing implements IPairing {
     final List<PairingInfo> activePairings = pairings.getAll();
     for (final PairingInfo pairing in activePairings) {
       if (pairing.active) {
-        print('Resubscribing to topic: ${pairing.topic}');
+        // print('Resubscribing to topic: ${pairing.topic}');
         await core.relayClient.subscribe(topic: pairing.topic);
       }
     }
@@ -359,7 +359,7 @@ class Pairing implements IPairing {
   Future sendRequest(
     String topic,
     String method,
-    Map<String, dynamic> params, {
+    dynamic params, {
     int? id,
     int? ttl,
     EncodeOptions? encodeOptions,
@@ -369,7 +369,7 @@ class Pairing implements IPairing {
       params,
       id: id,
     );
-    final JsonRpcRequest request = JsonRpcRequest.fromJson(payload);
+    // final JsonRpcRequest request = JsonRpcRequest.fromJson(payload);
 
     final String? message = await core.crypto.encode(
       topic,
@@ -426,7 +426,10 @@ class Pairing implements IPairing {
     EncodeOptions? encodeOptions,
   }) async {
     // print('sending result');
-    final Map<String, dynamic> payload = PairingUtils.formatJsonRpcResponse(
+    // print(result);
+    // print(result.runtimeType);
+    final Map<String, dynamic> payload =
+        PairingUtils.formatJsonRpcResponse<dynamic>(
       id,
       result,
     );
@@ -566,6 +569,7 @@ class Pairing implements IPairing {
     if (payloadString == null) {
       return;
     }
+    // print(payloadString);
 
     Map<String, dynamic> data = jsonDecode(payloadString);
 
@@ -593,6 +597,8 @@ class Pairing implements IPairing {
         if (response.error != null) {
           pendingRequests.remove(response.id)!.completeError(response.error!);
         } else {
+          // print(
+          //     'completing: ${response.result}, ${response.result.runtimeType}');
           pendingRequests.remove(response.id)!.complete(response.result);
         }
       }

@@ -13,7 +13,7 @@ class PairingUtils {
 
   static Map<String, dynamic> formatJsonRpcRequest(
     String method,
-    Map<String, dynamic> params, {
+    dynamic params, {
     int? id,
   }) {
     return {

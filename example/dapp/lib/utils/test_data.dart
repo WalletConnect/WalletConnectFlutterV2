@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:kadena_dart_sdk/kadena_dart_sdk.dart';
 import 'package:kadena_dart_sdk/models/walletconnect_models.dart';
+import 'package:walletconnect_flutter_v2_dapp/utils/crypto/kadena_test_files.dart'
+    as kdtest;
 
 const String testSignData = 'Test sign data';
 String testSignTypedData(String address) => jsonEncode(
@@ -38,7 +40,7 @@ String testSignTypedData(String address) => jsonEncode(
 
 /// KADENA ///
 
-SignRequest createSignRequest({
+kdtest.SignRequest createSignRequest({
   required String networkId,
   required String signingPubKey,
   required String sender,
@@ -50,7 +52,7 @@ SignRequest createSignRequest({
   double gasPrice = 1e-8,
   int ttl = 600,
 }) =>
-    SignRequest(
+    kdtest.SignRequest(
       code: code,
       data: data ?? {},
       sender: sender,

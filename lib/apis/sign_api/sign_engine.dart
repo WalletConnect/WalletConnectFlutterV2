@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:event/event.dart';
 import 'package:walletconnect_flutter_v2/apis/core/store/i_generic_store.dart';
@@ -211,7 +212,7 @@ class SignEngine implements ISignEngine {
       final Map<String, dynamic> resp = await core.pairing.sendRequest(
         topic,
         MethodConstants.WC_SESSION_PROPOSE,
-        request.toJson(),
+        request,
         id: requestId,
       );
       final String peerPublicKey = resp['responderPublicKey'];
@@ -307,7 +308,7 @@ class SignEngine implements ISignEngine {
               : WalletConnectConstants.RELAYER_DEFAULT_PROTOCOL,
         ),
         responderPublicKey: selfPubKey,
-      ).toJson(),
+      ),
     );
     await _deleteProposal(id);
     await core.pairing.activate(topic: proposal.pairingTopic);
@@ -321,7 +322,7 @@ class SignEngine implements ISignEngine {
     bool acknowledged = await core.pairing.sendRequest(
       sessionTopic,
       MethodConstants.WC_SESSION_SETTLE,
-      request.toJson(),
+      request,
     );
 
     SessionData session = SessionData(
@@ -404,7 +405,7 @@ class SignEngine implements ISignEngine {
     await core.pairing.sendRequest(
       topic,
       MethodConstants.WC_SESSION_UPDATE,
-      WcSessionUpdateRequest(namespaces: namespaces).toJson(),
+      WcSessionUpdateRequest(namespaces: namespaces),
     );
   }
 
@@ -452,15 +453,13 @@ class SignEngine implements ISignEngine {
       chainId,
       request,
     );
-    Map<String, dynamic> payload = WcSessionRequestRequest(
-      chainId: chainId,
-      request: request,
-    ).toJson();
-    request.toJson();
     return await core.pairing.sendRequest(
       topic,
       MethodConstants.WC_SESSION_REQUEST,
-      payload,
+      WcSessionRequestRequest(
+        chainId: chainId,
+        request: request,
+      ),
     );
   }
 
@@ -518,14 +517,13 @@ class SignEngine implements ISignEngine {
       event,
       chainId,
     );
-    Map<String, dynamic> payload = WcSessionEventRequest(
-      chainId: chainId,
-      event: event,
-    ).toJson();
     await core.pairing.sendRequest(
       topic,
       MethodConstants.WC_SESSION_EVENT,
-      payload,
+      WcSessionEventRequest(
+        chainId: chainId,
+        event: event,
+      ),
     );
   }
 
@@ -556,18 +554,16 @@ class SignEngine implements ISignEngine {
     await _isValidDisconnect(topic);
 
     if (sessions.has(topic)) {
-      Map<String, dynamic> payload = WcSessionDeleteRequest(
-        code: reason.code,
-        message: reason.message,
-        data: reason.data,
-      ).toJson();
-
       // Send the request to delete the session, we don't care if it fails
       try {
         core.pairing.sendRequest(
           topic,
           MethodConstants.WC_SESSION_DELETE,
-          payload,
+          WcSessionDeleteRequest(
+            code: reason.code,
+            message: reason.message,
+            data: reason.data,
+          ),
         );
       } catch (_) {}
 

@@ -153,7 +153,7 @@ void main() {
           completer.complete();
         });
 
-        await coreB.pairing.pair(uri: response.uri);
+        await coreB.pairing.pair(uri: response.uri, activatePairing: false);
         await completer.future;
 
         expect(counter, 1);
@@ -180,7 +180,7 @@ void main() {
     test("can activate pairing", () async {
       final CreateResponse response = await coreA.pairing.create();
 
-      await coreB.pairing.pair(uri: response.uri);
+      await coreB.pairing.pair(uri: response.uri, activatePairing: false);
       PairingInfo? pairing = coreB.pairing.getStore().get(response.topic);
 
       expect(pairing != null, true);

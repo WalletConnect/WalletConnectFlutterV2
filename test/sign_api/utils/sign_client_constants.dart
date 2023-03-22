@@ -206,7 +206,8 @@ final testSessionExpired = SessionData(
 
 // Test Messages
 
-const TEST_MESSAGE_1 = 'Hello';
+const TEST_MESSAGE_1 = {"test": "Hello"};
+const TEST_MESSAGE_2 = 'Hello';
 
 const TEST_MESSAGE = "My name is John Doe";
 const TEST_SIGNATURE =

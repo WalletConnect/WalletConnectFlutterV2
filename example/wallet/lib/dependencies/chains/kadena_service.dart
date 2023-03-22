@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:kadena_dart_sdk/kadena_dart_sdk.dart';
@@ -107,7 +109,8 @@ class KadenaService extends IChain {
       );
 
       // Return the signature
-      return signature.toJson();
+      print(jsonEncode(signature));
+      return signature.body;
     } else {
       throw Errors.getSdkError(Errors.USER_REJECTED_SIGN);
     }
