@@ -155,34 +155,36 @@ class ConnectPageState extends State<ConnectPage> {
     );
   }
 
-  void _onConnect(
+  Future<void> _onConnect(
     List<ChainMetadata> chains,
   ) async {
     // Use the chain metadata to build the required namespaces:
     // Get the methods, get the events
     final Map<String, RequiredNamespace> requiredNamespaces = {};
-    final Map<String, dynamic> data = {};
     for (final chain in chains) {
       final RequiredNamespace rNamespace = RequiredNamespace(
-        chains: [chain.chainId],
+        chains: [chain.chain],
         methods: getChainMethods(chain.type),
         events: getChainEvents(chain.type),
       );
-      requiredNamespaces[chain.chainId.split(':')[0]] = rNamespace;
-      data[chain.chainId] = rNamespace.toJson();
+      requiredNamespaces[chain.chain.split(':')[0]] = rNamespace;
     }
-    // debugPrint(data.toString());
+    debugPrint('Required namespaces: $requiredNamespaces');
 
     // Send off a connect
+    debugPrint('Creating connection and session');
     final ConnectResponse res = await widget.web3App.connect(
       requiredNamespaces: requiredNamespaces,
     );
+    // debugPrint('Connection created, connection response: ${res.uri}');
 
     // print(res.uri!.toString());
     _showQrCode(res);
 
     try {
-      await res.session.future;
+      debugPrint('Awaiting session proposal settlement');
+      final sessionData = await res.session.future;
+      // print(sessionData);
 
       showPlatformToast(
         child: const Text(
@@ -192,15 +194,17 @@ class ConnectPageState extends State<ConnectPage> {
       );
 
       // Send off an auth request now that the pairing/session is established
+      debugPrint('Requesting authentication');
       final AuthRequestResponse authRes = await widget.web3App.requestAuth(
         pairingTopic: res.pairingTopic,
         params: AuthRequestParams(
-          chainId: chains[0].chainId,
+          chainId: chains[0].chain,
           domain: Constants.domain,
           aud: Constants.aud,
         ),
       );
 
+      debugPrint('Awaiting authentication response');
       await authRes.completer.future;
 
       showPlatformToast(
@@ -233,6 +237,8 @@ class ConnectPageState extends State<ConnectPage> {
     ConnectResponse response,
   ) async {
     // Show the QR code
+    debugPrint('Showing QR Code: ${response.uri}');
+
     _shouldDismissQrCode = true;
     await showDialog(
       context: context,
@@ -264,7 +270,7 @@ class ConnectPageState extends State<ConnectPage> {
                       );
                       await showPlatformToast(
                         child: const Text(
-                          StringConstants.urlCopiedToClipboard,
+                          StringConstants.copiedToClipboard,
                         ),
                         context: context,
                       );

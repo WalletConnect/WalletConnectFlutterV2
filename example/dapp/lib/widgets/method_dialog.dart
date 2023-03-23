@@ -1,4 +1,8 @@
+import 'dart:convert';
+
+import 'package:fl_toast/fl_toast.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:walletconnect_flutter_v2_dapp/utils/constants.dart';
 import 'package:walletconnect_flutter_v2_dapp/utils/string_constants.dart';
 
@@ -40,11 +44,46 @@ class MethodDialogState extends State<MethodDialog> {
       content: FutureBuilder<dynamic>(
         future: widget.response,
         builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-          debugPrint(snapshot.data);
+          debugPrint('snapshot: $snapshot');
           if (snapshot.hasData) {
-            return Text(snapshot.data.toString());
+            final String t = jsonEncode(snapshot.data);
+            return InkWell(
+              onTap: () async {
+                await Clipboard.setData(
+                  ClipboardData(
+                    text: t,
+                  ),
+                );
+                showPlatformToast(
+                  child: const Text(
+                    StringConstants.copiedToClipboard,
+                  ),
+                  context: context,
+                );
+              },
+              child: Text(
+                t,
+              ),
+            );
           } else if (snapshot.hasError) {
-            return Text(snapshot.error.toString());
+            return InkWell(
+              onTap: () async {
+                await Clipboard.setData(
+                  ClipboardData(
+                    text: snapshot.data.toString(),
+                  ),
+                );
+                showPlatformToast(
+                  child: const Text(
+                    StringConstants.copiedToClipboard,
+                  ),
+                  context: context,
+                );
+              },
+              child: Text(
+                snapshot.error.toString(),
+              ),
+            );
           } else {
             return const SizedBox(
               width: StyleConstants.linear48,

@@ -100,7 +100,7 @@ class SessionWidgetState extends State<SessionWidget> {
     final String account = NamespaceUtils.getAccount(
       namespaceAccount,
     );
-    final ChainMetadata chainMetadata = getChainMetadataFromChainId(chainId);
+    final ChainMetadata chainMetadata = getChainMetadataFromChain(chainId);
 
     final List<Widget> children = [
       Text(
@@ -276,7 +276,7 @@ class SessionWidgetState extends State<SessionWidget> {
           web3App: widget.web3App,
           topic: widget.session.topic,
           method: method.toEip155Method()!,
-          chainId: chainMetadata.chainId,
+          chainId: chainMetadata.chain,
           address: address.toLowerCase(),
         );
       case ChainType.kadena:
@@ -284,7 +284,7 @@ class SessionWidgetState extends State<SessionWidget> {
           web3App: widget.web3App,
           topic: widget.session.topic,
           method: method.toKadenaMethod()!,
-          chainId: chainMetadata.chainId,
+          chainId: chainMetadata.chain,
           address: address.toLowerCase(),
         );
       default:

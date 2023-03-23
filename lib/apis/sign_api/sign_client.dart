@@ -18,7 +18,6 @@ import 'package:walletconnect_flutter_v2/apis/sign_api/models/sign_client_models
 import 'package:walletconnect_flutter_v2/apis/sign_api/models/sign_client_events.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/models/session_models.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/sessions.dart';
-import 'package:walletconnect_flutter_v2/apis/sign_api/utils/sign_constants.dart';
 import 'package:walletconnect_flutter_v2/apis/utils/constants.dart';
 
 class SignClient implements ISignClient {
@@ -95,23 +94,24 @@ class SignClient implements ISignClient {
       metadata: metadata,
       proposals: GenericStore(
         core: core,
-        context: SignConstants.CONTEXT_PROPOSALS,
-        version: SignConstants.VERSION_PROPOSALS,
-        toJson: (ProposalData value) {
-          return value.toJson();
-        },
+        context: StoreVersions.CONTEXT_PROPOSALS,
+        version: StoreVersions.VERSION_PROPOSALS,
         fromJson: (dynamic value) {
           return ProposalData.fromJson(value);
         },
       ),
-      sessions: Sessions(core),
+      sessions: Sessions(
+        core: core,
+        context: StoreVersions.CONTEXT_SESSIONS,
+        version: StoreVersions.VERSION_SESSIONS,
+        fromJson: (dynamic value) {
+          return SessionData.fromJson(value);
+        },
+      ),
       pendingRequests: GenericStore(
         core: core,
-        context: SignConstants.CONTEXT_PENDING_REQUESTS,
-        version: SignConstants.VERSION_PENDING_REQUESTS,
-        toJson: (SessionRequest value) {
-          return value.toJson();
-        },
+        context: StoreVersions.CONTEXT_PENDING_REQUESTS,
+        version: StoreVersions.VERSION_PENDING_REQUESTS,
         fromJson: (dynamic value) {
           return SessionRequest.fromJson(value);
         },
@@ -292,14 +292,14 @@ class SignClient implements ISignClient {
   }
 
   @override
-  void registerEventEmitters({
-    required String namespaceOrChainId,
-    required List<String> events,
+  void registerEventEmitter({
+    required String chainId,
+    required String event,
   }) {
     try {
-      return engine.registerEventEmitters(
-        namespaceOrChainId: namespaceOrChainId,
-        events: events,
+      return engine.registerEventEmitter(
+        chainId: chainId,
+        event: event,
       );
     } catch (e) {
       rethrow;
@@ -307,14 +307,14 @@ class SignClient implements ISignClient {
   }
 
   @override
-  void registerAccounts({
-    required String namespaceOrChainId,
-    required List<String> accounts,
+  void registerAccount({
+    required String chainId,
+    required String accountAddress,
   }) {
     try {
-      return engine.registerAccounts(
-        namespaceOrChainId: namespaceOrChainId,
-        accounts: accounts,
+      return engine.registerAccount(
+        chainId: chainId,
+        accountAddress: accountAddress,
       );
     } catch (e) {
       rethrow;

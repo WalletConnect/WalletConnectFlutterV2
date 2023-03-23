@@ -45,43 +45,44 @@ class PairingsPageState extends State<PairingsPage> {
             pairing: pairing,
             onTap: () async {
               showDialog(
-                  context: context,
-                  builder: (BuildContext context) {
-                    return AlertDialog(
-                      title: const Text(
-                        StringConstants.deletePairing,
-                        style: StyleConstants.titleText,
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: const Text(
+                      StringConstants.deletePairing,
+                      style: StyleConstants.titleText,
+                    ),
+                    content: Text(
+                      pairing.topic,
+                    ),
+                    actions: [
+                      TextButton(
+                        child: const Text(
+                          StringConstants.cancel,
+                        ),
+                        onPressed: () {
+                          Navigator.of(context).pop();
+                        },
                       ),
-                      content: Text(
-                        pairing.topic,
-                      ),
-                      actions: [
-                        TextButton(
-                          child: const Text(
-                            StringConstants.cancel,
-                          ),
-                          onPressed: () {
+                      TextButton(
+                        child: const Text(
+                          StringConstants.delete,
+                        ),
+                        onPressed: () async {
+                          try {
+                            widget.web3App.core.pairing.disconnect(
+                              topic: pairing.topic,
+                            );
                             Navigator.of(context).pop();
-                          },
-                        ),
-                        TextButton(
-                          child: const Text(
-                            StringConstants.delete,
-                          ),
-                          onPressed: () async {
-                            try {
-                              widget.web3App.core.pairing.disconnect(
-                                topic: pairing.topic,
-                              );
-                              Navigator.of(context).pop();
-                            } catch (e) {
-                              debugPrint(e.toString());
-                            }
-                          },
-                        ),
-                      ],
-                    );
-                  });
+                          } catch (e) {
+                            debugPrint(e.toString());
+                          }
+                        },
+                      ),
+                    ],
+                  );
+                },
+              );
             },
           ),
         )

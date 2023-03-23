@@ -1,11 +1,11 @@
 import 'package:walletconnect_flutter_v2/apis/core/crypto/crypto_models.dart';
 import 'package:walletconnect_flutter_v2/apis/core/crypto/i_crypto_utils.dart';
-import 'package:walletconnect_flutter_v2/apis/core/key_chain/i_key_chain.dart';
+import 'package:walletconnect_flutter_v2/apis/core/store/i_generic_store.dart';
 
 abstract class ICrypto {
   abstract final String name;
 
-  abstract IKeyChain? keyChain;
+  abstract IGenericStore<String> keyChain;
 
   Future<void> init();
 

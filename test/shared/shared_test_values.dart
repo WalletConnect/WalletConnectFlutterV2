@@ -1,6 +1,19 @@
 import 'package:walletconnect_flutter_v2/apis/core/crypto/crypto_models.dart';
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 
+const PROPOSER = PairingMetadata(
+  name: 'App A (Proposer, dapp)',
+  description: 'Description of Proposer App run by client A',
+  url: 'https://walletconnect.com',
+  icons: ['https://avatars.githubusercontent.com/u/37784886'],
+);
+const RESPONDER = PairingMetadata(
+  name: 'App B (Responder, Wallet)',
+  description: 'Description of Proposer App run by client B',
+  url: 'https://walletconnect.com',
+  icons: ['https://avatars.githubusercontent.com/u/37784886'],
+);
+
 const TEST_RELAY_URL = String.fromEnvironment(
   'RELAY_ENDPOINT',
   defaultValue: 'wss://relay.walletconnect.com',
@@ -35,56 +48,117 @@ const TEST_URI =
 
 const TEST_ETHEREUM_CHAIN = 'eip155:1';
 
-final Map<String, Set<String>> availableAccounts = {
-  'namespace1:chain1': Set<String>.from([
-    'namespace1:chain1:acc1',
-    'namespace1:chain1:acc2',
-  ]),
-  'namespace1:chain2': Set<String>.from([
-    'namespace1:chain2:acc3',
-    'namespace1:chain2:acc4',
-  ]),
-  'namespace1': Set<String>.from([
-    'namespace1:chain1:acc7',
-    'namespace1:chain1:acc8',
-  ]),
-  'namespace2': Set<String>.from([
-    'namespace2:chain1:acc5',
-    'namespace2:chain2:acc6',
-  ]),
+final Set<String> availableAccounts = {
+  'namespace1:chain1:address1',
+  'namespace1:chain1:address2',
+  'namespace2:chain1:address3',
+  'namespace2:chain1:address4',
+  'namespace2:chain2:address5',
+  'namespace4:chain1:address6',
 };
 
-final List<String> availableMethods = [
+final Set<String> availableMethods = {
   'namespace1:chain1:method1',
   'namespace1:chain1:method2',
-  'namespace1:chain2:method3',
-  'namespace1:chain2:method4',
-  'namespace2:chain1:method5',
-  'namespace2:chain1:method6',
-  'namespace2:chain2:method6',
-];
-
-final Map<String, Set<String>> availableEvents = {
-  'namespace1:chain1': Set<String>.from(['event1', 'event2']),
-  'namespace1:chain2': Set<String>.from(['event3', 'event4']),
-  'namespace2': Set<String>.from(['event5', 'event6']),
+  'namespace2:chain1:method3',
+  'namespace2:chain1:method4',
+  'namespace2:chain2:method3',
+  'namespace4:chain1:method5',
 };
 
-final Map<String, RequiredNamespace> requiredNamespaces = {
+final Set<String> availableEvents = {
+  'namespace1:chain1:event1',
+  'namespace1:chain1:event2',
+  'namespace2:chain1:event3',
+  'namespace2:chain1:event4',
+  'namespace2:chain2:event3',
+  'namespace4:chain1:event5',
+};
+
+final Map<String, RequiredNamespace> requiredNamespacesInAvailable = {
+  'namespace1:chain1': RequiredNamespace(
+    methods: ['method1'],
+    events: ['event1'],
+  ),
+  'namespace2': RequiredNamespace(
+    chains: ['namespace2:chain1', 'namespace2:chain2'],
+    methods: ['method3'],
+    events: ['event3'],
+  ),
+};
+
+final Map<String, RequiredNamespace> requiredNamespacesMatchingAvailable1 = {
   'namespace1:chain1': RequiredNamespace(
     methods: ['method1', 'method2'],
     events: ['event1', 'event2'],
   ),
   'namespace2': RequiredNamespace(
-    methods: ['method6'],
-    events: ['event5', 'event6'],
-    chains: ['namespace2:chain1', 'namespace2:chain2'],
+    chains: ['namespace2:chain1'],
+    methods: ['method3', 'method4'],
+    events: ['event3', 'event4'],
   ),
 };
 
-final Map<String, RequiredNamespace> optionalNamespaces = {
-  'namespace1:chain2': RequiredNamespace(
+final Map<String, RequiredNamespace> requiredNamespacesNonconformingAccounts1 =
+    {
+  'namespace3': RequiredNamespace(
+    chains: ['namespace3:chain1'],
+    methods: [],
+    events: [],
+  ),
+};
+
+final Map<String, RequiredNamespace> requiredNamespacesNonconformingMethods1 = {
+  'namespace1:chain1': RequiredNamespace(
+    methods: ['method1', 'method2', 'method3'],
+    events: ['event1', 'event2'],
+  ),
+  'namespace2': RequiredNamespace(
+    chains: ['namespace2:chain1', 'namespace2:chain2'],
+    methods: ['method3'],
+    events: ['event3'],
+  ),
+};
+
+final Map<String, RequiredNamespace> requiredNamespacesNonconformingMethods2 = {
+  'namespace1:chain1': RequiredNamespace(
+    methods: ['method1', 'method2'],
+    events: ['event1', 'event2'],
+  ),
+  'namespace2': RequiredNamespace(
+    chains: ['namespace2:chain1', 'namespace2:chain2'],
     methods: ['method3', 'method4'],
+    events: ['event3'],
+  ),
+};
+
+final Map<String, RequiredNamespace> requiredNamespacesNonconformingEvents1 = {
+  'namespace1:chain1': RequiredNamespace(
+    methods: ['method1', 'method2'],
+    events: ['event1', 'event2', 'event3'],
+  ),
+  'namespace2': RequiredNamespace(
+    chains: ['namespace2:chain1', 'namespace2:chain2'],
+    methods: ['method3'],
+    events: ['event3'],
+  ),
+};
+
+final Map<String, RequiredNamespace> requiredNamespacesNonconformingEvents2 = {
+  'namespace1:chain1': RequiredNamespace(
+    methods: ['method1', 'method2'],
+    events: ['event1', 'event2'],
+  ),
+  'namespace2': RequiredNamespace(
+    chains: ['namespace2:chain1', 'namespace2:chain2'],
+    methods: ['method3'],
     events: ['event3', 'event4'],
+  ),
+};
+
+Map<String, RequiredNamespace> optionalNamespaces = {
+  'namespace4:chain1': RequiredNamespace(
+    methods: ['method5'],
+    events: ['event5', 'event2'],
   ),
 };

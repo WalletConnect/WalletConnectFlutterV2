@@ -23,6 +23,11 @@ class RequiredNamespace {
   Map<String, dynamic> toJson() => _$RequiredNamespaceToJson(this);
 
   @override
+  String toString() {
+    return 'RequiredNamespace(chains: $chains, methods: $methods, events: $events)';
+  }
+
+  @override
   bool operator ==(Object other) {
     return other is RequiredNamespace && hashCode == other.hashCode;
   }

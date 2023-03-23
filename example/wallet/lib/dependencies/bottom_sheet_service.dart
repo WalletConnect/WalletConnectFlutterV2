@@ -3,9 +3,10 @@ import 'dart:collection';
 
 import 'package:flutter/material.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/i_bottom_sheet_service.dart';
+import 'package:walletconnect_flutter_v2_wallet/utils/constants.dart';
 
 class BottomSheetService extends IBottomSheetService {
-  final BuildContext context;
+  BuildContext context;
 
   BottomSheetService(this.context);
 
@@ -35,6 +36,11 @@ class BottomSheetService extends IBottomSheetService {
     return await completer.future;
   }
 
+  @override
+  void setDefaultContext(BuildContext context) {
+    this.context = context;
+  }
+
   Future<dynamic> showNext() async {
     bottomSheetIsOpen = true;
 
@@ -43,8 +49,34 @@ class BottomSheetService extends IBottomSheetService {
 
     final value = await showModalBottomSheet(
       context: queueItem.context,
+      backgroundColor: StyleConstants.clear,
+      isScrollControlled: true,
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(queueItem.context).size.height * 0.9,
+      ),
       builder: (context) {
-        return queueItem.widget;
+        return Container(
+          decoration: const BoxDecoration(
+            color: StyleConstants.layerColor1,
+            borderRadius: BorderRadius.all(
+              Radius.circular(
+                StyleConstants.linear16,
+              ),
+            ),
+          ),
+          padding: const EdgeInsets.all(
+            StyleConstants.linear16,
+          ),
+          margin: const EdgeInsets.all(
+            StyleConstants.linear16,
+          ),
+          // constraints: BoxConstraints(
+          //     minHeight: 3000.0,
+          //     maxHeight:
+          //         4000.0 //MediaQuery.of(queueItem.context).size.height * 1.8,
+          //     ),
+          child: queueItem.widget,
+        );
       },
     );
 

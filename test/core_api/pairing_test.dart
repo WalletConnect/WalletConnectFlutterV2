@@ -4,15 +4,15 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:walletconnect_flutter_v2/apis/core/core.dart';
 import 'package:walletconnect_flutter_v2/apis/core/i_core.dart';
 import 'package:walletconnect_flutter_v2/apis/core/pairing/utils/pairing_models.dart';
-import 'package:walletconnect_flutter_v2/apis/core/pairing/utils/pairing_utils.dart';
+import 'package:walletconnect_flutter_v2/apis/core/pairing/utils/json_rpc_utils.dart';
 import 'package:walletconnect_flutter_v2/apis/core/relay_client/relay_client_models.dart';
-import 'package:walletconnect_flutter_v2/apis/models/json_rpc_error.dart';
 import 'package:walletconnect_flutter_v2/apis/models/basic_models.dart';
 import 'package:walletconnect_flutter_v2/apis/models/uri_parse_result.dart';
 import 'package:walletconnect_flutter_v2/apis/utils/constants.dart';
 import 'package:walletconnect_flutter_v2/apis/utils/method_constants.dart';
 import 'package:walletconnect_flutter_v2/apis/utils/walletconnect_utils.dart';
 
+import '../shared/shared_test_utils.dart';
 import '../shared/shared_test_values.dart';
 
 void main() {
@@ -85,11 +85,13 @@ void main() {
         relayUrl: TEST_RELAY_URL,
         projectId: TEST_PROJECT_ID,
         memoryStore: true,
+        httpClient: getHttpWrapper(),
       );
       coreB = Core(
         relayUrl: TEST_RELAY_URL,
         projectId: TEST_PROJECT_ID,
         memoryStore: true,
+        httpClient: getHttpWrapper(),
       );
       await coreA.start();
       await coreB.start();
@@ -154,7 +156,7 @@ void main() {
           completer.complete();
         });
 
-        await coreB.pairing.pair(uri: response.uri);
+        await coreB.pairing.pair(uri: response.uri, activatePairing: false);
         await completer.future;
 
         expect(counter, 1);
@@ -181,7 +183,7 @@ void main() {
     test("can activate pairing", () async {
       final CreateResponse response = await coreA.pairing.create();
 
-      await coreB.pairing.pair(uri: response.uri);
+      await coreB.pairing.pair(uri: response.uri, activatePairing: false);
       PairingInfo? pairing = coreB.pairing.getStore().get(response.topic);
 
       expect(pairing != null, true);
@@ -306,6 +308,7 @@ void main() {
           relayUrl: TEST_RELAY_URL,
           projectId: TEST_PROJECT_ID,
           memoryStore: true,
+          httpClient: getHttpWrapper(),
         );
         await coreA.start();
       });
@@ -410,21 +413,21 @@ void main() {
             )
           ];
           expect(
-            PairingUtils.validateMethods(
+            JsonRpcUtils.validateMethods(
               ['wc_sessionPropose'],
               registeredFunctions,
             ),
             true,
           );
           expect(
-            PairingUtils.validateMethods(
+            JsonRpcUtils.validateMethods(
               ['wc_sessionPropose', 'wc_authRequest'],
               registeredFunctions,
             ),
             true,
           );
           expect(
-            PairingUtils.validateMethods(
+            JsonRpcUtils.validateMethods(
               ['wc_sessionPropose', 'wc_authRequest', 'wc_authBatchRequest'],
               registeredFunctions,
             ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:walletconnect_flutter_v2_wallet/utils/constants.dart';
 import 'package:walletconnect_flutter_v2_wallet/utils/string_constants.dart';
+import 'package:walletconnect_flutter_v2_wallet/widgets/custom_button.dart';
 
 class UriInputPopup extends StatelessWidget {
   UriInputPopup({
@@ -38,6 +39,7 @@ class UriInputPopup extends StatelessWidget {
                 hintStyle: StyleConstants.layerTextStyle3,
                 hintText: StringConstants.textFieldPlaceholder,
                 fillColor: StyleConstants.layerColor2,
+                labelStyle: StyleConstants.layerTextStyle3,
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.all(
                     Radius.circular(
@@ -48,21 +50,36 @@ class UriInputPopup extends StatelessWidget {
               ),
               autofocus: true,
             ),
-            MaterialButton(
-              child: const Text(
-                StringConstants.connect,
-                style: StyleConstants.buttonText,
-              ),
-              onPressed: () {
-                Navigator.of(context).pop(
-                  controller.text,
-                );
-              },
+            const SizedBox(
+              height: StyleConstants.linear16,
+            ),
+            Row(
+              children: [
+                CustomButton(
+                  type: CustomButtonType.normal,
+                  onTap: () {
+                    Navigator.of(context).pop(
+                      controller.text,
+                    );
+                  },
+                  child: const Text(
+                    StringConstants.connect,
+                    style: StyleConstants.buttonText,
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(
+              height: StyleConstants.linear16,
             ),
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
-              child: const Text(
+              child: Text(
                 StringConstants.cancel,
+                style: StyleConstants.buttonText.copyWith(
+                  color: Colors.blue,
+                ),
               ),
             ),
           ],

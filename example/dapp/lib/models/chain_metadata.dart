@@ -8,7 +8,7 @@ enum ChainType {
 }
 
 class ChainMetadata {
-  final String chainId;
+  final String chain;
   final String name;
   final String logo;
   final bool isTestnet;
@@ -17,7 +17,7 @@ class ChainMetadata {
   final List<String> rpc;
 
   const ChainMetadata({
-    required this.chainId,
+    required this.chain,
     required this.name,
     required this.logo,
     this.isTestnet = false,
@@ -31,7 +31,7 @@ class ChainMetadata {
     if (identical(this, other)) return true;
 
     return other is ChainMetadata &&
-        other.chainId == chainId &&
+        other.chain == chain &&
         other.name == name &&
         other.logo == logo &&
         other.isTestnet == isTestnet &&
@@ -40,7 +40,7 @@ class ChainMetadata {
 
   @override
   int get hashCode {
-    return chainId.hashCode ^
+    return chain.hashCode ^
         name.hashCode ^
         logo.hashCode ^
         rpc.hashCode ^

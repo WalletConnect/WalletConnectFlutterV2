@@ -257,3 +257,18 @@ class Errors {
     return new WalletConnectError(code: -1, message: "UNKNOWN SDK ERROR");
   }
 }
+
+class WebSocketErrors {
+  static const int PROJECT_ID_NOT_FOUND = 401;
+  static const int INVALID_PROJECT_ID = 403;
+  static const int TOO_MANY_REQUESTS = 1013;
+  static const String INVALID_PROJECT_ID_MESSAGE =
+      "Invalid project id. Please check your project id.";
+  static const String PROJECT_ID_NOT_FOUND_MESSAGE = "Project id not found.";
+  static const String TOO_MANY_REQUESTS_MESSAGE =
+      "Too many requests. Please try again later.";
+
+  static const int SERVER_TERMINATING = 1001;
+  static const int CLIENT_STALE = 4008;
+  static const int LOAD_REBALANCING = 4010;
+}

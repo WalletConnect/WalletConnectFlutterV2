@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 import 'package:walletconnect_flutter_v2_wallet/utils/constants.dart';
+import 'package:walletconnect_flutter_v2_wallet/utils/namespace_model_builder.dart';
 import 'package:walletconnect_flutter_v2_wallet/utils/string_constants.dart';
 import 'package:walletconnect_flutter_v2_wallet/widgets/wc_connection_request/wc_auth_request_model.dart';
 import 'package:walletconnect_flutter_v2_wallet/widgets/wc_connection_request/wc_session_request_model.dart';
@@ -12,13 +13,11 @@ class WCConnectionRequestWidget extends StatelessWidget {
   const WCConnectionRequestWidget({
     Key? key,
     required this.wallet,
-    required this.title,
     this.authRequest,
     this.sessionProposal,
   }) : super(key: key);
 
   final Web3Wallet wallet;
-  final String title;
   final WCAuthRequestModel? authRequest;
   final WCSessionRequestModel? sessionProposal;
 
@@ -33,9 +32,6 @@ class WCConnectionRequestWidget extends StatelessWidget {
     }
 
     return Container(
-      padding: const EdgeInsets.all(
-        StyleConstants.linear8,
-      ),
       decoration: BoxDecoration(
         color: StyleConstants.layerColor1,
         borderRadius: BorderRadius.circular(
@@ -43,21 +39,25 @@ class WCConnectionRequestWidget extends StatelessWidget {
         ),
       ),
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisSize: MainAxisSize.min,
         children: [
-          _buildTitle(title),
+          _buildTitle(metadata.metadata.name),
           const Text(
             StringConstants.wouldLikeToConnect,
             style: StyleConstants.subtitleText,
             textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 8),
+          const SizedBox(height: StyleConstants.linear8),
           Text(
-            metadata.metadata.name,
+            metadata.metadata.url,
             style: StyleConstants.bodyText,
+            textAlign: TextAlign.center,
           ),
-          const SizedBox(height: 8),
-          authRequest != null ? _buildAuthRequest() : _buildSessionProposal(),
+          const SizedBox(height: StyleConstants.linear8),
+          authRequest != null
+              ? _buildAuthRequest()
+              : _buildSessionProposal(context),
         ],
       ),
     );
@@ -87,60 +87,25 @@ class WCConnectionRequestWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildSessionProposal() {
+  Widget _buildSessionProposal(BuildContext context) {
     // Create the connection models using the required and optional namespaces provided by the proposal data
     // The key is the title and the list of values is the data
-    final List<WCConnectionWidget> views = [];
-    for (final key in sessionProposal!.request.requiredNamespaces.keys) {
-      RequiredNamespace ns = sessionProposal!.request.requiredNamespaces[key]!;
-      final List<WCConnectionModel> models = [];
-      // If the chains property is present, add the chain data to the models
-      if (ns.chains != null) {
-        models.add(
-          WCConnectionModel(
-            title: StringConstants.chains,
-            elements: ns.chains!,
-          ),
-        );
-      }
-      models.add(WCConnectionModel(
-        title: StringConstants.methods,
-        elements: ns.methods,
-      ));
-      models.add(WCConnectionModel(
-        title: StringConstants.events,
-        elements: ns.events,
-      ));
-
-      views.add(
-        WCConnectionWidget(
-          title: key,
-          info: models,
-        ),
-      );
-    }
-
-    return ListView.separated(
-      itemBuilder: (context, index) => views[index],
-      separatorBuilder: (context, index) => const SizedBox(
-        height: StyleConstants.linear8,
-      ),
-      itemCount: views.length,
+    final List<WCConnectionWidget> views =
+        ConnectionWidgetBuilder.buildFromRequiredNamespaces(
+      sessionProposal!.request.requiredNamespaces,
     );
-  }
 
-  Widget _buildButton(
-    String text,
-    VoidCallback onPressed, {
-    bool isPrimary = false,
-  }) {
-    return ElevatedButton(
-      onPressed: onPressed,
-      // style: ButtonStyle(),
-      child: Text(
-        text,
-        style: StyleConstants.buttonText,
-      ),
+    return Column(
+      children: views,
     );
+    // return Expanded(
+    //   child: ListView.separated(
+    //     itemBuilder: (context, index) => views[index],
+    //     separatorBuilder: (context, index) => const SizedBox(
+    //       height: StyleConstants.linear8,
+    //     ),
+    //     itemCount: views.length,
+    //   ),
+    // );
   }
 }

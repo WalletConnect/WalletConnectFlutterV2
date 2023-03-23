@@ -6,6 +6,8 @@ import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 import 'package:walletconnect_flutter_v2_dapp/utils/test_data.dart';
 
 enum KadenaMethods {
+  sign,
+  quicksign,
   kadenaSignV1,
   kadenaQuicksignV1,
   kadenaGetAccountsV1,
@@ -43,6 +45,8 @@ extension KadenaEventsStringX on String {
 
 class Kadena {
   static final Map<KadenaMethods, String> methods = {
+    KadenaMethods.sign: 'kadena_sign',
+    KadenaMethods.quicksign: 'kadena_quicksign',
     KadenaMethods.kadenaSignV1: 'kadena_sign_v1',
     KadenaMethods.kadenaQuicksignV1: 'kadena_quicksign_v1',
     KadenaMethods.kadenaGetAccountsV1: 'kadena_getAccounts_v1'
@@ -57,16 +61,22 @@ class Kadena {
     required String chainId,
     required String address,
   }) {
+    final String addressActual =
+        address.startsWith('k**') ? address.substring(3) : address;
+
     switch (method) {
+      case KadenaMethods.sign:
+      case KadenaMethods.quicksign:
       case KadenaMethods.kadenaSignV1:
         return kadenaSignV1(
           web3App: web3App,
+          method: method,
           topic: topic,
           chainId: chainId,
           data: createSignRequest(
             networkId: chainId.split(':')[1],
-            signingPubKey: address,
-            sender: 'k:$address',
+            signingPubKey: addressActual,
+            sender: 'k:$addressActual',
           ),
         );
       case KadenaMethods.kadenaQuicksignV1:
@@ -78,7 +88,7 @@ class Kadena {
             cmd: jsonEncode(
               createPactCommandPayload(
                 networkId: chainId.split(':')[1],
-                sender: 'k:$address',
+                sender: 'k:$addressActual',
               ).toJson(),
             ),
           ),
@@ -88,25 +98,30 @@ class Kadena {
           web3App: web3App,
           topic: topic,
           chainId: chainId,
-          data: createGetAccountsRequest(account: '$chainId:$address'),
+          data: createGetAccountsRequest(account: '$chainId:$addressActual'),
         );
     }
   }
 
   static Future<dynamic> kadenaSignV1({
     required Web3App web3App,
+    required KadenaMethods method,
     required String topic,
     required String chainId,
     required SignRequest data,
   }) async {
-    return await web3App.request(
+    // print(jsonEncode(data));
+    final ret = await web3App.request(
       topic: topic,
       chainId: chainId,
       request: SessionRequestParams(
-        method: methods[KadenaMethods.kadenaSignV1]!,
-        params: data.toJson(),
+        method: methods[method]!,
+        params: data,
       ),
     );
+    // print('ret: $ret');
+    // print(ret.runtimeType);
+    return ret;
   }
 
   static Future<dynamic> kadenaQuicksignV1({

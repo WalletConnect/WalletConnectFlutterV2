@@ -13,14 +13,17 @@ class WCConnectionWidgetInfo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(
-        StyleConstants.linear8,
-      ),
       decoration: BoxDecoration(
         color: StyleConstants.layerColor3,
         borderRadius: BorderRadius.circular(
-          StyleConstants.linear8,
+          StyleConstants.linear16,
         ),
+      ),
+      padding: const EdgeInsets.all(
+        StyleConstants.linear8,
+      ),
+      margin: const EdgeInsetsDirectional.only(
+        top: StyleConstants.linear8,
       ),
       child: model.elements != null ? _buildList() : _buildText(),
     );
@@ -34,7 +37,7 @@ class WCConnectionWidgetInfo extends StatelessWidget {
           model.title!,
           style: StyleConstants.layerTextStyle3,
         ),
-        const SizedBox(height: 8),
+        const SizedBox(height: StyleConstants.linear8),
         Flex(
           direction: Axis.horizontal,
           children: model.elements!.map((e) => _buildElement(e)).toList(),
@@ -48,7 +51,7 @@ class WCConnectionWidgetInfo extends StatelessWidget {
       decoration: BoxDecoration(
         color: StyleConstants.layerColor4,
         borderRadius: BorderRadius.circular(
-          StyleConstants.linear8,
+          StyleConstants.linear16,
         ),
       ),
       padding: const EdgeInsets.all(
@@ -65,6 +68,7 @@ class WCConnectionWidgetInfo extends StatelessWidget {
     return Text(
       model.text!,
       style: StyleConstants.layerTextStyle3,
+      // textAlign: TextAlign.center,
     );
   }
 }

@@ -7,6 +7,7 @@ import 'package:walletconnect_flutter_v2_dapp/pages/sessions_page.dart';
 import 'package:walletconnect_flutter_v2_dapp/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:walletconnect_flutter_v2_dapp/utils/string_constants.dart';
+import 'package:walletconnect_flutter_v2_dapp/widgets/event_widget.dart';
 
 void main() {
   runApp(const MyApp());
@@ -58,12 +59,15 @@ class _MyHomePageState extends State<MyHomePage> {
     _web3App = await Web3App.createInstance(
       projectId: Constants.projectId,
       metadata: const PairingMetadata(
-        name: 'Example Dapp',
-        description: 'Example Dapp',
+        name: 'Flutter WalletConnect',
+        description: 'Flutter WalletConnect Dapp Example',
         url: 'https://walletconnect.com/',
         icons: ['https://walletconnect.com/walletconnect-logo.png'],
       ),
     );
+
+    _web3App!.onSessionPing.subscribe(_onSessionPing);
+    _web3App!.onSessionEvent.subscribe(_onSessionEvent);
 
     setState(() {
       _pageDatas = [
@@ -94,6 +98,12 @@ class _MyHomePageState extends State<MyHomePage> {
     // } on WalletConnectError catch (e) {
     //   print(e.message);
     // }
+  }
+
+  @override
+  void dispose() {
+    _web3App!.onSessionPing.unsubscribe(_onSessionPing);
+    super.dispose();
   }
 
   @override
@@ -171,6 +181,31 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           )
           .toList(),
+    );
+  }
+
+  void _onSessionPing(SessionPing? args) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return EventWidget(
+          title: StringConstants.receivedPing,
+          content: 'Topic: ${args!.topic}',
+        );
+      },
+    );
+  }
+
+  void _onSessionEvent(SessionEvent? args) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return EventWidget(
+          title: StringConstants.receivedEvent,
+          content:
+              'Topic: ${args!.topic}\nEvent Name: ${args.name}\nEvent Data: ${args.data}',
+        );
+      },
     );
   }
 }

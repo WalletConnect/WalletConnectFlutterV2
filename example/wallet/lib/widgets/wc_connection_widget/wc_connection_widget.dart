@@ -17,16 +17,19 @@ class WCConnectionWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
       decoration: BoxDecoration(
-        color: StyleConstants.layerColor1,
+        color: StyleConstants.layerColor2,
         borderRadius: BorderRadius.circular(
-          StyleConstants.linear8,
+          StyleConstants.linear16,
         ),
+      ),
+      padding: const EdgeInsets.all(
+        StyleConstants.linear8,
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildTitle(title),
-          const SizedBox(height: 8),
+          const SizedBox(height: StyleConstants.linear8),
           ...info.map(
             (e) => WCConnectionWidgetInfo(
               model: e,
@@ -42,13 +45,13 @@ class WCConnectionWidget extends StatelessWidget {
       decoration: BoxDecoration(
         color: StyleConstants.layerBubbleColor2,
         borderRadius: BorderRadius.circular(
-          StyleConstants.linear8,
+          StyleConstants.linear16,
         ),
       ),
       padding: StyleConstants.bubblePadding,
       child: Text(
         text,
-        style: StyleConstants.layerTextStyle3,
+        style: StyleConstants.layerTextStyle2,
       ),
     );
   }

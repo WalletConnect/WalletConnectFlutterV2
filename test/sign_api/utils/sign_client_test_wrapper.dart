@@ -1,4 +1,6 @@
 import 'package:event/event.dart';
+import 'package:walletconnect_flutter_v2/apis/core/relay_client/websocket/http_client.dart';
+import 'package:walletconnect_flutter_v2/apis/core/relay_client/websocket/i_http_client.dart';
 import 'package:walletconnect_flutter_v2/apis/core/store/i_generic_store.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/sign_engine.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/i_sessions.dart';
@@ -50,12 +52,14 @@ class SignClientTestWrapper implements ISignEngine {
     String relayUrl = WalletConnectConstants.DEFAULT_RELAY_URL,
     required PairingMetadata metadata,
     bool memoryStore = false,
+    IHttpClient httpClient = const HttpWrapper(),
   }) async {
     final client = SignClientTestWrapper(
       core: Core(
         projectId: projectId,
         relayUrl: relayUrl,
         memoryStore: memoryStore,
+        httpClient: httpClient,
       ),
       metadata: metadata,
     );
@@ -247,14 +251,14 @@ class SignClientTestWrapper implements ISignEngine {
   }
 
   @override
-  void registerEventEmitters({
-    required String namespaceOrChainId,
-    required List<String> events,
+  void registerEventEmitter({
+    required String chainId,
+    required String event,
   }) {
     try {
-      return client.registerEventEmitters(
-        namespaceOrChainId: namespaceOrChainId,
-        events: events,
+      return client.registerEventEmitter(
+        chainId: chainId,
+        event: event,
       );
     } catch (e) {
       rethrow;
@@ -262,14 +266,14 @@ class SignClientTestWrapper implements ISignEngine {
   }
 
   @override
-  void registerAccounts({
-    required String namespaceOrChainId,
-    required List<String> accounts,
+  void registerAccount({
+    required String chainId,
+    required String accountAddress,
   }) {
     try {
-      return client.registerAccounts(
-        namespaceOrChainId: namespaceOrChainId,
-        accounts: accounts,
+      return client.registerAccount(
+        chainId: chainId,
+        accountAddress: accountAddress,
       );
     } catch (e) {
       rethrow;

@@ -16,13 +16,14 @@ class StyleConstants {
   static const Color darkGray = Color(0xFF141414);
   static const Color lightGray = Color.fromARGB(255, 196, 196, 196);
 
+  static const Color clear = Color.fromARGB(0, 0, 0, 0);
   static const Color layerColor0 = Color(0xFF000000);
-  static const Color layerColor1 = Color(0x99141415);
+  static const Color layerColor1 = Color.fromARGB(255, 18, 18, 19);
   static const Color layerColor1NoAlpha = Color(0xFF141415);
-  static const Color layerColor2 = Color(0x1FE4E4E7);
+  static const Color layerColor2 = Color.fromARGB(255, 65, 65, 71);
   static const Color layerBubbleColor2 = Color(0xFF798686);
   static const Color layerTextColor2 = Color(0xFF141414);
-  static const Color layerColor3 = Color(0x1A272A2A);
+  static const Color layerColor3 = Color.fromARGB(255, 39, 42, 42);
   static const Color layerTextColor3 = Color(0xFF9EA9A9);
   static const Color layerColor4 = Color(0xFF153B47);
   static const Color layerTextColor4 = Color(0xFF1AC6FF);
@@ -68,6 +69,11 @@ class StyleConstants {
     fontSize: linear16,
     fontWeight: FontWeight.w600,
   );
+  static const TextStyle bodyTextBold = TextStyle(
+    color: Colors.white,
+    fontSize: magic14,
+    fontWeight: FontWeight.w900,
+  );
   static const TextStyle bodyText = TextStyle(
     color: Colors.white,
     fontSize: magic14,
@@ -76,6 +82,11 @@ class StyleConstants {
   static const TextStyle bodyLightGray = TextStyle(
     color: lightGray,
     fontSize: magic14,
+  );
+  static const TextStyle layerTextStyle2 = TextStyle(
+    color: layerTextColor2,
+    fontSize: magic14,
+    fontWeight: FontWeight.w600,
   );
   static const TextStyle layerTextStyle3 = TextStyle(
     color: layerTextColor3,
@@ -91,5 +102,6 @@ class StyleConstants {
   // Bubbles
   static const EdgeInsets bubblePadding = EdgeInsets.symmetric(
     vertical: linear8,
+    horizontal: linear8,
   );
 }

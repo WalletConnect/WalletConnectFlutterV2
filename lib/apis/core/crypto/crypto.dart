@@ -5,13 +5,12 @@ import 'package:convert/convert.dart';
 import 'package:walletconnect_flutter_v2/apis/core/crypto/crypto_models.dart';
 import 'package:walletconnect_flutter_v2/apis/core/crypto/crypto_utils.dart';
 import 'package:walletconnect_flutter_v2/apis/core/i_core.dart';
-import 'package:walletconnect_flutter_v2/apis/core/key_chain/key_chain.dart';
 import 'package:walletconnect_flutter_v2/apis/core/crypto/i_crypto.dart';
 import 'package:walletconnect_flutter_v2/apis/core/crypto/i_crypto_utils.dart';
-import 'package:walletconnect_flutter_v2/apis/core/key_chain/i_key_chain.dart';
 import 'package:walletconnect_flutter_v2/apis/core/relay_auth/i_relay_auth.dart';
 import 'package:walletconnect_flutter_v2/apis/core/relay_auth/relay_auth.dart';
 import 'package:walletconnect_flutter_v2/apis/core/relay_auth/relay_auth_models.dart';
+import 'package:walletconnect_flutter_v2/apis/core/store/i_generic_store.dart';
 import 'package:walletconnect_flutter_v2/apis/utils/constants.dart';
 import 'package:walletconnect_flutter_v2/apis/utils/errors.dart';
 
@@ -25,19 +24,21 @@ class Crypto implements ICrypto {
   @override
   String get name => CRYPTO_CONTEXT;
 
-  ICore core;
+  final ICore core;
 
   @override
-  IKeyChain? keyChain;
-  ICryptoUtils? utils;
-  IRelayAuth? relayAuth;
+  IGenericStore<String> keyChain;
 
-  Crypto(
-    this.core, {
-    this.keyChain,
-    this.utils,
-    this.relayAuth,
-  });
+  ICryptoUtils utils;
+  IRelayAuth relayAuth;
+
+  Crypto({
+    required this.core,
+    required this.keyChain,
+    CryptoUtils? utils,
+    RelayAuth? relayAuth,
+  })  : utils = utils ?? CryptoUtils(),
+        relayAuth = relayAuth ?? RelayAuth();
 
   @override
   Future<void> init() async {
@@ -45,24 +46,15 @@ class Crypto implements ICrypto {
       return;
     }
 
-    if (keyChain == null) {
-      keyChain = KeyChain(core);
-    }
-    if (utils == null) {
-      utils = CryptoUtils();
-    }
-    if (relayAuth == null) {
-      relayAuth = RelayAuth();
-    }
+    await keyChain.init();
 
-    await keyChain!.init();
     _initialized = true;
   }
 
   @override
   bool hasKeys(String tag) {
     _checkInitialized();
-    return keyChain!.has(tag);
+    return keyChain.has(tag);
   }
 
   @override
@@ -71,15 +63,15 @@ class Crypto implements ICrypto {
 
     // If we don't have a pub key associated with the seed yet, make one
     final Uint8List seed = await _getClientSeed();
-    final RelayAuthKeyPair keyPair = await relayAuth!.generateKeyPair(seed);
-    return relayAuth!.encodeIss(keyPair.publicKeyBytes);
+    final RelayAuthKeyPair keyPair = await relayAuth.generateKeyPair(seed);
+    return relayAuth.encodeIss(keyPair.publicKeyBytes);
   }
 
   @override
   Future<String> generateKeyPair() async {
     _checkInitialized();
 
-    CryptoKeyPair keyPair = utils!.generateKeyPair();
+    CryptoKeyPair keyPair = utils.generateKeyPair();
     return await _setPrivateKey(keyPair);
   }
 
@@ -92,7 +84,7 @@ class Crypto implements ICrypto {
     _checkInitialized();
 
     String privKey = _getPrivateKey(selfPublicKey)!;
-    String symKey = await utils!.deriveSymKey(privKey, peerPublicKey);
+    String symKey = await utils.deriveSymKey(privKey, peerPublicKey);
     return await setSymKey(symKey, overrideTopic: overrideTopic);
   }
 
@@ -104,22 +96,22 @@ class Crypto implements ICrypto {
     _checkInitialized();
 
     final String topic =
-        overrideTopic == null ? utils!.hashKey(symKey) : overrideTopic;
+        overrideTopic == null ? utils.hashKey(symKey) : overrideTopic;
     // print('crypto setSymKey, symKey: $symKey, overrideTopic: $topic');
-    await keyChain!.set(topic, symKey);
+    await keyChain.set(topic, symKey);
     return topic;
   }
 
   @override
   Future<void> deleteKeyPair(String publicKey) async {
     _checkInitialized();
-    await keyChain!.delete(publicKey);
+    await keyChain.delete(publicKey);
   }
 
   @override
   Future<void> deleteSymKey(String topic) async {
     _checkInitialized();
-    await keyChain!.delete(topic);
+    await keyChain.delete(topic);
   }
 
   @override
@@ -132,9 +124,9 @@ class Crypto implements ICrypto {
 
     EncodingValidation params;
     if (options == null) {
-      params = utils!.validateEncoding();
+      params = utils.validateEncoding();
     } else {
-      params = utils!.validateEncoding(
+      params = utils.validateEncoding(
         type: options.type,
         senderPublicKey: options.senderPublicKey,
         receiverPublicKey: options.receiverPublicKey,
@@ -143,7 +135,7 @@ class Crypto implements ICrypto {
 
     final String message = jsonEncode(payload);
 
-    if (utils!.isTypeOneEnvelope(params)) {
+    if (utils.isTypeOneEnvelope(params)) {
       final String selfPublicKey = params.senderPublicKey!;
       final String peerPublicKey = params.receiverPublicKey!;
       topic = await generateSharedKey(selfPublicKey, peerPublicKey);
@@ -154,7 +146,7 @@ class Crypto implements ICrypto {
       return null;
     }
 
-    final String result = await utils!.encrypt(
+    final String result = await utils.encrypt(
       message,
       symKey,
       type: params.type,
@@ -172,19 +164,12 @@ class Crypto implements ICrypto {
   }) async {
     _checkInitialized();
 
-    EncodingValidation params;
-    if (options == null) {
-      params = utils!.validateDecoding(
-        encoded,
-      );
-    } else {
-      params = utils!.validateDecoding(
-        encoded,
-        receiverPublicKey: options.receiverPublicKey,
-      );
-    }
+    final EncodingValidation params = utils.validateDecoding(
+      encoded,
+      receiverPublicKey: options?.receiverPublicKey,
+    );
 
-    if (utils!.isTypeOneEnvelope(params)) {
+    if (utils.isTypeOneEnvelope(params)) {
       final String selfPublicKey = params.receiverPublicKey!;
       final String peerPublicKey = params.senderPublicKey!;
       topic = await generateSharedKey(selfPublicKey, peerPublicKey);
@@ -194,7 +179,7 @@ class Crypto implements ICrypto {
       return null;
     }
 
-    final String message = await utils!.decrypt(symKey, encoded);
+    final String message = await utils.decrypt(symKey, encoded);
 
     return message;
   }
@@ -203,9 +188,9 @@ class Crypto implements ICrypto {
   Future<String> signJWT(String aud) async {
     _checkInitialized();
     final Uint8List seed = await _getClientSeed();
-    final RelayAuthKeyPair keyPair = await relayAuth!.generateKeyPair(seed);
-    String sub = utils!.generateRandomBytes32();
-    String jwt = await relayAuth!.signJWT(
+    final RelayAuthKeyPair keyPair = await relayAuth.generateKeyPair(seed);
+    String sub = utils.generateRandomBytes32();
+    String jwt = await relayAuth.signJWT(
       sub: sub,
       aud: aud,
       ttl: WalletConnectConstants.ONE_DAY,
@@ -218,43 +203,43 @@ class Crypto implements ICrypto {
   int getPayloadType(String encoded) {
     _checkInitialized();
 
-    return utils!.deserialize(encoded).type;
+    return utils.deserialize(encoded).type;
   }
 
   // PRIVATE FUNCTIONS
 
   Future<String> _setPrivateKey(CryptoKeyPair keyPair) async {
-    await keyChain!.set(keyPair.publicKey, keyPair.privateKey);
+    await keyChain.set(keyPair.publicKey, keyPair.privateKey);
     return keyPair.publicKey;
   }
 
   String? _getPrivateKey(String publicKey) {
-    return keyChain!.get(publicKey);
+    return keyChain.get(publicKey);
   }
 
   String? _getSymKey(String topic) {
     // print('crypto getSymKey: $topic');
-    return keyChain!.get(topic);
+    return keyChain.get(topic);
   }
 
   // Future<String> _getClientKeyFromSeed() async {
   //   // Get the seed
   //   String seed = await _getClientSeed();
 
-  //   String pubKey = keyChain!.get(seed);
+  //   String pubKey = keyChain.get(seed);
   //   if (pubKey == '') {
   //     pubKey = await generateKeyPair();
-  //     await keyChain!.set(seed, pubKey);
+  //     await keyChain.set(seed, pubKey);
   //   }
 
   //   return pubKey;
   // }
 
   Future<Uint8List> _getClientSeed() async {
-    String? seed = keyChain!.get(CLIENT_SEED);
+    String? seed = keyChain.get(CLIENT_SEED);
     if (seed == null) {
-      seed = utils!.generateRandomBytes32();
-      await keyChain!.set(CLIENT_SEED, seed);
+      seed = utils.generateRandomBytes32();
+      await keyChain.set(CLIENT_SEED, seed);
     }
 
     return Uint8List.fromList(hex.decode(seed));
@@ -268,6 +253,6 @@ class Crypto implements ICrypto {
 
   @override
   ICryptoUtils getUtils() {
-    return utils!;
+    return utils;
   }
 }

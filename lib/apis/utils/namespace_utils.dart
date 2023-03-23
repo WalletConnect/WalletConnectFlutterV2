@@ -2,7 +2,7 @@ import 'package:walletconnect_flutter_v2/apis/sign_api/models/proposal_models.da
 import 'package:walletconnect_flutter_v2/apis/sign_api/models/session_models.dart';
 
 class NamespaceUtils {
-  /// Checks if the string is a chainId
+  /// Checks if the string is a chain
   static bool isValidChainId(String value) {
     if (value.contains(":")) {
       List<String> split = value.split(":");
@@ -43,13 +43,13 @@ class NamespaceUtils {
     if (isValidAccount(account)) {
       List<String> parts = account.split(":");
       String namespace = parts[0];
-      String chainId = parts[1];
-      return "$namespace:$chainId";
+      String reference = parts[1];
+      return "$namespace:$reference";
     }
     return account;
   }
 
-  /// Gets all unique chainIds from the provided list of accounts
+  /// Gets all unique chains from the provided list of accounts
   /// This function assumes that all accounts are valid
   static List<String> getChainsFromAccounts(List<String> accounts) {
     Set<String> chains = {};
@@ -65,12 +65,12 @@ class NamespaceUtils {
   }
 
   /// Gets the namespace string id from the chainId
-  /// If the chainId is not valid, then it returns the chain
-  static String getNamespaceFromChain(String chain) {
-    if (isValidChainId(chain)) {
-      return chain.split(":")[0];
+  /// If the chain id is not valid, then it returns the chain id
+  static String getNamespaceFromChain(String chainId) {
+    if (isValidChainId(chainId)) {
+      return chainId.split(":")[0];
     }
-    return chain;
+    return chainId;
   }
 
   /// Gets all unique namespaces from the provided list of accounts
@@ -88,10 +88,10 @@ class NamespaceUtils {
   //   return chains.toList();
   // }
 
-  /// Gets the chainIds from the namespace.
-  /// If the namespace is a chainId, then it returns the chainId.
+  /// Gets the chains from the namespace.
+  /// If the namespace is a chain, then it returns the chain.
   /// Otherwise it gets the chains from the accounts in the namespace.
-  static List<String> getChainsFromNamespace({
+  static List<String> getChainIdsFromNamespace({
     required String nsOrChainId,
     required Namespace namespace,
   }) {
@@ -103,32 +103,31 @@ class NamespaceUtils {
   }
 
   /// Gets the chainIds from the namespace.
-
-  static List<String> getChainsFromNamespaces({
+  static List<String> getChainIdsFromNamespaces({
     required Map<String, Namespace> namespaces,
   }) {
-    Set<String> chains = {};
+    Set<String> chainIds = {};
 
     namespaces.forEach((String ns, Namespace namespace) {
-      chains.addAll(
-        getChainsFromNamespace(
+      chainIds.addAll(
+        getChainIdsFromNamespace(
           nsOrChainId: ns,
           namespace: namespace,
         ),
       );
     });
 
-    return chains.toList();
+    return chainIds.toList();
   }
 
-  /// Gets the methods from a namespace map for the given chainId
+  /// Gets the methods from a namespace map for the given chain
   static List<String> getNamespacesMethodsForChainId({
     required String chainId,
     required Map<String, Namespace> namespaces,
   }) {
     List<String> methods = [];
-    namespaces.forEach((String nsOrChainId, Namespace namespace) {
-      if (nsOrChainId == chainId) {
+    namespaces.forEach((String nsOrChain, Namespace namespace) {
+      if (nsOrChain == chainId) {
         methods.addAll(namespace.methods);
       } else {
         List<String> chains = getChainsFromAccounts(namespace.accounts);
@@ -141,14 +140,14 @@ class NamespaceUtils {
     return methods;
   }
 
-  /// Gets the methods from a namespace map for the given chainId
-  static List<String> getNamespacesEventsForChainId({
+  /// Gets the methods from a namespace map for the given chain id
+  static List<String> getNamespacesEventsForChain({
     required String chainId,
     required Map<String, Namespace> namespaces,
   }) {
     List<String> events = [];
-    namespaces.forEach((String nsOrChainId, Namespace namespace) {
-      if (nsOrChainId == chainId) {
+    namespaces.forEach((String nsOrChain, Namespace namespace) {
+      if (nsOrChain == chainId) {
         events.addAll(namespace.events);
       } else {
         List<String> chains = getChainsFromAccounts(namespace.accounts);
@@ -161,8 +160,8 @@ class NamespaceUtils {
     return events;
   }
 
-  /// If the namespace is a chainId, add it to the list and return it
-  /// Otherwise, get the chainIds from the required namespaces
+  /// If the namespace is a chain, add it to the list and return it
+  /// Otherwise, get the chains from the required namespaces
   static List<String> getChainsFromRequiredNamespace({
     required String nsOrChainId,
     required RequiredNamespace requiredNamespace,
@@ -171,7 +170,7 @@ class NamespaceUtils {
     if (requiredNamespace.chains != null) {
       chains.addAll(requiredNamespace.chains!);
     } else {
-      // We are assuming that the namespace is a chainId
+      // We are assuming that the namespace is a chain
       // Validate the requiredNamespace before it is sent here
       chains.add(nsOrChainId);
     }
@@ -179,16 +178,16 @@ class NamespaceUtils {
     return chains;
   }
 
-  /// Gets the chainIds from the required namespaces
-  /// If keys value is provided, it will only get the chainIds for the provided keys
-  static List<String> getChainsFromRequiredNamespaces({
+  /// Gets the chains from the required namespaces
+  /// If keys value is provided, it will only get the chains for the provided keys
+  static List<String> getChainIdsFromRequiredNamespaces({
     required Map<String, RequiredNamespace> requiredNamespaces,
   }) {
-    Set<String> chains = {};
+    Set<String> chainIds = {};
 
     // Loop through the required namespaces
     requiredNamespaces.forEach((String ns, RequiredNamespace value) {
-      chains.addAll(
+      chainIds.addAll(
         getChainsFromRequiredNamespace(
           nsOrChainId: ns,
           requiredNamespace: value,
@@ -196,15 +195,15 @@ class NamespaceUtils {
       );
     });
 
-    return chains.toList();
+    return chainIds.toList();
   }
 
   /// Using the availabe accounts, methods, and events, construct the namespaces
   /// If optional namespaces are provided, then they will be added to the namespaces as well
   static Map<String, Namespace> constructNamespaces({
-    required Map<String, Set<String>> availableAccounts,
-    required List<String> availableMethods,
-    required Map<String, Set<String>> availableEvents,
+    required Set<String> availableAccounts,
+    required Set<String> availableMethods,
+    required Set<String> availableEvents,
     required Map<String, RequiredNamespace> requiredNamespaces,
     Map<String, RequiredNamespace>? optionalNamespaces,
   }) {
@@ -226,79 +225,119 @@ class NamespaceUtils {
     };
   }
 
+  /// Gets the matching items from the available items using the chainId
+  /// This function assumes that each element in the available items is in the format of chainId:itemId
+  static Set<String> _getMatching({
+    required String chainId,
+    required Set<String> available,
+    Set<String>? requested,
+    bool takeLast = true,
+  }) {
+    Set<String> matching = {};
+    // Loop through the available items, and if it starts with the chainId,
+    // and is in the requested items, add it to the matching items
+    available.forEach((item) {
+      if (item.startsWith('$chainId:')) {
+        matching.add(takeLast ? item.split(':').last : item);
+      }
+    });
+
+    if (requested != null) {
+      matching = matching.intersection(requested);
+    }
+
+    return matching;
+  }
+
   static Map<String, Namespace> _constructNamespacesFromRequired({
-    required Map<String, Set<String>> availableAccounts,
-    required List<String> availableMethods,
-    required Map<String, Set<String>> availableEvents,
+    required Set<String> availableAccounts,
+    required Set<String> availableMethods,
+    required Set<String> availableEvents,
     required Map<String, RequiredNamespace> requiredNamespaces,
   }) {
     Map<String, Namespace> namespaces = {};
 
     // Loop through the required namespaces
     for (final String namespaceOrChainId in requiredNamespaces.keys) {
-      // If the key is a chainId, add all of the chain specific events, keys, and methods first
+      // If the key is a chain, add all of the chain specific events, keys, and methods first
       final List<String> accounts = [];
       final List<String> events = [];
       final List<String> methods = [];
 
-      String namespace = namespaceOrChainId;
       if (NamespaceUtils.isValidChainId(namespaceOrChainId)) {
-        namespace = NamespaceUtils.getNamespaceFromChain(namespaceOrChainId);
-
         // Add the chain specific availableAccounts
-        if (availableAccounts[namespaceOrChainId] != null) {
-          accounts.addAll(availableAccounts[namespaceOrChainId]!);
-        }
-        // Add the chain specific functions
-        // Loop through all method handlers
-        for (final String method in availableMethods) {
-          // If the method is a chain specific method, add it to the list
-          if (method.startsWith(namespaceOrChainId)) {
-            methods.add(method.split(':').last);
-          }
-        }
+        accounts.addAll(
+          _getMatching(
+            chainId: namespaceOrChainId,
+            available: availableAccounts,
+            takeLast: false,
+          ),
+        );
         // Add the chain specific events
-        if (availableEvents[namespaceOrChainId] != null) {
-          events.addAll(availableEvents[namespaceOrChainId]!);
-        }
+        events.addAll(
+          _getMatching(
+            chainId: namespaceOrChainId,
+            available: availableEvents,
+            requested: requiredNamespaces[namespaceOrChainId]!.events.toSet(),
+          ),
+        );
+        // Add the chain specific methods
+        methods.addAll(
+          _getMatching(
+            chainId: namespaceOrChainId,
+            available: availableMethods,
+            requested: requiredNamespaces[namespaceOrChainId]!.methods.toSet(),
+          ),
+        );
       } else {
-        // Add the namespace specific availableAccounts
-        if (availableAccounts[namespace] != null) {
-          accounts.addAll(availableAccounts[namespace]!);
-        }
-
         // Add the namespace specific functions
         List<Set<String>> chainMethodSets = [];
-        // Loop through all of the chainIds
-        // print(requiredNamespaces[namespaceOrChainId]!);
-        // print(requiredNamespaces[namespaceOrChainId]!.chains);
+        List<Set<String>> chainEventSets = [];
+        // Loop through all of the chains
         for (final String chainId
             in requiredNamespaces[namespaceOrChainId]!.chains!) {
-          Set<String> chainMethods = {};
-          // Loop through all method handlers
-          for (final String method in availableMethods) {
-            // If the method is a chain specific method, add it to the list
-            if (method.startsWith(chainId)) {
-              chainMethods.add(method.split(':').last);
-            }
-          }
-          chainMethodSets.add(chainMethods);
+          // Add the chain specific availableAccounts
+          accounts.addAll(
+            _getMatching(
+              chainId: chainId,
+              available: availableAccounts,
+            ).map((e) => '$chainId:$e'),
+          );
+          // Add the chain specific events
+          chainEventSets.add(
+            _getMatching(
+              chainId: chainId,
+              available: availableEvents,
+              requested: requiredNamespaces[namespaceOrChainId]!.events.toSet(),
+            ),
+          );
+          // Add the chain specific methods
+          chainMethodSets.add(
+            _getMatching(
+              chainId: chainId,
+              available: availableMethods,
+              requested:
+                  requiredNamespaces[namespaceOrChainId]!.methods.toSet(),
+            ),
+          );
         }
 
         // Get the intersection of the chainMethodSets
-        Set<String> intersection = chainMethodSets.first;
+        Set<String> intersectionMethods = chainMethodSets.first;
+        Set<String> intersectionEvents = chainEventSets.first;
 
         for (final Set<String> chainMethods in chainMethodSets) {
-          intersection = intersection.intersection(chainMethods);
+          intersectionMethods = intersectionMethods.intersection(chainMethods);
+        }
+        for (final Set<String> chainEvents in chainEventSets) {
+          intersectionEvents = intersectionEvents.intersection(chainEvents);
         }
 
-        methods.addAll(intersection);
-
-        // Add the namespace specific events
-        if (availableEvents[namespace] != null) {
-          events.addAll(availableEvents[namespace]!);
-        }
+        methods.addAll(intersectionMethods);
+        events.addAll(intersectionEvents);
       }
+      // print(availableAccounts);
+      // print(accounts);
 
       // Add the namespace to the list
       namespaces[namespaceOrChainId] = Namespace(

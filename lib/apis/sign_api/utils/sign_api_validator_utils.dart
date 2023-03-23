@@ -116,7 +116,7 @@ class SignApiValidatorUtils {
     );
 
     // Get the chains from the namespaces and
-    List<String> chains = NamespaceUtils.getChainsFromNamespaces(
+    List<String> chains = NamespaceUtils.getChainIdsFromNamespaces(
       namespaces: namespaces,
     );
 
@@ -187,7 +187,7 @@ class SignApiValidatorUtils {
       context: 'isValidNamespacesEvent',
     );
 
-    List<dynamic> events = NamespaceUtils.getNamespacesEventsForChainId(
+    List<dynamic> events = NamespaceUtils.getNamespacesEventsForChain(
       namespaces: namespaces,
       chainId: chainId,
     );
@@ -226,7 +226,7 @@ class SignApiValidatorUtils {
           nsOrChainId: key,
           requiredNamespace: requiredNamespaces[key]!,
         );
-        List<String> namespaceChains = NamespaceUtils.getChainsFromNamespace(
+        List<String> namespaceChains = NamespaceUtils.getChainIdsFromNamespace(
           nsOrChainId: key,
           namespace: namespaces[key]!,
         );
@@ -291,7 +291,7 @@ class SignApiValidatorUtils {
         nsOrChainId: key,
         requiredNamespace: requiredNamespace,
       );
-      List<String> namespaceChains = NamespaceUtils.getChainsFromNamespace(
+      List<String> namespaceChains = NamespaceUtils.getChainIdsFromNamespace(
         nsOrChainId: key,
         namespace: namespace,
       );

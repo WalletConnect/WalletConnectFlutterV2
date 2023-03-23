@@ -12,12 +12,14 @@ class StringConstants {
   static const String sessionsPageTitle = 'Sessions';
   static const String authPageTitle = 'Auth';
   static const String settingsPageTitle = 'Settings';
+  static const String receivedPing = 'Received Ping';
+  static const String receivedEvent = 'Received Event';
 
   // Connect Page
   static const String selectChains = 'Select chains:';
   static const String testnetsOnly = 'Testnets only?';
   static const String scanQrCode = 'Scan QR Code';
-  static const String urlCopiedToClipboard = 'URL copied to clipboard';
+  static const String copiedToClipboard = 'Copied to clipboard';
   static const String connect = 'Connect';
   static const String connectionEstablished = 'Session established';
   static const String connectionFailed = 'Session setup failed';
