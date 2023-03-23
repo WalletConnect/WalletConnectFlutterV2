@@ -13,7 +13,7 @@ import 'package:walletconnect_flutter_v2/apis/auth_api/utils/auth_signature.dart
 import 'package:walletconnect_flutter_v2/apis/core/crypto/crypto_models.dart';
 import 'package:walletconnect_flutter_v2/apis/core/i_core.dart';
 import 'package:walletconnect_flutter_v2/apis/core/pairing/utils/pairing_models.dart';
-import 'package:walletconnect_flutter_v2/apis/core/pairing/utils/pairing_utils.dart';
+import 'package:walletconnect_flutter_v2/apis/core/pairing/utils/json_rpc_utils.dart';
 import 'package:walletconnect_flutter_v2/apis/models/basic_models.dart';
 import 'package:walletconnect_flutter_v2/apis/models/json_rpc_error.dart';
 import 'package:walletconnect_flutter_v2/apis/models/json_rpc_request.dart';
@@ -101,7 +101,7 @@ class AuthEngine implements IAuthEngine {
     final publicKey = await core.crypto.generateKeyPair();
     // print('requestAuth, publicKey: $publicKey');
     final String responseTopic = core.crypto.getUtils().hashKey(publicKey);
-    final int id = PairingUtils.payloadId();
+    final int id = JsonRpcUtils.payloadId();
 
     WcAuthRequestRequest request = WcAuthRequestRequest(
       payloadParams: AuthPayloadParams.fromRequestParams(

@@ -1,4 +1,6 @@
+import 'package:http/http.dart';
 import 'package:mockito/annotations.dart';
+import 'package:mockito/mockito.dart';
 import 'package:walletconnect_flutter_v2/apis/core/core.dart';
 import 'package:walletconnect_flutter_v2/apis/core/crypto/crypto.dart';
 import 'package:walletconnect_flutter_v2/apis/core/crypto/crypto_utils.dart';
@@ -6,6 +8,7 @@ import 'package:walletconnect_flutter_v2/apis/core/crypto/i_crypto.dart';
 import 'package:walletconnect_flutter_v2/apis/core/i_core.dart';
 import 'package:walletconnect_flutter_v2/apis/core/relay_client/i_message_tracker.dart';
 import 'package:walletconnect_flutter_v2/apis/core/relay_client/message_tracker.dart';
+import 'package:walletconnect_flutter_v2/apis/core/relay_client/websocket/http_client.dart';
 import 'package:walletconnect_flutter_v2/apis/core/store/generic_store.dart';
 import 'package:walletconnect_flutter_v2/apis/core/store/i_generic_store.dart';
 import 'package:walletconnect_flutter_v2/apis/utils/constants.dart';
@@ -17,6 +20,7 @@ import 'shared_test_utils.mocks.dart';
   CryptoUtils,
   Crypto,
   MessageTracker,
+  HttpWrapper,
 ])
 class SharedTestUtils {}
 
@@ -61,4 +65,15 @@ IGenericStore<String> getTopicMap({
     version: StoreVersions.VERSION_TOPIC_MAP,
     fromJson: (dynamic value) => value as String,
   );
+}
+
+MockHttpWrapper getHttpWrapper() {
+  final MockHttpWrapper httpWrapper = MockHttpWrapper();
+  when(httpWrapper.get(any)).thenAnswer((_) async => Response('', 200));
+  // when(httpWrapper.post(
+  //   url: anyNamed('url'),
+  //   body: anyNamed('body'),
+  // )).thenAnswer((_) async => '');
+
+  return httpWrapper;
 }

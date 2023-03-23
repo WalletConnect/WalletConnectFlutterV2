@@ -20,9 +20,7 @@ class Expirer extends GenericStore<int> implements IExpirer {
   Future<bool> checkExpiry(String key, int expiry) async {
     checkInitialized();
 
-    int msToTimeout = WalletConnectUtils.toMilliseconds(expiry) -
-        DateTime.now().toUtc().millisecondsSinceEpoch;
-    if (msToTimeout <= 0) {
+    if (WalletConnectUtils.isExpired(expiry)) {
       await expire(key);
       return true;
     }
@@ -38,9 +36,7 @@ class Expirer extends GenericStore<int> implements IExpirer {
 
     if (data.containsKey(key)) {
       int expiration = data[key]!;
-      int msToTimeout = WalletConnectUtils.toMilliseconds(expiration) -
-          DateTime.now().toUtc().millisecondsSinceEpoch;
-      if (msToTimeout <= 0) {
+      if (WalletConnectUtils.isExpired(expiration)) {
         await expire(key);
         return true;
       }
@@ -57,6 +53,7 @@ class Expirer extends GenericStore<int> implements IExpirer {
     if (expiry == null) {
       return;
     }
+    // print('Expiring $key');
     onExpire.broadcast(
       ExpirationEvent(
         target: key,

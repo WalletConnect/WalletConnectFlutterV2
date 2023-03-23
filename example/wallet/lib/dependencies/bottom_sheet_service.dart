@@ -50,6 +50,10 @@ class BottomSheetService extends IBottomSheetService {
     final value = await showModalBottomSheet(
       context: queueItem.context,
       backgroundColor: StyleConstants.clear,
+      isScrollControlled: true,
+      constraints: BoxConstraints(
+        maxHeight: MediaQuery.of(queueItem.context).size.height * 0.9,
+      ),
       builder: (context) {
         return Container(
           decoration: const BoxDecoration(
@@ -66,9 +70,11 @@ class BottomSheetService extends IBottomSheetService {
           margin: const EdgeInsets.all(
             StyleConstants.linear16,
           ),
-          constraints: BoxConstraints(
-            maxHeight: MediaQuery.of(context).size.height * 1.8,
-          ),
+          // constraints: BoxConstraints(
+          //     minHeight: 3000.0,
+          //     maxHeight:
+          //         4000.0 //MediaQuery.of(queueItem.context).size.height * 1.8,
+          //     ),
           child: queueItem.widget,
         );
       },

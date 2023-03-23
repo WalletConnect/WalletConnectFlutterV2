@@ -10,6 +10,7 @@ import 'package:walletconnect_flutter_v2/apis/core/store/generic_store.dart';
 import 'package:walletconnect_flutter_v2/apis/auth_api/utils/auth_constants.dart';
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 
+import '../shared/shared_test_utils.dart';
 import '../shared/shared_test_values.dart';
 import 'utils/auth_client_test_wrapper.dart';
 import 'utils/engine_constants.dart';
@@ -26,12 +27,14 @@ void main() {
           relayUrl: TEST_RELAY_URL,
           metadata: metadata,
           memoryStore: true,
+          httpClient: getHttpWrapper(),
         ),
     (PairingMetadata? self) async {
       final core = Core(
         projectId: TEST_PROJECT_ID,
         relayUrl: TEST_RELAY_URL,
         memoryStore: true,
+        httpClient: getHttpWrapper(),
       );
       IAuthEngine e = AuthEngine(
         core: core,
@@ -80,6 +83,7 @@ void main() {
           relayUrl: TEST_RELAY_URL,
           metadata: metadata,
           memoryStore: true,
+          httpClient: getHttpWrapper(),
         ),
   ];
 
@@ -90,12 +94,14 @@ void main() {
           relayUrl: TEST_RELAY_URL,
           metadata: metadata,
           memoryStore: true,
+          httpClient: getHttpWrapper(),
         ),
     (PairingMetadata metadata) async {
       final core = Core(
         projectId: TEST_PROJECT_ID,
         relayUrl: TEST_RELAY_URL,
         memoryStore: true,
+        httpClient: getHttpWrapper(),
       );
       IAuthEngine e = AuthEngine(
         core: core,
@@ -143,6 +149,7 @@ void main() {
           relayUrl: TEST_RELAY_URL,
           metadata: metadata,
           memoryStore: true,
+          httpClient: getHttpWrapper(),
         ),
   ];
 

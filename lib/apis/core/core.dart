@@ -10,6 +10,8 @@ import 'package:walletconnect_flutter_v2/apis/core/pairing/pairing_store.dart';
 import 'package:walletconnect_flutter_v2/apis/core/pairing/utils/pairing_models.dart';
 import 'package:walletconnect_flutter_v2/apis/core/relay_client/message_tracker.dart';
 import 'package:walletconnect_flutter_v2/apis/core/relay_client/relay_client.dart';
+import 'package:walletconnect_flutter_v2/apis/core/relay_client/websocket/http_client.dart';
+import 'package:walletconnect_flutter_v2/apis/core/relay_client/websocket/i_http_client.dart';
 import 'package:walletconnect_flutter_v2/apis/core/store/generic_store.dart';
 import 'package:walletconnect_flutter_v2/apis/core/store/i_store.dart';
 import 'package:walletconnect_flutter_v2/apis/core/relay_client/i_relay_client.dart';
@@ -52,6 +54,7 @@ class Core implements ICore {
     this.relayUrl = WalletConnectConstants.DEFAULT_RELAY_URL,
     required this.projectId,
     bool memoryStore = false,
+    IHttpClient httpClient = const HttpWrapper(),
   }) {
     storage = SharedPrefsStores(
       <String, dynamic>{},
@@ -82,6 +85,7 @@ class Core implements ICore {
         version: StoreVersions.VERSION_TOPIC_MAP,
         fromJson: (dynamic value) => value as String,
       ),
+      httpClient: httpClient,
     );
     expirer = Expirer(
       core: this,

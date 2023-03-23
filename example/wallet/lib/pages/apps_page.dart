@@ -2,16 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:get_it_mixin/get_it_mixin.dart';
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
-import 'package:walletconnect_flutter_v2_wallet/dependencies/i_bottom_sheet_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/i_web3wallet_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/utils/constants.dart';
 import 'package:walletconnect_flutter_v2_wallet/utils/string_constants.dart';
 import 'package:walletconnect_flutter_v2_wallet/widgets/pairing_item.dart';
 import 'package:walletconnect_flutter_v2_wallet/widgets/qr_scan_sheet.dart';
 import 'package:walletconnect_flutter_v2_wallet/widgets/uri_input_popup.dart';
-import 'package:walletconnect_flutter_v2_wallet/widgets/wc_connection_request/wc_connection_request_widget.dart';
-import 'package:walletconnect_flutter_v2_wallet/widgets/wc_connection_request/wc_session_request_model.dart';
-import 'package:walletconnect_flutter_v2_wallet/widgets/wc_request_widget.dart/wc_request_widget.dart';
 
 class AppsPage extends StatefulWidget with GetItStatefulWidgetMixin {
   AppsPage({
@@ -58,6 +54,24 @@ class AppsPageState extends State<AppsPage> with GetItStateMixin {
           right: StyleConstants.magic20,
           child: Row(
             children: [
+              _buildIconButton(
+                Icons.discord,
+                () {
+                  web3Wallet.core.relayClient.disconnect();
+                },
+              ),
+              const SizedBox(
+                width: StyleConstants.magic20,
+              ),
+              _buildIconButton(
+                Icons.connect_without_contact,
+                () {
+                  web3Wallet.core.relayClient.connect();
+                },
+              ),
+              const SizedBox(
+                width: StyleConstants.magic20,
+              ),
               _buildIconButton(
                 Icons.copy,
                 _onCopyQrCode,
@@ -209,7 +223,7 @@ class AppsPageState extends State<AppsPage> with GetItStateMixin {
       },
     );
 
-    print(uri);
+    // print(uri);
 
     if (uri != null && uri.isNotEmpty) {
       await web3Wallet.pair(

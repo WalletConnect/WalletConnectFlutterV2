@@ -85,9 +85,12 @@ class KadenaSignWidgetState extends State<KadenaSignWidget> {
         const SizedBox(
           height: StyleConstants.linear16,
         ),
-        ...payload.signers[0].clist.map(
-          (Capability sigCap) => _buildCapability(sigCap),
-        ),
+        // Add the caps if they exist
+        if (payload.signers[0].clist != null &&
+            payload.signers[0].clist!.isNotEmpty)
+          ...payload.signers[0].clist!.map(
+            (Capability sigCap) => _buildCapability(sigCap),
+          ),
       ],
     );
   }

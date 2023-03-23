@@ -7,7 +7,7 @@ import 'package:pointycastle/digests/keccak.dart';
 import 'package:walletconnect_flutter_v2/apis/auth_api/models/auth_client_models.dart';
 import 'package:walletconnect_flutter_v2/apis/auth_api/utils/auth_constants.dart';
 import 'package:walletconnect_flutter_v2/apis/auth_api/utils/secp256k1/auth_secp256k1.dart';
-import 'package:walletconnect_flutter_v2/apis/core/pairing/utils/pairing_utils.dart';
+import 'package:walletconnect_flutter_v2/apis/core/pairing/utils/json_rpc_utils.dart';
 
 class AuthSignature {
   static final KeccakDigest keccakDigest = KeccakDigest(256);
@@ -121,7 +121,7 @@ class AuthSignature {
       final Uri url = Uri.parse(
         '${AuthConstants.AUTH_DEFAULT_URL}/?chainId=$chainId&projectId=$projectId',
       );
-      final Map<String, dynamic> body = PairingUtils.formatJsonRpcRequest(
+      final Map<String, dynamic> body = JsonRpcUtils.formatJsonRpcRequest(
         "eth_call",
         {
           "to": address,

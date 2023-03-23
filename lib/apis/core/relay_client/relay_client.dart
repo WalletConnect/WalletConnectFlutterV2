@@ -1,17 +1,21 @@
 import 'dart:async';
 
 import 'package:event/event.dart';
-import 'package:json_rpc_2/json_rpc_2.dart';
+// import 'package:json_rpc_2/json_rpc_2.dart';
 import 'package:walletconnect_flutter_v2/apis/core/i_core.dart';
+import 'package:walletconnect_flutter_v2/apis/core/pairing/utils/json_rpc_utils.dart';
 import 'package:walletconnect_flutter_v2/apis/core/relay_client/i_message_tracker.dart';
 import 'package:walletconnect_flutter_v2/apis/core/relay_client/i_relay_client.dart';
+import 'package:walletconnect_flutter_v2/apis/core/relay_client/json_rpc_2/src/parameters.dart';
+import 'package:walletconnect_flutter_v2/apis/core/relay_client/json_rpc_2/src/peer.dart';
+import 'package:walletconnect_flutter_v2/apis/core/relay_client/websocket/i_http_client.dart';
+import 'package:walletconnect_flutter_v2/apis/core/relay_client/websocket/i_websocket_handler.dart';
 import 'package:walletconnect_flutter_v2/apis/core/relay_client/relay_client_models.dart';
+import 'package:walletconnect_flutter_v2/apis/core/relay_client/websocket/websocket_handler.dart';
 import 'package:walletconnect_flutter_v2/apis/core/store/i_generic_store.dart';
-import 'package:walletconnect_flutter_v2/apis/models/basic_models.dart';
 import 'package:walletconnect_flutter_v2/apis/utils/constants.dart';
 import 'package:walletconnect_flutter_v2/apis/utils/errors.dart';
 import 'package:walletconnect_flutter_v2/apis/utils/walletconnect_utils.dart';
-import 'package:web_socket_channel/web_socket_channel.dart';
 
 class RelayClient implements IRelayClient {
   static const JSON_RPC_PUBLISH = 'publish';
@@ -51,7 +55,8 @@ class RelayClient implements IRelayClient {
 
   bool _initialized = false;
 
-  late WebSocketChannel socket;
+  // late WebSocketChannel socket;
+  late IWebSocketHandler socket;
   late Peer jsonRPC;
 
   /// Stores all the subs that haven't been completed
@@ -59,13 +64,17 @@ class RelayClient implements IRelayClient {
 
   IMessageTracker messageTracker;
   IGenericStore<String> topicMap;
+  IHttpClient httpClient;
 
   ICore core;
+
+  Timer? _heartbeatTimer;
 
   RelayClient({
     required this.core,
     required this.messageTracker,
     required this.topicMap,
+    required this.httpClient,
     // this.test = false,
     relayUrl = WalletConnectConstants.RELAYER_DEFAULT_PROTOCOL,
   });
@@ -76,22 +85,11 @@ class RelayClient implements IRelayClient {
       return;
     }
 
-    // Setup the json RPC server
-    jsonRPC = await _createJsonRPCProvider();
+    onRelayClientDisconnect.subscribe(_reconnect);
 
-    jsonRPC.registerMethod(
-      _buildMethod(JSON_RPC_SUBSCRIPTION),
-      _handleSubscription,
-    );
-    jsonRPC.registerMethod(
-      _buildMethod(JSON_RPC_SUBSCRIBE),
-      _handleSubscribe,
-    );
-    jsonRPC.registerMethod(
-      _buildMethod(JSON_RPC_UNSUBSCRIBE),
-      _handleUnsubscribe,
-    );
-    jsonRPC.listen();
+    // Setup the json RPC server
+    await _createJsonRPCProvider();
+    _startHeartbeat();
 
     await messageTracker.init();
     await topicMap.init();
@@ -119,6 +117,7 @@ class RelayClient implements IRelayClient {
       var _ = await jsonRPC.sendRequest(
         _buildMethod(JSON_RPC_PUBLISH),
         data,
+        JsonRpcUtils.payloadId(entropy: 6),
       );
       // print(value);
       await messageTracker.recordMessageEvent(topic, message);
@@ -151,6 +150,7 @@ class RelayClient implements IRelayClient {
           'topic': topic,
           'id': id,
         },
+        JsonRpcUtils.payloadId(entropy: 6),
       );
     } catch (e) {
       onRelayClientError.broadcast(ErrorEvent(e));
@@ -172,64 +172,92 @@ class RelayClient implements IRelayClient {
       return;
     }
 
-    jsonRPC = await _createJsonRPCProvider();
-    jsonRPC.registerMethod(
-      _buildMethod(JSON_RPC_SUBSCRIPTION),
-      _handleSubscription,
-    );
-    jsonRPC.registerMethod(
-      _buildMethod(JSON_RPC_SUBSCRIBE),
-      _handleSubscribe,
-    );
-    jsonRPC.registerMethod(
-      _buildMethod(JSON_RPC_UNSUBSCRIBE),
-      _handleUnsubscribe,
-    );
-    jsonRPC.listen();
+    await _createJsonRPCProvider();
+    if (_heartbeatTimer == null) {
+      _startHeartbeat();
+    }
   }
 
   @override
   Future<void> disconnect() async {
     _checkInitialized();
+    onRelayClientDisconnect.unsubscribe(_reconnect);
     await jsonRPC.close();
+    await socket.close();
+    _heartbeatTimer?.cancel();
+    _heartbeatTimer = null;
+    onRelayClientDisconnect.subscribe(_reconnect);
   }
 
   /// PRIVATE FUNCTIONS ///
 
-  Future<Peer> _createJsonRPCProvider() async {
+  Future<void> _createJsonRPCProvider() async {
     var auth = await core.crypto.signJWT(core.relayUrl);
     try {
-      socket = WebSocketChannel.connect(
-        Uri.parse(
-          WalletConnectUtils.formatRelayRpcUrl(
-            protocol: WalletConnectConstants.CORE_PROTOCOL,
-            version: WalletConnectConstants.CORE_VERSION,
-            relayUrl: core.relayUrl,
-            sdkVersion: WalletConnectConstants.SDK_VERSION,
-            auth: auth,
-            projectId: core.projectId,
-          ),
-        ),
+      final String url = WalletConnectUtils.formatRelayRpcUrl(
+        protocol: WalletConnectConstants.CORE_PROTOCOL,
+        version: WalletConnectConstants.CORE_VERSION,
+        relayUrl: core.relayUrl,
+        sdkVersion: WalletConnectConstants.SDK_VERSION,
+        auth: auth,
+        projectId: core.projectId,
+      );
+      socket = WebSocketHandler(
+        url: url,
+        httpClient: httpClient,
+        origin: core.projectId,
       );
 
-      await socket.ready;
+      // print('got here');
+      await socket.init();
+
+      jsonRPC = Peer(socket.channel!);
+
+      jsonRPC.registerMethod(
+        _buildMethod(JSON_RPC_SUBSCRIPTION),
+        _handleSubscription,
+      );
+      jsonRPC.registerMethod(
+        _buildMethod(JSON_RPC_SUBSCRIBE),
+        _handleSubscribe,
+      );
+      jsonRPC.registerMethod(
+        _buildMethod(JSON_RPC_UNSUBSCRIBE),
+        _handleUnsubscribe,
+      );
+
+      jsonRPC.listen();
+
+      // When jsonRPC closes, emit the event
+      jsonRPC.done.then((value) => onRelayClientDisconnect.broadcast());
+
+      // print('connected');
 
       onRelayClientConnect.broadcast();
-
-      final Peer p = Peer(socket.cast<String>());
-
-      // When p closes, emit the event
-      p.done.then((value) => onRelayClientDisconnect.broadcast());
-
-      return p;
     } catch (e) {
       onRelayClientError.broadcast(ErrorEvent(e));
-      throw WalletConnectError(
-        code: 401,
-        message:
-            "Project ID doesn't exist, is invalid, or has too many requests",
-      );
+      rethrow;
     }
+  }
+
+  Future<void> _reconnect(EventArgs? args) async {
+    // print('disconnected, reconnecting');
+    await connect();
+  }
+
+  void _startHeartbeat() {
+    _heartbeatTimer = Timer.periodic(
+      Duration(seconds: 30),
+      (timer) async {
+        // print('heartbeat');
+        try {
+          socket.channel!.sink.add('ping');
+        } catch (e) {
+          // Close the socket and trigger the disconnect -> reconnect
+          await socket.close();
+        }
+      },
+    );
   }
 
   String _buildMethod(String method) {
@@ -296,6 +324,7 @@ class RelayClient implements IRelayClient {
         {
           'topic': topic,
         },
+        JsonRpcUtils.payloadId(entropy: 6),
       );
       // print('onSubscribe response $requestId');
     } catch (e) {

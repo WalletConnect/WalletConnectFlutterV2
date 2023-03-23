@@ -182,7 +182,7 @@ void signRequestAndHandler({
         }
       });
       clientB.onSessionRequest.subscribe((args) {
-        print('completing');
+        // print('completing');
         sessionRequestCompleter.complete();
       });
       await pendingRequestCompleter.future;

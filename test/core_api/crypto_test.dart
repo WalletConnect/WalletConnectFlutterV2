@@ -13,8 +13,8 @@ import 'package:walletconnect_flutter_v2/apis/core/store/generic_store.dart';
 import 'package:walletconnect_flutter_v2/apis/models/basic_models.dart';
 import 'package:walletconnect_flutter_v2/apis/utils/constants.dart';
 
-import 'shared/shared_test_utils.dart';
-import 'shared/shared_test_utils.mocks.dart';
+import '../shared/shared_test_utils.dart';
+import '../shared/shared_test_utils.mocks.dart';
 import '../shared/shared_test_values.dart';
 
 void main() {

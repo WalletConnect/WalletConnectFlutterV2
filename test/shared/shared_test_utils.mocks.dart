@@ -3,27 +3,30 @@
 // Do not manually edit this file.
 
 // ignore_for_file: no_leading_underscores_for_library_prefixes
-import 'dart:async' as _i10;
-import 'dart:typed_data' as _i9;
+import 'dart:async' as _i11;
+import 'dart:typed_data' as _i10;
 
 import 'package:event/event.dart' as _i7;
+import 'package:http/http.dart' as _i8;
 import 'package:mockito/mockito.dart' as _i1;
-import 'package:walletconnect_flutter_v2/apis/core/crypto/crypto.dart' as _i11;
+import 'package:walletconnect_flutter_v2/apis/core/crypto/crypto.dart' as _i12;
 import 'package:walletconnect_flutter_v2/apis/core/crypto/crypto_models.dart'
     as _i2;
 import 'package:walletconnect_flutter_v2/apis/core/crypto/crypto_utils.dart'
-    as _i8;
+    as _i9;
 import 'package:walletconnect_flutter_v2/apis/core/crypto/i_crypto_utils.dart'
     as _i5;
 import 'package:walletconnect_flutter_v2/apis/core/i_core.dart' as _i3;
 import 'package:walletconnect_flutter_v2/apis/core/relay_auth/i_relay_auth.dart'
     as _i6;
 import 'package:walletconnect_flutter_v2/apis/core/relay_client/message_tracker.dart'
-    as _i12;
+    as _i13;
+import 'package:walletconnect_flutter_v2/apis/core/relay_client/websocket/http_client.dart'
+    as _i15;
 import 'package:walletconnect_flutter_v2/apis/core/store/i_generic_store.dart'
     as _i4;
 import 'package:walletconnect_flutter_v2/apis/core/store/store_models.dart'
-    as _i13;
+    as _i14;
 
 // ignore_for_file: type=lint
 // ignore_for_file: avoid_redundant_argument_values
@@ -120,10 +123,20 @@ class _FakeEvent_7<T extends _i7.EventArgs> extends _i1.SmartFake
         );
 }
 
+class _FakeResponse_8 extends _i1.SmartFake implements _i8.Response {
+  _FakeResponse_8(
+    Object parent,
+    Invocation parentInvocation,
+  ) : super(
+          parent,
+          parentInvocation,
+        );
+}
+
 /// A class which mocks [CryptoUtils].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockCryptoUtils extends _i1.Mock implements _i8.CryptoUtils {
+class MockCryptoUtils extends _i1.Mock implements _i9.CryptoUtils {
   MockCryptoUtils() {
     _i1.throwOnMissingStub(this);
   }
@@ -143,13 +156,13 @@ class MockCryptoUtils extends _i1.Mock implements _i8.CryptoUtils {
         ),
       ) as _i2.CryptoKeyPair);
   @override
-  _i9.Uint8List randomBytes(int? length) => (super.noSuchMethod(
+  _i10.Uint8List randomBytes(int? length) => (super.noSuchMethod(
         Invocation.method(
           #randomBytes,
           [length],
         ),
-        returnValue: _i9.Uint8List(0),
-      ) as _i9.Uint8List);
+        returnValue: _i10.Uint8List(0),
+      ) as _i10.Uint8List);
   @override
   String generateRandomBytes32() => (super.noSuchMethod(
         Invocation.method(
@@ -159,7 +172,7 @@ class MockCryptoUtils extends _i1.Mock implements _i8.CryptoUtils {
         returnValue: '',
       ) as String);
   @override
-  _i10.Future<String> deriveSymKey(
+  _i11.Future<String> deriveSymKey(
     String? privKeyA,
     String? pubKeyB,
   ) =>
@@ -171,8 +184,8 @@ class MockCryptoUtils extends _i1.Mock implements _i8.CryptoUtils {
             pubKeyB,
           ],
         ),
-        returnValue: _i10.Future<String>.value(''),
-      ) as _i10.Future<String>);
+        returnValue: _i11.Future<String>.value(''),
+      ) as _i11.Future<String>);
   @override
   String hashKey(String? key) => (super.noSuchMethod(
         Invocation.method(
@@ -190,7 +203,7 @@ class MockCryptoUtils extends _i1.Mock implements _i8.CryptoUtils {
         returnValue: '',
       ) as String);
   @override
-  _i10.Future<String> encrypt(
+  _i11.Future<String> encrypt(
     String? message,
     String? symKey, {
     int? type,
@@ -210,10 +223,10 @@ class MockCryptoUtils extends _i1.Mock implements _i8.CryptoUtils {
             #senderPublicKey: senderPublicKey,
           },
         ),
-        returnValue: _i10.Future<String>.value(''),
-      ) as _i10.Future<String>);
+        returnValue: _i11.Future<String>.value(''),
+      ) as _i11.Future<String>);
   @override
-  _i10.Future<String> decrypt(
+  _i11.Future<String> decrypt(
     String? symKey,
     String? encoded,
   ) =>
@@ -225,14 +238,14 @@ class MockCryptoUtils extends _i1.Mock implements _i8.CryptoUtils {
             encoded,
           ],
         ),
-        returnValue: _i10.Future<String>.value(''),
-      ) as _i10.Future<String>);
+        returnValue: _i11.Future<String>.value(''),
+      ) as _i11.Future<String>);
   @override
   String serialize(
     int? type,
-    _i9.Uint8List? sealed,
-    _i9.Uint8List? iv, {
-    _i9.Uint8List? senderPublicKey,
+    _i10.Uint8List? sealed,
+    _i10.Uint8List? iv, {
+    _i10.Uint8List? senderPublicKey,
   }) =>
       (super.noSuchMethod(
         Invocation.method(
@@ -322,7 +335,7 @@ class MockCryptoUtils extends _i1.Mock implements _i8.CryptoUtils {
 /// A class which mocks [Crypto].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockCrypto extends _i1.Mock implements _i11.Crypto {
+class MockCrypto extends _i1.Mock implements _i12.Crypto {
   MockCrypto() {
     _i1.throwOnMissingStub(this);
   }
@@ -389,14 +402,14 @@ class MockCrypto extends _i1.Mock implements _i11.Crypto {
         returnValue: '',
       ) as String);
   @override
-  _i10.Future<void> init() => (super.noSuchMethod(
+  _i11.Future<void> init() => (super.noSuchMethod(
         Invocation.method(
           #init,
           [],
         ),
-        returnValue: _i10.Future<void>.value(),
-        returnValueForMissingStub: _i10.Future<void>.value(),
-      ) as _i10.Future<void>);
+        returnValue: _i11.Future<void>.value(),
+        returnValueForMissingStub: _i11.Future<void>.value(),
+      ) as _i11.Future<void>);
   @override
   bool hasKeys(String? tag) => (super.noSuchMethod(
         Invocation.method(
@@ -406,23 +419,23 @@ class MockCrypto extends _i1.Mock implements _i11.Crypto {
         returnValue: false,
       ) as bool);
   @override
-  _i10.Future<String> getClientId() => (super.noSuchMethod(
+  _i11.Future<String> getClientId() => (super.noSuchMethod(
         Invocation.method(
           #getClientId,
           [],
         ),
-        returnValue: _i10.Future<String>.value(''),
-      ) as _i10.Future<String>);
+        returnValue: _i11.Future<String>.value(''),
+      ) as _i11.Future<String>);
   @override
-  _i10.Future<String> generateKeyPair() => (super.noSuchMethod(
+  _i11.Future<String> generateKeyPair() => (super.noSuchMethod(
         Invocation.method(
           #generateKeyPair,
           [],
         ),
-        returnValue: _i10.Future<String>.value(''),
-      ) as _i10.Future<String>);
+        returnValue: _i11.Future<String>.value(''),
+      ) as _i11.Future<String>);
   @override
-  _i10.Future<String> generateSharedKey(
+  _i11.Future<String> generateSharedKey(
     String? selfPublicKey,
     String? peerPublicKey, {
     String? overrideTopic,
@@ -436,10 +449,10 @@ class MockCrypto extends _i1.Mock implements _i11.Crypto {
           ],
           {#overrideTopic: overrideTopic},
         ),
-        returnValue: _i10.Future<String>.value(''),
-      ) as _i10.Future<String>);
+        returnValue: _i11.Future<String>.value(''),
+      ) as _i11.Future<String>);
   @override
-  _i10.Future<String> setSymKey(
+  _i11.Future<String> setSymKey(
     String? symKey, {
     String? overrideTopic,
   }) =>
@@ -449,28 +462,28 @@ class MockCrypto extends _i1.Mock implements _i11.Crypto {
           [symKey],
           {#overrideTopic: overrideTopic},
         ),
-        returnValue: _i10.Future<String>.value(''),
-      ) as _i10.Future<String>);
+        returnValue: _i11.Future<String>.value(''),
+      ) as _i11.Future<String>);
   @override
-  _i10.Future<void> deleteKeyPair(String? publicKey) => (super.noSuchMethod(
+  _i11.Future<void> deleteKeyPair(String? publicKey) => (super.noSuchMethod(
         Invocation.method(
           #deleteKeyPair,
           [publicKey],
         ),
-        returnValue: _i10.Future<void>.value(),
-        returnValueForMissingStub: _i10.Future<void>.value(),
-      ) as _i10.Future<void>);
+        returnValue: _i11.Future<void>.value(),
+        returnValueForMissingStub: _i11.Future<void>.value(),
+      ) as _i11.Future<void>);
   @override
-  _i10.Future<void> deleteSymKey(String? topic) => (super.noSuchMethod(
+  _i11.Future<void> deleteSymKey(String? topic) => (super.noSuchMethod(
         Invocation.method(
           #deleteSymKey,
           [topic],
         ),
-        returnValue: _i10.Future<void>.value(),
-        returnValueForMissingStub: _i10.Future<void>.value(),
-      ) as _i10.Future<void>);
+        returnValue: _i11.Future<void>.value(),
+        returnValueForMissingStub: _i11.Future<void>.value(),
+      ) as _i11.Future<void>);
   @override
-  _i10.Future<String?> encode(
+  _i11.Future<String?> encode(
     String? topic,
     Map<String, dynamic>? payload, {
     _i2.EncodeOptions? options,
@@ -484,10 +497,10 @@ class MockCrypto extends _i1.Mock implements _i11.Crypto {
           ],
           {#options: options},
         ),
-        returnValue: _i10.Future<String?>.value(),
-      ) as _i10.Future<String?>);
+        returnValue: _i11.Future<String?>.value(),
+      ) as _i11.Future<String?>);
   @override
-  _i10.Future<String?> decode(
+  _i11.Future<String?> decode(
     String? topic,
     String? encoded, {
     _i2.DecodeOptions? options,
@@ -501,16 +514,16 @@ class MockCrypto extends _i1.Mock implements _i11.Crypto {
           ],
           {#options: options},
         ),
-        returnValue: _i10.Future<String?>.value(),
-      ) as _i10.Future<String?>);
+        returnValue: _i11.Future<String?>.value(),
+      ) as _i11.Future<String?>);
   @override
-  _i10.Future<String> signJWT(String? aud) => (super.noSuchMethod(
+  _i11.Future<String> signJWT(String? aud) => (super.noSuchMethod(
         Invocation.method(
           #signJWT,
           [aud],
         ),
-        returnValue: _i10.Future<String>.value(''),
-      ) as _i10.Future<String>);
+        returnValue: _i11.Future<String>.value(''),
+      ) as _i11.Future<String>);
   @override
   int getPayloadType(String? encoded) => (super.noSuchMethod(
         Invocation.method(
@@ -538,7 +551,7 @@ class MockCrypto extends _i1.Mock implements _i11.Crypto {
 /// A class which mocks [MessageTracker].
 ///
 /// See the documentation for Mockito's code generation for more information.
-class MockMessageTracker extends _i1.Mock implements _i12.MessageTracker {
+class MockMessageTracker extends _i1.Mock implements _i13.MessageTracker {
   MockMessageTracker() {
     _i1.throwOnMissingStub(this);
   }
@@ -562,40 +575,40 @@ class MockMessageTracker extends _i1.Mock implements _i12.MessageTracker {
         ),
       ) as _i3.ICore);
   @override
-  _i7.Event<_i13.StoreCreateEvent<Map<String, String>>> get onCreate =>
+  _i7.Event<_i14.StoreCreateEvent<Map<String, String>>> get onCreate =>
       (super.noSuchMethod(
         Invocation.getter(#onCreate),
-        returnValue: _FakeEvent_7<_i13.StoreCreateEvent<Map<String, String>>>(
+        returnValue: _FakeEvent_7<_i14.StoreCreateEvent<Map<String, String>>>(
           this,
           Invocation.getter(#onCreate),
         ),
-      ) as _i7.Event<_i13.StoreCreateEvent<Map<String, String>>>);
+      ) as _i7.Event<_i14.StoreCreateEvent<Map<String, String>>>);
   @override
-  _i7.Event<_i13.StoreUpdateEvent<Map<String, String>>> get onUpdate =>
+  _i7.Event<_i14.StoreUpdateEvent<Map<String, String>>> get onUpdate =>
       (super.noSuchMethod(
         Invocation.getter(#onUpdate),
-        returnValue: _FakeEvent_7<_i13.StoreUpdateEvent<Map<String, String>>>(
+        returnValue: _FakeEvent_7<_i14.StoreUpdateEvent<Map<String, String>>>(
           this,
           Invocation.getter(#onUpdate),
         ),
-      ) as _i7.Event<_i13.StoreUpdateEvent<Map<String, String>>>);
+      ) as _i7.Event<_i14.StoreUpdateEvent<Map<String, String>>>);
   @override
-  _i7.Event<_i13.StoreDeleteEvent<Map<String, String>>> get onDelete =>
+  _i7.Event<_i14.StoreDeleteEvent<Map<String, String>>> get onDelete =>
       (super.noSuchMethod(
         Invocation.getter(#onDelete),
-        returnValue: _FakeEvent_7<_i13.StoreDeleteEvent<Map<String, String>>>(
+        returnValue: _FakeEvent_7<_i14.StoreDeleteEvent<Map<String, String>>>(
           this,
           Invocation.getter(#onDelete),
         ),
-      ) as _i7.Event<_i13.StoreDeleteEvent<Map<String, String>>>);
+      ) as _i7.Event<_i14.StoreDeleteEvent<Map<String, String>>>);
   @override
-  _i7.Event<_i13.StoreSyncEvent> get onSync => (super.noSuchMethod(
+  _i7.Event<_i14.StoreSyncEvent> get onSync => (super.noSuchMethod(
         Invocation.getter(#onSync),
-        returnValue: _FakeEvent_7<_i13.StoreSyncEvent>(
+        returnValue: _FakeEvent_7<_i14.StoreSyncEvent>(
           this,
           Invocation.getter(#onSync),
         ),
-      ) as _i7.Event<_i13.StoreSyncEvent>);
+      ) as _i7.Event<_i14.StoreSyncEvent>);
   @override
   Map<String, Map<String, String>> get data => (super.noSuchMethod(
         Invocation.getter(#data),
@@ -620,7 +633,7 @@ class MockMessageTracker extends _i1.Mock implements _i12.MessageTracker {
         returnValue: '',
       ) as String);
   @override
-  _i10.Future<void> recordMessageEvent(
+  _i11.Future<void> recordMessageEvent(
     String? topic,
     String? message,
   ) =>
@@ -632,9 +645,9 @@ class MockMessageTracker extends _i1.Mock implements _i12.MessageTracker {
             message,
           ],
         ),
-        returnValue: _i10.Future<void>.value(),
-        returnValueForMissingStub: _i10.Future<void>.value(),
-      ) as _i10.Future<void>);
+        returnValue: _i11.Future<void>.value(),
+        returnValueForMissingStub: _i11.Future<void>.value(),
+      ) as _i11.Future<void>);
   @override
   bool messageIsRecorded(
     String? topic,
@@ -651,24 +664,24 @@ class MockMessageTracker extends _i1.Mock implements _i12.MessageTracker {
         returnValue: false,
       ) as bool);
   @override
-  _i10.Future<void> deleteSubscriptionMessages(String? topic) =>
+  _i11.Future<void> deleteSubscriptionMessages(String? topic) =>
       (super.noSuchMethod(
         Invocation.method(
           #deleteSubscriptionMessages,
           [topic],
         ),
-        returnValue: _i10.Future<void>.value(),
-        returnValueForMissingStub: _i10.Future<void>.value(),
-      ) as _i10.Future<void>);
+        returnValue: _i11.Future<void>.value(),
+        returnValueForMissingStub: _i11.Future<void>.value(),
+      ) as _i11.Future<void>);
   @override
-  _i10.Future<void> init() => (super.noSuchMethod(
+  _i11.Future<void> init() => (super.noSuchMethod(
         Invocation.method(
           #init,
           [],
         ),
-        returnValue: _i10.Future<void>.value(),
-        returnValueForMissingStub: _i10.Future<void>.value(),
-      ) as _i10.Future<void>);
+        returnValue: _i11.Future<void>.value(),
+        returnValueForMissingStub: _i11.Future<void>.value(),
+      ) as _i11.Future<void>);
   @override
   bool has(String? key) => (super.noSuchMethod(
         Invocation.method(
@@ -692,7 +705,7 @@ class MockMessageTracker extends _i1.Mock implements _i12.MessageTracker {
         returnValue: <Map<String, String>>[],
       ) as List<Map<String, String>>);
   @override
-  _i10.Future<void> set(
+  _i11.Future<void> set(
     String? key,
     Map<String, String>? value,
   ) =>
@@ -704,36 +717,36 @@ class MockMessageTracker extends _i1.Mock implements _i12.MessageTracker {
             value,
           ],
         ),
-        returnValue: _i10.Future<void>.value(),
-        returnValueForMissingStub: _i10.Future<void>.value(),
-      ) as _i10.Future<void>);
+        returnValue: _i11.Future<void>.value(),
+        returnValueForMissingStub: _i11.Future<void>.value(),
+      ) as _i11.Future<void>);
   @override
-  _i10.Future<void> delete(String? key) => (super.noSuchMethod(
+  _i11.Future<void> delete(String? key) => (super.noSuchMethod(
         Invocation.method(
           #delete,
           [key],
         ),
-        returnValue: _i10.Future<void>.value(),
-        returnValueForMissingStub: _i10.Future<void>.value(),
-      ) as _i10.Future<void>);
+        returnValue: _i11.Future<void>.value(),
+        returnValueForMissingStub: _i11.Future<void>.value(),
+      ) as _i11.Future<void>);
   @override
-  _i10.Future<void> persist() => (super.noSuchMethod(
+  _i11.Future<void> persist() => (super.noSuchMethod(
         Invocation.method(
           #persist,
           [],
         ),
-        returnValue: _i10.Future<void>.value(),
-        returnValueForMissingStub: _i10.Future<void>.value(),
-      ) as _i10.Future<void>);
+        returnValue: _i11.Future<void>.value(),
+        returnValueForMissingStub: _i11.Future<void>.value(),
+      ) as _i11.Future<void>);
   @override
-  _i10.Future<void> restore() => (super.noSuchMethod(
+  _i11.Future<void> restore() => (super.noSuchMethod(
         Invocation.method(
           #restore,
           [],
         ),
-        returnValue: _i10.Future<void>.value(),
-        returnValueForMissingStub: _i10.Future<void>.value(),
-      ) as _i10.Future<void>);
+        returnValue: _i11.Future<void>.value(),
+        returnValueForMissingStub: _i11.Future<void>.value(),
+      ) as _i11.Future<void>);
   @override
   void checkInitialized() => super.noSuchMethod(
         Invocation.method(
@@ -742,4 +755,34 @@ class MockMessageTracker extends _i1.Mock implements _i12.MessageTracker {
         ),
         returnValueForMissingStub: null,
       );
+}
+
+/// A class which mocks [HttpWrapper].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockHttpWrapper extends _i1.Mock implements _i15.HttpWrapper {
+  MockHttpWrapper() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i11.Future<_i8.Response> get(
+    Uri? url, {
+    Map<String, String>? headers,
+  }) =>
+      (super.noSuchMethod(
+        Invocation.method(
+          #get,
+          [url],
+          {#headers: headers},
+        ),
+        returnValue: _i11.Future<_i8.Response>.value(_FakeResponse_8(
+          this,
+          Invocation.method(
+            #get,
+            [url],
+            {#headers: headers},
+          ),
+        )),
+      ) as _i11.Future<_i8.Response>);
 }

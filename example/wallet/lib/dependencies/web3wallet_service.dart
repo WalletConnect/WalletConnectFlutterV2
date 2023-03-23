@@ -110,7 +110,7 @@ class Web3WalletService extends IWeb3WalletService {
 
   void _onSessionProposal(SessionProposalEvent? args) async {
     if (args != null) {
-      print(args);
+      // print(args);
 
       // Validate the
       // args.params.
@@ -126,7 +126,7 @@ class Web3WalletService extends IWeb3WalletService {
       final bool? approved = await _bottomSheetHandler.queueBottomSheet(
         widget: w,
       );
-      print('approved: $approved');
+      // print('approved: $approved');
 
       if (approved != null && approved) {
         _web3Wallet!.approveSession(
@@ -161,7 +161,7 @@ class Web3WalletService extends IWeb3WalletService {
 
   void _onAuthRequest(AuthRequest? args) {
     if (args != null) {
-      print(args);
+      // print(args);
       final Widget w = WCRequestWidget(
         child: WCConnectionRequestWidget(
           wallet: _web3Wallet!,

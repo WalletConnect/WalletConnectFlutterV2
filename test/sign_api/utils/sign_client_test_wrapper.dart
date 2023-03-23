@@ -1,4 +1,6 @@
 import 'package:event/event.dart';
+import 'package:walletconnect_flutter_v2/apis/core/relay_client/websocket/http_client.dart';
+import 'package:walletconnect_flutter_v2/apis/core/relay_client/websocket/i_http_client.dart';
 import 'package:walletconnect_flutter_v2/apis/core/store/i_generic_store.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/sign_engine.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/i_sessions.dart';
@@ -50,12 +52,14 @@ class SignClientTestWrapper implements ISignEngine {
     String relayUrl = WalletConnectConstants.DEFAULT_RELAY_URL,
     required PairingMetadata metadata,
     bool memoryStore = false,
+    IHttpClient httpClient = const HttpWrapper(),
   }) async {
     final client = SignClientTestWrapper(
       core: Core(
         projectId: projectId,
         relayUrl: relayUrl,
         memoryStore: memoryStore,
+        httpClient: httpClient,
       ),
       metadata: metadata,
     );

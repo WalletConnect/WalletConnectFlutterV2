@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:fl_toast/fl_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -44,11 +46,12 @@ class MethodDialogState extends State<MethodDialog> {
         builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
           debugPrint('snapshot: $snapshot');
           if (snapshot.hasData) {
+            final String t = jsonEncode(snapshot.data);
             return InkWell(
               onTap: () async {
                 await Clipboard.setData(
                   ClipboardData(
-                    text: snapshot.data.toString(),
+                    text: t,
                   ),
                 );
                 showPlatformToast(
@@ -59,7 +62,7 @@ class MethodDialogState extends State<MethodDialog> {
                 );
               },
               child: Text(
-                snapshot.data.toString(),
+                t,
               ),
             );
           } else if (snapshot.hasError) {

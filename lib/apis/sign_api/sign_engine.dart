@@ -4,7 +4,7 @@ import 'dart:convert';
 import 'package:event/event.dart';
 import 'package:walletconnect_flutter_v2/apis/core/store/i_generic_store.dart';
 import 'package:walletconnect_flutter_v2/apis/core/pairing/i_pairing_store.dart';
-import 'package:walletconnect_flutter_v2/apis/core/pairing/utils/pairing_utils.dart';
+import 'package:walletconnect_flutter_v2/apis/core/pairing/utils/json_rpc_utils.dart';
 import 'package:walletconnect_flutter_v2/apis/core/pairing/utils/pairing_models.dart';
 import 'package:walletconnect_flutter_v2/apis/core/i_core.dart';
 import 'package:walletconnect_flutter_v2/apis/core/relay_client/relay_client_models.dart';
@@ -99,10 +99,7 @@ class SignEngine implements ISignEngine {
     _registerRelayClientFunctions();
     await _cleanup();
 
-    // Subscribe to all the sessions
-    for (final SessionData session in sessions.getAll()) {
-      await core.relayClient.subscribe(topic: session.topic);
-    }
+    await _resubscribeAll();
 
     _initialized = true;
   }
@@ -140,7 +137,7 @@ class SignEngine implements ISignEngine {
     }
 
     final publicKey = await core.crypto.generateKeyPair();
-    final int id = PairingUtils.payloadId();
+    final int id = JsonRpcUtils.payloadId();
 
     final WcSessionProposeRequest request = WcSessionProposeRequest(
       relays: relays == null
@@ -349,7 +346,7 @@ class SignEngine implements ISignEngine {
     );
 
     await sessions.set(sessionTopic, session);
-    await _setExpiry(sessionTopic, expiry);
+    await _setSessionExpiry(sessionTopic, expiry);
 
     return ApproveResponse(
       topic: sessionTopic,
@@ -422,7 +419,7 @@ class SignEngine implements ISignEngine {
       {},
     );
 
-    await _setExpiry(
+    await _setSessionExpiry(
       topic,
       WalletConnectUtils.calculateExpiry(
         WalletConnectConstants.SEVEN_DAYS,
@@ -690,6 +687,14 @@ class SignEngine implements ISignEngine {
   }
 
   /// ---- PRIVATE HELPERS ---- ////
+
+  Future<void> _resubscribeAll() async {
+    // Subscribe to all the sessions
+    for (final SessionData session in sessions.getAll()) {
+      await core.relayClient.subscribe(topic: session.topic);
+    }
+  }
+
   void _checkInitialized() {
     if (!_initialized) {
       throw Errors.getInternalError(Errors.NOT_INITIALIZED);
@@ -744,7 +749,7 @@ class SignEngine implements ISignEngine {
     }
   }
 
-  Future<void> _setExpiry(String topic, int expiry) async {
+  Future<void> _setSessionExpiry(String topic, int expiry) async {
     if (sessions.has(topic)) {
       await sessions.update(
         topic,
@@ -786,7 +791,11 @@ class SignEngine implements ISignEngine {
         proposalIds.add(proposal.id);
       }
     }
-    sessionTopics.map((topic) async => await _deleteSession(topic));
+
+    sessionTopics.map((topic) async {
+      // print('deleting expired session $topic');
+      await _deleteSession(topic);
+    });
     proposalIds.map((id) async => await _deleteProposal(id));
   }
 
@@ -960,7 +969,7 @@ class SignEngine implements ISignEngine {
 
       // Update all the things: session, expiry, metadata, pairing
       sessions.set(topic, session);
-      _setExpiry(topic, session.expiry);
+      _setSessionExpiry(topic, session.expiry);
       await core.pairing.updateMetadata(
         topic: sProposalCompleter.pairingTopic,
         metadata: request.controller.metadata,
@@ -1036,7 +1045,7 @@ class SignEngine implements ISignEngine {
     try {
       final _ = WcSessionExtendRequest.fromJson(payload.params);
       await _isValidSessionTopic(topic);
-      await _setExpiry(
+      await _setSessionExpiry(
         topic,
         WalletConnectUtils.calculateExpiry(
           WalletConnectConstants.SEVEN_DAYS,
@@ -1301,9 +1310,15 @@ class SignEngine implements ISignEngine {
   /// ---- Event Registers ---- ///
 
   void _registerInternalEvents() {
+    core.relayClient.onRelayClientConnect.subscribe(_onRelayConnect);
     core.expirer.onExpire.subscribe(_onExpired);
     core.pairing.onPairingDelete.subscribe(_onPairingDelete);
     core.pairing.onPairingExpire.subscribe(_onPairingDelete);
+  }
+
+  Future<void> _onRelayConnect(EventArgs? args) async {
+    // print('Relay connected: sessions');
+    await _resubscribeAll();
   }
 
   // void _deregisterInternalEvents() {

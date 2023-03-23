@@ -26,6 +26,8 @@ class PairingStore extends GenericStore<PairingInfo> implements IPairingStore {
     if (info == null) {
       return;
     }
+    int prevExpiry = info.expiry;
+    bool wasActive = info.active;
 
     if (expiry != null) {
       info.expiry = expiry;
@@ -44,6 +46,11 @@ class PairingStore extends GenericStore<PairingInfo> implements IPairingStore {
       ),
     );
 
+    // print('Previous expiry: $prevExpiry, new expiry: ${info.expiry}');
+    // print('Previous active: $wasActive, new active: ${info.active}');
     await set(topic, info);
+
+    // print('Saved PairingInfo');
+    // print(get(topic));
   }
 }

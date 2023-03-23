@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 
+import '../shared/shared_test_utils.dart';
 import '../shared/shared_test_values.dart';
 import 'web3wallet_helpers.dart';
 
@@ -14,6 +15,7 @@ void main() {
           relayUrl: TEST_RELAY_URL,
           memoryStore: true,
           metadata: metadata,
+          httpClient: getHttpWrapper(),
         ),
   ];
   final List<Future<IWeb3Wallet> Function(PairingMetadata)> walletCreators = [
@@ -22,6 +24,7 @@ void main() {
           relayUrl: TEST_RELAY_URL,
           memoryStore: true,
           metadata: metadata,
+          httpClient: getHttpWrapper(),
         ),
   ];
 

@@ -8,7 +8,7 @@ class KeyService extends IKeyService {
       chains: [
         'kadena:mainnet01',
         'kadena:testnet04',
-        'kadena:devnet',
+        'kadena:development',
       ],
       privateKey: DartDefines.kadenaPrivateKey,
       publicKey: DartDefines.kadenaPublicKey,

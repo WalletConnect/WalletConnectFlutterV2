@@ -129,6 +129,7 @@ class GenericStore<T> implements IGenericStore<T> {
   @override
   Future<void> restore() async {
     if (core.storage.has(storageKey)) {
+      // print('Restoring $storageKey');
       for (var entry in core.storage.get(storageKey).entries) {
         data[entry.key] = fromJson(entry.value);
       }

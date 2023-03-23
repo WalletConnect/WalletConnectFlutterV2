@@ -3,6 +3,7 @@ import 'package:walletconnect_flutter_v2/apis/core/store/generic_store.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/sign_engine.dart';
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 
+import '../shared/shared_test_utils.dart';
 import '../shared/shared_test_values.dart';
 import 'tests/sign_common.dart';
 
@@ -16,6 +17,7 @@ void main() {
         projectId: TEST_PROJECT_ID,
         relayUrl: TEST_RELAY_URL,
         memoryStore: true,
+        httpClient: getHttpWrapper(),
       );
       ISignEngine e = SignEngine(
         core: core,
@@ -55,6 +57,7 @@ void main() {
         projectId: TEST_PROJECT_ID,
         relayUrl: TEST_RELAY_URL,
         memoryStore: true,
+        httpClient: getHttpWrapper(),
       );
       ISignEngine e = SignEngine(
         core: core,

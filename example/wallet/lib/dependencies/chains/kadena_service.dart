@@ -16,7 +16,7 @@ import 'package:walletconnect_flutter_v2_wallet/widgets/wc_request_widget.dart/w
 enum KadenaChainId {
   testnet04,
   mainnet01,
-  devnet,
+  development,
 }
 
 extension KadenaChainIdX on KadenaChainId {
@@ -26,6 +26,7 @@ extension KadenaChainIdX on KadenaChainId {
 class KadenaService extends IChain {
   static const namespace = 'kadena';
   static const kadenaSign = 'kadena_sign';
+  static const kadenaQuicksign = 'kadena_quicksign';
   static const kadenaSignV1 = 'kadena_sign_v1';
   static const kadenaQuicksignV1 = 'kadena_quicksign_v1';
   static const kadenaGetAccountsV1 = 'kadena_getAccounts_v1';
@@ -41,6 +42,9 @@ class KadenaService extends IChain {
     required this.reference,
   }) {
     final Web3Wallet wallet = _web3WalletService.getWeb3Wallet();
+    for (final String event in getEvents()) {
+      wallet.registerEventEmitter(chainId: getChainId(), event: event);
+    }
     wallet.registerRequestHandler(
       chainId: getChainId(),
       method: kadenaSign,
@@ -50,6 +54,11 @@ class KadenaService extends IChain {
       chainId: getChainId(),
       method: kadenaSignV1,
       handler: signV1,
+    );
+    wallet.registerRequestHandler(
+      chainId: getChainId(),
+      method: kadenaQuicksign,
+      handler: quicksignV1,
     );
     wallet.registerRequestHandler(
       chainId: getChainId(),
@@ -75,27 +84,35 @@ class KadenaService extends IChain {
 
   @override
   List<String> getEvents() {
-    return [];
+    return ['kadena_transaction_updated'];
   }
 
   Future signV1(String topic, dynamic parameters) async {
+    // print('received kadena sign request: $parameters');
     // Parse the request
-    final SignRequest signRequest = _signingApi.parseSignRequest(
-      request: parameters,
+    late SignRequest signRequest;
+    try {
+      signRequest = _signingApi.parseSignRequest(
+        request: parameters,
+      );
+    } catch (e) {
+      print(e);
+      rethrow;
+    }
+
+    // Get the keys for the kadena chain
+    final List<ChainKey> keys = GetIt.I<IKeyService>().getKeysForChain(
+      getChainId(),
     );
 
     final PactCommandPayload payload = _signingApi.constructPactCommandPayload(
       request: signRequest,
+      signingPubKey: keys[0].publicKey,
     );
 
     // Show the sign widget
     final List<bool>? approved = await _bottomSheetService.queueBottomSheet(
       widget: KadenaSignWidget(payloads: [payload]),
-    );
-
-    // Get the keys for the kadena chain
-    final List<ChainKey> keys = GetIt.I<IKeyService>().getKeysForChain(
-      getChainId(),
     );
 
     // If the user approved, sign the request
@@ -109,8 +126,8 @@ class KadenaService extends IChain {
       );
 
       // Return the signature
-      print(jsonEncode(signature));
-      return signature.body;
+      // print(jsonEncode(signature));
+      return signature;
     } else {
       throw Errors.getSdkError(Errors.USER_REJECTED_SIGN);
     }
