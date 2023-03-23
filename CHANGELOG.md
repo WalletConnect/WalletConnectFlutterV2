@@ -1,3 +1,7 @@
+## 1.2.2
+
+- Reverted preflight check for HTTP Errors.
+
 ## 1.2.1
 
 - Added `onCreate`, `onUpdate`, `onDelete`, `onSync` events to the Pairings, Sessions, and StoredCacao objects for easier state updates
