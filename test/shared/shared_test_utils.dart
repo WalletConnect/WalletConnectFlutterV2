@@ -32,7 +32,7 @@ ICrypto getCrypto({
   final ICrypto crypto = Crypto(
     core: _core,
     keyChain: GenericStore<String>(
-      core: _core,
+      storage: _core.storage,
       context: StoreVersions.CONTEXT_KEYCHAIN,
       version: StoreVersions.VERSION_KEYCHAIN,
       fromJson: (dynamic value) => value as String,
@@ -48,7 +48,7 @@ IMessageTracker getMessageTracker({
 }) {
   final ICore _core = core ?? Core(projectId: '', memoryStore: true);
   return MessageTracker(
-    core: _core,
+    storage: _core.storage,
     context: StoreVersions.CONTEXT_MESSAGE_TRACKER,
     version: StoreVersions.VERSION_MESSAGE_TRACKER,
     fromJson: (dynamic value) => WalletConnectUtils.convertMapTo<String>(value),
@@ -60,7 +60,7 @@ IGenericStore<String> getTopicMap({
 }) {
   final ICore _core = core ?? Core(projectId: '', memoryStore: true);
   return GenericStore<String>(
-    core: _core,
+    storage: _core.storage,
     context: StoreVersions.CONTEXT_TOPIC_MAP,
     version: StoreVersions.VERSION_TOPIC_MAP,
     fromJson: (dynamic value) => value as String,

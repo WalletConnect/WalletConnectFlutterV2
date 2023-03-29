@@ -23,7 +23,7 @@ void main() {
         core: core,
         metadata: metadata,
         proposals: GenericStore(
-          core: core,
+          storage: core.storage,
           context: StoreVersions.CONTEXT_PROPOSALS,
           version: StoreVersions.VERSION_PROPOSALS,
           fromJson: (dynamic value) {
@@ -31,7 +31,7 @@ void main() {
           },
         ),
         sessions: Sessions(
-          core: core,
+          storage: core.storage,
           context: StoreVersions.CONTEXT_SESSIONS,
           version: StoreVersions.VERSION_SESSIONS,
           fromJson: (dynamic value) {
@@ -39,7 +39,7 @@ void main() {
           },
         ),
         pendingRequests: GenericStore(
-          core: core,
+          storage: core.storage,
           context: StoreVersions.CONTEXT_PENDING_REQUESTS,
           version: StoreVersions.VERSION_PENDING_REQUESTS,
           fromJson: (dynamic value) {
@@ -63,7 +63,7 @@ void main() {
         core: core,
         metadata: metadata,
         proposals: GenericStore(
-          core: core,
+          storage: core.storage,
           context: StoreVersions.CONTEXT_PROPOSALS,
           version: StoreVersions.VERSION_PROPOSALS,
           fromJson: (dynamic value) {
@@ -71,7 +71,7 @@ void main() {
           },
         ),
         sessions: Sessions(
-          core: core,
+          storage: core.storage,
           context: StoreVersions.CONTEXT_SESSIONS,
           version: StoreVersions.VERSION_SESSIONS,
           fromJson: (dynamic value) {
@@ -79,7 +79,7 @@ void main() {
           },
         ),
         pendingRequests: GenericStore(
-          core: core,
+          storage: core.storage,
           context: StoreVersions.CONTEXT_PENDING_REQUESTS,
           version: StoreVersions.VERSION_PENDING_REQUESTS,
           fromJson: (dynamic value) {

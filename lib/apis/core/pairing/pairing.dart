@@ -379,6 +379,12 @@ class Pairing implements IPairing {
       opts = opts.copyWith(ttl: ttl);
     }
 
+    // await core.expirer.set(
+    //   payload['id'].toString(),
+    //   WalletConnectUtils.calculateExpiry(
+    //     WalletConnectConstants.ONE_DAY,
+    //   ),
+    // );
     await core.history.set(
       payload['id'].toString(),
       JsonRpcRecord(
@@ -477,7 +483,7 @@ class Pairing implements IPairing {
       ttl: opts.ttl,
       tag: opts.tag,
     );
-    await core.history.resolve(payload);
+    // await core.history.resolve(payload);
   }
 
   /// ---- Private Helpers ---- ///

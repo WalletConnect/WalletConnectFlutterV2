@@ -209,7 +209,7 @@ class PairingActivateEvent extends EventArgs {
   }
 }
 
-@JsonSerializable()
+@JsonSerializable(includeIfNull: false)
 class JsonRpcRecord {
   int id;
   String topic;

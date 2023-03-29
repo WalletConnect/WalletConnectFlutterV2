@@ -1,7 +1,7 @@
 import 'package:event/event.dart';
 import 'package:flutter/material.dart';
 import 'package:walletconnect_flutter_v2/apis/core/store/i_generic_store.dart';
-import 'package:walletconnect_flutter_v2/apis/core/i_core.dart';
+import 'package:walletconnect_flutter_v2/apis/core/store/i_store.dart';
 import 'package:walletconnect_flutter_v2/apis/core/store/store_models.dart';
 import 'package:walletconnect_flutter_v2/apis/utils/errors.dart';
 
@@ -14,7 +14,7 @@ class GenericStore<T> implements IGenericStore<T> {
   @override
   String get storageKey => '$version//$context';
   @override
-  final ICore core;
+  final IStore storage;
 
   @override
   final Event<StoreCreateEvent<T>> onCreate = Event();
@@ -34,7 +34,7 @@ class GenericStore<T> implements IGenericStore<T> {
   final T Function(dynamic) fromJson;
 
   GenericStore({
-    required this.core,
+    required this.storage,
     required this.context,
     required this.version,
     required this.fromJson,
@@ -46,7 +46,7 @@ class GenericStore<T> implements IGenericStore<T> {
       return;
     }
 
-    await core.storage.init();
+    await storage.init();
     await restore();
 
     _initialized = true;
@@ -123,14 +123,14 @@ class GenericStore<T> implements IGenericStore<T> {
       StoreSyncEvent(),
     );
 
-    await core.storage.set(storageKey, data);
+    await storage.set(storageKey, data);
   }
 
   @override
   Future<void> restore() async {
-    if (core.storage.has(storageKey)) {
+    if (storage.has(storageKey)) {
       // print('Restoring $storageKey');
-      for (var entry in core.storage.get(storageKey).entries) {
+      for (var entry in storage.get(storageKey).entries) {
         data[entry.key] = fromJson(entry.value);
       }
     }

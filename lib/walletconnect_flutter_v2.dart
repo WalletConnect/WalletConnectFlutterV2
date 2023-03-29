@@ -17,6 +17,7 @@ export 'apis/models/uri_parse_result.dart';
 export 'apis/utils/method_constants.dart';
 
 // Sign API
+export 'apis/sign_api/i_sign_client.dart';
 export 'apis/sign_api/i_sign_engine.dart';
 export 'apis/sign_api/sign_client.dart';
 export 'apis/sign_api/sessions.dart';
