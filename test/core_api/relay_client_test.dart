@@ -40,13 +40,23 @@ void main() {
       expect(
         () async => await core.start(),
         throwsA(
-          isA<HttpException>().having(
+          isA<WalletConnectError>().having(
             (e) => e.message,
             'Invalid project id',
-            WebSocketErrors.PROJECT_ID_NOT_FOUND_MESSAGE,
+            'WebSocket connection failed, this could be: 1. Missing project id, 2. Invalid project id, 3. Too many requests',
           ),
         ),
       );
+      // expect(
+      //   () async => await core.start(),
+      //   throwsA(
+      //     isA<HttpException>().having(
+      //       (e) => e.message,
+      //       'Invalid project id',
+      //       WebSocketErrors.PROJECT_ID_NOT_FOUND_MESSAGE,
+      //     ),
+      //   ),
+      // );
     });
   });
 

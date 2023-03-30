@@ -1,6 +1,13 @@
+## 1.2.2
+
+- Reverted preflight check for HTTP Errors.
+
 ## 1.2.1
 
 - Added `onCreate`, `onUpdate`, `onDelete`, `onSync` events to the Pairings, Sessions, and StoredCacao objects for easier state updates
+- Relay now reconnects and resubscribes to active topics when connection WebSocket is lost
+- Added heartbeat to websocket to keep connection alive
+- Added preflight check for HTTP Errors before connecting to WebSocket
 
 ## 1.2.0
 

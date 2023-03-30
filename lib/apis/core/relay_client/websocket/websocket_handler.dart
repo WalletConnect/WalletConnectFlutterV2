@@ -1,13 +1,9 @@
 import 'dart:async';
-import 'dart:math';
 
-import 'package:flutter/foundation.dart';
-import 'package:http/http.dart';
 import 'package:stream_channel/stream_channel.dart';
-import 'package:universal_io/io.dart';
 import 'package:walletconnect_flutter_v2/apis/core/relay_client/websocket/i_http_client.dart';
 import 'package:walletconnect_flutter_v2/apis/core/relay_client/websocket/i_websocket_handler.dart';
-import 'package:walletconnect_flutter_v2/apis/utils/errors.dart';
+import 'package:walletconnect_flutter_v2/apis/models/basic_models.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 class WebSocketHandler implements IWebSocketHandler {
@@ -44,22 +40,22 @@ class WebSocketHandler implements IWebSocketHandler {
   Future<void> _connect() async {
     // Perform the HTTP GET request
     // print(httpClient);
-    late Response response;
+    // late Response response;
 
-    if (kIsWeb) {
-      // Can't make a get request on web due to CORS, so we just assume we are good.
-      response = Response('', 200);
-    } else {
-      final httpsUrl = url.replaceFirst('wss', 'https');
-      response = await httpClient.get(
-        Uri.parse(
-          httpsUrl,
-        ),
-      );
-    }
+    // if (kIsWeb) {
+    //   // Can't make a get request on web due to CORS, so we just assume we are good.
+    //   response = Response('', 200);
+    // } else {
+    //   final httpsUrl = url.replaceFirst('wss', 'https');
+    //   response = await httpClient.get(
+    //     Uri.parse(
+    //       httpsUrl,
+    //     ),
+    //   );
+    // }
 
     // Check if the request was successful (status code 200)
-    if (response.statusCode == 200) {
+    try {
       // print('connecting');
       _socket = WebSocketChannel.connect(
         Uri.parse(
@@ -71,29 +67,30 @@ class WebSocketHandler implements IWebSocketHandler {
       // print('websocket ready');
 
       _channel = _socket!.cast<String>();
-
-      // Handle WebSocket closing event
-      // if (closeCode == WebSocketErrors.SERVER_TERMINATING ||
-      //     closeCode == WebSocketErrors.CLIENT_STALE ||
-      //     closeCode == WebSocketErrors.LOAD_REBALANCING) {
-      //   _handleDisconnect();
-      // }
-    } else {
+    } catch (e) {
       // If the request failed, handle the error
       // debugPrint(
       //   'HTTP GET request failed with status code: ${response.statusCode}',
       // );
+      // print(response.headers);
+      // print(response.statusCode);
 
-      switch (response.statusCode) {
-        case WebSocketErrors.PROJECT_ID_NOT_FOUND:
-          throw HttpException(WebSocketErrors.PROJECT_ID_NOT_FOUND_MESSAGE);
-        case WebSocketErrors.INVALID_PROJECT_ID:
-          throw HttpException(WebSocketErrors.INVALID_PROJECT_ID_MESSAGE);
-        case WebSocketErrors.TOO_MANY_REQUESTS:
-          throw HttpException(WebSocketErrors.TOO_MANY_REQUESTS_MESSAGE);
-        default:
-          throw HttpException(response.body);
-      }
+      // switch (response.statusCode) {
+      //   case WebSocketErrors.PROJECT_ID_NOT_FOUND:
+      //     throw HttpException(WebSocketErrors.PROJECT_ID_NOT_FOUND_MESSAGE);
+      //   case WebSocketErrors.INVALID_PROJECT_ID:
+      //     throw HttpException(WebSocketErrors.INVALID_PROJECT_ID_MESSAGE);
+      //   case WebSocketErrors.TOO_MANY_REQUESTS:
+      //     throw HttpException(WebSocketErrors.TOO_MANY_REQUESTS_MESSAGE);
+      //   default:
+      //     throw HttpException(response.body);
+      // }
+
+      throw WalletConnectError(
+        code: 400,
+        message:
+            'WebSocket connection failed, this could be: 1. Missing project id, 2. Invalid project id, 3. Too many requests',
+      );
     }
   }
 
