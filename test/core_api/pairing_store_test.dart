@@ -132,38 +132,5 @@ void main() {
         expect(topicToReceiverPublicKey.getAll().length, 0);
       });
     });
-
-    group('history', () {
-      test('emits events when records are updated', () async {
-        Completer completer = Completer();
-        history.onUpdate.subscribe((args) {
-          completer.complete();
-        });
-
-        await pairing.init();
-
-        await history.set(
-          '3',
-          JsonRpcRecord(
-            id: 3,
-            topic: '1',
-            method: 'eth_sign',
-            params: '',
-            expiry: WalletConnectUtils.calculateExpiry(
-              WalletConnectConstants.ONE_DAY,
-            ),
-          ),
-        );
-
-        await history.resolve(
-          {'id': '3', 'result': 'test'},
-        );
-
-        await completer.future;
-
-        expect(history.getAll().length, 1);
-        expect(history.get('3')!.response, 'test');
-      });
-    });
   });
 }

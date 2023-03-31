@@ -138,7 +138,7 @@ class GenericStore<T> implements IGenericStore<T> {
     // If we have stored our version, but it doesn't match, we need to clear storage and stop
     if (storage.get(context)['version'] != version) {
       // print('Clearing storage');
-      await storage.set(storageKey, {});
+      await storage.set(storageKey, <String, dynamic>{});
       await storage.set(context, {'version': version});
       return;
     }

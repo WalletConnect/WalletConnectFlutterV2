@@ -8,6 +8,7 @@ import 'package:walletconnect_flutter_v2/apis/core/pairing/pairing_store.dart';
 import 'package:walletconnect_flutter_v2/apis/core/pairing/utils/pairing_models.dart';
 import 'package:walletconnect_flutter_v2/apis/core/relay_client/i_message_tracker.dart';
 import 'package:walletconnect_flutter_v2/apis/core/relay_client/message_tracker.dart';
+import 'package:walletconnect_flutter_v2/apis/core/relay_client/relay_client_models.dart';
 import 'package:walletconnect_flutter_v2/apis/core/store/generic_store.dart';
 import 'package:walletconnect_flutter_v2/apis/core/store/i_generic_store.dart';
 import 'package:walletconnect_flutter_v2/apis/core/store/i_store.dart';
@@ -96,10 +97,26 @@ void main() {
             '${WalletConnectConstants.CORE_STORAGE_PREFIX}swag//keychain': {
               'key': 'value',
             },
+            '${WalletConnectConstants.CORE_STORAGE_PREFIX}keychain': {
+              'version': 'swag',
+            },
           },
           memoryStore: true,
         );
         await store.init();
+
+        // Case 1: Storage doesn't have the context
+        genericStore = GenericStore(
+          storage: store,
+          context: 'records',
+          version: 'swag',
+          fromJson: (value) => value as String,
+        );
+        await genericStore.init();
+
+        expect(store.get('records'), {'version': 'swag'});
+
+        // Case 2: Storage has the context but not the version
         genericStore = GenericStore(
           storage: store,
           context: 'keychain',
@@ -108,7 +125,20 @@ void main() {
         );
         await genericStore.init();
 
+        expect(store.get('keychain'), {'version': 'swag'});
         expect(genericStore.get('key'), 'value');
+
+        // Case 3: Storage has the context and version and the key
+        genericStore = GenericStore(
+          storage: store,
+          context: 'keychain',
+          version: 'swagV2',
+          fromJson: (value) => value as String,
+        );
+        await genericStore.init();
+
+        expect(store.get('keychain'), {'version': 'swagV2'});
+        expect(genericStore.get('key') == null, true);
       });
     });
 
@@ -122,14 +152,15 @@ void main() {
             return WalletConnectUtils.convertMapTo<String>(value);
           },
         );
-        await messageTracker.init();
-
-        expect(messageTracker.messageIsRecorded('test', 'message'), false);
 
         Completer createComplete = Completer();
         messageTracker.onCreate.subscribe((args) {
           createComplete.complete();
         });
+
+        await messageTracker.init();
+
+        expect(messageTracker.messageIsRecorded('test', 'message'), false);
 
         await messageTracker.recordMessageEvent('test', 'message');
         await createComplete.future;
@@ -203,16 +234,17 @@ void main() {
         );
         await specialStore.init();
 
-        // await specialStore.set(
-        //   '1',
-        //   JsonRpcRecord(
-        //     id: 1,
-        //     topic: 'test',
-        //     method: 'method',
-        //     params: [],
-        //     expiry: 1,
-        //   ),
-        // );
+        await specialStore.set(
+          '1',
+          PairingInfo(
+            topic: 'expired',
+            expiry: -1,
+            relay: Relay(
+              'irn',
+            ),
+            active: true,
+          ),
+        );
 
         Completer updateComplete = Completer();
         Completer syncComplete = Completer();
@@ -223,20 +255,23 @@ void main() {
           syncComplete.complete();
         });
 
-        // await specialStore.resolve(
-        //   {
-        //     'id': 1,
-        //     'result': 'result',
-        //   },
-        // );
+        expect(
+          specialStore.get('1')!.expiry,
+          -1,
+        );
+
+        await specialStore.update(
+          '1',
+          expiry: 2,
+        );
 
         await updateComplete.future;
         await syncComplete.future;
 
-        // expect(
-        //   specialStore.get('1')!.response,
-        //   'result',
-        // );
+        expect(
+          specialStore.get('1')!.expiry,
+          2,
+        );
       });
     });
   });

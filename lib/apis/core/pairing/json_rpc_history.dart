@@ -31,15 +31,6 @@ class JsonRpcHistory extends GenericStore<JsonRpcRecord>
 
     record.response =
         response.containsKey('result') ? response['result'] : response['error'];
-    data[sId] = record;
-
-    onUpdate.broadcast(
-      StoreUpdateEvent(
-        sId,
-        record,
-      ),
-    );
-
-    await persist();
+    await set(sId, record);
   }
 }

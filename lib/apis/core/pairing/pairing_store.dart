@@ -37,12 +37,12 @@ class PairingStore extends GenericStore<PairingInfo> implements IPairingStore {
       info.peerMetadata = metadata;
     }
 
-    onUpdate.broadcast(
-      StoreUpdateEvent(
-        topic,
-        info,
-      ),
-    );
+    // onUpdate.broadcast(
+    //   StoreUpdateEvent(
+    //     topic,
+    //     info,
+    //   ),
+    // );
 
     // print('Previous expiry: $prevExpiry, new expiry: ${info.expiry}');
     // print('Previous active: $wasActive, new active: ${info.active}');
