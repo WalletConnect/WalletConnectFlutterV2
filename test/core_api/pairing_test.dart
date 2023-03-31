@@ -117,39 +117,6 @@ void main() {
       expect(coreB.pairing.getPairings().length, 0);
     });
 
-    group('history', () {
-      IPairing pairing;
-      IJsonRpcHistory history;
-
-      setUp(() async {
-        pairing = Pairing(
-          core: coreA,
-          pairings: PairingStore(
-            core: coreA,
-            context: StoreVersions.CONTEXT_PAIRINGS,
-            version: StoreVersions.VERSION_PAIRINGS,
-            fromJson: (dynamic value) {
-              return PairingInfo.fromJson(value as Map<String, dynamic>);
-            },
-          ),
-          history: JsonRpcHistory(
-            core: coreA,
-            context: StoreVersions.CONTEXT_JSON_RPC_HISTORY,
-            version: StoreVersions.VERSION_JSON_RPC_HISTORY,
-            fromJson: (dynamic value) => JsonRpcRecord.fromJson(value),
-          ),
-          topicToReceiverPublicKey: GenericStore(
-            core: coreA,
-            context: StoreVersions.CONTEXT_TOPIC_TO_RECEIVER_PUBLIC_KEY,
-            version: StoreVersions.VERSION_TOPIC_TO_RECEIVER_PUBLIC_KEY,
-            fromJson: (dynamic value) => ReceiverPublicKey.fromJson(value),
-          ),
-        );
-      });
-
-      test('deletes old records', () async {});
-    });
-
     group('create', () {
       test('returns pairing topic and URI in expected format', () async {
         Completer completer = Completer();
