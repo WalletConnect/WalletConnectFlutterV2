@@ -107,10 +107,7 @@ void main() {
         );
 
         expect(history.getAll().length, 2);
-        print(history.getAll());
-
         await pairing.init();
-
         expect(history.getAll().length, 0);
       });
 
