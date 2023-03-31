@@ -84,7 +84,7 @@ void main() {
     });
 
     group('history', () {
-      test('deletes old records', () async {
+      test('deletes expired records', () async {
         await history.init();
         await history.set(
           '1',
