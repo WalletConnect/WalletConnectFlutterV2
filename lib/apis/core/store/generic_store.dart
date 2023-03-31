@@ -128,6 +128,21 @@ class GenericStore<T> implements IGenericStore<T> {
 
   @override
   Future<void> restore() async {
+    // If we haven't stored our version yet, we need to store it and stop
+    if (!core.storage.has(context)) {
+      // print('Storing $context');
+      await core.storage.set(context, {'version': version});
+      return;
+    }
+
+    // If we have stored our version, but it doesn't match, we need to clear storage and stop
+    if (core.storage.get(context)['version'] != version) {
+      // print('Clearing storage');
+      await core.storage.set(storageKey, {});
+      await core.storage.set(context, {'version': version});
+      return;
+    }
+
     if (core.storage.has(storageKey)) {
       // print('Restoring $storageKey');
       for (var entry in core.storage.get(storageKey).entries) {

@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:walletconnect_flutter_v2/apis/core/core.dart';
 import 'package:walletconnect_flutter_v2/apis/core/i_core.dart';
@@ -32,6 +33,7 @@ void main() {
     late IPairing pairing;
     late IJsonRpcHistory history;
     late IPairingStore pairingStore;
+    late GenericStore<ReceiverPublicKey> topicToReceiverPublicKey;
 
     setUp(() async {
       coreA = Core(
@@ -63,18 +65,17 @@ void main() {
         version: StoreVersions.VERSION_JSON_RPC_HISTORY,
         fromJson: (dynamic value) => JsonRpcRecord.fromJson(value),
       );
+      topicToReceiverPublicKey = GenericStore(
+        core: coreA,
+        context: StoreVersions.CONTEXT_TOPIC_TO_RECEIVER_PUBLIC_KEY,
+        version: StoreVersions.VERSION_TOPIC_TO_RECEIVER_PUBLIC_KEY,
+        fromJson: (dynamic value) => ReceiverPublicKey.fromJson(value),
+      );
       pairing = Pairing(
         core: coreA,
         pairings: pairingStore,
         history: history,
-        topicToReceiverPublicKey: GenericStore(
-          core: coreA,
-          context: StoreVersions.CONTEXT_TOPIC_TO_RECEIVER_PUBLIC_KEY,
-          version: StoreVersions.VERSION_TOPIC_TO_RECEIVER_PUBLIC_KEY,
-          fromJson: (dynamic value) {
-            return value as String;
-          },
-        ),
+        topicToReceiverPublicKey: topicToReceiverPublicKey,
       );
     });
 
@@ -83,7 +84,7 @@ void main() {
       await coreB.relayClient.disconnect();
     });
 
-    group('history', () {
+    group('pairing init', () {
       test('deletes expired records', () async {
         await history.init();
         await history.set(
@@ -105,12 +106,39 @@ void main() {
             expiry: 0,
           ),
         );
+        await pairingStore.init();
+        await pairingStore.set(
+          'expired',
+          PairingInfo(
+            topic: 'expired',
+            expiry: -1,
+            relay: Relay(
+              'irn',
+            ),
+            active: true,
+          ),
+        );
+        await topicToReceiverPublicKey.init();
+        await topicToReceiverPublicKey.set(
+          'abc',
+          ReceiverPublicKey(
+            topic: 'abc',
+            publicKey: 'def',
+            expiry: -1,
+          ),
+        );
 
         expect(history.getAll().length, 2);
+        expect(pairingStore.getAll().length, 1);
+        expect(topicToReceiverPublicKey.getAll().length, 1);
         await pairing.init();
         expect(history.getAll().length, 0);
+        expect(pairingStore.getAll().length, 0);
+        expect(topicToReceiverPublicKey.getAll().length, 0);
       });
+    });
 
+    group('history', () {
       test('emits events when records are updated', () async {
         Completer completer = Completer();
         history.onUpdate.subscribe((args) {

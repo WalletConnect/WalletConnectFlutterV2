@@ -49,7 +49,7 @@ class Pairing implements IPairing {
   /// Stores the public key of Type 1 Envelopes for a topic
   /// Once a receiver public key has been used, it is removed from the store
   /// Thus, this store works under the assumption that a public key will only be used once
-  final IGenericStore<String> topicToReceiverPublicKey;
+  final IGenericStore<ReceiverPublicKey> topicToReceiverPublicKey;
 
   Pairing({
     required this.core,
@@ -234,11 +234,14 @@ class Pairing implements IPairing {
     int? expiry,
   }) async {
     _checkInitialized();
-    await topicToReceiverPublicKey.set(topic, publicKey);
-    await core.expirer.set(
-      publicKey,
-      WalletConnectUtils.calculateExpiry(
-        expiry ?? WalletConnectConstants.FIVE_MINUTES,
+    await topicToReceiverPublicKey.set(
+      topic,
+      ReceiverPublicKey(
+        topic: topic,
+        publicKey: publicKey,
+        expiry: WalletConnectUtils.calculateExpiry(
+          expiry ?? WalletConnectConstants.FIVE_MINUTES,
+        ),
       ),
     );
   }
@@ -534,15 +537,15 @@ class Pairing implements IPairing {
     }
 
     // Cleanup all of the expired receiver public keys
-    final List<String> expiredReceiverPublicKeys = topicToReceiverPublicKey
-        .getAll()
-        .where(
-            (key) => WalletConnectUtils.isExpired(core.expirer.get(key) ?? -1))
-        .toList();
+    final List<ReceiverPublicKey> expiredReceiverPublicKeys =
+        topicToReceiverPublicKey
+            .getAll()
+            .where((receiver) => WalletConnectUtils.isExpired(receiver.expiry))
+            .toList();
     // Loop through the expired receiver public keys and delete them
-    for (final String key in expiredReceiverPublicKeys) {
-      // print('deleting expired receiver public key: $key');
-      await topicToReceiverPublicKey.delete(key);
+    for (final ReceiverPublicKey receiver in expiredReceiverPublicKeys) {
+      print('deleting expired receiver public key: $receiver');
+      await topicToReceiverPublicKey.delete(receiver.topic);
     }
   }
 
@@ -583,7 +586,8 @@ class Pairing implements IPairing {
     }
 
     // If we have a reciever public key for the topic, use it
-    String? receiverPublicKey = topicToReceiverPublicKey.get(event.topic);
+    ReceiverPublicKey? receiverPublicKey =
+        topicToReceiverPublicKey.get(event.topic);
     // If there was a public key, delete it. One use.
     if (receiverPublicKey != null) {
       await topicToReceiverPublicKey.delete(event.topic);
@@ -594,7 +598,7 @@ class Pairing implements IPairing {
       event.topic,
       event.message,
       options: DecodeOptions(
-        receiverPublicKey: receiverPublicKey,
+        receiverPublicKey: receiverPublicKey?.publicKey,
       ),
     );
 

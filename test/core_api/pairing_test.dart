@@ -142,9 +142,7 @@ void main() {
             core: coreA,
             context: StoreVersions.CONTEXT_TOPIC_TO_RECEIVER_PUBLIC_KEY,
             version: StoreVersions.VERSION_TOPIC_TO_RECEIVER_PUBLIC_KEY,
-            fromJson: (dynamic value) {
-              return value as String;
-            },
+            fromJson: (dynamic value) => ReceiverPublicKey.fromJson(value),
           ),
         );
       });

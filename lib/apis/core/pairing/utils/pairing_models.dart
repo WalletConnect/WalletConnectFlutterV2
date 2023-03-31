@@ -239,6 +239,29 @@ class JsonRpcRecord {
   }
 }
 
+@JsonSerializable(includeIfNull: false)
+class ReceiverPublicKey {
+  String topic;
+  String publicKey;
+  int expiry;
+
+  ReceiverPublicKey({
+    required this.topic,
+    required this.publicKey,
+    required this.expiry,
+  });
+
+  factory ReceiverPublicKey.fromJson(Map<String, dynamic> json) =>
+      _$ReceiverPublicKeyFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ReceiverPublicKeyToJson(this);
+
+  @override
+  String toString() {
+    return 'Receiver(topic: $topic, publicKey: $publicKey, expiry: $expiry)';
+  }
+}
+
 class RegisteredFunction {
   String method;
   Function(String, JsonRpcRequest) function;
