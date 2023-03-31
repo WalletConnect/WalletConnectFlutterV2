@@ -10,7 +10,7 @@ import 'package:walletconnect_flutter_v2/apis/utils/walletconnect_utils.dart';
 
 class Sessions extends GenericStore<SessionData> implements ISessions {
   Sessions({
-    required super.core,
+    required super.storage,
     required super.context,
     required super.version,
     required super.fromJson,

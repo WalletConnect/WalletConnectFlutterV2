@@ -85,7 +85,6 @@ class CryptoUtils extends ICryptoUtils {
         ),
       ),
     );
-    // return hex.encode(Hash.sha256(message));
   }
 
   @override

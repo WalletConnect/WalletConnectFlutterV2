@@ -161,7 +161,7 @@ class RelayClient implements IRelayClient {
     await topicMap.delete(topic);
 
     // Delete all the messages
-    messageTracker.deleteSubscriptionMessages(topic);
+    await messageTracker.delete(topic);
   }
 
   @override

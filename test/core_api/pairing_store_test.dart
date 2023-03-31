@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:walletconnect_flutter_v2/apis/core/core.dart';
 import 'package:walletconnect_flutter_v2/apis/core/i_core.dart';
@@ -11,13 +10,9 @@ import 'package:walletconnect_flutter_v2/apis/core/pairing/json_rpc_history.dart
 import 'package:walletconnect_flutter_v2/apis/core/pairing/pairing.dart';
 import 'package:walletconnect_flutter_v2/apis/core/pairing/pairing_store.dart';
 import 'package:walletconnect_flutter_v2/apis/core/pairing/utils/pairing_models.dart';
-import 'package:walletconnect_flutter_v2/apis/core/pairing/utils/json_rpc_utils.dart';
 import 'package:walletconnect_flutter_v2/apis/core/relay_client/relay_client_models.dart';
 import 'package:walletconnect_flutter_v2/apis/core/store/generic_store.dart';
-import 'package:walletconnect_flutter_v2/apis/models/basic_models.dart';
-import 'package:walletconnect_flutter_v2/apis/models/uri_parse_result.dart';
 import 'package:walletconnect_flutter_v2/apis/utils/constants.dart';
-import 'package:walletconnect_flutter_v2/apis/utils/method_constants.dart';
 import 'package:walletconnect_flutter_v2/apis/utils/walletconnect_utils.dart';
 
 import '../shared/shared_test_utils.dart';
@@ -52,7 +47,7 @@ void main() {
       await coreB.start();
 
       pairingStore = PairingStore(
-        core: coreA,
+        storage: coreA.storage,
         context: StoreVersions.CONTEXT_PAIRINGS,
         version: StoreVersions.VERSION_PAIRINGS,
         fromJson: (dynamic value) {
@@ -60,13 +55,13 @@ void main() {
         },
       );
       history = JsonRpcHistory(
-        core: coreA,
+        storage: coreA.storage,
         context: StoreVersions.CONTEXT_JSON_RPC_HISTORY,
         version: StoreVersions.VERSION_JSON_RPC_HISTORY,
         fromJson: (dynamic value) => JsonRpcRecord.fromJson(value),
       );
       topicToReceiverPublicKey = GenericStore(
-        core: coreA,
+        storage: coreA.storage,
         context: StoreVersions.CONTEXT_TOPIC_TO_RECEIVER_PUBLIC_KEY,
         version: StoreVersions.VERSION_TOPIC_TO_RECEIVER_PUBLIC_KEY,
         fromJson: (dynamic value) => ReceiverPublicKey.fromJson(value),

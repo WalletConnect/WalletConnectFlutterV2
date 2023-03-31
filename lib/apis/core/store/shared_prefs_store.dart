@@ -9,7 +9,7 @@ class SharedPrefsStores implements IStore<Map<String, dynamic>> {
   late SharedPreferences prefs;
   bool _initialized = false;
 
-  Map<String, Map<String, dynamic>> _map = <String, Map<String, dynamic>>{};
+  Map<String, Map<String, dynamic>> _map;
 
   @override
   Map<String, Map<String, dynamic>> get map => _map;
@@ -23,13 +23,12 @@ class SharedPrefsStores implements IStore<Map<String, dynamic>> {
   @override
   String get storagePrefix => WalletConnectConstants.CORE_STORAGE_PREFIX;
 
-  final Map<String, dynamic> defaultValue;
   final bool memoryStore;
 
-  SharedPrefsStores(
-    this.defaultValue, {
+  SharedPrefsStores({
+    Map<String, Map<String, dynamic>>? defaultValue,
     this.memoryStore = false,
-  });
+  }) : _map = defaultValue ?? {};
 
   /// Initializes the store, loading all persistent values into memory.
   @override
@@ -113,7 +112,7 @@ class SharedPrefsStores implements IStore<Map<String, dynamic>> {
 
   Map<String, dynamic> _getPref(String key) {
     if (memoryStore) {
-      return defaultValue;
+      return {};
     }
 
     if (prefs.containsKey(key)) {

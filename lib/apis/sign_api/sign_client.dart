@@ -93,7 +93,7 @@ class SignClient implements ISignClient {
       core: core,
       metadata: metadata,
       proposals: GenericStore(
-        core: core,
+        storage: core.storage,
         context: StoreVersions.CONTEXT_PROPOSALS,
         version: StoreVersions.VERSION_PROPOSALS,
         fromJson: (dynamic value) {
@@ -101,7 +101,7 @@ class SignClient implements ISignClient {
         },
       ),
       sessions: Sessions(
-        core: core,
+        storage: core.storage,
         context: StoreVersions.CONTEXT_SESSIONS,
         version: StoreVersions.VERSION_SESSIONS,
         fromJson: (dynamic value) {
@@ -109,7 +109,7 @@ class SignClient implements ISignClient {
         },
       ),
       pendingRequests: GenericStore(
-        core: core,
+        storage: core.storage,
         context: StoreVersions.CONTEXT_PENDING_REQUESTS,
         version: StoreVersions.VERSION_PENDING_REQUESTS,
         fromJson: (dynamic value) {

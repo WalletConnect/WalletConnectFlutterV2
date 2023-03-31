@@ -57,13 +57,12 @@ class Core implements ICore {
     IHttpClient httpClient = const HttpWrapper(),
   }) {
     storage = SharedPrefsStores(
-      <String, dynamic>{},
       memoryStore: memoryStore,
     );
     crypto = Crypto(
       core: this,
       keyChain: GenericStore<String>(
-        core: this,
+        storage: storage,
         context: StoreVersions.CONTEXT_KEYCHAIN,
         version: StoreVersions.VERSION_KEYCHAIN,
         fromJson: (dynamic value) => value as String,
@@ -72,7 +71,7 @@ class Core implements ICore {
     relayClient = RelayClient(
       core: this,
       messageTracker: MessageTracker(
-        core: this,
+        storage: storage,
         context: StoreVersions.CONTEXT_MESSAGE_TRACKER,
         version: StoreVersions.VERSION_MESSAGE_TRACKER,
         fromJson: (dynamic value) {
@@ -80,7 +79,7 @@ class Core implements ICore {
         },
       ),
       topicMap: GenericStore<String>(
-        core: this,
+        storage: storage,
         context: StoreVersions.CONTEXT_TOPIC_MAP,
         version: StoreVersions.VERSION_TOPIC_MAP,
         fromJson: (dynamic value) => value as String,
@@ -88,7 +87,7 @@ class Core implements ICore {
       httpClient: httpClient,
     );
     expirer = Expirer(
-      core: this,
+      storage: storage,
       context: StoreVersions.CONTEXT_EXPIRER,
       version: StoreVersions.VERSION_EXPIRER,
       fromJson: (dynamic value) => value as int,
@@ -96,7 +95,7 @@ class Core implements ICore {
     pairing = Pairing(
       core: this,
       pairings: PairingStore(
-        core: this,
+        storage: storage,
         context: StoreVersions.CONTEXT_PAIRINGS,
         version: StoreVersions.VERSION_PAIRINGS,
         fromJson: (dynamic value) {
@@ -104,13 +103,13 @@ class Core implements ICore {
         },
       ),
       history: JsonRpcHistory(
-        core: this,
+        storage: storage,
         context: StoreVersions.CONTEXT_JSON_RPC_HISTORY,
         version: StoreVersions.VERSION_JSON_RPC_HISTORY,
         fromJson: (dynamic value) => JsonRpcRecord.fromJson(value),
       ),
       topicToReceiverPublicKey: GenericStore(
-        core: this,
+        storage: storage,
         context: StoreVersions.CONTEXT_TOPIC_TO_RECEIVER_PUBLIC_KEY,
         version: StoreVersions.VERSION_TOPIC_TO_RECEIVER_PUBLIC_KEY,
         fromJson: (dynamic value) => ReceiverPublicKey.fromJson(value),
