@@ -3,9 +3,15 @@ import 'dart:async';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:walletconnect_flutter_v2/apis/core/core.dart';
 import 'package:walletconnect_flutter_v2/apis/core/i_core.dart';
+import 'package:walletconnect_flutter_v2/apis/core/pairing/i_json_rpc_history.dart';
+import 'package:walletconnect_flutter_v2/apis/core/pairing/i_pairing.dart';
+import 'package:walletconnect_flutter_v2/apis/core/pairing/json_rpc_history.dart';
+import 'package:walletconnect_flutter_v2/apis/core/pairing/pairing.dart';
+import 'package:walletconnect_flutter_v2/apis/core/pairing/pairing_store.dart';
 import 'package:walletconnect_flutter_v2/apis/core/pairing/utils/pairing_models.dart';
 import 'package:walletconnect_flutter_v2/apis/core/pairing/utils/json_rpc_utils.dart';
 import 'package:walletconnect_flutter_v2/apis/core/relay_client/relay_client_models.dart';
+import 'package:walletconnect_flutter_v2/apis/core/store/generic_store.dart';
 import 'package:walletconnect_flutter_v2/apis/models/basic_models.dart';
 import 'package:walletconnect_flutter_v2/apis/models/uri_parse_result.dart';
 import 'package:walletconnect_flutter_v2/apis/utils/constants.dart';
@@ -76,6 +82,10 @@ void main() {
     expect(parsed.methods.length, 0);
   });
 
+  group('history', () {
+    test('deletes old records', () async {});
+  });
+
   group('Pairing API', () {
     late ICore coreA;
     late ICore coreB;
@@ -105,6 +115,41 @@ void main() {
     test('Initializes', () async {
       expect(coreA.pairing.getPairings().length, 0);
       expect(coreB.pairing.getPairings().length, 0);
+    });
+
+    group('history', () {
+      IPairing pairing;
+      IJsonRpcHistory history;
+
+      setUp(() async {
+        pairing = Pairing(
+          core: coreA,
+          pairings: PairingStore(
+            core: coreA,
+            context: StoreVersions.CONTEXT_PAIRINGS,
+            version: StoreVersions.VERSION_PAIRINGS,
+            fromJson: (dynamic value) {
+              return PairingInfo.fromJson(value as Map<String, dynamic>);
+            },
+          ),
+          history: JsonRpcHistory(
+            core: coreA,
+            context: StoreVersions.CONTEXT_JSON_RPC_HISTORY,
+            version: StoreVersions.VERSION_JSON_RPC_HISTORY,
+            fromJson: (dynamic value) => JsonRpcRecord.fromJson(value),
+          ),
+          topicToReceiverPublicKey: GenericStore(
+            core: coreA,
+            context: StoreVersions.CONTEXT_TOPIC_TO_RECEIVER_PUBLIC_KEY,
+            version: StoreVersions.VERSION_TOPIC_TO_RECEIVER_PUBLIC_KEY,
+            fromJson: (dynamic value) {
+              return value as String;
+            },
+          ),
+        );
+      });
+
+      test('deletes old records', () async {});
     });
 
     group('create', () {
@@ -145,7 +190,7 @@ void main() {
       });
     });
 
-    group('Pair', () {
+    group('pair', () {
       test("can pair via provided URI", () async {
         final CreateResponse response = await coreA.pairing.create();
 

@@ -69,6 +69,7 @@ class Pairing implements IPairing {
 
     await core.expirer.init();
     await pairings.init();
+    await history.init();
     await topicToReceiverPublicKey.init();
 
     await _cleanup();
@@ -514,24 +515,23 @@ class Pairing implements IPairing {
           (PairingInfo info) => WalletConnectUtils.isExpired(info.expiry),
         )
         .toList();
-    expiredPairings.map((PairingInfo e) async {
-      // print('deleting expired pairing: ${e.topic}');
-      await pairings.delete(e.topic);
-    });
+    for (final PairingInfo pairing in expiredPairings) {
+      // print('deleting expired pairing: ${pairing.topic}');
+      await _deletePairing(pairing.topic, true);
+    }
 
     // Cleanup all history records
     final List<JsonRpcRecord> expiredHistory = history
         .getAll()
         .where(
-          (record) =>
-              record.expiry == null ||
-              WalletConnectUtils.isExpired(record.expiry!),
+          (record) => WalletConnectUtils.isExpired(record.expiry ?? -1),
         )
         .toList();
-    expiredHistory.map((JsonRpcRecord record) async {
+    // Loop through the expired records and delete them
+    for (final JsonRpcRecord record in expiredHistory) {
       // print('deleting expired history record: ${record.id}');
       await history.delete(record.id.toString());
-    });
+    }
 
     // Cleanup all of the expired receiver public keys
     final List<String> expiredReceiverPublicKeys = topicToReceiverPublicKey
@@ -539,9 +539,11 @@ class Pairing implements IPairing {
         .where(
             (key) => WalletConnectUtils.isExpired(core.expirer.get(key) ?? -1))
         .toList();
-    expiredReceiverPublicKeys.map(
-      (String key) async => await topicToReceiverPublicKey.delete(key),
-    );
+    // Loop through the expired receiver public keys and delete them
+    for (final String key in expiredReceiverPublicKeys) {
+      // print('deleting expired receiver public key: $key');
+      await topicToReceiverPublicKey.delete(key);
+    }
   }
 
   void _checkInitialized() {
