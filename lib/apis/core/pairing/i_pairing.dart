@@ -14,8 +14,6 @@ abstract class IPairing {
   abstract final Event<PairingEvent> onPairingDelete;
   abstract final Event<PairingEvent> onPairingExpire;
 
-  abstract final IJsonRpcHistory history;
-
   Future<void> init();
   Future<PairingInfo> pair({
     required Uri uri,

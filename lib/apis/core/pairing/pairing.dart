@@ -544,7 +544,7 @@ class Pairing implements IPairing {
             .toList();
     // Loop through the expired receiver public keys and delete them
     for (final ReceiverPublicKey receiver in expiredReceiverPublicKeys) {
-      print('deleting expired receiver public key: $receiver');
+      // print('deleting expired receiver public key: $receiver');
       await topicToReceiverPublicKey.delete(receiver.topic);
     }
   }
