@@ -132,21 +132,32 @@ class GenericStore<T> implements IGenericStore<T> {
     if (!storage.has(context)) {
       // print('Storing $context');
       await storage.set(context, {'version': version});
+      await storage.set(storageKey, <String, dynamic>{});
       return;
     }
 
-    // If we have stored our version, but it doesn't match, we need to clear storage and stop
-    if (storage.get(context)['version'] != version) {
-      // print('Clearing storage');
-      await storage.set(storageKey, <String, dynamic>{});
+    // If we have stored our version, but it doesn't match, we need to delete the previous data,
+    // create a new version, and stop
+    final String storedVersion = storage.get(context)['version'];
+    if (storedVersion != version) {
+      // print('Updating storage from $storedVersion to $version');
+      await storage.delete('$storedVersion//$context');
       await storage.set(context, {'version': version});
+      await storage.set(storageKey, <String, dynamic>{});
       return;
     }
 
     if (storage.has(storageKey)) {
+      // If there is invalid data, delete the stored data
       // print('Restoring $storageKey');
-      for (var entry in storage.get(storageKey).entries) {
-        data[entry.key] = fromJson(entry.value);
+      try {
+        for (var entry in storage.get(storageKey).entries) {
+          // print(entry);
+          data[entry.key] = fromJson(entry.value);
+        }
+      } catch (e) {
+        // print('Error restoring $storageKey: $e');
+        await storage.delete(storedVersion);
       }
     }
   }

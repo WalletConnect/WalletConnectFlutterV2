@@ -47,16 +47,18 @@ class SharedPrefsStores implements IStore<Map<String, dynamic>> {
   /// Gets the value of the specified key, if it hasn't been cached yet, it caches it.
   /// If the key doesn't exist it throws an error.
   @override
-  Map<String, dynamic> get(String key) {
+  Map<String, dynamic>? get(String key) {
     _checkInitialized();
 
     final String keyWithPrefix = _addPrefix(key);
     if (_map.containsKey(keyWithPrefix)) {
-      return _map[keyWithPrefix]!;
+      return _map[keyWithPrefix];
     }
 
-    Map<String, dynamic> value = _getPref(keyWithPrefix);
-    _map[keyWithPrefix] = value;
+    Map<String, dynamic>? value = _getPref(keyWithPrefix);
+    if (value != null) {
+      _map[keyWithPrefix] = value;
+    }
     return value;
   }
 
@@ -110,9 +112,9 @@ class SharedPrefsStores implements IStore<Map<String, dynamic>> {
     await _removePref(keyWithPrefix);
   }
 
-  Map<String, dynamic> _getPref(String key) {
+  Map<String, dynamic>? _getPref(String key) {
     if (memoryStore) {
-      return {};
+      return null;
     }
 
     if (prefs.containsKey(key)) {

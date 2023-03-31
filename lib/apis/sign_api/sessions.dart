@@ -36,13 +36,6 @@ class Sessions extends GenericStore<SessionData> implements ISessions {
       info.namespaces = namespaces;
     }
 
-    onUpdate.broadcast(
-      StoreUpdateEvent(
-        topic,
-        info,
-      ),
-    );
-
     await set(topic, info);
   }
 }

@@ -20,7 +20,7 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   group('Store', () {
-    late IStore store;
+    late IStore<Map<String, dynamic>> store;
 
     setUp(() async {
       store = SharedPrefsStores(
@@ -97,13 +97,27 @@ void main() {
             '${WalletConnectConstants.CORE_STORAGE_PREFIX}swag//keychain': {
               'key': 'value',
             },
+            '${WalletConnectConstants.CORE_STORAGE_PREFIX}swag//invalid': {
+              'key': {
+                'invalid': 'value',
+              },
+            },
             '${WalletConnectConstants.CORE_STORAGE_PREFIX}keychain': {
+              'version': 'swag',
+            },
+            '${WalletConnectConstants.CORE_STORAGE_PREFIX}invalid': {
               'version': 'swag',
             },
           },
           memoryStore: true,
         );
         await store.init();
+        print(
+          store.get('swag//keychain'),
+        );
+        print(
+          store.get('swag//invalid'),
+        );
 
         // Case 1: Storage doesn't have the context
         genericStore = GenericStore(
@@ -115,8 +129,9 @@ void main() {
         await genericStore.init();
 
         expect(store.get('records'), {'version': 'swag'});
+        expect(store.get(genericStore.storageKey), {});
 
-        // Case 2: Storage has the context but not the version
+        // Case 2: Storage has the context, version, and key
         genericStore = GenericStore(
           storage: store,
           context: 'keychain',
@@ -128,7 +143,7 @@ void main() {
         expect(store.get('keychain'), {'version': 'swag'});
         expect(genericStore.get('key'), 'value');
 
-        // Case 3: Storage has the context and version and the key
+        // Case 3: Storage has the context, but versions don't match
         genericStore = GenericStore(
           storage: store,
           context: 'keychain',
@@ -138,6 +153,21 @@ void main() {
         await genericStore.init();
 
         expect(store.get('keychain'), {'version': 'swagV2'});
+        expect(store.get('swag//keychain') == null, true);
+        expect(store.get(genericStore.storageKey) == null, false);
+        expect(genericStore.get('key') == null, true);
+
+        // Case 4: Storage data is invalid
+        // print('case 4');
+        genericStore = GenericStore(
+          storage: store,
+          context: 'invalid',
+          version: 'swag',
+          fromJson: (value) => value as String,
+        );
+        await genericStore.init();
+
+        expect(store.get('invalid'), {'version': 'swag'});
         expect(genericStore.get('key') == null, true);
       });
     });
