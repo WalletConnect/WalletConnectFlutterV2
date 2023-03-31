@@ -51,3 +51,6 @@ app.*.map.json
 
 # vscode
 .vscode/
+
+# Run scripts
+*.sh

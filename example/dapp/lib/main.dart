@@ -6,6 +6,7 @@ import 'package:walletconnect_flutter_v2_dapp/pages/pairings_page.dart';
 import 'package:walletconnect_flutter_v2_dapp/pages/sessions_page.dart';
 import 'package:walletconnect_flutter_v2_dapp/utils/constants.dart';
 import 'package:flutter/material.dart';
+import 'package:walletconnect_flutter_v2_dapp/utils/dart_defines.dart';
 import 'package:walletconnect_flutter_v2_dapp/utils/string_constants.dart';
 import 'package:walletconnect_flutter_v2_dapp/widgets/event_widget.dart';
 
@@ -57,7 +58,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<void> initialize() async {
     // try {
     _web3App = await Web3App.createInstance(
-      projectId: Constants.projectId,
+      projectId: DartDefines.projectId,
       metadata: const PairingMetadata(
         name: 'Flutter WalletConnect',
         description: 'Flutter WalletConnect Dapp Example',

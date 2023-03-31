@@ -1,6 +1,14 @@
 import 'package:walletconnect_flutter_v2/apis/core/crypto/crypto_models.dart';
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 
+const TEST_RELAY_URL = String.fromEnvironment(
+  'RELAY_ENDPOINT',
+  defaultValue: 'wss://relay.walletconnect.com',
+);
+const TEST_PROJECT_ID = String.fromEnvironment(
+  'PROJECT_ID',
+);
+
 const PROPOSER = PairingMetadata(
   name: 'App A (Proposer, dapp)',
   description: 'Description of Proposer App run by client A',
@@ -12,15 +20,6 @@ const RESPONDER = PairingMetadata(
   description: 'Description of Proposer App run by client B',
   url: 'https://walletconnect.com',
   icons: ['https://avatars.githubusercontent.com/u/37784886'],
-);
-
-const TEST_RELAY_URL = String.fromEnvironment(
-  'RELAY_ENDPOINT',
-  defaultValue: 'wss://relay.walletconnect.com',
-);
-const TEST_PROJECT_ID = String.fromEnvironment(
-  'PROJECT_ID',
-  defaultValue: '7e984f90b95f0236d3c12d791537f233',
 );
 
 const TEST_PAIRING_TOPIC = '';

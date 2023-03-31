@@ -112,12 +112,6 @@ void main() {
           memoryStore: true,
         );
         await store.init();
-        print(
-          store.get('swag//keychain'),
-        );
-        print(
-          store.get('swag//invalid'),
-        );
 
         // Case 1: Storage doesn't have the context
         genericStore = GenericStore(

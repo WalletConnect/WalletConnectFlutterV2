@@ -1,1 +1,5 @@
-const String projectId = String.fromEnvironment('PROJECT_ID');
+class DartDefines {
+  static const String projectId = String.fromEnvironment(
+    'PROJECT_ID',
+  );
+}

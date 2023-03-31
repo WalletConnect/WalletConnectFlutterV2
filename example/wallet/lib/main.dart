@@ -36,7 +36,7 @@ class MyApp extends StatelessWidget {
 
   ThemeData _buildDarkTheme() {
     final baseTheme = ThemeData.dark();
-    final nearWhite = const Color(0xFFE0E0E0);
+    const nearWhite = Color(0xFFE0E0E0);
 
     return baseTheme.copyWith(
       backgroundColor: Colors.black,
@@ -47,20 +47,20 @@ class MyApp extends StatelessWidget {
       ),
       inputDecorationTheme: InputDecorationTheme(
         hintStyle: TextStyle(color: nearWhite.withOpacity(0.5)),
-        labelStyle: TextStyle(color: nearWhite),
+        labelStyle: const TextStyle(color: nearWhite),
         enabledBorder: OutlineInputBorder(
           borderSide: BorderSide(color: nearWhite.withOpacity(0.5)),
         ),
-        focusedBorder: OutlineInputBorder(
+        focusedBorder: const OutlineInputBorder(
           borderSide: BorderSide(color: nearWhite),
         ),
       ),
-      dialogTheme: DialogTheme(
+      dialogTheme: const DialogTheme(
         backgroundColor: Colors.black,
         titleTextStyle: TextStyle(color: nearWhite),
         contentTextStyle: TextStyle(color: nearWhite),
       ),
-      appBarTheme: AppBarTheme(
+      appBarTheme: const AppBarTheme(
         color: Colors.black,
         brightness: Brightness.dark,
         textTheme: TextTheme(
@@ -75,13 +75,13 @@ class MyApp extends StatelessWidget {
       ),
       navigationRailTheme: NavigationRailThemeData(
         backgroundColor: Colors.black,
-        selectedIconTheme: IconThemeData(color: nearWhite),
+        selectedIconTheme: const IconThemeData(color: nearWhite),
         unselectedIconTheme: IconThemeData(color: nearWhite.withOpacity(0.5)),
-        selectedLabelTextStyle: TextStyle(color: nearWhite),
+        selectedLabelTextStyle: const TextStyle(color: nearWhite),
         unselectedLabelTextStyle: TextStyle(color: nearWhite.withOpacity(0.5)),
       ),
-      cardColor: Color(0xFF1A1A1A),
-      cardTheme: CardTheme(
+      cardColor: const Color(0xFF1A1A1A),
+      cardTheme: const CardTheme(
         color: Color(0xFF1A1A1A),
       ),
       dividerColor: nearWhite.withOpacity(0.2),
