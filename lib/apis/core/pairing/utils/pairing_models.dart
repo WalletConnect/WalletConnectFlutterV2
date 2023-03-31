@@ -209,7 +209,7 @@ class PairingActivateEvent extends EventArgs {
   }
 }
 
-@JsonSerializable()
+@JsonSerializable(includeIfNull: false)
 class JsonRpcRecord {
   int id;
   String topic;
@@ -217,6 +217,7 @@ class JsonRpcRecord {
   dynamic params;
   dynamic response;
   String? chainId;
+  int? expiry;
 
   JsonRpcRecord({
     required this.id,
@@ -224,6 +225,7 @@ class JsonRpcRecord {
     required this.method,
     required this.params,
     this.chainId,
+    this.expiry,
   });
 
   factory JsonRpcRecord.fromJson(Map<String, dynamic> json) =>
@@ -233,7 +235,7 @@ class JsonRpcRecord {
 
   @override
   String toString() {
-    return 'JsonRpcRecord(id: $id, topic: $topic, method: $method, params: $params, response: $response, chainId: $chainId)';
+    return 'JsonRpcRecord(id: $id, topic: $topic, method: $method, params: $params, response: $response, chainId: $chainId, expiry: $expiry)';
   }
 }
 

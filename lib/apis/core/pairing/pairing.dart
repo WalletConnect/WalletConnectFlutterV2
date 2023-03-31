@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:convert';
 
 import 'package:event/event.dart';
+import 'package:walletconnect_flutter_v2/apis/core/pairing/i_json_rpc_history.dart';
 import 'package:walletconnect_flutter_v2/apis/core/store/i_generic_store.dart';
 import 'package:walletconnect_flutter_v2/apis/core/crypto/crypto_models.dart';
 import 'package:walletconnect_flutter_v2/apis/core/i_core.dart';
@@ -43,6 +44,7 @@ class Pairing implements IPairing {
 
   final ICore core;
   final IPairingStore pairings;
+  final IJsonRpcHistory history;
 
   /// Stores the public key of Type 1 Envelopes for a topic
   /// Once a receiver public key has been used, it is removed from the store
@@ -52,6 +54,7 @@ class Pairing implements IPairing {
   Pairing({
     required this.core,
     required this.pairings,
+    required this.history,
     required this.topicToReceiverPublicKey,
   });
 
@@ -379,13 +382,16 @@ class Pairing implements IPairing {
       opts = opts.copyWith(ttl: ttl);
     }
 
-    await core.history.set(
+    await history.set(
       payload['id'].toString(),
       JsonRpcRecord(
         id: payload['id'],
         topic: topic,
         method: method,
         params: params,
+        expiry: WalletConnectUtils.calculateExpiry(
+          WalletConnectConstants.ONE_DAY,
+        ),
       ),
     );
     // print('sent request');
@@ -477,7 +483,7 @@ class Pairing implements IPairing {
       ttl: opts.ttl,
       tag: opts.tag,
     );
-    await core.history.resolve(payload);
+    await history.resolve(payload);
   }
 
   /// ---- Private Helpers ---- ///
@@ -511,6 +517,20 @@ class Pairing implements IPairing {
     expiredPairings.map((PairingInfo e) async {
       // print('deleting expired pairing: ${e.topic}');
       await pairings.delete(e.topic);
+    });
+
+    // Cleanup all history records
+    final List<JsonRpcRecord> expiredHistory = history
+        .getAll()
+        .where(
+          (record) =>
+              record.expiry == null ||
+              WalletConnectUtils.isExpired(record.expiry!),
+        )
+        .toList();
+    expiredHistory.map((JsonRpcRecord record) async {
+      // print('deleting expired history record: ${record.id}');
+      await history.delete(record.id.toString());
     });
 
     // Cleanup all of the expired receiver public keys
@@ -597,7 +617,9 @@ class Pairing implements IPairing {
     // Otherwise handle it as a response
     else {
       final response = JsonRpcResponse.fromJson(data);
-      final JsonRpcRecord? record = core.history.get(response.id.toString());
+
+      // Only handle the response if we have a record of the request
+      final JsonRpcRecord? record = history.get(response.id.toString());
       // print(record);
       if (record == null) {
         return;

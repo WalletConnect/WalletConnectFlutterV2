@@ -41,8 +41,8 @@ class Core implements ICore {
   @override
   late IExpirer expirer;
 
-  @override
-  late IJsonRpcHistory history;
+  // @override
+  // late IJsonRpcHistory history;
 
   @override
   late IPairing pairing;
@@ -93,12 +93,6 @@ class Core implements ICore {
       version: StoreVersions.VERSION_EXPIRER,
       fromJson: (dynamic value) => value as int,
     );
-    history = JsonRpcHistory(
-      core: this,
-      context: StoreVersions.CONTEXT_JSON_RPC_HISTORY,
-      version: StoreVersions.VERSION_JSON_RPC_HISTORY,
-      fromJson: (dynamic value) => JsonRpcRecord.fromJson(value),
-    );
     pairing = Pairing(
       core: this,
       pairings: PairingStore(
@@ -108,6 +102,12 @@ class Core implements ICore {
         fromJson: (dynamic value) {
           return PairingInfo.fromJson(value as Map<String, dynamic>);
         },
+      ),
+      history: JsonRpcHistory(
+        core: this,
+        context: StoreVersions.CONTEXT_JSON_RPC_HISTORY,
+        version: StoreVersions.VERSION_JSON_RPC_HISTORY,
+        fromJson: (dynamic value) => JsonRpcRecord.fromJson(value),
       ),
       topicToReceiverPublicKey: GenericStore(
         core: this,
@@ -126,7 +126,7 @@ class Core implements ICore {
     await crypto.init();
     await relayClient.init();
     await expirer.init();
-    await history.init();
+    // await history.init();
     await pairing.init();
   }
 }

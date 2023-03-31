@@ -1,5 +1,6 @@
 import 'package:event/event.dart';
 import 'package:walletconnect_flutter_v2/apis/core/crypto/crypto_models.dart';
+import 'package:walletconnect_flutter_v2/apis/core/pairing/i_json_rpc_history.dart';
 import 'package:walletconnect_flutter_v2/apis/core/pairing/i_pairing_store.dart';
 import 'package:walletconnect_flutter_v2/apis/core/pairing/utils/pairing_models.dart';
 import 'package:walletconnect_flutter_v2/apis/models/json_rpc_error.dart';
@@ -12,6 +13,8 @@ abstract class IPairing {
   abstract final Event<PairingInvalidEvent> onPairingInvalid;
   abstract final Event<PairingEvent> onPairingDelete;
   abstract final Event<PairingEvent> onPairingExpire;
+
+  abstract final IJsonRpcHistory history;
 
   Future<void> init();
   Future<PairingInfo> pair({
