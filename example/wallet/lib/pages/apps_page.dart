@@ -3,6 +3,7 @@ import 'package:get_it/get_it.dart';
 import 'package:get_it_mixin/get_it_mixin.dart';
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/i_web3wallet_service.dart';
+import 'package:walletconnect_flutter_v2_wallet/pages/app_detail_page.dart';
 import 'package:walletconnect_flutter_v2_wallet/utils/constants.dart';
 import 'package:walletconnect_flutter_v2_wallet/utils/string_constants.dart';
 import 'package:walletconnect_flutter_v2_wallet/widgets/pairing_item.dart';
@@ -106,47 +107,7 @@ class AppsPageState extends State<AppsPage> with GetItStateMixin {
           (PairingInfo pairing) => PairingItem(
             key: ValueKey(pairing.topic),
             pairing: pairing,
-            onTap: () async {
-              showDialog(
-                context: context,
-                builder: (BuildContext context) {
-                  return AlertDialog(
-                    title: const Text(
-                      StringConstants.deletePairing,
-                      style: StyleConstants.titleText,
-                    ),
-                    content: Text(
-                      pairing.topic,
-                    ),
-                    actions: [
-                      TextButton(
-                        child: const Text(
-                          StringConstants.cancel,
-                        ),
-                        onPressed: () {
-                          Navigator.of(context).pop();
-                        },
-                      ),
-                      TextButton(
-                        child: const Text(
-                          StringConstants.delete,
-                        ),
-                        onPressed: () async {
-                          try {
-                            web3Wallet.core.pairing.disconnect(
-                              topic: pairing.topic,
-                            );
-                            Navigator.of(context).pop();
-                          } catch (e) {
-                            //debugPrint(e.toString());
-                          }
-                        },
-                      ),
-                    ],
-                  );
-                },
-              );
-            },
+            onTap: () => _onListItemTap(pairing),
           ),
         )
         .toList();
@@ -179,43 +140,6 @@ class AppsPageState extends State<AppsPage> with GetItStateMixin {
   }
 
   Future _onCopyQrCode() async {
-    // final Widget w = WCRequestWidget(
-    //   child: //Center(child: Text('swag')),
-    //       WCConnectionRequestWidget(
-    //     wallet: web3Wallet,
-    //     title: 'Sign',
-    //     sessionProposal: WCSessionRequestModel(
-    //       request: const ProposalData(
-    //         id: 0,
-    //         expiry: 0,
-    //         relays: [],
-    //         proposer: ConnectionMetadata(
-    //           publicKey: 'swag',
-    //           metadata: PairingMetadata(
-    //             name: 'A',
-    //             description: 'B',
-    //             url: 'abc.com',
-    //             icons: [],
-    //           ),
-    //         ),
-    //         requiredNamespaces: {
-    //           'kadena': RequiredNamespace(
-    //             methods: ['kadena_sign_v1'],
-    //             events: [],
-    //           ),
-    //         },
-    //         optionalNamespaces: {},
-    //         pairingTopic: 'abc',
-    //       ),
-    //     ),
-    //   ),
-    // );
-
-    // final bool? approved =
-    //     await GetIt.I<IBottomSheetService>().queueBottomSheet(
-    //   widget: w,
-    // );
-
     final String? uri = await showDialog<String>(
       context: context,
       builder: (BuildContext context) {
@@ -253,5 +177,16 @@ class AppsPageState extends State<AppsPage> with GetItStateMixin {
     setState(() {
       _pairings = web3Wallet.pairings.getAll();
     });
+  }
+
+  void _onListItemTap(PairingInfo pairing) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => AppDetailPage(
+          pairing: pairing,
+        ),
+      ),
+    );
   }
 }

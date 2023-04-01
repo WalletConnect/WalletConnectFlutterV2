@@ -13,6 +13,7 @@ class WCConnectionWidgetInfo extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      width: double.infinity,
       decoration: BoxDecoration(
         color: StyleConstants.layerColor3,
         borderRadius: BorderRadius.circular(
@@ -38,7 +39,9 @@ class WCConnectionWidgetInfo extends StatelessWidget {
           style: StyleConstants.layerTextStyle3,
         ),
         const SizedBox(height: StyleConstants.linear8),
-        Flex(
+        Wrap(
+          spacing: 4,
+          runSpacing: 4,
           direction: Axis.horizontal,
           children: model.elements!.map((e) => _buildElement(e)).toList(),
         ),
@@ -54,12 +57,15 @@ class WCConnectionWidgetInfo extends StatelessWidget {
           StyleConstants.linear16,
         ),
       ),
+      // margin: const EdgeInsets.all(2),
       padding: const EdgeInsets.all(
         StyleConstants.linear8,
       ),
       child: Text(
         text,
         style: StyleConstants.layerTextStyle4,
+        maxLines: 10,
+        overflow: TextOverflow.ellipsis,
       ),
     );
   }

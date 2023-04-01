@@ -89,7 +89,7 @@ wcClient.onSessionEvent.subscribe((SessionEvent? session) {
   // Do something with the event
 });
 wcClient.registerEventHandler(
-  namespace: 'kadena',
+  chainId: 'kadena',
   event: 'kadena_transaction_updated',
 );
 ```
@@ -159,7 +159,7 @@ final kadenaSignV1RequestHandler = (String topic, dynamic parameters) async {
   }
 }
 wcClient.registerRequestHandler(
-  namespace: 'kadena:mainnet01',
+  chainId: 'kadena:mainnet01',
   method: 'kadena_sign_v1',
   handler: kadenaSignV1RequestHandler,
 );
