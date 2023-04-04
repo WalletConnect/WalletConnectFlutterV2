@@ -66,7 +66,6 @@ class Kadena {
 
     switch (method) {
       case KadenaMethods.sign:
-      case KadenaMethods.quicksign:
       case KadenaMethods.kadenaSignV1:
         return kadenaSignV1(
           web3App: web3App,
@@ -77,22 +76,91 @@ class Kadena {
             networkId: chainId.split(':')[1],
             signingPubKey: addressActual,
             sender: 'k:$addressActual',
+            caps: [
+              DappCapp(
+                role: 'Test',
+                description: 'description',
+                cap: Capability(
+                  name: 'coin.GAS',
+                ),
+              ),
+              DappCapp(
+                role: 'Test',
+                description: 'description',
+                cap: Capability(
+                  name: 'coin.TRANSFER',
+                  args: ['sender', 'receiver', 1.0],
+                ),
+              ),
+            ],
           ),
         );
+      case KadenaMethods.quicksign:
       case KadenaMethods.kadenaQuicksignV1:
         return kadenaQuicksignV1(
           web3App: web3App,
           topic: topic,
           chainId: chainId,
-          data: createQuicksignRequest(
-            cmd: jsonEncode(
-              createPactCommandPayload(
-                networkId: chainId.split(':')[1],
-                sender: 'k:$addressActual',
-              ).toJson(),
-            ),
+          data: QuicksignRequest(
+            commandSigDatas: [
+              CommandSigData(
+                cmd: jsonEncode(
+                  createPactCommandPayload(
+                    networkId: chainId.split(':')[1],
+                    sender: 'k:$addressActual',
+                    signerCaps: [
+                      SignerCapabilities(
+                        pubKey: addressActual,
+                        clist: [
+                          Capability(
+                            name: 'coin.GAS',
+                          ),
+                          Capability(
+                            name: 'coin.TRANSFER',
+                            args: ['sender', 'receiver', 1.0],
+                          ),
+                        ],
+                      ),
+                    ],
+                  ).toJson(),
+                ),
+                sigs: [
+                  QuicksignSigner(
+                    pubKey: addressActual,
+                  ),
+                ],
+              ),
+              CommandSigData(
+                cmd: jsonEncode(
+                  createPactCommandPayload(
+                    networkId: chainId.split(':')[1],
+                    sender: 'k:$addressActual',
+                    signerCaps: [
+                      SignerCapabilities(
+                        pubKey: addressActual,
+                        clist: [
+                          Capability(
+                            name: 'coin.GAS',
+                          ),
+                          Capability(
+                            name: 'coin.TRANSFER',
+                            args: ['sender2', 'receiver2', 2.0],
+                          ),
+                        ],
+                      ),
+                    ],
+                  ).toJson(),
+                ),
+                sigs: [
+                  QuicksignSigner(
+                    pubKey: addressActual,
+                  ),
+                ],
+              ),
+            ],
           ),
         );
+
       case KadenaMethods.kadenaGetAccountsV1:
         return kadenaGetAccountsV1(
           web3App: web3App,

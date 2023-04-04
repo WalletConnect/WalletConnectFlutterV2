@@ -691,6 +691,7 @@ class SignEngine implements ISignEngine {
   Future<void> _resubscribeAll() async {
     // Subscribe to all the sessions
     for (final SessionData session in sessions.getAll()) {
+      // print('Session: subscribing to ${session.topic}');
       await core.relayClient.subscribe(topic: session.topic);
     }
   }
@@ -1317,7 +1318,7 @@ class SignEngine implements ISignEngine {
   }
 
   Future<void> _onRelayConnect(EventArgs? args) async {
-    // print('Relay connected: sessions');
+    // print('Session: relay connected');
     await _resubscribeAll();
   }
 

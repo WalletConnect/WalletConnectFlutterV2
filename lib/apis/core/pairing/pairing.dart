@@ -386,18 +386,18 @@ class Pairing implements IPairing {
       opts = opts.copyWith(ttl: ttl);
     }
 
-    await history.set(
-      payload['id'].toString(),
-      JsonRpcRecord(
-        id: payload['id'],
-        topic: topic,
-        method: method,
-        params: params,
-        expiry: WalletConnectUtils.calculateExpiry(
-          WalletConnectConstants.ONE_DAY,
-        ),
-      ),
-    );
+    // await history.set(
+    //   payload['id'].toString(),
+    //   JsonRpcRecord(
+    //     id: payload['id'],
+    //     topic: topic,
+    //     method: method,
+    //     params: params,
+    //     expiry: WalletConnectUtils.calculateExpiry(
+    //       WalletConnectConstants.ONE_DAY,
+    //     ),
+    //   ),
+    // );
     // print('sent request');
     await core.relayClient.publish(
       topic: topic,
@@ -487,7 +487,7 @@ class Pairing implements IPairing {
       ttl: opts.ttl,
       tag: opts.tag,
     );
-    await history.resolve(payload);
+    // await history.resolve(payload);
   }
 
   /// ---- Private Helpers ---- ///
@@ -576,7 +576,7 @@ class Pairing implements IPairing {
   }
 
   Future<void> _onRelayConnect(EventArgs? args) async {
-    // print('Relay connected');
+    // print('Pairing: Relay connected');
     await _resubscribeAll();
   }
 
@@ -608,10 +608,9 @@ class Pairing implements IPairing {
     // print(payloadString);
 
     Map<String, dynamic> data = jsonDecode(payloadString);
-    // print(data);
 
     // If it's an rpc request, handle it
-    // print(data);
+    // print('Pairing: Received data: $data');
     if (data.containsKey('method')) {
       final request = JsonRpcRequest.fromJson(data);
       if (routerMapRequest.containsKey(request.method)) {
@@ -625,13 +624,15 @@ class Pairing implements IPairing {
       final response = JsonRpcResponse.fromJson(data);
 
       // Only handle the response if we have a record of the request
-      final JsonRpcRecord? record = history.get(response.id.toString());
-      // print(record);
-      if (record == null) {
-        return;
-      }
+      // final JsonRpcRecord? record = history.get(response.id.toString());
+      // // print(record);
+      // if (record == null) {
+      //   return;
+      // }
 
-      // print('got here');
+      print(
+        'pendingRequests: ${pendingRequests.keys} has ${response.id} is ${pendingRequests.containsKey(response.id)}',
+      );
       if (pendingRequests.containsKey(response.id)) {
         if (response.error != null) {
           pendingRequests.remove(response.id)!.completeError(response.error!);

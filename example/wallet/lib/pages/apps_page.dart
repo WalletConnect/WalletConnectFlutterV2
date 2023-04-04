@@ -1,3 +1,4 @@
+import 'package:fl_toast/fl_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:get_it_mixin/get_it_mixin.dart';
@@ -55,6 +56,7 @@ class AppsPageState extends State<AppsPage> with GetItStateMixin {
           right: StyleConstants.magic20,
           child: Row(
             children: [
+              // Disconnect buttons for testing
               _buildIconButton(
                 Icons.discord,
                 () {
@@ -149,11 +151,7 @@ class AppsPageState extends State<AppsPage> with GetItStateMixin {
 
     // print(uri);
 
-    if (uri != null && uri.isNotEmpty) {
-      await web3Wallet.pair(
-        uri: Uri.parse(uri),
-      );
-    }
+    _onFoundUri(uri);
   }
 
   Future _onScanQrCode() async {
@@ -166,11 +164,44 @@ class AppsPageState extends State<AppsPage> with GetItStateMixin {
       },
     );
 
-    if (s != null) {
-      await web3Wallet.pair(
-        uri: Uri.parse(s),
-      );
+    _onFoundUri(s);
+  }
+
+  Future _onFoundUri(String? uri) async {
+    if (uri != null) {
+      try {
+        final Uri uriData = Uri.parse(uri);
+        await web3Wallet.pair(
+          uri: uriData,
+        );
+      } catch (e) {
+        _invalidUriToast();
+      }
+    } else {
+      _invalidUriToast();
     }
+  }
+
+  void _invalidUriToast() {
+    showToast(
+      child: Container(
+        padding: const EdgeInsets.all(StyleConstants.linear8),
+        margin: const EdgeInsets.only(
+          bottom: StyleConstants.magic40,
+        ),
+        decoration: BoxDecoration(
+          color: StyleConstants.errorColor,
+          borderRadius: BorderRadius.circular(
+            StyleConstants.linear16,
+          ),
+        ),
+        child: const Text(
+          StringConstants.invalidUri,
+          style: StyleConstants.bodyTextBold,
+        ),
+      ),
+      context: context,
+    );
   }
 
   void _onPairingDelete(PairingEvent? event) {

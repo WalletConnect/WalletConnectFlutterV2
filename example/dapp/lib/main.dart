@@ -123,7 +123,35 @@ class _MyHomePageState extends State<MyHomePage> {
     }
     navRail.add(
       Expanded(
-        child: _pageDatas[_selectedIndex].page,
+        child: Stack(
+          children: [
+            _pageDatas[_selectedIndex].page,
+            Positioned(
+              bottom: StyleConstants.magic20,
+              right: StyleConstants.magic20,
+              child: Row(
+                children: [
+                  // Disconnect buttons for testing
+                  _buildIconButton(
+                    Icons.discord,
+                    () {
+                      _web3App!.core.relayClient.disconnect();
+                    },
+                  ),
+                  const SizedBox(
+                    width: StyleConstants.magic20,
+                  ),
+                  _buildIconButton(
+                    Icons.connect_without_contact,
+                    () {
+                      _web3App!.core.relayClient.connect();
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
 
@@ -207,6 +235,25 @@ class _MyHomePageState extends State<MyHomePage> {
               'Topic: ${args!.topic}\nEvent Name: ${args.name}\nEvent Data: ${args.data}',
         );
       },
+    );
+  }
+
+  Widget _buildIconButton(IconData icon, void Function()? onPressed) {
+    return Container(
+      decoration: BoxDecoration(
+        color: StyleConstants.primaryColor,
+        borderRadius: BorderRadius.circular(
+          StyleConstants.linear48,
+        ),
+      ),
+      child: IconButton(
+        icon: Icon(
+          icon,
+          color: StyleConstants.titleTextColor,
+        ),
+        iconSize: StyleConstants.linear24,
+        onPressed: onPressed,
+      ),
     );
   }
 }

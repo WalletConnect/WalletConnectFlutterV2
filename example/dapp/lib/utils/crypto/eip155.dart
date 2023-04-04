@@ -46,8 +46,8 @@ class EIP155 {
     EIP155Methods.personalSign: 'personal_sign',
     EIP155Methods.ethSign: 'eth_sign',
     EIP155Methods.ethSignTransaction: 'eth_signTransaction',
-    EIP155Methods.ethSignTypedData: 'eth_signTypedData',
-    EIP155Methods.ethSendTransaction: 'eth_sendTransaction',
+    // EIP155Methods.ethSignTypedData: 'eth_signTypedData',
+    // EIP155Methods.ethSendTransaction: 'eth_sendTransaction',
   };
 
   static final Map<EIP155Events, String> events = {

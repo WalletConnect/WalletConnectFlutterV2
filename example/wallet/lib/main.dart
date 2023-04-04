@@ -1,10 +1,12 @@
 import 'package:get_it/get_it.dart';
 import 'package:get_it_mixin/get_it_mixin.dart';
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
-import 'package:walletconnect_flutter_v2_wallet/dependencies/bottom_sheet_service.dart';
+import 'package:walletconnect_flutter_v2_wallet/dependencies/bottom_sheet/bottom_sheet_listener.dart';
+import 'package:walletconnect_flutter_v2_wallet/dependencies/bottom_sheet/bottom_sheet_service.dart';
+import 'package:walletconnect_flutter_v2_wallet/dependencies/chains/evm_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/chains/i_chain.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/chains/kadena_service.dart';
-import 'package:walletconnect_flutter_v2_wallet/dependencies/i_bottom_sheet_service.dart';
+import 'package:walletconnect_flutter_v2_wallet/dependencies/bottom_sheet/i_bottom_sheet_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/i_web3wallet_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/key_service/i_key_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/key_service/key_service.dart';
@@ -99,8 +101,6 @@ class MyHomePage extends StatefulWidget with GetItStatefulWidgetMixin {
 class _MyHomePageState extends State<MyHomePage> with GetItStateMixin {
   bool _initializing = true;
 
-  Web3Wallet? _web3Wallet;
-
   List<PageData> _pageDatas = [];
   int _selectedIndex = 0;
 
@@ -125,7 +125,7 @@ class _MyHomePageState extends State<MyHomePage> with GetItStateMixin {
   }
 
   Future<void> initialize() async {
-    GetIt.I.registerSingleton<IBottomSheetService>(BottomSheetService(context));
+    GetIt.I.registerSingleton<IBottomSheetService>(BottomSheetService());
     GetIt.I.registerSingleton<IKeyService>(KeyService());
 
     final IWeb3WalletService web3WalletService = Web3WalletService();
@@ -136,6 +136,13 @@ class _MyHomePageState extends State<MyHomePage> with GetItStateMixin {
       GetIt.I.registerSingleton<IChain>(
         KadenaService(reference: cId),
         instanceName: cId.chain,
+      );
+    }
+
+    for (final cId in EVMChainId.values) {
+      GetIt.I.registerSingleton<IChain>(
+        EVMService(reference: cId),
+        instanceName: cId.chain(),
       );
     }
 
@@ -179,7 +186,7 @@ class _MyHomePageState extends State<MyHomePage> with GetItStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    GetIt.I<IBottomSheetService>().setDefaultContext(context);
+    // GetIt.I<IBottomSheetService>().setDefaultContext(context);
 
     if (_initializing) {
       return const Center(
@@ -207,9 +214,11 @@ class _MyHomePageState extends State<MyHomePage> with GetItStateMixin {
           MediaQuery.of(context).size.width < Constants.smallScreen
               ? _buildBottomNavBar()
               : null,
-      body: Row(
-        mainAxisSize: MainAxisSize.max,
-        children: navRail,
+      body: BottomSheetListener(
+        child: Row(
+          mainAxisSize: MainAxisSize.max,
+          children: navRail,
+        ),
       ),
     );
   }
