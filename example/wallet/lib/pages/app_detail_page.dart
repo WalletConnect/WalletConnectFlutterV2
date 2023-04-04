@@ -6,7 +6,6 @@ import 'package:walletconnect_flutter_v2_wallet/utils/constants.dart';
 import 'package:walletconnect_flutter_v2_wallet/utils/namespace_model_builder.dart';
 import 'package:walletconnect_flutter_v2_wallet/utils/string_constants.dart';
 import 'package:walletconnect_flutter_v2_wallet/widgets/custom_button.dart';
-import 'package:walletconnect_flutter_v2_wallet/widgets/wc_connection_widget/wc_connection_widget.dart';
 
 class AppDetailPage extends StatefulWidget {
   final PairingInfo pairing;
@@ -124,52 +123,4 @@ class AppDetailPageState extends State<AppDetailPage> {
   void _back() {
     Navigator.of(context).pop();
   }
-
-  // void _onPingTap() {
-  //   GetIt.I<IWeb3WalletService>().getWeb3Wallet().ping web3Wallet.core.pairing.ping(
-  //     topic: pairing.topic,
-  //   );
-  // }
 }
-
-// () async {
-            //   showDialog(
-            //     context: context,
-            //     builder: (BuildContext context) {
-            //       return AlertDialog(
-            //         title: const Text(
-            //           StringConstants.deletePairing,
-            //           style: StyleConstants.titleText,
-            //         ),
-            //         content: Text(
-            //           pairing.topic,
-            //         ),
-            //         actions: [
-            //           TextButton(
-            //             child: const Text(
-            //               StringConstants.cancel,
-            //             ),
-            //             onPressed: () {
-            //               Navigator.of(context).pop();
-            //             },
-            //           ),
-            //           TextButton(
-            //             child: const Text(
-            //               StringConstants.delete,
-            //             ),
-            //             onPressed: () async {
-            //               try {
-            //                 web3Wallet.core.pairing.disconnect(
-            //                   topic: pairing.topic,
-            //                 );
-            //                 Navigator.of(context).pop();
-            //               } catch (e) {
-            //                 //debugPrint(e.toString());
-            //               }
-            //             },
-            //           ),
-            //         ],
-            //       );
-            //     },
-            //   );
-            // },
