@@ -54,13 +54,13 @@ class Web3WalletService extends IWeb3WalletService {
     for (final chainKey in chainKeys) {
       for (final chainId in chainKey.chains) {
         if (chainId.startsWith('kadena')) {
-          print('registering kadena $chainId:${chainKey.publicKey}');
+          // print('registering kadena $chainId:${chainKey.publicKey}');
           _web3Wallet!.registerAccount(
             chainId: chainId,
             accountAddress: 'k**${chainKey.publicKey}',
           );
         } else {
-          print('registering other $chainId:${chainKey.publicKey}');
+          // print('registering other $chainId:${chainKey.publicKey}');
           _web3Wallet!.registerAccount(
             chainId: chainId,
             accountAddress: chainKey.publicKey,

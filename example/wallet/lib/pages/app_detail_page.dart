@@ -44,6 +44,7 @@ class AppDetailPageState extends State<AppDetailPage> {
     for (final SessionData session in sessions) {
       List<Widget> namespaceWidget =
           ConnectionWidgetBuilder.buildFromNamespaces(
+        session.topic,
         session.namespaces,
       );
       // Loop through and add the namespace widgets, but put 20 pixels between each one

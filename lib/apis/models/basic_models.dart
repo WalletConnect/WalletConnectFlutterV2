@@ -5,6 +5,8 @@ part 'basic_models.g.dart';
 
 /// ERRORS
 
+class WalletConnectErrorSilent {}
+
 @JsonSerializable(includeIfNull: false)
 class WalletConnectError {
   int code;

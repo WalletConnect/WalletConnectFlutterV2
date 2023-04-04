@@ -630,9 +630,9 @@ class Pairing implements IPairing {
       //   return;
       // }
 
-      print(
-        'pendingRequests: ${pendingRequests.keys} has ${response.id} is ${pendingRequests.containsKey(response.id)}',
-      );
+      // print(
+      //   'pendingRequests: ${pendingRequests.keys} has ${response.id} is ${pendingRequests.containsKey(response.id)}',
+      // );
       if (pendingRequests.containsKey(response.id)) {
         if (response.error != null) {
           pendingRequests.remove(response.id)!.completeError(response.error!);

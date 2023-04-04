@@ -123,6 +123,11 @@ final kadenaSignV1RequestHandler = (String topic, dynamic parameters) async {
   // JsonRpcError.invalidParams error
   final parsedResponse = parameters;
 
+  // 1. If you want to fail silently, you can throw a WalletConnectErrorSilent
+  if (failSilently) {
+    throw WalletConnectErrorSilent();
+  }
+
   // 2. Show a modal to the user with the signature info: Allow approval/rejection
   bool userApproved = await showDialog( // This is an example, you will have to make your own changes to make it work.
     context: context,

@@ -8,7 +8,7 @@ import 'package:walletconnect_flutter_v2_dapp/utils/crypto/solana_data.dart';
 String getChainName(String chain) {
   try {
     return ChainData.allChains
-        .where((element) => element.chain == chain)
+        .where((element) => element.chainId == chain)
         .first
         .name;
   } catch (e) {
@@ -19,7 +19,9 @@ String getChainName(String chain) {
 
 ChainMetadata getChainMetadataFromChain(String chain) {
   try {
-    return ChainData.allChains.where((element) => element.chain == chain).first;
+    return ChainData.allChains
+        .where((element) => element.chainId == chain)
+        .first;
   } catch (e) {
     debugPrint('Invalid chain');
   }
