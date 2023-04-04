@@ -89,7 +89,7 @@ wcClient.onSessionEvent.subscribe((SessionEvent? session) {
   // Do something with the event
 });
 wcClient.registerEventHandler(
-  namespace: 'kadena',
+  chainId: 'kadena',
   event: 'kadena_transaction_updated',
 );
 ```
@@ -122,6 +122,11 @@ final kadenaSignV1RequestHandler = (String topic, dynamic parameters) async {
   // the client will automatically respond to the requester with a 
   // JsonRpcError.invalidParams error
   final parsedResponse = parameters;
+
+  // 1. If you want to fail silently, you can throw a WalletConnectErrorSilent
+  if (failSilently) {
+    throw WalletConnectErrorSilent();
+  }
 
   // 2. Show a modal to the user with the signature info: Allow approval/rejection
   bool userApproved = await showDialog( // This is an example, you will have to make your own changes to make it work.
@@ -159,7 +164,7 @@ final kadenaSignV1RequestHandler = (String topic, dynamic parameters) async {
   }
 }
 wcClient.registerRequestHandler(
-  namespace: 'kadena:mainnet01',
+  chainId: 'kadena:mainnet01',
   method: 'kadena_sign_v1',
   handler: kadenaSignV1RequestHandler,
 );
@@ -277,7 +282,7 @@ This library requires that you add the following to your `DebugProfile.entitleme
 
 # To Test
 
-Run tests using `flutter test`.
+Run tests using `flutter test --dart-define=PROJECT_ID=xxx`.
 Expected flutter version is: >`3.3.10`
 
 # Commands Run in CI

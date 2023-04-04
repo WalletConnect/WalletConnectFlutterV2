@@ -36,7 +36,7 @@ class StoreVersions {
   static const VERSION_TOPIC_MAP = '1.0';
   static const CONTEXT_TOPIC_TO_RECEIVER_PUBLIC_KEY =
       'topicToReceiverPublicKey';
-  static const VERSION_TOPIC_TO_RECEIVER_PUBLIC_KEY = '1.0';
+  static const VERSION_TOPIC_TO_RECEIVER_PUBLIC_KEY = '1.1';
 
   // Sign
   static const CONTEXT_PROPOSALS = 'proposals';

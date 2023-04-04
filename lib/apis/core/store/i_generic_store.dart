@@ -1,12 +1,12 @@
 import 'package:event/event.dart';
-import 'package:walletconnect_flutter_v2/apis/core/i_core.dart';
+import 'package:walletconnect_flutter_v2/apis/core/store/i_store.dart';
 import 'package:walletconnect_flutter_v2/apis/core/store/store_models.dart';
 
 abstract class IGenericStore<T> {
   abstract final String version;
   abstract final String context;
 
-  abstract final ICore core;
+  abstract final IStore storage;
   abstract final String storageKey;
 
   // abstract final dynamic Function(T) toJson;

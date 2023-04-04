@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
 
 class Constants {
-  static const projectId = '7e984f90b95f0236d3c12d791537f233';
-
   static const smallScreen = 640;
 
   static const String aud = 'https://walletconnect.org/login';
@@ -13,6 +11,7 @@ class StyleConstants {
   static const Color primaryColor = Color.fromARGB(255, 16, 165, 206);
   static const Color secondaryColor = Color(0xFF1A1A1A);
   static const Color grayColor = Color.fromARGB(255, 180, 180, 180);
+  static const Color titleTextColor = Color(0xFFFFFFFF);
 
   // Linear
   static const double linear8 = 8;

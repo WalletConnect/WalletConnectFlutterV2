@@ -5,7 +5,7 @@ class ChainData {
   static final List<ChainMetadata> mainChains = [
     ChainMetadata(
       type: ChainType.eip155,
-      chain: 'eip155:1',
+      chainId: 'eip155:1',
       name: 'Ethereum',
       logo: '/chain-logos/eip155-1.png',
       color: Colors.blue.shade300,
@@ -13,7 +13,7 @@ class ChainData {
     ),
     ChainMetadata(
       type: ChainType.eip155,
-      chain: 'eip155:137',
+      chainId: 'eip155:137',
       name: 'Polygon',
       logo: '/chain-logos/eip155-137.png',
       color: Colors.purple.shade300,
@@ -32,7 +32,7 @@ class ChainData {
     // ),
     ChainMetadata(
       type: ChainType.kadena,
-      chain: 'kadena:mainnet01',
+      chainId: 'kadena:mainnet01',
       name: 'Kadena',
       logo: 'TODO',
       color: Colors.purple.shade600,
@@ -45,7 +45,7 @@ class ChainData {
   static final List<ChainMetadata> testChains = [
     ChainMetadata(
       type: ChainType.eip155,
-      chain: 'eip155:5',
+      chainId: 'eip155:5',
       name: 'Ethereum Goerli',
       logo: '/chain-logos/eip155-1.png',
       color: Colors.blue.shade300,
@@ -54,7 +54,7 @@ class ChainData {
     ),
     ChainMetadata(
       type: ChainType.eip155,
-      chain: 'eip155:80001',
+      chainId: 'eip155:80001',
       name: 'Polygon Mumbai',
       logo: '/chain-logos/eip155-137.png',
       color: Colors.purple.shade300,
@@ -72,7 +72,7 @@ class ChainData {
     // ),
     ChainMetadata(
       type: ChainType.kadena,
-      chain: 'kadena:testnet04',
+      chainId: 'kadena:testnet04',
       name: 'Kadena',
       logo: 'TODO',
       color: Colors.purple.shade600,

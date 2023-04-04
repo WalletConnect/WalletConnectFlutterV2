@@ -16,7 +16,7 @@ abstract class ICore {
   abstract ICrypto crypto;
   abstract IRelayClient relayClient;
   abstract IStore<Map<String, dynamic>> storage;
-  abstract IJsonRpcHistory history;
+  // abstract IJsonRpcHistory history;
   abstract IExpirer expirer;
   abstract IPairing pairing;
 

@@ -73,7 +73,7 @@ class AuthClient implements IAuthClient {
       core: core,
       metadata: metadata,
       authKeys: GenericStore(
-        core: core,
+        storage: core.storage,
         context: StoreVersions.CONTEXT_AUTH_KEYS,
         version: StoreVersions.VERSION_AUTH_KEYS,
         fromJson: (dynamic value) {
@@ -81,7 +81,7 @@ class AuthClient implements IAuthClient {
         },
       ),
       pairingTopics: GenericStore(
-        core: core,
+        storage: core.storage,
         context: StoreVersions.CONTEXT_PAIRING_TOPICS,
         version: StoreVersions.VERSION_PAIRING_TOPICS,
         fromJson: (dynamic value) {
@@ -89,7 +89,7 @@ class AuthClient implements IAuthClient {
         },
       ),
       authRequests: GenericStore(
-        core: core,
+        storage: core.storage,
         context: StoreVersions.CONTEXT_AUTH_REQUESTS,
         version: StoreVersions.VERSION_AUTH_REQUESTS,
         fromJson: (dynamic value) {
@@ -97,7 +97,7 @@ class AuthClient implements IAuthClient {
         },
       ),
       completeRequests: GenericStore(
-        core: core,
+        storage: core.storage,
         context: StoreVersions.CONTEXT_COMPLETE_REQUESTS,
         version: StoreVersions.VERSION_COMPLETE_REQUESTS,
         fromJson: (dynamic value) {

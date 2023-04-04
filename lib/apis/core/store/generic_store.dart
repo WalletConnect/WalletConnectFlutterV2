@@ -1,7 +1,7 @@
 import 'package:event/event.dart';
 import 'package:flutter/material.dart';
 import 'package:walletconnect_flutter_v2/apis/core/store/i_generic_store.dart';
-import 'package:walletconnect_flutter_v2/apis/core/i_core.dart';
+import 'package:walletconnect_flutter_v2/apis/core/store/i_store.dart';
 import 'package:walletconnect_flutter_v2/apis/core/store/store_models.dart';
 import 'package:walletconnect_flutter_v2/apis/utils/errors.dart';
 
@@ -14,7 +14,7 @@ class GenericStore<T> implements IGenericStore<T> {
   @override
   String get storageKey => '$version//$context';
   @override
-  final ICore core;
+  final IStore storage;
 
   @override
   final Event<StoreCreateEvent<T>> onCreate = Event();
@@ -34,7 +34,7 @@ class GenericStore<T> implements IGenericStore<T> {
   final T Function(dynamic) fromJson;
 
   GenericStore({
-    required this.core,
+    required this.storage,
     required this.context,
     required this.version,
     required this.fromJson,
@@ -46,7 +46,7 @@ class GenericStore<T> implements IGenericStore<T> {
       return;
     }
 
-    await core.storage.init();
+    await storage.init();
     await restore();
 
     _initialized = true;
@@ -123,15 +123,41 @@ class GenericStore<T> implements IGenericStore<T> {
       StoreSyncEvent(),
     );
 
-    await core.storage.set(storageKey, data);
+    await storage.set(storageKey, data);
   }
 
   @override
   Future<void> restore() async {
-    if (core.storage.has(storageKey)) {
+    // If we haven't stored our version yet, we need to store it and stop
+    if (!storage.has(context)) {
+      // print('Storing $context');
+      await storage.set(context, {'version': version});
+      await storage.set(storageKey, <String, dynamic>{});
+      return;
+    }
+
+    // If we have stored our version, but it doesn't match, we need to delete the previous data,
+    // create a new version, and stop
+    final String storedVersion = storage.get(context)['version'];
+    if (storedVersion != version) {
+      // print('Updating storage from $storedVersion to $version');
+      await storage.delete('$storedVersion//$context');
+      await storage.set(context, {'version': version});
+      await storage.set(storageKey, <String, dynamic>{});
+      return;
+    }
+
+    if (storage.has(storageKey)) {
+      // If there is invalid data, delete the stored data
       // print('Restoring $storageKey');
-      for (var entry in core.storage.get(storageKey).entries) {
-        data[entry.key] = fromJson(entry.value);
+      try {
+        for (var entry in storage.get(storageKey).entries) {
+          // print(entry);
+          data[entry.key] = fromJson(entry.value);
+        }
+      } catch (e) {
+        // print('Error restoring $storageKey: $e');
+        await storage.delete(storedVersion);
       }
     }
   }

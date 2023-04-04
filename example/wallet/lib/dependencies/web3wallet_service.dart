@@ -1,13 +1,16 @@
 import 'dart:async';
+import 'dart:typed_data';
 
+import 'package:eth_sig_util/eth_sig_util.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
-import 'package:walletconnect_flutter_v2_wallet/dependencies/i_bottom_sheet_service.dart';
+import 'package:walletconnect_flutter_v2_wallet/dependencies/bottom_sheet/i_bottom_sheet_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/i_web3wallet_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/key_service/chain_key.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/key_service/i_key_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/utils/constants.dart';
+import 'package:walletconnect_flutter_v2_wallet/utils/dart_defines.dart';
 import 'package:walletconnect_flutter_v2_wallet/widgets/wc_connection_request/wc_auth_request_model.dart';
 import 'package:walletconnect_flutter_v2_wallet/widgets/wc_connection_request/wc_connection_request_widget.dart';
 import 'package:walletconnect_flutter_v2_wallet/widgets/wc_connection_request/wc_session_request_model.dart';
@@ -36,7 +39,7 @@ class Web3WalletService extends IWeb3WalletService {
 // Create the web3wallet
     _web3Wallet = Web3Wallet(
       core: Core(
-        projectId: Constants.projectId,
+        projectId: DartDefines.projectId,
       ),
       metadata: const PairingMetadata(
         name: 'Example Wallet',
@@ -50,11 +53,19 @@ class Web3WalletService extends IWeb3WalletService {
     List<ChainKey> chainKeys = GetIt.I<IKeyService>().getKeys();
     for (final chainKey in chainKeys) {
       for (final chainId in chainKey.chains) {
-        // print('registering $chainId:${chainKey.publicKey}');
-        _web3Wallet!.registerAccount(
-          chainId: chainId,
-          accountAddress: 'k**${chainKey.publicKey}',
-        );
+        if (chainId.startsWith('kadena')) {
+          // print('registering kadena $chainId:${chainKey.publicKey}');
+          _web3Wallet!.registerAccount(
+            chainId: chainId,
+            accountAddress: 'k**${chainKey.publicKey}',
+          );
+        } else {
+          // print('registering other $chainId:${chainKey.publicKey}');
+          _web3Wallet!.registerAccount(
+            chainId: chainId,
+            accountAddress: chainKey.publicKey,
+          );
+        }
       }
     }
 
@@ -159,21 +170,58 @@ class Web3WalletService extends IWeb3WalletService {
     }
   }
 
-  void _onAuthRequest(AuthRequest? args) {
+  Future<void> _onAuthRequest(AuthRequest? args) async {
     if (args != null) {
+      List<ChainKey> chainKeys = GetIt.I<IKeyService>().getKeysForChain(
+        'eip155:1',
+      );
+      // Create the message to be signed
+      final String iss = 'did:pkh:eip155:1:${chainKeys.first.publicKey}';
+
       // print(args);
       final Widget w = WCRequestWidget(
         child: WCConnectionRequestWidget(
           wallet: _web3Wallet!,
           authRequest: WCAuthRequestModel(
-            iss: '',
+            iss: iss,
             request: args,
           ),
         ),
       );
-      _bottomSheetHandler.queueBottomSheet(
+      final bool? auth = await _bottomSheetHandler.queueBottomSheet(
         widget: w,
       );
+
+      if (auth != null && auth) {
+        final String message = _web3Wallet!.formatAuthMessage(
+          iss: iss,
+          cacaoPayload: CacaoRequestPayload.fromPayloadParams(
+            args.payloadParams,
+          ),
+        );
+
+        final String sig = EthSigUtil.signPersonalMessage(
+          message: Uint8List.fromList(message.codeUnits),
+          privateKey: chainKeys.first.privateKey,
+        );
+
+        await _web3Wallet!.respondAuthRequest(
+          id: args.id,
+          iss: iss,
+          signature: CacaoSignature(
+            t: CacaoSignature.EIP191,
+            s: sig,
+          ),
+        );
+      } else {
+        await _web3Wallet!.respondAuthRequest(
+          id: args.id,
+          iss: iss,
+          error: Errors.getSdkError(
+            Errors.USER_REJECTED_AUTH,
+          ),
+        );
+      }
     }
   }
 }

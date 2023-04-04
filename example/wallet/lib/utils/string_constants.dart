@@ -10,6 +10,7 @@ class StringConstants {
   static const String getStarted = 'Get Started';
   static const String wouldLikeToConnect = 'would like to connect';
   static const String message = 'Message';
+  static const String invalidUri = 'Invalid URI';
 
   // Apps Pages
   static const String apps = 'Apps';

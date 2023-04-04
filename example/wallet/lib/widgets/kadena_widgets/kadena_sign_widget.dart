@@ -1,6 +1,10 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:kadena_dart_sdk/kadena_dart_sdk.dart';
 import 'package:walletconnect_flutter_v2_wallet/utils/constants.dart';
+import 'package:walletconnect_flutter_v2_wallet/widgets/wc_connection_widget/wc_connection_model.dart';
+import 'package:walletconnect_flutter_v2_wallet/widgets/wc_connection_widget/wc_connection_widget.dart';
 import 'package:walletconnect_flutter_v2_wallet/widgets/wc_request_widget.dart/wc_request_widget.dart';
 
 /// A widget that takes a list of PactCommandPayloads, and allows the user
@@ -36,6 +40,41 @@ class KadenaSignWidgetState extends State<KadenaSignWidget> {
 
   @override
   Widget build(BuildContext context) {
+    final List<WCConnectionModel> capsList = [];
+
+    if (widget.payloads[_currentIndex].signers.isNotEmpty &&
+        widget.payloads[_currentIndex].signers.first.clist != null) {
+      capsList.addAll(
+        widget.payloads[_currentIndex].signers.first.clist!
+            .map(
+              (e) => WCConnectionModel(
+                title: e.name,
+                elements: e.args
+                    .map(
+                      (e) => e.toString(),
+                    )
+                    .toList(),
+              ),
+            )
+            .toList(),
+      );
+    }
+
+    final List<Widget> signCounter = [];
+    if (widget.payloads.length > 1) {
+      signCounter.add(
+        Text(
+          '${_currentIndex + 1} of ${widget.payloads.length}',
+          style: StyleConstants.subtitleText,
+        ),
+      );
+      signCounter.add(
+        const SizedBox(
+          height: StyleConstants.magic20,
+        ),
+      );
+    }
+
     return WCRequestWidget(
       onAccept: () {
         _responses.add(true);
@@ -47,73 +86,75 @@ class KadenaSignWidgetState extends State<KadenaSignWidget> {
       },
       child: Column(
         children: [
-          if (widget.payloads.length > 1)
-            Text(
-              '$_currentIndex/${widget.payloads.length} Transactions',
-              style: StyleConstants.bodyText,
-            ),
-          const SizedBox(
-            height: StyleConstants.linear16,
+          ...signCounter,
+          WCConnectionWidget(
+            title: 'Sign Transaction',
+            info: [
+              WCConnectionModel(
+                title: 'Pact Command',
+                text: jsonEncode(widget.payloads[_currentIndex]),
+              ),
+              ...capsList,
+            ],
           ),
-          _buildPactCommandPayload(widget.payloads[_currentIndex]),
         ],
       ),
     );
   }
 
-  Widget _buildPactCommandPayload(PactCommandPayload payload) {
-    return Column(
-      children: [
-        Text(
-          payload.payload.exec?.code ?? '',
-          style: StyleConstants.bodyText,
-        ),
-        const SizedBox(
-          height: StyleConstants.linear16,
-        ),
-        Text(
-          (payload.payload.exec?.data ?? {}).toString(),
-          style: StyleConstants.bodyText,
-        ),
-        const SizedBox(
-          height: StyleConstants.linear16,
-        ),
-        const Text(
-          'Capabilities',
-          style: StyleConstants.subtitleText,
-        ),
-        const SizedBox(
-          height: StyleConstants.linear16,
-        ),
-        // Add the caps if they exist
-        if (payload.signers[0].clist != null &&
-            payload.signers[0].clist!.isNotEmpty)
-          ...payload.signers[0].clist!.map(
-            (Capability sigCap) => _buildCapability(sigCap),
-          ),
-      ],
-    );
-  }
+  // Widget _buildPactCommandPayload(PactCommandPayload payload) {
+  //   return Column(
+  //     children: [
+  //       Text(
+  //         payload.payload.exec?.code ?? '',
+  //         style: StyleConstants.bodyText,
+  //       ),
+  //       const SizedBox(
+  //         height: StyleConstants.linear16,
+  //       ),
+  //       Text(
+  //         (payload.payload.exec?.data ?? {}).toString(),
+  //         style: StyleConstants.bodyText,
+  //       ),
+  //       const SizedBox(
+  //         height: StyleConstants.linear16,
+  //       ),
+  //       const Text(
+  //         'Capabilities',
+  //         style: StyleConstants.subtitleText,
+  //       ),
+  //       const SizedBox(
+  //         height: StyleConstants.linear16,
+  //       ),
+  //       // Add the caps if they exist
+  //       if (payload.signers[0].clist != null &&
+  //           payload.signers[0].clist!.isNotEmpty)
+  //         ...payload.signers[0].clist!.map(
+  //           (Capability sigCap) => _buildCapability(sigCap),
+  //         ),
+  //     ],
+  //   );
+  // }
 
-  Widget _buildCapability(Capability cap) {
-    return Column(
-      children: [
-        Text(
-          cap.name,
-          style: StyleConstants.bodyTextBold,
-        ),
-        const SizedBox(
-          height: StyleConstants.linear16,
-        ),
-        ...cap.args.map(
-          (e) => Text(
-            e.toString(),
-            style: StyleConstants.bodyText,
-          ),
-        ),
-      ],
-    );
-  }
+  // Widget _buildCapability(Capability cap) {
+  //   return Column(
+  //     children: [
+  //       Text(
+  //         cap.name,
+  //         style: StyleConstants.bodyTextBold,
+  //       ),
+  //       const SizedBox(
+  //         height: StyleConstants.linear16,
+  //       ),
+  //       ...cap.args.map(
+  //         (e) => Text(
+  //           e.toString(),
+  //           style: StyleConstants.bodyText,
+  //         ),
+  //       ),
+  //     ],
+  //   );
+  // }
 
   void _incrementIndex() {
     if (_currentIndex < widget.payloads.length - 1) {

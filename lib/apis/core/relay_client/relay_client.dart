@@ -69,13 +69,14 @@ class RelayClient implements IRelayClient {
   ICore core;
 
   Timer? _heartbeatTimer;
+  final int heartbeatPeriod;
 
   RelayClient({
     required this.core,
     required this.messageTracker,
     required this.topicMap,
     required this.httpClient,
-    // this.test = false,
+    this.heartbeatPeriod = 30,
     relayUrl = WalletConnectConstants.RELAYER_DEFAULT_PROTOCOL,
   });
 
@@ -161,7 +162,7 @@ class RelayClient implements IRelayClient {
     await topicMap.delete(topic);
 
     // Delete all the messages
-    messageTracker.deleteSubscriptionMessages(topic);
+    await messageTracker.delete(topic);
   }
 
   @override
@@ -247,14 +248,18 @@ class RelayClient implements IRelayClient {
 
   void _startHeartbeat() {
     _heartbeatTimer = Timer.periodic(
-      Duration(seconds: 30),
+      Duration(seconds: heartbeatPeriod),
       (timer) async {
         // print('heartbeat');
-        try {
-          socket.channel!.sink.add('ping');
-        } catch (e) {
-          // Close the socket and trigger the disconnect -> reconnect
-          await socket.close();
+        if (jsonRPC.isClosed) {
+          await connect();
+        } else {
+          try {
+            socket.channel!.sink.add('ping');
+          } catch (e) {
+            // Close the socket and trigger the disconnect -> reconnect
+            await socket.close();
+          }
         }
       },
     );

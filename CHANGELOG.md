@@ -1,3 +1,9 @@
+## 1.2.3
+
+- Event and request events will only be emitted if they are registered
+- Added `WalletConnectErrorSilent` that can be thrown in a requestHandler to fail silently and return nothing to the requester
+- Multiple bug fixes
+
 ## 1.2.2
 
 - Reverted preflight check for HTTP Errors.

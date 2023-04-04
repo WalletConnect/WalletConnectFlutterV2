@@ -52,7 +52,7 @@ class Web3Wallet implements IWeb3Wallet {
       core: core,
       metadata: metadata,
       proposals: GenericStore(
-        core: core,
+        storage: core.storage,
         context: StoreVersions.CONTEXT_PROPOSALS,
         version: StoreVersions.VERSION_PROPOSALS,
         fromJson: (dynamic value) {
@@ -60,7 +60,7 @@ class Web3Wallet implements IWeb3Wallet {
         },
       ),
       sessions: Sessions(
-        core: core,
+        storage: core.storage,
         context: StoreVersions.CONTEXT_SESSIONS,
         version: StoreVersions.VERSION_SESSIONS,
         fromJson: (dynamic value) {
@@ -68,7 +68,7 @@ class Web3Wallet implements IWeb3Wallet {
         },
       ),
       pendingRequests: GenericStore(
-        core: core,
+        storage: core.storage,
         context: StoreVersions.CONTEXT_PENDING_REQUESTS,
         version: StoreVersions.VERSION_PENDING_REQUESTS,
         fromJson: (dynamic value) {
@@ -81,7 +81,7 @@ class Web3Wallet implements IWeb3Wallet {
       core: core,
       metadata: metadata,
       authKeys: GenericStore(
-        core: core,
+        storage: core.storage,
         context: StoreVersions.CONTEXT_AUTH_KEYS,
         version: StoreVersions.VERSION_AUTH_KEYS,
         fromJson: (dynamic value) {
@@ -89,7 +89,7 @@ class Web3Wallet implements IWeb3Wallet {
         },
       ),
       pairingTopics: GenericStore(
-        core: core,
+        storage: core.storage,
         context: StoreVersions.CONTEXT_PAIRING_TOPICS,
         version: StoreVersions.VERSION_PAIRING_TOPICS,
         fromJson: (dynamic value) {
@@ -97,7 +97,7 @@ class Web3Wallet implements IWeb3Wallet {
         },
       ),
       authRequests: GenericStore(
-        core: core,
+        storage: core.storage,
         context: StoreVersions.CONTEXT_AUTH_REQUESTS,
         version: StoreVersions.VERSION_AUTH_REQUESTS,
         fromJson: (dynamic value) {
@@ -105,7 +105,7 @@ class Web3Wallet implements IWeb3Wallet {
         },
       ),
       completeRequests: GenericStore(
-        core: core,
+        storage: core.storage,
         context: StoreVersions.CONTEXT_COMPLETE_REQUESTS,
         version: StoreVersions.VERSION_COMPLETE_REQUESTS,
         fromJson: (dynamic value) {

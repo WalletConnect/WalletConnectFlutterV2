@@ -2,7 +2,6 @@ import 'package:event/event.dart';
 import 'package:walletconnect_flutter_v2/apis/core/pairing/i_expirer.dart';
 import 'package:walletconnect_flutter_v2/apis/core/pairing/utils/pairing_models.dart';
 import 'package:walletconnect_flutter_v2/apis/core/store/generic_store.dart';
-import 'package:walletconnect_flutter_v2/apis/utils/constants.dart';
 import 'package:walletconnect_flutter_v2/apis/utils/walletconnect_utils.dart';
 
 class Expirer extends GenericStore<int> implements IExpirer {
@@ -10,7 +9,7 @@ class Expirer extends GenericStore<int> implements IExpirer {
   final Event<ExpirationEvent> onExpire = Event();
 
   Expirer({
-    required super.core,
+    required super.storage,
     required super.context,
     required super.version,
     required super.fromJson,

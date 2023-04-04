@@ -6,7 +6,7 @@ abstract class IStore<T> {
 
   Future<void> init();
   Future<void> set(String key, T value);
-  T get(String key);
+  T? get(String key);
   bool has(String key);
   List<dynamic> getAll();
   Future<void> update(String key, T value);

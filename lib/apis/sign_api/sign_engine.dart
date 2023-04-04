@@ -691,6 +691,7 @@ class SignEngine implements ISignEngine {
   Future<void> _resubscribeAll() async {
     // Subscribe to all the sessions
     for (final SessionData session in sessions.getAll()) {
+      // print('Session: subscribing to ${session.topic}');
       await core.relayClient.subscribe(topic: session.topic);
     }
   }
@@ -1189,6 +1190,8 @@ class SignEngine implements ISignEngine {
                 e.toJson(),
               ),
             );
+          } on WalletConnectErrorSilent catch (_) {
+            // Do nothing on silent error
           } catch (err) {
             await core.pairing.sendError(
               payload.id,
@@ -1203,6 +1206,12 @@ class SignEngine implements ISignEngine {
             payload.id.toString(),
           );
         }
+
+        onSessionRequest.broadcast(
+          SessionRequestEvent.fromSessionRequest(
+            sessionRequest,
+          ),
+        );
       } else {
         await core.pairing.sendError(
           payload.id,
@@ -1213,12 +1222,6 @@ class SignEngine implements ISignEngine {
           ),
         );
       }
-
-      onSessionRequest.broadcast(
-        SessionRequestEvent.fromSessionRequest(
-          sessionRequest,
-        ),
-      );
     } on WalletConnectError catch (err) {
       await core.pairing.sendError(
         payload.id,
@@ -1242,16 +1245,6 @@ class SignEngine implements ISignEngine {
         topic,
         event,
         request.chainId,
-      );
-
-      onSessionEvent.broadcast(
-        SessionEvent(
-          payload.id,
-          topic,
-          event.name,
-          request.chainId,
-          event.data,
-        ),
       );
 
       final String eventKey = _getRegisterKey(
@@ -1285,6 +1278,16 @@ class SignEngine implements ISignEngine {
           MethodConstants.WC_SESSION_REQUEST,
           true,
         );
+
+        onSessionEvent.broadcast(
+          SessionEvent(
+            payload.id,
+            topic,
+            event.name,
+            request.chainId,
+            event.data,
+          ),
+        );
       } else {
         await core.pairing.sendError(
           payload.id,
@@ -1317,7 +1320,7 @@ class SignEngine implements ISignEngine {
   }
 
   Future<void> _onRelayConnect(EventArgs? args) async {
-    // print('Relay connected: sessions');
+    // print('Session: relay connected');
     await _resubscribeAll();
   }
 

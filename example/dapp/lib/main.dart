@@ -1,4 +1,5 @@
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
+import 'package:walletconnect_flutter_v2_dapp/models/chain_metadata.dart';
 import 'package:walletconnect_flutter_v2_dapp/models/page_data.dart';
 import 'package:walletconnect_flutter_v2_dapp/pages/auth_page.dart';
 import 'package:walletconnect_flutter_v2_dapp/pages/connect_page.dart';
@@ -6,6 +7,9 @@ import 'package:walletconnect_flutter_v2_dapp/pages/pairings_page.dart';
 import 'package:walletconnect_flutter_v2_dapp/pages/sessions_page.dart';
 import 'package:walletconnect_flutter_v2_dapp/utils/constants.dart';
 import 'package:flutter/material.dart';
+import 'package:walletconnect_flutter_v2_dapp/utils/crypto/chain_data.dart';
+import 'package:walletconnect_flutter_v2_dapp/utils/crypto/helpers.dart';
+import 'package:walletconnect_flutter_v2_dapp/utils/dart_defines.dart';
 import 'package:walletconnect_flutter_v2_dapp/utils/string_constants.dart';
 import 'package:walletconnect_flutter_v2_dapp/widgets/event_widget.dart';
 
@@ -57,7 +61,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Future<void> initialize() async {
     // try {
     _web3App = await Web3App.createInstance(
-      projectId: Constants.projectId,
+      projectId: DartDefines.projectId,
       metadata: const PairingMetadata(
         name: 'Flutter WalletConnect',
         description: 'Flutter WalletConnect Dapp Example',
@@ -65,6 +69,16 @@ class _MyHomePageState extends State<MyHomePage> {
         icons: ['https://walletconnect.com/walletconnect-logo.png'],
       ),
     );
+
+    // Register event handlers
+
+    // Loop through all the chain data
+    for (final ChainMetadata chain in ChainData.allChains) {
+      // Loop through the events for that chain
+      for (final event in getChainEvents(chain.type)) {
+        _web3App!.registerEventHandler(chainId: chain.chainId, event: event);
+      }
+    }
 
     _web3App!.onSessionPing.subscribe(_onSessionPing);
     _web3App!.onSessionEvent.subscribe(_onSessionEvent);
@@ -122,7 +136,35 @@ class _MyHomePageState extends State<MyHomePage> {
     }
     navRail.add(
       Expanded(
-        child: _pageDatas[_selectedIndex].page,
+        child: Stack(
+          children: [
+            _pageDatas[_selectedIndex].page,
+            Positioned(
+              bottom: StyleConstants.magic20,
+              right: StyleConstants.magic20,
+              child: Row(
+                children: [
+                  // Disconnect buttons for testing
+                  _buildIconButton(
+                    Icons.discord,
+                    () {
+                      _web3App!.core.relayClient.disconnect();
+                    },
+                  ),
+                  const SizedBox(
+                    width: StyleConstants.magic20,
+                  ),
+                  _buildIconButton(
+                    Icons.connect_without_contact,
+                    () {
+                      _web3App!.core.relayClient.connect();
+                    },
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
 
@@ -206,6 +248,25 @@ class _MyHomePageState extends State<MyHomePage> {
               'Topic: ${args!.topic}\nEvent Name: ${args.name}\nEvent Data: ${args.data}',
         );
       },
+    );
+  }
+
+  Widget _buildIconButton(IconData icon, void Function()? onPressed) {
+    return Container(
+      decoration: BoxDecoration(
+        color: StyleConstants.primaryColor,
+        borderRadius: BorderRadius.circular(
+          StyleConstants.linear48,
+        ),
+      ),
+      child: IconButton(
+        icon: Icon(
+          icon,
+          color: StyleConstants.titleTextColor,
+        ),
+        iconSize: StyleConstants.linear24,
+        onPressed: onPressed,
+      ),
     );
   }
 }

@@ -162,12 +162,18 @@ class ConnectPageState extends State<ConnectPage> {
     // Get the methods, get the events
     final Map<String, RequiredNamespace> requiredNamespaces = {};
     for (final chain in chains) {
+      // If the chain is already in the required namespaces, add it to the chains list
+      final String chainName = chain.chainId.split(':')[0];
+      if (requiredNamespaces.containsKey(chainName)) {
+        requiredNamespaces[chainName]!.chains!.add(chain.chainId);
+        continue;
+      }
       final RequiredNamespace rNamespace = RequiredNamespace(
-        chains: [chain.chain],
+        chains: [chain.chainId],
         methods: getChainMethods(chain.type),
         events: getChainEvents(chain.type),
       );
-      requiredNamespaces[chain.chain.split(':')[0]] = rNamespace;
+      requiredNamespaces[chainName] = rNamespace;
     }
     debugPrint('Required namespaces: $requiredNamespaces');
 
@@ -198,7 +204,7 @@ class ConnectPageState extends State<ConnectPage> {
       final AuthRequestResponse authRes = await widget.web3App.requestAuth(
         pairingTopic: res.pairingTopic,
         params: AuthRequestParams(
-          chainId: chains[0].chain,
+          chainId: chains[0].chainId,
           domain: Constants.domain,
           aud: Constants.aud,
         ),

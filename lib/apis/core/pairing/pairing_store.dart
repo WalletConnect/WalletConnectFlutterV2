@@ -1,13 +1,11 @@
-import 'package:walletconnect_flutter_v2/apis/core/i_core.dart';
 import 'package:walletconnect_flutter_v2/apis/core/pairing/i_pairing_store.dart';
 import 'package:walletconnect_flutter_v2/apis/core/pairing/utils/pairing_models.dart';
 import 'package:walletconnect_flutter_v2/apis/core/store/generic_store.dart';
 import 'package:walletconnect_flutter_v2/apis/core/store/store_models.dart';
-import 'package:walletconnect_flutter_v2/apis/utils/errors.dart';
 
 class PairingStore extends GenericStore<PairingInfo> implements IPairingStore {
   PairingStore({
-    required super.core,
+    required super.storage,
     required super.context,
     required super.version,
     required super.fromJson,
@@ -26,8 +24,8 @@ class PairingStore extends GenericStore<PairingInfo> implements IPairingStore {
     if (info == null) {
       return;
     }
-    int prevExpiry = info.expiry;
-    bool wasActive = info.active;
+    // int prevExpiry = info.expiry;
+    // bool wasActive = info.active;
 
     if (expiry != null) {
       info.expiry = expiry;
@@ -39,12 +37,12 @@ class PairingStore extends GenericStore<PairingInfo> implements IPairingStore {
       info.peerMetadata = metadata;
     }
 
-    onUpdate.broadcast(
-      StoreUpdateEvent(
-        topic,
-        info,
-      ),
-    );
+    // onUpdate.broadcast(
+    //   StoreUpdateEvent(
+    //     topic,
+    //     info,
+    //   ),
+    // );
 
     // print('Previous expiry: $prevExpiry, new expiry: ${info.expiry}');
     // print('Previous active: $wasActive, new active: ${info.active}');

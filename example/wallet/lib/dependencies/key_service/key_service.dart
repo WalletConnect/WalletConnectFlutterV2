@@ -13,6 +13,18 @@ class KeyService extends IKeyService {
       privateKey: DartDefines.kadenaPrivateKey,
       publicKey: DartDefines.kadenaPublicKey,
     ),
+    ChainKey(
+      chains: [
+        'eip155:1',
+        'eip155:5',
+        'eip155:137',
+        'eip155:80001',
+      ],
+      privateKey:
+          '5c863219aac113b78823027ed8fd3e287b38bc0f5a65756e1797c8f7fce56b8e',
+      publicKey:
+          '0x83ba3013f776d4e2801010ee88581aedf5349b43', // Eth Address, not actual public key
+    )
   ];
 
   @override

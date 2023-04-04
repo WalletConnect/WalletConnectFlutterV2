@@ -63,14 +63,39 @@ JsonRpcRecord _$JsonRpcRecordFromJson(Map<String, dynamic> json) =>
       method: json['method'] as String,
       params: json['params'],
       chainId: json['chainId'] as String?,
+      expiry: json['expiry'] as int?,
     )..response = json['response'];
 
-Map<String, dynamic> _$JsonRpcRecordToJson(JsonRpcRecord instance) =>
+Map<String, dynamic> _$JsonRpcRecordToJson(JsonRpcRecord instance) {
+  final val = <String, dynamic>{
+    'id': instance.id,
+    'topic': instance.topic,
+    'method': instance.method,
+  };
+
+  void writeNotNull(String key, dynamic value) {
+    if (value != null) {
+      val[key] = value;
+    }
+  }
+
+  writeNotNull('params', instance.params);
+  writeNotNull('response', instance.response);
+  writeNotNull('chainId', instance.chainId);
+  writeNotNull('expiry', instance.expiry);
+  return val;
+}
+
+ReceiverPublicKey _$ReceiverPublicKeyFromJson(Map<String, dynamic> json) =>
+    ReceiverPublicKey(
+      topic: json['topic'] as String,
+      publicKey: json['publicKey'] as String,
+      expiry: json['expiry'] as int,
+    );
+
+Map<String, dynamic> _$ReceiverPublicKeyToJson(ReceiverPublicKey instance) =>
     <String, dynamic>{
-      'id': instance.id,
       'topic': instance.topic,
-      'method': instance.method,
-      'params': instance.params,
-      'response': instance.response,
-      'chainId': instance.chainId,
+      'publicKey': instance.publicKey,
+      'expiry': instance.expiry,
     };

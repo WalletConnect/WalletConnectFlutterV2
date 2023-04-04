@@ -276,7 +276,7 @@ class SessionWidgetState extends State<SessionWidget> {
           web3App: widget.web3App,
           topic: widget.session.topic,
           method: method.toEip155Method()!,
-          chainId: chainMetadata.chain,
+          chainId: chainMetadata.chainId,
           address: address.toLowerCase(),
         );
       case ChainType.kadena:
@@ -284,7 +284,7 @@ class SessionWidgetState extends State<SessionWidget> {
           web3App: widget.web3App,
           topic: widget.session.topic,
           method: method.toKadenaMethod()!,
-          chainId: chainMetadata.chain,
+          chainId: chainMetadata.chainId,
           address: address.toLowerCase(),
         );
       default:

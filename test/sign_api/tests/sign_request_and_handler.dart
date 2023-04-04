@@ -45,7 +45,7 @@ void signRequestAndHandler({
       await clientB.core.relayClient.disconnect();
     });
 
-    test('register a request handler and recieve method calls with it',
+    test('register a request handler and receive method calls with it',
         () async {
       final connectionInfo = await SignClientHelpers.testConnectPairApprove(
         clientA,
@@ -122,7 +122,11 @@ void signRequestAndHandler({
         dynamic request,
       ) async {
         if (request is String) {
-          throw Errors.getSdkError(Errors.USER_REJECTED_SIGN);
+          if (request == TEST_MESSAGE_2) {
+            throw Errors.getSdkError(Errors.USER_REJECTED_SIGN);
+          } else {
+            throw WalletConnectErrorSilent();
+          }
         } else {
           return request['try']!;
         }
@@ -134,6 +138,15 @@ void signRequestAndHandler({
       );
 
       try {
+        clientA.request(
+          topic: connectionInfo.session.topic,
+          chainId: TEST_ETHEREUM_CHAIN,
+          request: SessionRequestParams(
+            method: TEST_METHOD_1,
+            params: 'silent',
+          ),
+        );
+
         await clientA.request(
           topic: connectionInfo.session.topic,
           chainId: TEST_ETHEREUM_CHAIN,

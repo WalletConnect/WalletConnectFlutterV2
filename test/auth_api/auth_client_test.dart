@@ -40,7 +40,7 @@ void main() {
         core: core,
         metadata: self ?? PairingMetadata.empty(),
         authKeys: GenericStore(
-          core: core,
+          storage: core.storage,
           context: StoreVersions.CONTEXT_AUTH_KEYS,
           version: StoreVersions.VERSION_AUTH_KEYS,
           fromJson: (dynamic value) {
@@ -48,7 +48,7 @@ void main() {
           },
         ),
         pairingTopics: GenericStore(
-          core: core,
+          storage: core.storage,
           context: StoreVersions.CONTEXT_PAIRING_TOPICS,
           version: StoreVersions.VERSION_PAIRING_TOPICS,
           fromJson: (dynamic value) {
@@ -56,7 +56,7 @@ void main() {
           },
         ),
         authRequests: GenericStore(
-          core: core,
+          storage: core.storage,
           context: StoreVersions.CONTEXT_AUTH_REQUESTS,
           version: StoreVersions.VERSION_AUTH_REQUESTS,
           fromJson: (dynamic value) {
@@ -64,7 +64,7 @@ void main() {
           },
         ),
         completeRequests: GenericStore(
-          core: core,
+          storage: core.storage,
           context: StoreVersions.CONTEXT_COMPLETE_REQUESTS,
           version: StoreVersions.VERSION_COMPLETE_REQUESTS,
           fromJson: (dynamic value) {
@@ -107,7 +107,7 @@ void main() {
         core: core,
         metadata: metadata,
         authKeys: GenericStore(
-          core: core,
+          storage: core.storage,
           context: StoreVersions.CONTEXT_AUTH_KEYS,
           version: StoreVersions.VERSION_AUTH_KEYS,
           fromJson: (dynamic value) {
@@ -115,7 +115,7 @@ void main() {
           },
         ),
         pairingTopics: GenericStore(
-          core: core,
+          storage: core.storage,
           context: StoreVersions.CONTEXT_PAIRING_TOPICS,
           version: StoreVersions.VERSION_PAIRING_TOPICS,
           fromJson: (dynamic value) {
@@ -123,7 +123,7 @@ void main() {
           },
         ),
         authRequests: GenericStore(
-          core: core,
+          storage: core.storage,
           context: StoreVersions.CONTEXT_AUTH_REQUESTS,
           version: StoreVersions.VERSION_AUTH_REQUESTS,
           fromJson: (dynamic value) {
@@ -131,7 +131,7 @@ void main() {
           },
         ),
         completeRequests: GenericStore(
-          core: core,
+          storage: core.storage,
           context: StoreVersions.CONTEXT_COMPLETE_REQUESTS,
           version: StoreVersions.VERSION_COMPLETE_REQUESTS,
           fromJson: (dynamic value) {

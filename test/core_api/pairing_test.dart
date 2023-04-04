@@ -3,9 +3,15 @@ import 'dart:async';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:walletconnect_flutter_v2/apis/core/core.dart';
 import 'package:walletconnect_flutter_v2/apis/core/i_core.dart';
+import 'package:walletconnect_flutter_v2/apis/core/pairing/i_json_rpc_history.dart';
+import 'package:walletconnect_flutter_v2/apis/core/pairing/i_pairing.dart';
+import 'package:walletconnect_flutter_v2/apis/core/pairing/json_rpc_history.dart';
+import 'package:walletconnect_flutter_v2/apis/core/pairing/pairing.dart';
+import 'package:walletconnect_flutter_v2/apis/core/pairing/pairing_store.dart';
 import 'package:walletconnect_flutter_v2/apis/core/pairing/utils/pairing_models.dart';
 import 'package:walletconnect_flutter_v2/apis/core/pairing/utils/json_rpc_utils.dart';
 import 'package:walletconnect_flutter_v2/apis/core/relay_client/relay_client_models.dart';
+import 'package:walletconnect_flutter_v2/apis/core/store/generic_store.dart';
 import 'package:walletconnect_flutter_v2/apis/models/basic_models.dart';
 import 'package:walletconnect_flutter_v2/apis/models/uri_parse_result.dart';
 import 'package:walletconnect_flutter_v2/apis/utils/constants.dart';
@@ -74,6 +80,10 @@ void main() {
     expect(parsed.symKey, 'xyz');
     expect(parsed.relay.protocol, 'irn');
     expect(parsed.methods.length, 0);
+  });
+
+  group('history', () {
+    test('deletes old records', () async {});
   });
 
   group('Pairing API', () {
@@ -145,7 +155,7 @@ void main() {
       });
     });
 
-    group('Pair', () {
+    group('pair', () {
       test("can pair via provided URI", () async {
         final CreateResponse response = await coreA.pairing.create();
 

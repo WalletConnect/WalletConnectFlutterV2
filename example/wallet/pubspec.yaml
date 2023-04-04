@@ -45,6 +45,9 @@ dependencies:
   mobile_scanner: ^3.0.0
   get_it: ^7.2.0
   get_it_mixin: ^4.0.0
+  web3dart: ^2.5.1
+  eth_sig_util: ^0.0.9
+  convert: ^3.0.1
 
 dev_dependencies:
   flutter_test:
