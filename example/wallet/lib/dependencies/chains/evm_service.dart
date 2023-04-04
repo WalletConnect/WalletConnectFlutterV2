@@ -54,8 +54,8 @@ class EVMService extends IChain {
   static const pSign = 'personal_sign';
   static const eSign = 'eth_sign';
   static const eSignTransaction = 'eth_signTransaction';
-  // static const eSignTypedData = 'eth_signTypedData';
-  // static const eSendTransaction = 'eth_sendTransaction';
+  static const eSignTypedData = 'eth_signTypedData';
+  static const eSendTransaction = 'eth_sendTransaction';
 
   final IBottomSheetService _bottomSheetService =
       GetIt.I<IBottomSheetService>();
@@ -85,11 +85,16 @@ class EVMService extends IChain {
       method: eSignTransaction,
       handler: ethSignTransaction,
     );
-    // wallet.registerRequestHandler(
-    //   chainId: getChainId(),
-    //   method: eSignTypedData,
-    //   handler: ethSignTypedData,
-    // );
+    wallet.registerRequestHandler(
+      chainId: getChainId(),
+      method: eSendTransaction,
+      handler: ethSignTransaction,
+    );
+    wallet.registerRequestHandler(
+      chainId: getChainId(),
+      method: eSignTypedData,
+      handler: ethSignTypedData,
+    );
   }
 
   @override
@@ -143,13 +148,15 @@ class EVMService extends IChain {
       );
       final Credentials credentials = EthPrivateKey.fromHex(keys[0].privateKey);
 
-      return hex.encode(
+      final String signature = hex.encode(
         credentials.signPersonalMessageToUint8List(
           Uint8List.fromList(
             (parameters[0] as String).codeUnits,
           ),
         ),
       );
+
+      return '0x$signature';
     } catch (e) {
       print(e);
       return 'Failed';
@@ -170,13 +177,15 @@ class EVMService extends IChain {
       );
       final Credentials credentials = EthPrivateKey.fromHex(keys[0].privateKey);
 
-      return hex.encode(
-        credentials.signToUint8List(
+      final String signature = hex.encode(
+        credentials.signPersonalMessageToUint8List(
           Uint8List.fromList(
             (parameters[1] as String).codeUnits,
           ),
         ),
       );
+
+      return '0x$signature';
     } catch (e) {
       print(e);
       return 'Failed';
@@ -239,22 +248,24 @@ class EVMService extends IChain {
     );
 
     // Sign the transaction
-    final signedTx = credentials.signToUint8List(
-      Uint8List.fromList(
-        rlp.encode(
-          transaction.toString(),
+    final String signedTx = hex.encode(
+      credentials.signToUint8List(
+        Uint8List.fromList(
+          rlp.encode(
+            transaction.toString(),
+          ),
         ),
       ),
     );
 
     // Return the signed transaction as a hexadecimal string
-    return hex.encode(signedTx);
-    // return 'failred';
+    return '0x$signedTx';
   }
 
   Future ethSignTypedData(String topic, dynamic parameters) async {
     print('received eth sign typed data request: $parameters');
-    final String? authAcquired = await requestAuthorization(parameters[1]);
+    final String data = jsonEncode(parameters[1]);
+    final String? authAcquired = await requestAuthorization(data);
     if (authAcquired != null) {
       return authAcquired;
     }
@@ -265,8 +276,8 @@ class EVMService extends IChain {
 
     return EthSigUtil.signTypedData(
       privateKey: keys[0].privateKey,
-      jsonData: jsonEncode(parameters[1]),
-      version: TypedDataVersion.V1,
+      jsonData: data,
+      version: TypedDataVersion.V4,
     );
   }
 }

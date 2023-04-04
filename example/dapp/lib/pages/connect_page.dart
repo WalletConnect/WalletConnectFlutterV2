@@ -211,14 +211,24 @@ class ConnectPageState extends State<ConnectPage> {
       );
 
       debugPrint('Awaiting authentication response');
-      await authRes.completer.future;
+      final authResponse = await authRes.completer.future;
 
-      showPlatformToast(
-        child: const Text(
-          StringConstants.authSucceeded,
-        ),
-        context: context,
-      );
+      if (authResponse.error != null) {
+        debugPrint('Authentication failed: ${authResponse.error}');
+        await showPlatformToast(
+          child: const Text(
+            StringConstants.authFailed,
+          ),
+          context: context,
+        );
+      } else {
+        showPlatformToast(
+          child: const Text(
+            StringConstants.authSucceeded,
+          ),
+          context: context,
+        );
+      }
 
       if (_shouldDismissQrCode) {
         // ignore: use_build_context_synchronously

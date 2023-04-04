@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 import 'package:walletconnect_flutter_v2_dapp/models/eth/ethereum_transaction.dart';
 import 'package:walletconnect_flutter_v2_dapp/utils/test_data.dart';
@@ -46,8 +48,8 @@ class EIP155 {
     EIP155Methods.personalSign: 'personal_sign',
     EIP155Methods.ethSign: 'eth_sign',
     EIP155Methods.ethSignTransaction: 'eth_signTransaction',
-    // EIP155Methods.ethSignTypedData: 'eth_signTypedData',
-    // EIP155Methods.ethSendTransaction: 'eth_sendTransaction',
+    EIP155Methods.ethSignTypedData: 'eth_signTypedData',
+    EIP155Methods.ethSendTransaction: 'eth_sendTransaction',
   };
 
   static final Map<EIP155Events, String> events = {
@@ -85,7 +87,7 @@ class EIP155 {
           topic: topic,
           chainId: chainId,
           address: address,
-          data: testSignTypedData(address),
+          data: jsonDecode(typedData),
         );
       case EIP155Methods.ethSignTransaction:
         return ethSignTransaction(
@@ -151,7 +153,7 @@ class EIP155 {
     required String topic,
     required String chainId,
     required String address,
-    required String data,
+    required Map<String, dynamic> data,
   }) async {
     return await web3App.request(
       topic: topic,
