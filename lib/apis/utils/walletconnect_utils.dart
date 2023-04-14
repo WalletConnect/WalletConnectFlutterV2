@@ -96,20 +96,46 @@ class WalletConnectUtils {
     if (methods.length == 1 && methods[0].isEmpty) {
       methods = [];
     }
+    final URIVersion? version;
+    switch (splitParams[1]) {
+      case '1':
+        version = URIVersion.v1;
+        break;
+      case '2':
+        version = URIVersion.v2;
+        break;
+      default:
+        version = null;
+    }
+    final URIV1ParsedData? v1Data;
+    final URIV2ParsedData? v2Data;
+    if (version == URIVersion.v1) {
+      v1Data = URIV1ParsedData(
+        key: uri.queryParameters['key']!,
+        bridge: uri.queryParameters['bridge']!,
+      );
+      v2Data = null;
+    } else {
+      v1Data = null;
+      v2Data = URIV2ParsedData(
+        symKey: uri.queryParameters['symKey']!,
+        relay: Relay(
+          uri.queryParameters['relay-protocol']!,
+          data: uri.queryParameters.containsKey('relay-data')
+              ? uri.queryParameters['relay-data']
+              : null,
+        ),
+        methods: methods,
+      );
+    }
+
     URIParseResult ret = URIParseResult(
       protocol: protocol,
-      version: splitParams[1],
+      version: version,
       topic: splitParams[0],
-      symKey: uri.queryParameters['symKey']!,
-      relay: Relay(
-        uri.queryParameters['relay-protocol']!,
-        data: uri.queryParameters.containsKey('relay-data')
-            ? uri.queryParameters['relay-data']
-            : null,
-      ),
-      methods: methods,
+      v1Data: v1Data,
+      v2Data: v2Data,
     );
-    // print(ret);
     return ret;
   }
 
