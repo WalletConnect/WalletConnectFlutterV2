@@ -162,7 +162,7 @@ class SignClientHelpers {
       pairingA = a.pairings.get(uriParams.topic);
       expect(pairingA != null, true);
       expect(pairingA!.topic, uriParams.topic);
-      expect(pairingA.relay.protocol, uriParams.relay.protocol);
+      expect(pairingA.relay.protocol, uriParams.v2Data!.relay.protocol);
 
       // If we recieved no pairing topic, then we want to create one
       // e.g. we pair from b to a using the uri created from the connect
@@ -348,7 +348,7 @@ class SignClientHelpers {
       pairingA = a.pairings.get(uriParams.topic);
       expect(pairingA != null, true);
       expect(pairingA!.topic, uriParams.topic);
-      expect(pairingA.relay.protocol, uriParams.relay.protocol);
+      expect(pairingA.relay.protocol, uriParams.v2Data!.relay.protocol);
 
       // If we recieved no pairing topic, then we want to create one
       // e.g. we pair from b to a using the uri created from the connect
