@@ -42,14 +42,14 @@ void main() {
 
     URIParseResult parsed = WalletConnectUtils.parseUri(response);
     expect(parsed.protocol, 'wc');
-    expect(parsed.version, '2');
+    expect(parsed.version, URIVersion.v2);
     expect(parsed.topic, 'abc');
-    expect(parsed.symKey, 'xyz');
-    expect(parsed.relay.protocol, 'irn');
-    expect(parsed.methods.length, 3);
-    expect(parsed.methods[0], MethodConstants.WC_SESSION_PROPOSE);
-    expect(parsed.methods[1], MethodConstants.WC_AUTH_REQUEST);
-    expect(parsed.methods[2], 'wc_authBatchRequest');
+    expect(parsed.v2Data!.symKey, 'xyz');
+    expect(parsed.v2Data!.relay.protocol, 'irn');
+    expect(parsed.v2Data!.methods.length, 3);
+    expect(parsed.v2Data!.methods[0], MethodConstants.WC_SESSION_PROPOSE);
+    expect(parsed.v2Data!.methods[1], MethodConstants.WC_AUTH_REQUEST);
+    expect(parsed.v2Data!.methods[2], 'wc_authBatchRequest');
 
     response = WalletConnectUtils.formatUri(
       protocol: 'wc',
@@ -66,20 +66,31 @@ void main() {
 
     parsed = WalletConnectUtils.parseUri(response);
     expect(parsed.protocol, 'wc');
-    expect(parsed.version, '2');
+    expect(parsed.version, URIVersion.v2);
     expect(parsed.topic, 'abc');
-    expect(parsed.symKey, 'xyz');
-    expect(parsed.relay.protocol, 'irn');
-    expect(parsed.methods.length, 0);
+    expect(parsed.v2Data!.symKey, 'xyz');
+    expect(parsed.v2Data!.relay.protocol, 'irn');
+    expect(parsed.v2Data!.methods.length, 0);
 
     // Can parse URI with missing methods param
     response = Uri.parse('wc:abc@2?relay-protocol=irn&symKey=xyz');
     expect(parsed.protocol, 'wc');
-    expect(parsed.version, '2');
+    expect(parsed.version, URIVersion.v2);
     expect(parsed.topic, 'abc');
-    expect(parsed.symKey, 'xyz');
-    expect(parsed.relay.protocol, 'irn');
-    expect(parsed.methods.length, 0);
+    expect(parsed.v2Data!.symKey, 'xyz');
+    expect(parsed.v2Data!.relay.protocol, 'irn');
+    expect(parsed.v2Data!.methods.length, 0);
+
+    // V1 testing
+    parsed = WalletConnectUtils.parseUri(Uri.parse(
+        'wc:00e46b69-d0cc-4b3e-b6a2-cee442f97188@1?bridge=https%3A%2F%2Fbridge.walletconnect.org&key=91303dedf64285cbbaf9120f6e9d160a5c8aa3deb67017a3874cd272323f48ae'));
+    expect(parsed.protocol, 'wc');
+    expect(parsed.version, URIVersion.v1);
+    expect(parsed.topic, '00e46b69-d0cc-4b3e-b6a2-cee442f97188');
+    expect(parsed.v2Data, null);
+    expect(parsed.v1Data!.key,
+        '91303dedf64285cbbaf9120f6e9d160a5c8aa3deb67017a3874cd272323f48ae');
+    expect(parsed.v1Data!.bridge, 'https://bridge.walletconnect.org');
   });
 
   group('history', () {
@@ -146,12 +157,12 @@ void main() {
 
         final URIParseResult parsed = WalletConnectUtils.parseUri(response.uri);
         expect(parsed.protocol, 'wc');
-        expect(parsed.version, '2');
-        expect(parsed.relay.protocol, 'irn');
-        expect(parsed.methods.length, 3);
-        expect(parsed.methods[0], MethodConstants.WC_SESSION_PROPOSE);
-        expect(parsed.methods[1], MethodConstants.WC_AUTH_REQUEST);
-        expect(parsed.methods[2], 'wc_authBatchRequest');
+        expect(parsed.version, URIVersion.v2);
+        expect(parsed.v2Data!.relay.protocol, 'irn');
+        expect(parsed.v2Data!.methods.length, 3);
+        expect(parsed.v2Data!.methods[0], MethodConstants.WC_SESSION_PROPOSE);
+        expect(parsed.v2Data!.methods[1], MethodConstants.WC_AUTH_REQUEST);
+        expect(parsed.v2Data!.methods[2], 'wc_authBatchRequest');
       });
     });
 

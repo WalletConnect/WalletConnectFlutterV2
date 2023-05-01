@@ -134,9 +134,16 @@ class Pairing implements IPairing {
       WalletConnectConstants.FIVE_MINUTES,
     );
     final URIParseResult parsedUri = WalletConnectUtils.parseUri(uri);
+    if (parsedUri.version != URIVersion.v2) {
+      throw Errors.getInternalError(
+        Errors.MISSING_OR_INVALID,
+        context: 'URI is not WalletConnect version 2 URI',
+      );
+    }
+
     final String topic = parsedUri.topic;
-    final Relay relay = parsedUri.relay;
-    final String symKey = parsedUri.symKey;
+    final Relay relay = parsedUri.v2Data!.relay;
+    final String symKey = parsedUri.v2Data!.symKey;
     final PairingInfo pairing = PairingInfo(
       topic: topic,
       expiry: expiry,
@@ -146,7 +153,7 @@ class Pairing implements IPairing {
 
     try {
       JsonRpcUtils.validateMethods(
-        parsedUri.methods,
+        parsedUri.v2Data!.methods,
         routerMapRequest.values.toList(),
       );
     } on WalletConnectError catch (e) {
