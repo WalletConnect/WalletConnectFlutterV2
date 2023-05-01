@@ -76,7 +76,7 @@ class RelayClient implements IRelayClient {
     required this.messageTracker,
     required this.topicMap,
     required this.httpClient,
-    this.heartbeatPeriod = 30,
+    this.heartbeatPeriod = 5,
     relayUrl = WalletConnectConstants.RELAYER_DEFAULT_PROTOCOL,
   });
 
@@ -115,12 +115,11 @@ class RelayClient implements IRelayClient {
     };
 
     try {
-      var _ = await jsonRPC.sendRequest(
+      var _ = await _sendJsonRpcRequest(
         _buildMethod(JSON_RPC_PUBLISH),
         data,
         JsonRpcUtils.payloadId(entropy: 6),
       );
-      // print(value);
       await messageTracker.recordMessageEvent(topic, message);
     } catch (e) {
       // print(e);
@@ -145,7 +144,7 @@ class RelayClient implements IRelayClient {
     // print('Unsub from id: $id');
 
     try {
-      await jsonRPC.sendRequest(
+      await _sendJsonRpcRequest(
         _buildMethod(JSON_RPC_UNSUBSCRIBE),
         {
           'topic': topic,
@@ -172,6 +171,7 @@ class RelayClient implements IRelayClient {
     if (!jsonRPC.isClosed) {
       return;
     }
+    // print('connecting to relay server');
 
     await _createJsonRPCProvider();
     if (_heartbeatTimer == null) {
@@ -253,14 +253,15 @@ class RelayClient implements IRelayClient {
         // print('heartbeat');
         if (jsonRPC.isClosed) {
           await connect();
-        } else {
-          try {
-            socket.channel!.sink.add('ping');
-          } catch (e) {
-            // Close the socket and trigger the disconnect -> reconnect
-            await socket.close();
-          }
         }
+        //  else {
+        //   try {
+        //     socket.channel!.sink.add('ping');
+        //   } catch (e) {
+        //     // Close the socket and trigger the disconnect -> reconnect
+        //     await socket.close();
+        //   }
+        // }
       },
     );
   }
@@ -321,17 +322,43 @@ class RelayClient implements IRelayClient {
 
   /// SUBSCRIPTION HANDLING
 
+  Future<String?> _sendJsonRpcRequest(
+    String method, [
+    dynamic parameters,
+    int? id,
+  ]) async {
+    String? requestId;
+
+    try {
+      requestId = await jsonRPC.sendRequest(
+        method,
+        parameters,
+        id,
+      );
+    } on StateError catch (_) {
+      // Reconnect to the websocket
+      // print('StateError, reconnecting: $_');
+      await connect();
+      requestId = await jsonRPC.sendRequest(
+        method,
+        parameters,
+        id,
+      );
+    }
+
+    // print('onSubscribe response $requestId');
+
+    return requestId;
+  }
+
   Future<String> _onSubscribe(String topic) async {
     String? requestId;
     try {
-      requestId = await jsonRPC.sendRequest(
+      requestId = await _sendJsonRpcRequest(
         _buildMethod(JSON_RPC_SUBSCRIBE),
-        {
-          'topic': topic,
-        },
+        {'topic': topic},
         JsonRpcUtils.payloadId(entropy: 6),
       );
-      // print('onSubscribe response $requestId');
     } catch (e) {
       // print('onSubscribe error: $e');
       onRelayClientError.broadcast(ErrorEvent(e));

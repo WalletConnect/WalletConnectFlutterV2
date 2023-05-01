@@ -1,3 +1,8 @@
+## 2.0.0
+
+- Removed periodic ping from websocket, it was throwing an error on the server side. Periodic check to reconnect is still present.
+- Updated the parse URI to handle V1 URIs as well as V2 URIs
+
 ## 1.2.3
 
 - Event and request events will only be emitted if they are registered
