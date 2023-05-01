@@ -30,6 +30,21 @@ void signPair({
       await clientB.core.relayClient.disconnect();
     });
 
+    test('throws with v1 url', () {
+      final String uri = TEST_URI_V1;
+
+      expect(
+        () async => await clientB.pair(uri: Uri.parse(uri)),
+        throwsA(
+          isA<WalletConnectError>().having(
+            (e) => e.message,
+            'message',
+            'Missing or invalid. URI is not WalletConnect version 2 URI',
+          ),
+        ),
+      );
+    });
+
     test('throws with invalid methods', () {
       final String uriWithMethods = '$TEST_URI&methods=[wc_swag]';
 
