@@ -173,7 +173,6 @@ class AuthSignature {
     String chainId,
     String projectId,
   ) async {
-    print(cacaoSignature.t);
     if (cacaoSignature.t == "eip191") {
       return isValidEip191Signature(
         address,
