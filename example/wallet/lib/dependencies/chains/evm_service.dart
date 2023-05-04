@@ -109,7 +109,7 @@ class EVMService extends IChain {
 
   @override
   List<String> getEvents() {
-    return ['eth_chainsChanged', 'eth_accountsChanged'];
+    return ['chainChanged', 'accountsChanged'];
   }
 
   Future<String?> requestAuthorization(String text) async {

@@ -863,6 +863,9 @@ class SignEngine implements ISignEngine {
       // If there are accounts and event emitters, then handle the Namespace generate automatically
       Map<String, Namespace>? namespaces;
       if (_accounts.isNotEmpty || _eventEmitters.isNotEmpty) {
+        // print(_accounts);
+        // print(_methodHandlers.keys.toSet());
+        // print(_eventEmitters);
         namespaces = NamespaceUtils.constructNamespaces(
           availableAccounts: _accounts,
           availableMethods: _methodHandlers.keys.toSet(),
@@ -870,8 +873,9 @@ class SignEngine implements ISignEngine {
           requiredNamespaces: proposeRequest.requiredNamespaces,
           optionalNamespaces: proposeRequest.optionalNamespaces,
         );
-        // print(namespaces);
         // print(proposeRequest.requiredNamespaces);
+        // print(proposeRequest.optionalNamespaces);
+        // print(namespaces);
 
         // Check that the namespaces are conforming
         try {

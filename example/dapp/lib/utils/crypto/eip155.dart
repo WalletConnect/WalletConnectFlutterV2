@@ -53,8 +53,8 @@ class EIP155 {
   };
 
   static final Map<EIP155Events, String> events = {
-    EIP155Events.chainChanged: 'eth_chainsChanged',
-    EIP155Events.accountsChanged: 'eth_accountsChanged',
+    EIP155Events.chainChanged: 'chainChanged',
+    EIP155Events.accountsChanged: 'accountsChanged',
   };
 
   static Future<dynamic> callMethod({

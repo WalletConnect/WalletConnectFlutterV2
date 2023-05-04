@@ -207,21 +207,50 @@ class NamespaceUtils {
     required Map<String, RequiredNamespace> requiredNamespaces,
     Map<String, RequiredNamespace>? optionalNamespaces,
   }) {
+    final Map<String, Namespace> namespaces = _constructNamespacesFromRequired(
+      availableAccounts: availableAccounts,
+      availableMethods: availableMethods,
+      availableEvents: availableEvents,
+      requiredNamespaces: requiredNamespaces,
+    );
+    final Map<String, Namespace> optional = optionalNamespaces == null
+        ? {}
+        : _constructNamespacesFromRequired(
+            availableAccounts: availableAccounts,
+            availableMethods: availableMethods,
+            availableEvents: availableEvents,
+            requiredNamespaces: optionalNamespaces,
+          );
+
+    // Loop through the optional keys and if they exist in the namespaces, then merge them and delete them from optional
+    List<String> keys = optional.keys.toList();
+    for (int i = 0; i < keys.length; i++) {
+      String key = keys[i];
+      if (namespaces.containsKey(key)) {
+        namespaces[key] = Namespace(
+          accounts: namespaces[key]!
+              .accounts
+              .toSet()
+              .union(optional[key]!.accounts.toSet())
+              .toList(),
+          methods: namespaces[key]!
+              .methods
+              .toSet()
+              .union(optional[key]!.methods.toSet())
+              .toList(),
+          events: namespaces[key]!
+              .events
+              .toSet()
+              .union(optional[key]!.events.toSet())
+              .toList(),
+        );
+        optional.remove(key);
+      }
+    }
+
     return {
-      ..._constructNamespacesFromRequired(
-        availableAccounts: availableAccounts,
-        availableMethods: availableMethods,
-        availableEvents: availableEvents,
-        requiredNamespaces: requiredNamespaces,
-      ),
-      ...optionalNamespaces == null
-          ? {}
-          : _constructNamespacesFromRequired(
-              availableAccounts: availableAccounts,
-              availableMethods: availableMethods,
-              availableEvents: availableEvents,
-              requiredNamespaces: optionalNamespaces,
-            )
+      ...namespaces,
+      ...optional,
     };
   }
 

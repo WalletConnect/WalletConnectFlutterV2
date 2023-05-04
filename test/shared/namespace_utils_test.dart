@@ -1,6 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/utils/sign_api_validator_utils.dart';
-import 'package:walletconnect_flutter_v2/apis/utils/namespace_utils.dart';
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 
 import '../shared/shared_test_values.dart';
@@ -266,6 +265,120 @@ void main() {
             context: '',
           ),
           true,
+        );
+      });
+
+      test('constructNamespaces trims off unrequested', () {
+        final reqNamespace = {
+          'eip155': RequiredNamespace(
+              chains: ['eip155:1'],
+              methods: ['eth_sendTransaction', 'personal_sign'],
+              events: ['chainChanged', 'accountsChanged']),
+        };
+        final optionalNamespace = {
+          'eip155': RequiredNamespace(
+            chains: ['eip155:137'],
+            methods: [
+              'eth_sendTransaction',
+              'personal_sign',
+              'eth_accounts',
+              'eth_requestAccounts',
+              'eth_call',
+              'eth_getBalance',
+              'eth_sendRawTransaction',
+              'eth_sign',
+              'eth_signTransaction',
+              'eth_signTypedData',
+              'eth_signTypedData_v3',
+              'eth_signTypedData_v4',
+              'wallet_switchEthereumChain',
+              'wallet_addEthereumChain',
+              'wallet_getPermissions',
+              'wallet_requestPermissions',
+              'wallet_registerOnboarding',
+              'wallet_watchAsset',
+              'wallet_scanQRCode'
+            ],
+            events: [
+              'chainChanged',
+              'accountsChanged',
+              'message',
+              'disconnect',
+              'connect'
+            ],
+          )
+        };
+        final Set<String> availableAccounts = {
+          'eip155:1:0x83ba3013f776d4e2801010ee88581aedf5349b43',
+          'eip155:5:0x83ba3013f776d4e2801010ee88581aedf5349b43',
+          'eip155:137:0x83ba3013f776d4e2801010ee88581aedf5349b43',
+          'eip155:80001:0x83ba3013f776d4e2801010ee88581aedf5349b43',
+        };
+        final Set<String> availableMethods = {
+          'eip155:1:personal_sign',
+          'eip155:1:eth_sign',
+          'eip155:1:eth_signTransaction',
+          'eip155:1:eth_sendTransaction',
+          'eip155:1:eth_signTypedData',
+          'eip155:137:personal_sign',
+          'eip155:137:eth_sign',
+          'eip155:137:eth_signTransaction',
+          'eip155:137:eth_sendTransaction',
+          'eip155:137:eth_signTypedData',
+          'eip155:5:personal_sign',
+          'eip155:5:eth_sign',
+          'eip155:5:eth_signTransaction',
+          'eip155:5:eth_sendTransaction',
+          'eip155:5:eth_signTypedData',
+          'eip155:80001:personal_sign',
+          'eip155:80001:eth_sign',
+          'eip155:80001:eth_signTransaction',
+          'eip155:80001:eth_sendTransaction',
+          'eip155:80001:eth_signTypedData',
+        };
+        final Set<String> availableEvents = {
+          'eip155:1:chainChanged',
+          'eip155:1:accountsChanged',
+          'eip155:137:chainChanged',
+          'eip155:137:accountsChanged',
+          'eip155:5:chainChanged',
+          'eip155:5:accountsChanged',
+          'eip155:80001:chainChanged',
+          'eip155:80001:accountsChanged',
+        };
+
+        final Map<String, Namespace> namespaces =
+            NamespaceUtils.constructNamespaces(
+          availableAccounts: availableAccounts,
+          availableMethods: availableMethods,
+          availableEvents: availableEvents,
+          requiredNamespaces: reqNamespace,
+          optionalNamespaces: optionalNamespace,
+        );
+        final Namespace? eip155 = namespaces['eip155'];
+        print(eip155);
+
+        expect(eip155 != null, true);
+        expect(
+          eip155!.accounts,
+          [
+            'eip155:1:0x83ba3013f776d4e2801010ee88581aedf5349b43',
+            'eip155:137:0x83ba3013f776d4e2801010ee88581aedf5349b43'
+          ],
+        );
+        expect(
+          eip155.methods,
+          [
+            'personal_sign',
+            'eth_sendTransaction',
+            'eth_sign',
+            'eth_signTransaction',
+            'eth_signTypedData'
+          ],
+        );
+        expect(
+          eip155.events,
+          ['chainChanged', 'accountsChanged'],
         );
       });
 
