@@ -1,6 +1,7 @@
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:convert/convert.dart';
+import 'package:eth_sig_util/eth_sig_util.dart';
 import 'package:http/http.dart' as http;
 
 import 'package:pointycastle/digests/keccak.dart';
@@ -8,6 +9,7 @@ import 'package:walletconnect_flutter_v2/apis/auth_api/models/auth_client_models
 import 'package:walletconnect_flutter_v2/apis/auth_api/utils/auth_constants.dart';
 import 'package:walletconnect_flutter_v2/apis/auth_api/utils/secp256k1/auth_secp256k1.dart';
 import 'package:walletconnect_flutter_v2/apis/core/pairing/utils/json_rpc_utils.dart';
+import 'package:web3dart/crypto.dart' as crypto;
 
 class AuthSignature {
   static final KeccakDigest keccakDigest = KeccakDigest(256);
@@ -22,7 +24,7 @@ class AuthSignature {
         utf8.encode(
           [
             '\x19Ethereum Signed Message:\n',
-            message.length,
+            message.length.toString(),
             message,
           ].join(),
         ),
@@ -46,11 +48,17 @@ class AuthSignature {
     String sig,
   ) {
     // Get the sig bytes
+    // print(sig);
     final sigBytes = Uint8List.fromList(
       hex.decode(
         sig.substring(2),
       ),
     );
+
+    // If the sig bytes aren't 65 bytes long, throw an error
+    if (sigBytes.length != 65) {
+      throw Exception('Invalid signature length');
+    }
 
     // Get the r and s values from the sig bytes
     final r = BigInt.parse(
@@ -59,38 +67,52 @@ class AuthSignature {
       ),
       radix: 16,
     );
-    late BigInt s;
-    late int v;
-
-    // Depending on the length of the sig bytes, we can determine the v value
-    if (sigBytes.length == 64) {
-      Uint8List sBytes = sigBytes.sublist(32, 64);
-      sBytes[0] &= 0x7f;
-      v = (sBytes[0] & 0x80 == 0) ? 27 : 28;
-      s = BigInt.parse(hex.encode(sBytes), radix: 16);
-    } else {
-      Uint8List sBytes = sigBytes.sublist(32, 64);
-      v = getNormalizedV(sigBytes[64]);
-      s = BigInt.parse(hex.encode(sBytes), radix: 16);
-    }
-
-    // Recover the public key from the signature
-    Uint8List? publicKeyBytes = AuthSecp256k1.recoverPublicKeyFromSignature(
-      v - 27,
-      r,
-      s,
-      hashMessage(message),
+    final s = BigInt.parse(
+      hex.encode(
+        sigBytes.sublist(32, 64),
+      ),
+      radix: 16,
     );
+    // print(sigBytes[64]);
+    final v = getNormalizedV(sigBytes[64]);
+    // print(r);
+    // print(s);
+    // print(v);
 
-    // If the public key is null, return false
-    if (publicKeyBytes == null) {
-      return false;
-    }
+    // // Recover the public key from the signature
+    // Uint8List? publicKeyBytes = AuthSecp256k1.recoverPublicKeyFromSignature(
+    //   v - 27,
+    //   r,
+    //   s,
+    //   hashMessage(message),
+    // );
+
+    // // If the public key is null, return false
+    // if (publicKeyBytes == null) {
+    //   print('Could not derive publicKey');
+    //   return false;
+    // }
 
     // Convert the public key to an address
+    final publicKeyBytes = crypto.ecRecover(
+      hashMessage(message),
+      crypto.MsgSignature(r, s, v),
+    );
+    // print(hex.encode(publicKeyBytes));
     final hashedPubKeyBytes = keccak256(publicKeyBytes);
     final addressBytes = hashedPubKeyBytes.sublist(12, 32);
     final recoveredAddress = '0x${hex.encode(addressBytes)}';
+
+    // final String recoveredAddress = EthSigUtil.recoverSignature(
+    //   signature: sig,
+    //   message: hashMessage(message),
+    //   //  Uint8List.fromList(
+    //   //   ascii.encode(message),
+    //   // ),
+    // );
+
+    // print(recoveredAddress.toLowerCase());
+    // print(address.toLowerCase());
 
     return recoveredAddress.toLowerCase() == address.toLowerCase();
   }

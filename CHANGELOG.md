@@ -1,3 +1,7 @@
+## 2.0.1
+
+- Fixed an issue where the autonamespace's required namespaces would be overwritten by optional namespaces if they had the same chain
+
 ## 2.0.0
 
 - Removed periodic ping from websocket, it was throwing an error on the server side. Periodic check to reconnect is still present.
