@@ -24,7 +24,6 @@ dependencies:
   shared_preferences: ^2.0.17
   universal_io: ^2.0.4
   stack_trace: ^1.10.0
-  eth_sig_util: ^0.0.9
   web3dart: ^2.5.1
 
 dev_dependencies:
@@ -35,4 +34,5 @@ dev_dependencies:
   json_serializable: ^6.5.3
   dependency_validator: ^3.2.2
   mockito: ^5.3.2
+  eth_sig_util: ^0.0.9
 
