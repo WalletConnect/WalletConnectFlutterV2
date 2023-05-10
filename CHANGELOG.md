@@ -1,3 +1,8 @@
+## 2.0.2
+
+- Added a colon (:) to auth that makes it actually authenticate the message properly
+- Fixed issue with mismatched types used in jsonRPC.sendRequest
+
 ## 2.0.1
 
 - Fixed an issue where the autonamespace's required namespaces would be overwritten by optional namespaces if they had the same chain
