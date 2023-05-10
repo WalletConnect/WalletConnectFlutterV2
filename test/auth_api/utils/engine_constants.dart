@@ -81,7 +81,7 @@ final CacaoPayload testCacaoPayload = CacaoPayload.fromRequestPayload(
   payload: testCacaoRequestPayload,
 );
 const TEST_FORMATTED_MESSAGE =
-    '''localhost:3000 wants you to sign in with your Ethereum account
+    '''localhost:3000 wants you to sign in with your Ethereum account:
 0x06C6A22feB5f8CcEDA0db0D593e6F26A3611d5fa
 
 

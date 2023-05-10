@@ -347,7 +347,7 @@ class AuthEngine implements IAuthEngine {
     required CacaoRequestPayload cacaoPayload,
   }) {
     final header =
-        '${cacaoPayload.domain} wants you to sign in with your Ethereum account';
+        '${cacaoPayload.domain} wants you to sign in with your Ethereum account:';
     final walletAddress = AddressUtils.getDidAddress(iss);
     final uri = 'URI: ${cacaoPayload.aud}';
     final version = 'Version: ${cacaoPayload.version}';
