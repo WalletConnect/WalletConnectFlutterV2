@@ -322,15 +322,15 @@ class RelayClient implements IRelayClient {
 
   /// SUBSCRIPTION HANDLING
 
-  Future<String?> _sendJsonRpcRequest(
+  Future _sendJsonRpcRequest(
     String method, [
     dynamic parameters,
     int? id,
   ]) async {
-    String? requestId;
+    dynamic response;
 
     try {
-      requestId = await jsonRPC.sendRequest(
+      response = await jsonRPC.sendRequest(
         method,
         parameters,
         id,
@@ -339,7 +339,7 @@ class RelayClient implements IRelayClient {
       // Reconnect to the websocket
       // print('StateError, reconnecting: $_');
       await connect();
-      requestId = await jsonRPC.sendRequest(
+      response = await jsonRPC.sendRequest(
         method,
         parameters,
         id,
@@ -348,7 +348,7 @@ class RelayClient implements IRelayClient {
 
     // print('onSubscribe response $requestId');
 
-    return requestId;
+    return response;
   }
 
   Future<String> _onSubscribe(String topic) async {
