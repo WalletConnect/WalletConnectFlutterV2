@@ -15,6 +15,11 @@ class AuthRequest extends EventArgs {
     required this.payloadParams,
     required this.requester,
   });
+
+  @override
+  String toString() {
+    return 'AuthRequest(id: $id, topic: $topic, payloadParams: $payloadParams, requester: $requester)';
+  }
 }
 
 class AuthResponse extends EventArgs {
@@ -31,4 +36,9 @@ class AuthResponse extends EventArgs {
     this.error,
     this.jsonRpcError,
   });
+
+  @override
+  String toString() {
+    return 'AuthResponse(id: $id, topic: $topic, result: $result, error: $error, jsonRpcError: $jsonRpcError)';
+  }
 }

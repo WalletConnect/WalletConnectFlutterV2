@@ -172,6 +172,7 @@ class Web3WalletService extends IWeb3WalletService {
 
   Future<void> _onAuthRequest(AuthRequest? args) async {
     if (args != null) {
+      print(args);
       List<ChainKey> chainKeys = GetIt.I<IKeyService>().getKeysForChain(
         'eip155:1',
       );

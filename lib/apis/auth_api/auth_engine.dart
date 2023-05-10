@@ -295,6 +295,7 @@ class AuthEngine implements IAuthEngine {
         s: signature!,
       );
 
+      // print('auth res id: $id');
       await core.pairing.sendResult(
         id,
         responseTopic,
@@ -362,9 +363,13 @@ class AuthEngine implements IAuthEngine {
     final message = [
       header,
       walletAddress,
-      '',
-      cacaoPayload.statement,
-      '',
+      ...cacaoPayload.statement == null
+          ? ['']
+          : [
+              '',
+              cacaoPayload.statement,
+              '',
+            ],
       uri,
       version,
       chainId,

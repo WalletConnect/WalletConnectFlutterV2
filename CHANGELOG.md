@@ -1,3 +1,7 @@
+## 2.0.3
+
+- Fixed issue with auth formatMessage where it would leave 2 new lines if there was no statement
+
 ## 2.0.2
 
 - Added a colon (:) to auth that makes it actually authenticate the message properly

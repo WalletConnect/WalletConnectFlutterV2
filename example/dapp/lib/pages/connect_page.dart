@@ -207,6 +207,7 @@ class ConnectPageState extends State<ConnectPage> {
           chainId: chains[0].chainId,
           domain: Constants.domain,
           aud: Constants.aud,
+          // statement: 'Welcome to example flutter app',
         ),
       );
 
