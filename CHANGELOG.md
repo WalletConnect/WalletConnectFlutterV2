@@ -1,3 +1,9 @@
+## 2.0.4
+
+- Fixed issues with relay update
+- Resolved RPC ID starting at 1 and incrementing
+- Resolved race condition with null check on websocket
+
 ## 2.0.3
 
 - Fixed issue with auth formatMessage where it would leave 2 new lines if there was no statement

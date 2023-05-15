@@ -1,4 +1,6 @@
 class WalletConnectConstants {
+  static const SDK_VERSION = '2.0.4';
+
   static const CORE_PROTOCOL = "wc";
   static const CORE_VERSION = 2;
   static const CORE_CONTEXT = "core";
@@ -17,7 +19,6 @@ class WalletConnectConstants {
   static const THIRTY_DAYS = ONE_DAY * 30;
 
   static const RELAYER_DEFAULT_PROTOCOL = 'irn';
-  static const SDK_VERSION = '2.1.3';
 }
 
 class StoreVersions {

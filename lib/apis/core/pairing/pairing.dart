@@ -405,15 +405,16 @@ class Pairing implements IPairing {
     //     ),
     //   ),
     // );
+    final Completer completer = Completer();
+    // print('adding payload to pending requests: ${payload['id']}');
+    pendingRequests[payload['id']] = completer;
     // print('sent request');
-    await core.relayClient.publish(
+    core.relayClient.publish(
       topic: topic,
       message: message,
       ttl: opts.ttl,
       tag: opts.tag,
     );
-    final Completer completer = Completer();
-    pendingRequests[payload['id']] = completer;
 
     // Get the result from the completer, if it's an error, throw it
     try {
@@ -424,6 +425,7 @@ class Pairing implements IPairing {
 
       return result;
     } catch (e) {
+      // print('caught error: $e');
       rethrow;
     }
   }
@@ -642,10 +644,14 @@ class Pairing implements IPairing {
       // );
       if (pendingRequests.containsKey(response.id)) {
         if (response.error != null) {
+          // print(
+          //   'erroring: ${response.error}',
+          // );
           pendingRequests.remove(response.id)!.completeError(response.error!);
         } else {
           // print(
-          //     'completing: ${response.result}, ${response.result.runtimeType}');
+          //   'completing: ${response.result}',
+          // );
           pendingRequests.remove(response.id)!.complete(response.result);
         }
       }
