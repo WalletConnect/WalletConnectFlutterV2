@@ -78,7 +78,7 @@ void signRequestAndHandler({
       ) async {
         expect(topic, sessionTopic);
         // expect(request, TEST_MESSAGE_1);
-
+        // print(clientB.getPendingSessionRequests());
         expect(clientB.getPendingSessionRequests().length, 1);
 
         return request;
@@ -88,6 +88,14 @@ void signRequestAndHandler({
         method: TEST_METHOD_1,
         handler: requestHandler,
       );
+
+      Completer clientBReady = Completer();
+      clientB.pendingRequests.onSync.subscribe((args) {
+        if (clientB.getPendingSessionRequests().length == 0) {
+          clientBReady.complete();
+          clientBReady = Completer();
+        }
+      });
 
       try {
         final Map<String, dynamic> response = await clientA.request(
@@ -101,6 +109,10 @@ void signRequestAndHandler({
 
         expect(response, TEST_MESSAGE_1);
 
+        await clientBReady.future;
+
+        // await Future.delayed(Duration(milliseconds: 500));
+
         final String response2 = await clientA.request(
           topic: connectionInfo.session.topic,
           chainId: TEST_ETHEREUM_CHAIN,
@@ -111,6 +123,11 @@ void signRequestAndHandler({
         );
 
         expect(response2, TEST_MESSAGE_2);
+
+        await clientBReady.future;
+        clientB.sessions.onSync.unsubscribeAll();
+
+        // await Future.delayed(Duration(milliseconds: 500));
       } on JsonRpcError catch (e) {
         print(e);
         expect(false, true);
@@ -138,6 +155,7 @@ void signRequestAndHandler({
       );
 
       try {
+        // print('silent error');
         clientA.request(
           topic: connectionInfo.session.topic,
           chainId: TEST_ETHEREUM_CHAIN,
@@ -147,6 +165,7 @@ void signRequestAndHandler({
           ),
         );
 
+        // print('user rejected sign');
         await clientA.request(
           topic: connectionInfo.session.topic,
           chainId: TEST_ETHEREUM_CHAIN,
@@ -158,6 +177,7 @@ void signRequestAndHandler({
 
         expect(true, false);
       } on JsonRpcError catch (e) {
+        // print('user rejected sign error received');
         expect(
           e.code,
           Errors.getSdkError(Errors.USER_REJECTED_SIGN).code,
@@ -169,6 +189,7 @@ void signRequestAndHandler({
       }
 
       try {
+        // print('sessions: ${clientA.sessions.getAll()}');
         final _ = await clientA.request(
           topic: connectionInfo.session.topic,
           chainId: TEST_ETHEREUM_CHAIN,
@@ -186,7 +207,8 @@ void signRequestAndHandler({
         );
       }
 
-      // await Future.delayed(Duration(milliseconds: 1000)); // TODO: remove
+      // await Future.delayed(Duration(milliseconds: 500));
+
       Completer pendingRequestCompleter = Completer();
       Completer sessionRequestCompleter = Completer();
       clientB.pendingRequests.onSync.subscribe((_) {
@@ -195,8 +217,8 @@ void signRequestAndHandler({
         }
       });
       clientB.onSessionRequest.subscribe((args) {
-        // print('completing');
         sessionRequestCompleter.complete();
+        sessionRequestCompleter = Completer();
       });
       await pendingRequestCompleter.future;
       await sessionRequestCompleter.future;

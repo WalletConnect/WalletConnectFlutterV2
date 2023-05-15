@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:universal_io/io.dart';
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:walletconnect_flutter_v2/apis/core/relay_client/relay_client_models.dart';
 import 'package:walletconnect_flutter_v2/apis/models/basic_models.dart';
 import 'package:walletconnect_flutter_v2/apis/models/uri_parse_result.dart';
@@ -29,7 +30,21 @@ class WalletConnectUtils {
   }
 
   static String getId() {
-    return 'unknown'; // TODO: implement
+    if (Platform.isAndroid) {
+      return 'android';
+    } else if (Platform.isIOS) {
+      return 'ios';
+    } else if (Platform.isLinux) {
+      return 'linux';
+    } else if (Platform.isMacOS) {
+      return 'macos';
+    } else if (Platform.isWindows) {
+      return 'windows';
+    } else if (kIsWeb) {
+      return 'web';
+    } else {
+      return 'unknown';
+    }
   }
 
   static String formatUA(
@@ -41,7 +56,7 @@ class WalletConnectUtils {
     String id = getId();
     return <String>[
       [protocol, version].join('-'),
-      <String>['Dart', sdkVersion].join('-'),
+      <String>['Flutter', sdkVersion].join('-'),
       os,
       id,
     ].join('/');

@@ -254,6 +254,7 @@ class SignEngine implements ISignEngine {
     Map<String, String>? sessionProperties,
     String? relayProtocol,
   }) async {
+    // print('sign approveSession');
     _checkInitialized();
 
     await _isValidApprove(
@@ -294,6 +295,7 @@ class SignEngine implements ISignEngine {
     );
 
     // Respond to the proposal
+    // print('swag 1');
     await core.pairing.sendResult(
       id,
       proposal.pairingTopic,
@@ -315,12 +317,15 @@ class SignEngine implements ISignEngine {
       metadata: proposal.proposer.metadata,
     );
 
+    // print('swag 2');
     await core.relayClient.subscribe(topic: sessionTopic);
+    // print('swag 3');
     bool acknowledged = await core.pairing.sendRequest(
       sessionTopic,
       MethodConstants.WC_SESSION_SETTLE,
       request,
     );
+    // print('swag 4');
 
     SessionData session = SessionData(
       topic: sessionTopic,
@@ -339,6 +344,7 @@ class SignEngine implements ISignEngine {
       peer: proposal.proposer,
     );
 
+    // print('session connect');
     onSessionConnect.broadcast(
       SessionConnect(
         session,
@@ -710,6 +716,7 @@ class SignEngine implements ISignEngine {
     String topic, {
     bool expirerHasDeleted = false,
   }) async {
+    // print('deleting session: $topic, expirerHasDeleted: $expirerHasDeleted');
     final SessionData? session = sessions.get(topic);
     if (session == null) {
       return;
@@ -985,6 +992,7 @@ class SignEngine implements ISignEngine {
       sProposalCompleter.completer.complete(session);
 
       // Send back a success!
+      // print('responding to session settle: acknolwedged');
       await core.pairing.sendResult(
         payload.id,
         topic,
@@ -995,6 +1003,7 @@ class SignEngine implements ISignEngine {
         SessionConnect(session),
       );
     } on WalletConnectError catch (err) {
+      print(err);
       await core.pairing.sendError(
         payload.id,
         topic,
@@ -1206,9 +1215,8 @@ class SignEngine implements ISignEngine {
               ),
             );
           }
-          await pendingRequests.delete(
-            payload.id.toString(),
-          );
+
+          await _deletePendingRequest(payload.id);
         }
 
         onSessionRequest.broadcast(

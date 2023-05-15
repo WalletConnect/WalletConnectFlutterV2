@@ -63,10 +63,20 @@ class WebSocketHandler implements IWebSocketHandler {
         ),
       );
 
+      _channel = _socket!.cast<String>();
+
+      if (_channel == null) {
+        print('Socket channel is null, waiting...');
+        await Future.delayed(Duration(milliseconds: 500));
+        if (_channel == null) {
+          // print('Socket channel is still null, throwing ');
+          throw Exception('Socket channel is null');
+        }
+      }
+
       await _socket!.ready;
       // print('websocket ready');
 
-      _channel = _socket!.cast<String>();
     } catch (e) {
       // If the request failed, handle the error
       // debugPrint(
@@ -116,4 +126,9 @@ class WebSocketHandler implements IWebSocketHandler {
 
   //   return response;
   // }
+
+  @override
+  String toString() {
+    return 'WebSocketHandler{url: $url, heartbeatInterval: $heartbeatInterval, httpClient: $httpClient, origin: $origin, _socket: $_socket, _channel: $_channel}';
+  }
 }

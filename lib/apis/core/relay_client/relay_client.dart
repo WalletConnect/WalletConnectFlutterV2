@@ -173,6 +173,7 @@ class RelayClient implements IRelayClient {
     }
     // print('connecting to relay server');
 
+    await disconnect();
     await _createJsonRPCProvider();
     if (_heartbeatTimer == null) {
       _startHeartbeat();
@@ -242,7 +243,7 @@ class RelayClient implements IRelayClient {
   }
 
   Future<void> _reconnect(EventArgs? args) async {
-    // print('disconnected, reconnecting');
+    print('disconnected, reconnecting');
     await connect();
   }
 
