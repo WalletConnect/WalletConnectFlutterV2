@@ -95,7 +95,7 @@ class CryptoUtils extends ICryptoUtils {
     String? iv,
     String? senderPublicKey,
   }) async {
-    final int decodedType = type != null ? type : EncodeOptions.TYPE_0;
+    final int decodedType = type ?? EncodeOptions.TYPE_0;
     // print(message);
     // print(symKey);
 
@@ -222,15 +222,15 @@ class CryptoUtils extends ICryptoUtils {
     String? senderPublicKey,
     String? receiverPublicKey,
   }) {
-    final int t = type != null ? type : EncodeOptions.TYPE_0;
+    final int t = type ?? EncodeOptions.TYPE_0;
     if (t == EncodeOptions.TYPE_1) {
       if (senderPublicKey == null) {
-        throw new WalletConnectError(
-            code: -1, message: "Missing sender public key");
+        throw WalletConnectError(
+            code: -1, message: 'Missing sender public key');
       }
       if (receiverPublicKey == null) {
-        throw new WalletConnectError(
-            code: -1, message: "Missing receiver public key");
+        throw WalletConnectError(
+            code: -1, message: 'Missing receiver public key');
       }
     }
     return EncodingValidation(

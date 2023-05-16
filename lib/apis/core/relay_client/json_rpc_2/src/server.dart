@@ -91,7 +91,7 @@ class Server {
   /// Creates a [Server] that communicates using decoded messages over
   /// [channel].
   ///
-  /// Unlike [new Server], this doesn't read or write JSON strings. Instead, it
+  /// Unlike [Server], this doesn't read or write JSON strings. Instead, it
   /// reads and writes decoded maps or lists.
   ///
   /// Note that the server won't begin listening to [requests] until

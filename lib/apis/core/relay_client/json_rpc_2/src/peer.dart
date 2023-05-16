@@ -68,7 +68,7 @@ class Peer implements Client, Server {
 
   /// Creates a [Peer] that communicates using decoded messages over [channel].
   ///
-  /// Unlike [new Peer], this doesn't read or write JSON strings. Instead, it
+  /// Unlike [Peer], this doesn't read or write JSON strings. Instead, it
   /// reads and writes decoded maps or lists.
   ///
   /// Note that the peer won't begin listening to [channel] until

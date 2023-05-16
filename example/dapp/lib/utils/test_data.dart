@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:kadena_dart_sdk/kadena_dart_sdk.dart';
-import 'package:kadena_dart_sdk/models/walletconnect_models.dart';
 
 const String testSignData = 'Test sign data';
 String testSignTypedData(String address) => jsonEncode(

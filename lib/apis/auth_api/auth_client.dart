@@ -123,7 +123,7 @@ class AuthClient implements IAuthClient {
   Future<AuthRequestResponse> request({
     required AuthRequestParams params,
     String? pairingTopic,
-    List<List<String>>? methods = AuthEngine.DEFAULT_METHODS,
+    List<List<String>>? methods = AuthEngine.defaultMethods,
   }) async {
     try {
       return engine.requestAuth(

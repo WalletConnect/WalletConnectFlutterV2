@@ -1,9 +1,9 @@
 class WalletConnectConstants {
-  static const SDK_VERSION = '2.0.4';
+  static const SDK_VERSION = '2.0.5';
 
-  static const CORE_PROTOCOL = "wc";
+  static const CORE_PROTOCOL = 'wc';
   static const CORE_VERSION = 2;
-  static const CORE_CONTEXT = "core";
+  static const CORE_CONTEXT = 'core';
 
   static const DEFAULT_RELAY_URL = 'wss://relay.walletconnect.org';
 

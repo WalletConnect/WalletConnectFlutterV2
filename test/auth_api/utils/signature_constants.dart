@@ -33,23 +33,23 @@ const TEST_CACAO_SIGNATURE = CacaoSignature(
 );
 
 const TEST_VALID_EIP191_SIGNATURE = {
-  "valid": true,
-  "address": "0xf082c2c18b8293148fd3ad8b42e2348934f198b1",
-  "cacao": {
-    "h": {"t": "eip4361"},
-    "p": {
-      "iat": "2023-05-10T20:27:31.619Z",
-      "iss": "did:pkh:eip155:1:0xf082c2c18b8293148fd3ad8b42e2348934f198b1",
-      "statement": "Connect to Web3Modal Lab",
-      "domain": "lab.web3modal.com",
-      "aud": "https://lab.web3modal.com/AuthReact",
-      "version": "1",
-      "nonce": "XpJ0thNvq9lNixmwN"
+  'valid': true,
+  'address': '0xf082c2c18b8293148fd3ad8b42e2348934f198b1',
+  'cacao': {
+    'h': {'t': 'eip4361'},
+    'p': {
+      'iat': '2023-05-10T20:27:31.619Z',
+      'iss': 'did:pkh:eip155:1:0xf082c2c18b8293148fd3ad8b42e2348934f198b1',
+      'statement': 'Connect to Web3Modal Lab',
+      'domain': 'lab.web3modal.com',
+      'aud': 'https://lab.web3modal.com/AuthReact',
+      'version': '1',
+      'nonce': 'XpJ0thNvq9lNixmwN'
     },
-    "s": {
-      "t": "eip191",
-      "s":
-          "0x80e709c190c879164a6db449696b6c1ba78b71a19e4f8814630fd16d6ebf61863a10b1a0a84f7aeb39bf449a676a5f2a03f5fad16d20eb121523759d387280c91c"
+    's': {
+      't': 'eip191',
+      's':
+          '0x80e709c190c879164a6db449696b6c1ba78b71a19e4f8814630fd16d6ebf61863a10b1a0a84f7aeb39bf449a676a5f2a03f5fad16d20eb121523759d387280c91c'
     }
   }
 };

@@ -22,7 +22,7 @@ import 'package:walletconnect_flutter_v2/apis/utils/errors.dart';
 import 'package:walletconnect_flutter_v2/apis/utils/method_constants.dart';
 
 class AuthEngine implements IAuthEngine {
-  static const List<List<String>> DEFAULT_METHODS = [
+  static const List<List<String>> defaultMethods = [
     [
       MethodConstants.WC_AUTH_REQUEST,
     ]
@@ -80,7 +80,7 @@ class AuthEngine implements IAuthEngine {
   Future<AuthRequestResponse> requestAuth({
     required AuthRequestParams params,
     String? pairingTopic,
-    List<List<String>>? methods = DEFAULT_METHODS,
+    List<List<String>>? methods = defaultMethods,
   }) async {
     _checkInitialized();
 
@@ -395,7 +395,7 @@ class AuthEngine implements IAuthEngine {
     core.pairing.register(
       method: MethodConstants.WC_AUTH_REQUEST,
       function: _onAuthRequest,
-      type: ProtocolType.Auth,
+      type: ProtocolType.auth,
     );
   }
 

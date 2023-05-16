@@ -46,7 +46,7 @@ void main() {
             acknowledged: false,
             controller: 'controller',
             namespaces: {
-              'eth': Namespace(accounts: [], methods: [], events: []),
+              'eth': const Namespace(accounts: [], methods: [], events: []),
             },
             self: TEST_CONNECTION_METADATA_REQUESTER,
             peer: TEST_CONNECTION_METADATA_REQUESTER,

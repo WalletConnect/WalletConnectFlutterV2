@@ -270,13 +270,13 @@ void main() {
 
       test('constructNamespaces trims off unrequested', () {
         final reqNamespace = {
-          'eip155': RequiredNamespace(
+          'eip155': const RequiredNamespace(
               chains: ['eip155:1'],
               methods: ['eth_sendTransaction', 'personal_sign'],
               events: ['chainChanged', 'accountsChanged']),
         };
         final optionalNamespace = {
-          'eip155': RequiredNamespace(
+          'eip155': const RequiredNamespace(
             chains: ['eip155:137'],
             methods: [
               'eth_sendTransaction',
@@ -356,7 +356,7 @@ void main() {
           optionalNamespaces: optionalNamespace,
         );
         final Namespace? eip155 = namespaces['eip155'];
-        print(eip155);
+        // print(eip155);
 
         expect(eip155 != null, true);
         expect(

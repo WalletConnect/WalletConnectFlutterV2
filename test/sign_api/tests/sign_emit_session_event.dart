@@ -7,7 +7,6 @@ import 'package:walletconnect_flutter_v2/apis/sign_api/i_sign_engine_wallet.dart
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 
 import '../../shared/shared_test_values.dart';
-import '../utils/engine_constants.dart';
 import '../utils/sign_client_constants.dart';
 import 'sign_client_helpers.dart';
 
@@ -79,12 +78,13 @@ void signEmitSessionEvent({
         completer.complete();
       });
 
-      final requestHandler = (topic, request) async {
+      requestHandler(topic, request) async {
         expect(topic, sessionTopic);
         expect(request, TEST_MESSAGE_1);
 
         // Events return no responses
-      };
+      }
+
       clientA.registerEventHandler(
         chainId: TEST_ETHEREUM_CHAIN,
         event: TEST_EVENT_1,
@@ -103,7 +103,7 @@ void signEmitSessionEvent({
 
         // Events receive no responses
       } on JsonRpcError catch (e) {
-        print(e);
+        // print(e);
         expect(false, true);
       }
 

@@ -50,7 +50,7 @@ void runTests({
 
     setUp(() async {
       clientA = await web3appCreator(
-        PairingMetadata(
+        const PairingMetadata(
           name: 'App A (Proposer, dapp)',
           description: 'Description of Proposer App run by client A',
           url: 'https://walletconnect.com',
@@ -58,7 +58,7 @@ void runTests({
         ),
       );
       clientB = await web3walletCreator(
-        PairingMetadata(
+        const PairingMetadata(
           name: 'App B (Responder, Wallet)',
           description: 'Description of Proposer App run by client B',
           url: 'https://walletconnect.com',

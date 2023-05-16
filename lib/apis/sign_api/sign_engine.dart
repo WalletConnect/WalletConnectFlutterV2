@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:event/event.dart';
 import 'package:walletconnect_flutter_v2/apis/core/store/i_generic_store.dart';
@@ -140,9 +139,8 @@ class SignEngine implements ISignEngine {
     final int id = JsonRpcUtils.payloadId();
 
     final WcSessionProposeRequest request = WcSessionProposeRequest(
-      relays: relays == null
-          ? [Relay(WalletConnectConstants.RELAYER_DEFAULT_PROTOCOL)]
-          : relays,
+      relays:
+          relays ?? [Relay(WalletConnectConstants.RELAYER_DEFAULT_PROTOCOL)],
       requiredNamespaces: requiredNamespaces ?? {},
       optionalNamespaces: optionalNamespaces ?? {},
       proposer: ConnectionMetadata(
@@ -276,7 +274,7 @@ class SignEngine implements ISignEngine {
     );
     // print('approve session topic: $sessionTopic');
     final relay = Relay(
-      relayProtocol != null ? relayProtocol : 'irn',
+      relayProtocol ?? 'irn',
     );
     final int expiry = WalletConnectUtils.calculateExpiry(
       WalletConnectConstants.SEVEN_DAYS,
@@ -302,9 +300,7 @@ class SignEngine implements ISignEngine {
       MethodConstants.WC_SESSION_PROPOSE,
       WcSessionProposeResponse(
         relay: Relay(
-          relayProtocol != null
-              ? relayProtocol
-              : WalletConnectConstants.RELAYER_DEFAULT_PROTOCOL,
+          relayProtocol ?? WalletConnectConstants.RELAYER_DEFAULT_PROTOCOL,
         ),
         responderPublicKey: selfPubKey,
       ),
@@ -434,8 +430,9 @@ class SignEngine implements ISignEngine {
   }
 
   /// Maps a request using chainId:method to its handler
-  Map<String, dynamic Function(String, dynamic)?> _methodHandlers = {};
+  final Map<String, dynamic Function(String, dynamic)?> _methodHandlers = {};
 
+  @override
   void registerRequestHandler({
     required String chainId,
     required String method,
@@ -496,7 +493,7 @@ class SignEngine implements ISignEngine {
   }
 
   /// Maps a request using chainId:event to its handler
-  Map<String, dynamic Function(String, dynamic)?> _eventHandlers = {};
+  final Map<String, dynamic Function(String, dynamic)?> _eventHandlers = {};
 
   @override
   void registerEventHandler({
@@ -647,8 +644,8 @@ class SignEngine implements ISignEngine {
   @override
   IPairingStore get pairings => core.pairing.getStore();
 
-  Set<String> _eventEmitters = {};
-  Set<String> _accounts = {};
+  final Set<String> _eventEmitters = {};
+  final Set<String> _accounts = {};
 
   @override
   void registerEventEmitter({
@@ -813,42 +810,42 @@ class SignEngine implements ISignEngine {
     core.pairing.register(
       method: MethodConstants.WC_SESSION_PROPOSE,
       function: _onSessionProposeRequest,
-      type: ProtocolType.Sign,
+      type: ProtocolType.sign,
     );
     core.pairing.register(
       method: MethodConstants.WC_SESSION_SETTLE,
       function: _onSessionSettleRequest,
-      type: ProtocolType.Sign,
+      type: ProtocolType.sign,
     );
     core.pairing.register(
       method: MethodConstants.WC_SESSION_UPDATE,
       function: _onSessionUpdateRequest,
-      type: ProtocolType.Sign,
+      type: ProtocolType.sign,
     );
     core.pairing.register(
       method: MethodConstants.WC_SESSION_EXTEND,
       function: _onSessionExtendRequest,
-      type: ProtocolType.Sign,
+      type: ProtocolType.sign,
     );
     core.pairing.register(
       method: MethodConstants.WC_SESSION_PING,
       function: _onSessionPingRequest,
-      type: ProtocolType.Sign,
+      type: ProtocolType.sign,
     );
     core.pairing.register(
       method: MethodConstants.WC_SESSION_DELETE,
       function: _onSessionDeleteRequest,
-      type: ProtocolType.Sign,
+      type: ProtocolType.sign,
     );
     core.pairing.register(
       method: MethodConstants.WC_SESSION_REQUEST,
       function: _onSessionRequest,
-      type: ProtocolType.Sign,
+      type: ProtocolType.sign,
     );
     core.pairing.register(
       method: MethodConstants.WC_SESSION_EVENT,
       function: _onSessionEventRequest,
-      type: ProtocolType.Sign,
+      type: ProtocolType.sign,
     );
   }
 
@@ -1003,7 +1000,7 @@ class SignEngine implements ISignEngine {
         SessionConnect(session),
       );
     } on WalletConnectError catch (err) {
-      print(err);
+      // print(err);
       await core.pairing.sendError(
         payload.id,
         topic,
@@ -1422,7 +1419,7 @@ class SignEngine implements ISignEngine {
     if (await core.expirer.checkAndExpire(topic)) {
       throw Errors.getInternalError(
         Errors.EXPIRED,
-        context: "session topic: $topic",
+        context: 'session topic: $topic',
       );
     }
 
@@ -1455,7 +1452,7 @@ class SignEngine implements ISignEngine {
     if (await core.expirer.checkAndExpire(id.toString())) {
       throw Errors.getInternalError(
         Errors.EXPIRED,
-        context: "proposal id: $id",
+        context: 'proposal id: $id',
       );
     }
 
@@ -1473,7 +1470,7 @@ class SignEngine implements ISignEngine {
     if (await core.expirer.checkAndExpire(id.toString())) {
       throw Errors.getInternalError(
         Errors.EXPIRED,
-        context: "pending request id: $id",
+        context: 'pending request id: $id',
       );
     }
 
@@ -1500,14 +1497,14 @@ class SignEngine implements ISignEngine {
     if (requiredNamespaces != null) {
       SignApiValidatorUtils.isValidRequiredNamespaces(
         requiredNamespaces: requiredNamespaces,
-        context: "connect() check requiredNamespaces.",
+        context: 'connect() check requiredNamespaces.',
       );
     }
 
     if (optionalNamespaces != null) {
       SignApiValidatorUtils.isValidRequiredNamespaces(
         requiredNamespaces: optionalNamespaces,
-        context: "connect() check optionalNamespaces.",
+        context: 'connect() check optionalNamespaces.',
       );
     }
 
@@ -1527,24 +1524,24 @@ class SignEngine implements ISignEngine {
     // Validate the namespaces
     SignApiValidatorUtils.isValidNamespaces(
       namespaces: namespaces,
-      context: "approve()",
+      context: 'approve()',
     );
 
     // Validate the required and optional namespaces
     SignApiValidatorUtils.isValidRequiredNamespaces(
       requiredNamespaces: proposal.requiredNamespaces,
-      context: "approve() check requiredNamespaces.",
+      context: 'approve() check requiredNamespaces.',
     );
     SignApiValidatorUtils.isValidRequiredNamespaces(
       requiredNamespaces: proposal.optionalNamespaces,
-      context: "approve() check optionalNamespaces.",
+      context: 'approve() check optionalNamespaces.',
     );
 
     // Make sure the provided namespaces conforms with the required
     SignApiValidatorUtils.isConformingNamespaces(
       requiredNamespaces: proposal.requiredNamespaces,
       namespaces: namespaces,
-      context: "approve()",
+      context: 'approve()',
     );
 
     return true;
@@ -1562,7 +1559,7 @@ class SignEngine implements ISignEngine {
   ) async {
     SignApiValidatorUtils.isValidNamespaces(
       namespaces: namespaces,
-      context: "onSessionSettleRequest()",
+      context: 'onSessionSettleRequest()',
     );
 
     if (WalletConnectUtils.isExpired(expiry)) {
@@ -1582,7 +1579,7 @@ class SignEngine implements ISignEngine {
     await _isValidSessionTopic(topic);
     SignApiValidatorUtils.isValidNamespaces(
       namespaces: namespaces,
-      context: "update()",
+      context: 'update()',
     );
     final SessionData session = sessions.get(topic)!;
 

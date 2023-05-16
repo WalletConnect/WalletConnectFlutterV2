@@ -3,7 +3,6 @@ import 'package:walletconnect_flutter_v2/apis/core/crypto/i_crypto.dart';
 import 'package:walletconnect_flutter_v2/apis/core/i_core.dart';
 import 'package:walletconnect_flutter_v2/apis/core/pairing/expirer.dart';
 import 'package:walletconnect_flutter_v2/apis/core/pairing/i_expirer.dart';
-import 'package:walletconnect_flutter_v2/apis/core/pairing/i_json_rpc_history.dart';
 import 'package:walletconnect_flutter_v2/apis/core/pairing/json_rpc_history.dart';
 import 'package:walletconnect_flutter_v2/apis/core/pairing/pairing.dart';
 import 'package:walletconnect_flutter_v2/apis/core/pairing/pairing_store.dart';
@@ -30,7 +29,7 @@ class Core implements ICore {
   final String relayUrl;
 
   @override
-  final projectId;
+  final String projectId;
 
   @override
   late ICrypto crypto;

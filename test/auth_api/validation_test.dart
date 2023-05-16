@@ -102,7 +102,7 @@ void main() {
         AuthApiValidators.isValidRespond(
           id: TEST_PENDING_REQUEST_ID,
           pendingRequests: testPendingRequests,
-          signature: CacaoSignature(t: '', s: ''),
+          signature: const CacaoSignature(t: '', s: ''),
         ),
         true,
       );

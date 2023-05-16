@@ -7,15 +7,15 @@ import 'package:walletconnect_flutter_v2/apis/core/relay_auth/i_relay_auth.dart'
 import 'package:walletconnect_flutter_v2/apis/core/relay_auth/relay_auth_models.dart';
 
 class RelayAuth implements IRelayAuth {
-  static const String MULTICODEC_ED25519_HEADER = 'K36';
-  static const String MULTICODEC_ED25519_BASE = 'z';
-  static const int MULTICODEC_ED25519_LENGTH = 32;
+  static const String multicodecEd25519Header = 'K36';
+  static const String multicodecEd25519Base = 'z';
+  static const int multicodecEd25519Length = 32;
 
   static const String JWT_DELIMITER = '.';
 
-  static const String DID_DELIMITER = ":";
-  static const String DID_PREFIX = "did";
-  static const String DID_METHOD = "key";
+  static const String DID_DELIMITER = ':';
+  static const String DID_PREFIX = 'did';
+  static const String DID_METHOD = 'key';
 
   @override
   Future<RelayAuthKeyPair> generateKeyPair([Uint8List? seed]) async {
@@ -101,7 +101,7 @@ class RelayAuth implements IRelayAuth {
   }
 
   String stripEquals(String s) {
-    return s.replaceAll("=", '');
+    return s.replaceAll('=', '');
   }
 
   @override
@@ -131,9 +131,9 @@ class RelayAuth implements IRelayAuth {
   /// Encodes the public key into a multicodec issuer
   @override
   String encodeIss(Uint8List publicKey) {
-    Uint8List header = base58.decode(MULTICODEC_ED25519_HEADER);
+    Uint8List header = base58.decode(multicodecEd25519Header);
     final String multicodec =
-        '$MULTICODEC_ED25519_BASE${base58.encode(Uint8List.fromList(header + publicKey))}';
+        '$multicodecEd25519Base${base58.encode(Uint8List.fromList(header + publicKey))}';
     return <String>[
       DID_PREFIX,
       DID_METHOD,
@@ -152,7 +152,7 @@ class RelayAuth implements IRelayAuth {
 
     // Check the base
     String base = multicodec[0];
-    if (base != MULTICODEC_ED25519_BASE) {
+    if (base != multicodecEd25519Base) {
       throw IssuerDecodeError(
         issuer,
         'Issuer must be a key in the multicodec format',
@@ -164,7 +164,7 @@ class RelayAuth implements IRelayAuth {
 
     // Check the header
     String header = base58.encode(bytes.sublist(0, 2));
-    if (header != MULTICODEC_ED25519_HEADER) {
+    if (header != multicodecEd25519Header) {
       throw IssuerDecodeError(
         issuer,
         'Issuer must be a public key with type "Ed25519',
@@ -173,7 +173,7 @@ class RelayAuth implements IRelayAuth {
 
     // Slice off the public key and validate the length
     final Uint8List publicKey = bytes.sublist(2);
-    if (publicKey.length != MULTICODEC_ED25519_LENGTH) {
+    if (publicKey.length != multicodecEd25519Length) {
       throw IssuerDecodeError(
         issuer,
         'Issuer must be public key with length 32 bytes',

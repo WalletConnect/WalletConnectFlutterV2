@@ -3,6 +3,7 @@ import 'package:walletconnect_flutter_v2_wallet/utils/constants.dart';
 import 'package:walletconnect_flutter_v2_wallet/utils/string_constants.dart';
 import 'package:walletconnect_flutter_v2_wallet/widgets/custom_button.dart';
 
+// ignore: must_be_immutable
 class WCRequestWidget extends StatelessWidget {
   WCRequestWidget({
     super.key,

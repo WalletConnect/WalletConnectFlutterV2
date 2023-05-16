@@ -4,7 +4,6 @@ import 'package:walletconnect_flutter_v2/apis/core/relay_client/websocket/i_http
 import 'package:walletconnect_flutter_v2/apis/core/store/i_generic_store.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/sign_engine.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/i_sessions.dart';
-import 'package:walletconnect_flutter_v2/apis/sign_api/i_sign_client.dart';
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 
 class SignClientTestWrapper implements ISignEngine {

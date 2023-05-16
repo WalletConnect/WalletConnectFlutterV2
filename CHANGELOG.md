@@ -1,3 +1,7 @@
+## 2.0.5
+
+- Added analysis options and enforced them
+
 ## 2.0.4
 
 - Fixed issues with relay update

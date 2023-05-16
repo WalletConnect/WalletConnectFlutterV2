@@ -223,6 +223,7 @@ class CacaoPayload extends CacaoRequestPayload {
   factory CacaoPayload.fromJson(Map<String, dynamic> json) =>
       _$CacaoPayloadFromJson(json);
 
+  @override
   Map<String, dynamic> toJson() => _$CacaoPayloadToJson(this);
 }
 
@@ -310,6 +311,7 @@ class StoredCacao extends Cacao {
   factory StoredCacao.fromJson(Map<String, dynamic> json) =>
       _$StoredCacaoFromJson(json);
 
+  @override
   Map<String, dynamic> toJson() => _$StoredCacaoToJson(this);
 }
 

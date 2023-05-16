@@ -1,6 +1,5 @@
 import 'package:event/event.dart';
 import 'package:walletconnect_flutter_v2/apis/auth_api/auth_engine.dart';
-import 'package:walletconnect_flutter_v2/apis/auth_api/utils/auth_constants.dart';
 import 'package:walletconnect_flutter_v2/apis/core/relay_client/websocket/http_client.dart';
 import 'package:walletconnect_flutter_v2/apis/core/store/generic_store.dart';
 import 'package:walletconnect_flutter_v2/apis/core/store/i_generic_store.dart';

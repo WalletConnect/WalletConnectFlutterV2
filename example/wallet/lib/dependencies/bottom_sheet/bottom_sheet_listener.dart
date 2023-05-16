@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/bottom_sheet/i_bottom_sheet_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/utils/constants.dart';
-import 'bottom_sheet_service.dart';
 
 class BottomSheetListener extends StatefulWidget {
   final Widget child;

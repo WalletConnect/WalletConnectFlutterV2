@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
@@ -91,7 +93,7 @@ void signRequestAndHandler({
 
       Completer clientBReady = Completer();
       clientB.pendingRequests.onSync.subscribe((args) {
-        if (clientB.getPendingSessionRequests().length == 0) {
+        if (clientB.getPendingSessionRequests().isEmpty) {
           clientBReady.complete();
           clientBReady = Completer();
         }
@@ -212,7 +214,7 @@ void signRequestAndHandler({
       Completer pendingRequestCompleter = Completer();
       Completer sessionRequestCompleter = Completer();
       clientB.pendingRequests.onSync.subscribe((_) {
-        if (clientB.getPendingSessionRequests().length == 0) {
+        if (clientB.getPendingSessionRequests().isEmpty) {
           pendingRequestCompleter.complete();
         }
       });

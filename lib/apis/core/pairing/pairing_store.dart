@@ -1,7 +1,6 @@
 import 'package:walletconnect_flutter_v2/apis/core/pairing/i_pairing_store.dart';
 import 'package:walletconnect_flutter_v2/apis/core/pairing/utils/pairing_models.dart';
 import 'package:walletconnect_flutter_v2/apis/core/store/generic_store.dart';
-import 'package:walletconnect_flutter_v2/apis/core/store/store_models.dart';
 
 class PairingStore extends GenericStore<PairingInfo> implements IPairingStore {
   PairingStore({

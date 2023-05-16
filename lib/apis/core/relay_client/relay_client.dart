@@ -243,7 +243,7 @@ class RelayClient implements IRelayClient {
   }
 
   Future<void> _reconnect(EventArgs? args) async {
-    print('disconnected, reconnecting');
+    // print('disconnected, reconnecting');
     await connect();
   }
 

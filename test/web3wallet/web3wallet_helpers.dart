@@ -36,12 +36,9 @@ class Web3WalletHelpers {
   }) async {
     final start = DateTime.now().millisecondsSinceEpoch;
     final Map<String, RequiredNamespace> reqNamespaces =
-        requiredNamespaces != null
-            ? requiredNamespaces
-            : TEST_REQUIRED_NAMESPACES;
+        requiredNamespaces ?? TEST_REQUIRED_NAMESPACES;
 
-    Map<String, Namespace> workingNamespaces =
-        namespaces != null ? namespaces : TEST_NAMESPACES;
+    Map<String, Namespace> workingNamespaces = namespaces ?? TEST_NAMESPACES;
 
     SessionData? sessionA;
     SessionData? sessionB;
@@ -49,7 +46,7 @@ class Web3WalletHelpers {
 
     // Listen for a proposal via connect to avoid race conditions
     Completer signCompleter = Completer();
-    final signHandler = (SessionProposalEvent? args) async {
+    signHandler(SessionProposalEvent? args) async {
       // print('B Session Proposal');
 
       expect(
@@ -68,12 +65,13 @@ class Web3WalletHelpers {
       // if (sessionB == null) {
       //   print('session b was set to null');
       // }
-    };
+    }
+
     b.onSessionProposal.subscribe(signHandler);
 
     // Listen for a auth request
     Completer authCompleter = Completer();
-    final authHandler = (AuthRequest? args) async {
+    authHandler(AuthRequest? args) async {
       // print('B Auth Request');
 
       expect(b.getPendingAuthRequests().length, 1);
@@ -97,7 +95,8 @@ class Web3WalletHelpers {
         signature: CacaoSignature(t: CacaoSignature.EIP191, s: sig),
       );
       authCompleter.complete();
-    };
+    }
+
     b.onAuthRequest.subscribe(authHandler);
 
     // Connect to client b from a, this will trigger the above event
@@ -147,9 +146,9 @@ class Web3WalletHelpers {
       // If we recieved no pairing topic, then we want to create one
       // e.g. we pair from b to a using the uri created from the connect
       // params (The QR code).
-      final pairTimeoutMs = 15000;
-      final timeout = Timer(Duration(milliseconds: pairTimeoutMs), () {
-        throw Exception("Pair timed out after $pairTimeoutMs ms");
+      const pairTimeoutMs = 15000;
+      final timeout = Timer(const Duration(milliseconds: pairTimeoutMs), () {
+        throw Exception('Pair timed out after $pairTimeoutMs ms');
       });
       // print('pairing B -> A');
       pairingB = await b.pair(uri: uri);
@@ -180,7 +179,7 @@ class Web3WalletHelpers {
     await authCompleter.future;
 
     // if (sessionA == null) throw Exception("expect session A to be defined");
-    if (sessionB == null) throw Exception("expect session B to be defined");
+    if (sessionB == null) throw Exception('expect session B to be defined');
 
     expect(sessionA.topic, sessionB!.topic);
     // relay
@@ -219,7 +218,7 @@ class Web3WalletHelpers {
     expect(authResponse.jsonRpcError == null, true);
 
     // if (pairingA == null) throw Exception("expect pairing A to be defined");
-    if (pairingB == null) throw Exception("expect pairing B to be defined");
+    if (pairingB == null) throw Exception('expect pairing B to be defined');
 
     // update pairing state beforehand
     pairingA = a.pairings.get(pairingA.topic);

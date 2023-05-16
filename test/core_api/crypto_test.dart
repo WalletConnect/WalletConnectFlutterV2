@@ -3,15 +3,10 @@ import 'dart:convert';
 import 'package:convert/convert.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
-import 'package:walletconnect_flutter_v2/apis/core/core.dart';
-import 'package:walletconnect_flutter_v2/apis/core/crypto/crypto.dart';
 import 'package:walletconnect_flutter_v2/apis/core/crypto/crypto_models.dart';
 import 'package:walletconnect_flutter_v2/apis/core/crypto/crypto_utils.dart';
 import 'package:walletconnect_flutter_v2/apis/core/crypto/i_crypto.dart';
-import 'package:walletconnect_flutter_v2/apis/core/i_core.dart';
-import 'package:walletconnect_flutter_v2/apis/core/store/generic_store.dart';
 import 'package:walletconnect_flutter_v2/apis/models/basic_models.dart';
-import 'package:walletconnect_flutter_v2/apis/utils/constants.dart';
 
 import '../shared/shared_test_utils.dart';
 import '../shared/shared_test_utils.mocks.dart';
@@ -22,23 +17,23 @@ void main() {
 
   final testMessage = jsonEncode({
     'id': 1,
-    'jsonrpc': "2.0",
-    'method': "test_method",
+    'jsonrpc': '2.0',
+    'method': 'test_method',
     'params': {},
   });
 
   final testSelf = TEST_KEY_PAIRS['A']!;
   final testPeer = TEST_KEY_PAIRS['B']!;
 
-  const TEST_IV = "717765636661617364616473";
+  const TEST_IV = '717765636661617364616473';
 
   const TEST_SEALED =
-      "7a5a1e843debf98b01d6a75718b5ee27115eafa3caba9703ca1c5601a6af2419045320faec2073cc8b6b8dc439e63e21612ff3883c867e0bdcd72c833eb7f7bb2034a9ec35c2fb03d93732";
+      '7a5a1e843debf98b01d6a75718b5ee27115eafa3caba9703ca1c5601a6af2419045320faec2073cc8b6b8dc439e63e21612ff3883c867e0bdcd72c833eb7f7bb2034a9ec35c2fb03d93732';
 
   const TEST_ENCODED_TYPE_0 =
-      "AHF3ZWNmYWFzZGFkc3paHoQ96/mLAdanVxi17icRXq+jyrqXA8ocVgGmryQZBFMg+uwgc8yLa43EOeY+IWEv84g8hn4L3Ncsgz6397sgNKnsNcL7A9k3Mg==";
+      'AHF3ZWNmYWFzZGFkc3paHoQ96/mLAdanVxi17icRXq+jyrqXA8ocVgGmryQZBFMg+uwgc8yLa43EOeY+IWEv84g8hn4L3Ncsgz6397sgNKnsNcL7A9k3Mg==';
   const TEST_ENCODED_TYPE_1 =
-      "Af96fVdnw2KwoXrZIpnr23gx3L2aVpWcATaMdARUOzNCcXdlY2ZhYXNkYWRzeloehD3r+YsB1qdXGLXuJxFer6PKupcDyhxWAaavJBkEUyD67CBzzItrjcQ55j4hYS/ziDyGfgvc1yyDPrf3uyA0qew1wvsD2Tcy";
+      'Af96fVdnw2KwoXrZIpnr23gx3L2aVpWcATaMdARUOzNCcXdlY2ZhYXNkYWRzeloehD3r+YsB1qdXGLXuJxFer6PKupcDyhxWAaavJBkEUyD67CBzzItrjcQ55j4hYS/ziDyGfgvc1yyDPrf3uyA0qew1wvsD2Tcy';
 
   group('Crypto API', () {
     late MockCryptoUtils mockUtils;
@@ -159,7 +154,7 @@ void main() {
         () async {
           CryptoUtils utils = CryptoUtils();
           final fakeSymKey = utils.generateRandomBytes32();
-          final topic = 'test-topic';
+          const topic = 'test-topic';
 
           final topicActual = await cryptoAPI.setSymKey(
             fakeSymKey,
@@ -221,10 +216,10 @@ void main() {
 
     group('encode and decode', () {
       const SYM_KEY =
-          "5720435e682cd03ee45b484f9a213f0e3246a0ccc2cca183b72ab1cbfbefb702";
-      const PAYLOAD = {'id': 1, 'jsonrpc': "2.0", 'result': "result"};
+          '5720435e682cd03ee45b484f9a213f0e3246a0ccc2cca183b72ab1cbfbefb702';
+      const PAYLOAD = {'id': 1, 'jsonrpc': '2.0', 'result': 'result'};
       const ENCODED =
-          "AG7iJl9mMl9K04REnuWaKLQU6kwMcQWUd69OxGOJ5/A+VRRKkxnKhBeIAl4JRaIft3qZKEfnBvc7/Fife1DWcERqAfJwzPI=";
+          'AG7iJl9mMl9K04REnuWaKLQU6kwMcQWUd69OxGOJ5/A+VRRKkxnKhBeIAl4JRaIft3qZKEfnBvc7/Fife1DWcERqAfJwzPI=';
 
       test('Throws if not initialized', () async {
         expect(
@@ -290,7 +285,7 @@ void main() {
 
     test('hashes messages correctly', () {
       const TEST_HASHED_MESSAGE =
-          "15112289b5b794e68d1ea3cd91330db55582a37d0596f7b99ea8becdf9d10496";
+          '15112289b5b794e68d1ea3cd91330db55582a37d0596f7b99ea8becdf9d10496';
       final String hashedKey = utils.hashMessage(testMessage);
       expect(hashedKey, TEST_HASHED_MESSAGE);
     });
@@ -317,7 +312,7 @@ void main() {
       expect(decrypted, testMessage);
     });
 
-    test("encrypt (type 1)", () async {
+    test('encrypt (type 1)', () async {
       final String encoded = await utils.encrypt(
         testMessage,
         TEST_SYM_KEY,
@@ -333,7 +328,7 @@ void main() {
       expect(sealed, TEST_SEALED);
     });
 
-    test("decrypt (type 1)", () async {
+    test('decrypt (type 1)', () async {
       const encoded = TEST_ENCODED_TYPE_1;
       final EncodingValidation params = utils.validateDecoding(
         encoded,

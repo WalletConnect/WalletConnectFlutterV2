@@ -220,7 +220,7 @@ class SignApiValidatorUtils {
         context: "$context namespaces keys don't satisfy requiredNamespaces",
       );
     } else {
-      requiredNamespaceKeys.forEach((key) {
+      for (var key in requiredNamespaceKeys) {
         List<String> requiredNamespaceChains =
             NamespaceUtils.getChainsFromRequiredNamespace(
           nsOrChainId: key,
@@ -265,7 +265,7 @@ class SignApiValidatorUtils {
                 "$context namespaces events don't satisfy requiredNamespaces events for $key",
           );
         }
-      });
+      }
     }
 
     return true;
@@ -283,7 +283,7 @@ class SignApiValidatorUtils {
       return false;
     }
 
-    sessionKeys.forEach((key) {
+    for (var key in sessionKeys) {
       Namespace namespace = session.namespaces[key]!;
       RequiredNamespace requiredNamespace = requiredNamespaces[key]!;
       List<String> requiredNamespaceChains =
@@ -314,7 +314,7 @@ class SignApiValidatorUtils {
       if (!chainsOverlap || !methodsOverlap || !eventsOverlap) {
         compatible = false;
       }
-    });
+    }
 
     return compatible;
   }

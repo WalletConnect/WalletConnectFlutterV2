@@ -108,7 +108,7 @@ class GenericStore<T> implements IGenericStore<T> {
     onDelete.broadcast(
       StoreDeleteEvent(
         key,
-        data.remove(key)!,
+        data.remove(key) as T,
       ),
     );
 

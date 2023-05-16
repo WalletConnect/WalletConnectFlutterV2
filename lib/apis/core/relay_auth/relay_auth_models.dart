@@ -79,7 +79,7 @@ class JWTSigned extends JWTData {
     this.signature,
     JWTPayload payload, {
     JWTHeader? header,
-  }) : super(header == null ? JWTHeader() : header, payload);
+  }) : super(header ?? JWTHeader(), payload);
 }
 
 class JWTDecoded extends JWTSigned {

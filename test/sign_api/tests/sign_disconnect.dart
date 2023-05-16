@@ -7,7 +7,6 @@ import 'package:walletconnect_flutter_v2/apis/sign_api/i_sign_engine_wallet.dart
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 
 import '../../shared/shared_test_values.dart';
-import '../utils/engine_constants.dart';
 import '../utils/sign_client_constants.dart';
 import 'sign_client_helpers.dart';
 
@@ -33,7 +32,7 @@ void signDisconnect({
       await clientB.core.relayClient.disconnect();
     });
 
-    test("using pairing works", () async {
+    test('using pairing works', () async {
       TestConnectMethodReturn connectionInfo =
           await SignClientHelpers.testConnectPairApprove(
         clientA,
@@ -145,7 +144,7 @@ void signDisconnect({
       clientB.onSessionDelete.unsubscribeAll();
     });
 
-    test("using session works", () async {
+    test('using session works', () async {
       TestConnectMethodReturn connectionInfo =
           await SignClientHelpers.testConnectPairApprove(
         clientA,

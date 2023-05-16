@@ -1,6 +1,5 @@
 import 'package:get_it/get_it.dart';
 import 'package:get_it_mixin/get_it_mixin.dart';
-import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/bottom_sheet/bottom_sheet_listener.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/bottom_sheet/bottom_sheet_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/chains/evm_service.dart';
@@ -64,10 +63,10 @@ class MyApp extends StatelessWidget {
       ),
       appBarTheme: const AppBarTheme(
         color: Colors.black,
-        brightness: Brightness.dark,
-        textTheme: TextTheme(
-          headline6: TextStyle(color: nearWhite),
-        ),
+        // brightness: Brightness.dark,
+        // textTheme: TextTheme(
+        //   headline6: TextStyle(color: nearWhite),
+        // ),
         iconTheme: IconThemeData(color: nearWhite),
       ),
       bottomNavigationBarTheme: BottomNavigationBarThemeData(

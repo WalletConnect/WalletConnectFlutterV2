@@ -11,12 +11,12 @@ enum Endian {
 
 class AuthSecp256k1 {
   static final ECDomainParameters _params = ECCurve_secp256k1();
-  static final BigInt _byteMask = new BigInt.from(0xff);
+  static final BigInt _byteMask = BigInt.from(0xff);
 
   static BigInt decodeBigInt(List<int> bytes) {
-    BigInt result = new BigInt.from(0);
+    BigInt result = BigInt.from(0);
     for (int i = 0; i < bytes.length; i++) {
-      result += new BigInt.from(bytes[bytes.length - i - 1]) << (8 * i);
+      result += BigInt.from(bytes[bytes.length - i - 1]) << (8 * i);
     }
     return result;
   }
@@ -51,7 +51,7 @@ class AuthSecp256k1 {
       //https://github.com/bcgit/bc-java/blob/master/core/src/main/java/org/bouncycastle/asn1/x9/X9IntegerConverter.java#L45
       String hexString = s.toRadixString(16);
       if (hexString.length % 2 == 1) {
-        hexString = '0' + hexString;
+        hexString = '0$hexString';
       }
       final bytes = hex.decode(hexString);
 

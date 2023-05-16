@@ -4,8 +4,8 @@ import 'package:walletconnect_flutter_v2/apis/sign_api/models/session_models.dar
 class NamespaceUtils {
   /// Checks if the string is a chain
   static bool isValidChainId(String value) {
-    if (value.contains(":")) {
-      List<String> split = value.split(":");
+    if (value.contains(':')) {
+      List<String> split = value.split(':');
       return split.length == 2;
     }
     return false;
@@ -13,8 +13,8 @@ class NamespaceUtils {
 
   /// Checks if the string is an account
   static bool isValidAccount(String value) {
-    if (value.contains(":")) {
-      List<String> split = value.split(":");
+    if (value.contains(':')) {
+      List<String> split = value.split(':');
       if (split.length == 3) {
         String chainId = '${split[0]}:${split[1]}';
         return split.length >= 2 && isValidChainId(chainId);
@@ -41,10 +41,10 @@ class NamespaceUtils {
 
   static String getChainFromAccount(String account) {
     if (isValidAccount(account)) {
-      List<String> parts = account.split(":");
+      List<String> parts = account.split(':');
       String namespace = parts[0];
       String reference = parts[1];
-      return "$namespace:$reference";
+      return '$namespace:$reference';
     }
     return account;
   }
@@ -53,13 +53,13 @@ class NamespaceUtils {
   /// This function assumes that all accounts are valid
   static List<String> getChainsFromAccounts(List<String> accounts) {
     Set<String> chains = {};
-    accounts.forEach((account) {
+    for (var account in accounts) {
       chains.add(
         getChainFromAccount(
           account,
         ),
       );
-    });
+    }
 
     return chains.toList();
   }
@@ -68,7 +68,7 @@ class NamespaceUtils {
   /// If the chain id is not valid, then it returns the chain id
   static String getNamespaceFromChain(String chainId) {
     if (isValidChainId(chainId)) {
-      return chainId.split(":")[0];
+      return chainId.split(':')[0];
     }
     return chainId;
   }
@@ -265,11 +265,11 @@ class NamespaceUtils {
     Set<String> matching = {};
     // Loop through the available items, and if it starts with the chainId,
     // and is in the requested items, add it to the matching items
-    available.forEach((item) {
+    for (var item in available) {
       if (item.startsWith('$chainId:')) {
         matching.add(takeLast ? item.split(':').last : item);
       }
-    });
+    }
 
     if (requested != null) {
       matching = matching.intersection(requested);

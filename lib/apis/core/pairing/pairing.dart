@@ -345,6 +345,7 @@ class Pairing implements IPairing {
     return pairings;
   }
 
+  @override
   Future<void> isValidPairingTopic({required String topic}) async {
     if (!pairings.has(topic)) {
       throw Errors.getInternalError(
@@ -356,13 +357,14 @@ class Pairing implements IPairing {
     if (await core.expirer.checkAndExpire(topic)) {
       throw Errors.getInternalError(
         Errors.EXPIRED,
-        context: "pairing topic: $topic",
+        context: 'pairing topic: $topic',
       );
     }
   }
 
   // RELAY COMMUNICATION HELPERS
 
+  @override
   Future sendRequest(
     String topic,
     String method,
@@ -430,6 +432,7 @@ class Pairing implements IPairing {
     }
   }
 
+  @override
   Future<void> sendResult(
     int id,
     String topic,
@@ -465,6 +468,7 @@ class Pairing implements IPairing {
     // await core.history.resolve(payload);
   }
 
+  @override
   Future<void> sendError(
     int id,
     String topic,
@@ -575,12 +579,12 @@ class Pairing implements IPairing {
     register(
       method: MethodConstants.WC_PAIRING_PING,
       function: _onPairingPingRequest,
-      type: ProtocolType.Pair,
+      type: ProtocolType.pair,
     );
     register(
       method: MethodConstants.WC_PAIRING_DELETE,
       function: _onPairingDeleteRequest,
-      type: ProtocolType.Pair,
+      type: ProtocolType.pair,
     );
   }
 

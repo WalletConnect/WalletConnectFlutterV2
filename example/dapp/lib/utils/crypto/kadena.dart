@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:kadena_dart_sdk/kadena_dart_sdk.dart';
-import 'package:kadena_dart_sdk/models/walletconnect_models.dart';
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 import 'package:walletconnect_flutter_v2_dapp/utils/test_data.dart';
 

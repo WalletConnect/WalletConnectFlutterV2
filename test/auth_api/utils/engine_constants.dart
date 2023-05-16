@@ -69,7 +69,7 @@ final testAuthRequestParamsInvalidExpiry = AuthRequestParams(
   expiry: 0,
 );
 
-final testCacaoRequestPayload = CacaoRequestPayload(
+const testCacaoRequestPayload = CacaoRequestPayload(
   domain: TEST_DOMAIN,
   aud: TEST_AUD,
   version: '1',

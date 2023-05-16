@@ -31,40 +31,40 @@ class MethodConstants {
       'res': RpcOptions(WalletConnectConstants.ONE_DAY, false, 0),
     },
     WC_SESSION_PROPOSE: {
-      "req": RpcOptions(WalletConnectConstants.FIVE_MINUTES, true, 1100),
-      "res": RpcOptions(WalletConnectConstants.FIVE_MINUTES, false, 1101),
+      'req': RpcOptions(WalletConnectConstants.FIVE_MINUTES, true, 1100),
+      'res': RpcOptions(WalletConnectConstants.FIVE_MINUTES, false, 1101),
     },
     WC_SESSION_SETTLE: {
-      "req": RpcOptions(WalletConnectConstants.FIVE_MINUTES, false, 1102),
-      "res": RpcOptions(WalletConnectConstants.FIVE_MINUTES, false, 1103),
+      'req': RpcOptions(WalletConnectConstants.FIVE_MINUTES, false, 1102),
+      'res': RpcOptions(WalletConnectConstants.FIVE_MINUTES, false, 1103),
     },
     WC_SESSION_UPDATE: {
-      "req": RpcOptions(WalletConnectConstants.ONE_DAY, false, 1104),
-      "res": RpcOptions(WalletConnectConstants.ONE_DAY, false, 1105),
+      'req': RpcOptions(WalletConnectConstants.ONE_DAY, false, 1104),
+      'res': RpcOptions(WalletConnectConstants.ONE_DAY, false, 1105),
     },
     WC_SESSION_EXTEND: {
-      "req": RpcOptions(WalletConnectConstants.ONE_DAY, false, 1106),
-      "res": RpcOptions(WalletConnectConstants.ONE_DAY, false, 1107),
+      'req': RpcOptions(WalletConnectConstants.ONE_DAY, false, 1106),
+      'res': RpcOptions(WalletConnectConstants.ONE_DAY, false, 1107),
     },
     WC_SESSION_REQUEST: {
-      "req": RpcOptions(WalletConnectConstants.FIVE_MINUTES, true, 1108),
-      "res": RpcOptions(WalletConnectConstants.FIVE_MINUTES, false, 1109),
+      'req': RpcOptions(WalletConnectConstants.FIVE_MINUTES, true, 1108),
+      'res': RpcOptions(WalletConnectConstants.FIVE_MINUTES, false, 1109),
     },
     WC_SESSION_EVENT: {
-      "req": RpcOptions(WalletConnectConstants.FIVE_MINUTES, true, 1110),
-      "res": RpcOptions(WalletConnectConstants.FIVE_MINUTES, false, 1111),
+      'req': RpcOptions(WalletConnectConstants.FIVE_MINUTES, true, 1110),
+      'res': RpcOptions(WalletConnectConstants.FIVE_MINUTES, false, 1111),
     },
     WC_SESSION_DELETE: {
-      "req": RpcOptions(WalletConnectConstants.ONE_DAY, false, 1112),
-      "res": RpcOptions(WalletConnectConstants.ONE_DAY, false, 1113),
+      'req': RpcOptions(WalletConnectConstants.ONE_DAY, false, 1112),
+      'res': RpcOptions(WalletConnectConstants.ONE_DAY, false, 1113),
     },
     WC_SESSION_PING: {
-      "req": RpcOptions(WalletConnectConstants.THIRTY_SECONDS, false, 1114),
-      "res": RpcOptions(WalletConnectConstants.THIRTY_SECONDS, false, 1115),
+      'req': RpcOptions(WalletConnectConstants.THIRTY_SECONDS, false, 1114),
+      'res': RpcOptions(WalletConnectConstants.THIRTY_SECONDS, false, 1115),
     },
     WC_AUTH_REQUEST: {
-      "req": RpcOptions(WalletConnectConstants.ONE_DAY, true, 3000),
-      "res": RpcOptions(WalletConnectConstants.ONE_DAY, false, 3001),
+      'req': RpcOptions(WalletConnectConstants.ONE_DAY, true, 3000),
+      'res': RpcOptions(WalletConnectConstants.ONE_DAY, false, 3001),
     },
   };
 }

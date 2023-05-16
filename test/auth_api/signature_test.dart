@@ -38,7 +38,7 @@ void main() {
       //   privateKey: TEST_PRIVATE_KEY_EIP191,
       // )}');
 
-      final cacaoSig = CacaoSignature(
+      const cacaoSig = CacaoSignature(
         t: CacaoSignature.EIP191,
         s: TEST_SIG_EIP191,
       );
@@ -54,7 +54,7 @@ void main() {
       // print(bool);
       expect(bool, true);
 
-      final cacaoSig2 = CacaoSignature(
+      const cacaoSig2 = CacaoSignature(
         t: CacaoSignature.EIP191,
         s: TEST_SIGNATURE_FAIL,
       );

@@ -9,7 +9,7 @@ class SharedPrefsStores implements IStore<Map<String, dynamic>> {
   late SharedPreferences prefs;
   bool _initialized = false;
 
-  Map<String, Map<String, dynamic>> _map;
+  final Map<String, Map<String, dynamic>> _map;
 
   @override
   Map<String, Map<String, dynamic>> get map => _map;

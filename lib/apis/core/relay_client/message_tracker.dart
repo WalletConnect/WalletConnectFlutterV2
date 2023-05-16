@@ -26,6 +26,7 @@ class MessageTracker extends GenericStore<Map<String, String>>
     );
   }
 
+  @override
   Future<void> recordMessageEvent(String topic, String message) async {
     final String hash = hashMessage(message);
 
@@ -43,6 +44,7 @@ class MessageTracker extends GenericStore<Map<String, String>>
     await persist();
   }
 
+  @override
   bool messageIsRecorded(String topic, String message) {
     final String hash = hashMessage(message);
     return data.containsKey(topic) && data[topic]!.containsKey(hash);

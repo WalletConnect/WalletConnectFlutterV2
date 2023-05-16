@@ -15,14 +15,14 @@ import 'package:walletconnect_flutter_v2/apis/utils/constants.dart';
 import 'package:walletconnect_flutter_v2/apis/utils/errors.dart';
 
 class Crypto implements ICrypto {
-  static const CRYPTO_CONTEXT = 'crypto';
-  static const CRYPTO_CLIENT_SEED = 'client_ed25519_seed';
-  static const CLIENT_SEED = 'CLIENT_SEED';
+  static const cryptoContext = 'crypto';
+  static const cryptoClientSeed = 'client_ed25519_seed';
+  static const clientSeed = 'CLIENT_SEED';
 
   bool _initialized = false;
 
   @override
-  String get name => CRYPTO_CONTEXT;
+  String get name => cryptoContext;
 
   final ICore core;
 
@@ -95,8 +95,7 @@ class Crypto implements ICrypto {
   }) async {
     _checkInitialized();
 
-    final String topic =
-        overrideTopic == null ? utils.hashKey(symKey) : overrideTopic;
+    final String topic = overrideTopic ?? utils.hashKey(symKey);
     // print('crypto setSymKey, symKey: $symKey, overrideTopic: $topic');
     await keyChain.set(topic, symKey);
     return topic;
@@ -236,10 +235,10 @@ class Crypto implements ICrypto {
   // }
 
   Future<Uint8List> _getClientSeed() async {
-    String? seed = keyChain.get(CLIENT_SEED);
+    String? seed = keyChain.get(clientSeed);
     if (seed == null) {
       seed = utils.generateRandomBytes32();
-      await keyChain.set(CLIENT_SEED, seed);
+      await keyChain.set(clientSeed, seed);
     }
 
     return Uint8List.fromList(hex.decode(seed));

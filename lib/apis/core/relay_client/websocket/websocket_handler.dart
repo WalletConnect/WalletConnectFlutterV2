@@ -9,7 +9,9 @@ import 'package:web_socket_channel/web_socket_channel.dart';
 class WebSocketHandler implements IWebSocketHandler {
   // static final _random = Random.secure();
 
+  @override
   final String url;
+  @override
   final Duration heartbeatInterval;
   final IHttpClient httpClient;
   final String origin;
@@ -17,8 +19,10 @@ class WebSocketHandler implements IWebSocketHandler {
   WebSocketChannel? _socket;
 
   StreamChannel<String>? _channel;
+  @override
   StreamChannel<String>? get channel => _channel;
 
+  @override
   Future<void> get ready => _socket!.ready;
 
   WebSocketHandler({
@@ -28,10 +32,12 @@ class WebSocketHandler implements IWebSocketHandler {
     this.heartbeatInterval = const Duration(seconds: 30),
   });
 
+  @override
   Future<void> init() async {
     await _connect();
   }
 
+  @override
   Future<void> close() async {
     await _socket?.sink.close();
     // await _streamController?.close();
@@ -66,8 +72,8 @@ class WebSocketHandler implements IWebSocketHandler {
       _channel = _socket!.cast<String>();
 
       if (_channel == null) {
-        print('Socket channel is null, waiting...');
-        await Future.delayed(Duration(milliseconds: 500));
+        // print('Socket channel is null, waiting...');
+        await Future.delayed(const Duration(milliseconds: 500));
         if (_channel == null) {
           // print('Socket channel is still null, throwing ');
           throw Exception('Socket channel is null');

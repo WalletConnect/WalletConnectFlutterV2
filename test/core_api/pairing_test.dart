@@ -3,15 +3,9 @@ import 'dart:async';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:walletconnect_flutter_v2/apis/core/core.dart';
 import 'package:walletconnect_flutter_v2/apis/core/i_core.dart';
-import 'package:walletconnect_flutter_v2/apis/core/pairing/i_json_rpc_history.dart';
-import 'package:walletconnect_flutter_v2/apis/core/pairing/i_pairing.dart';
-import 'package:walletconnect_flutter_v2/apis/core/pairing/json_rpc_history.dart';
-import 'package:walletconnect_flutter_v2/apis/core/pairing/pairing.dart';
-import 'package:walletconnect_flutter_v2/apis/core/pairing/pairing_store.dart';
 import 'package:walletconnect_flutter_v2/apis/core/pairing/utils/pairing_models.dart';
 import 'package:walletconnect_flutter_v2/apis/core/pairing/utils/json_rpc_utils.dart';
 import 'package:walletconnect_flutter_v2/apis/core/relay_client/relay_client_models.dart';
-import 'package:walletconnect_flutter_v2/apis/core/store/generic_store.dart';
 import 'package:walletconnect_flutter_v2/apis/models/basic_models.dart';
 import 'package:walletconnect_flutter_v2/apis/models/uri_parse_result.dart';
 import 'package:walletconnect_flutter_v2/apis/utils/constants.dart';
@@ -24,7 +18,7 @@ import '../shared/shared_test_values.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
-  test("Format and parses URI correctly", () {
+  test('Format and parses URI correctly', () {
     Uri response = WalletConnectUtils.formatUri(
         protocol: 'wc',
         version: '2',
@@ -167,7 +161,7 @@ void main() {
     });
 
     group('pair', () {
-      test("can pair via provided URI", () async {
+      test('can pair via provided URI', () async {
         final CreateResponse response = await coreA.pairing.create();
 
         Completer completer = Completer();
@@ -192,7 +186,7 @@ void main() {
         expect(coreB.pairing.getPairings()[0].active, false);
       });
 
-      test("can pair via provided URI", () async {
+      test('can pair via provided URI', () async {
         final CreateResponse response = await coreA.pairing.create();
 
         await coreB.pairing.pair(uri: response.uri, activatePairing: true);
@@ -201,7 +195,7 @@ void main() {
       });
     });
 
-    test("can activate pairing", () async {
+    test('can activate pairing', () async {
       final CreateResponse response = await coreA.pairing.create();
 
       await coreB.pairing.pair(uri: response.uri, activatePairing: false);
@@ -217,9 +211,9 @@ void main() {
       expect(pairing2.expiry > expiry, true);
     });
 
-    test("can update expiry", () async {
+    test('can update expiry', () async {
       final CreateResponse response = await coreA.pairing.create();
-      final int mockExpiry = 1111111;
+      const int mockExpiry = 1111111;
 
       await coreA.pairing
           .updateExpiry(topic: response.topic, expiry: mockExpiry);
@@ -248,9 +242,9 @@ void main() {
       );
     });
 
-    test("can update peer metadata", () async {
+    test('can update peer metadata', () async {
       final CreateResponse response = await coreA.pairing.create();
-      PairingMetadata mock = PairingMetadata(
+      PairingMetadata mock = const PairingMetadata(
         name: 'Mock',
         description: 'Mock Metadata',
         url: 'https://mockurl.com',
@@ -268,7 +262,7 @@ void main() {
       );
     });
 
-    test("clients can ping each other", () async {
+    test('clients can ping each other', () async {
       final CreateResponse response = await coreA.pairing.create();
       // await coreB.pairing.pair(uri: response.uri);
 
@@ -285,7 +279,7 @@ void main() {
       await completer.future;
     });
 
-    test("can disconnect from a known pairing", () async {
+    test('can disconnect from a known pairing', () async {
       final CreateResponse response = await coreA.pairing.create();
       expect(coreA.pairing.getStore().getAll().length, 1);
       expect(coreB.pairing.getStore().getAll().length, 0);
@@ -339,7 +333,7 @@ void main() {
       });
 
       group('Pairing', () {
-        test("throws when no empty/invalid uri is provided", () async {
+        test('throws when no empty/invalid uri is provided', () async {
           expect(
             () async => await coreA.pairing.pair(uri: Uri.parse('')),
             throwsA(
@@ -364,7 +358,7 @@ void main() {
 
         test("throws when required methods aren't contained in registered",
             () async {
-          final String uriWithMethods =
+          const String uriWithMethods =
               '$TEST_URI&methods=[wc_sessionPropose],[wc_authRequest,wc_authBatchRequest]';
           expect(
             () async =>
@@ -381,7 +375,7 @@ void main() {
           coreA.pairing.register(
             method: 'wc_sessionPropose',
             function: (s, r) => {},
-            type: ProtocolType.Sign,
+            type: ProtocolType.sign,
           );
           expect(
             () async =>
@@ -398,7 +392,7 @@ void main() {
           coreA.pairing.register(
             method: 'wc_authRequest',
             function: (s, r) => {},
-            type: ProtocolType.Auth,
+            type: ProtocolType.auth,
           );
           expect(
             () async =>
@@ -414,23 +408,23 @@ void main() {
           );
         });
 
-        test("succeeds when required methods are contained in registered",
+        test('succeeds when required methods are contained in registered',
             () async {
           List<RegisteredFunction> registeredFunctions = [
             RegisteredFunction(
               method: MethodConstants.WC_SESSION_PROPOSE,
               function: (s, r) => {},
-              type: ProtocolType.Sign,
+              type: ProtocolType.sign,
             ),
             RegisteredFunction(
               method: 'wc_authRequest',
               function: (s, r) => {},
-              type: ProtocolType.Sign,
+              type: ProtocolType.sign,
             ),
             RegisteredFunction(
               method: 'wc_authBatchRequest',
               function: (s, r) => {},
-              type: ProtocolType.Sign,
+              type: ProtocolType.sign,
             )
           ];
           expect(
@@ -458,7 +452,7 @@ void main() {
       });
 
       group('Ping', () {
-        test("throws when unused topic is provided", () async {
+        test('throws when unused topic is provided', () async {
           expect(
             () async => await coreA.pairing.ping(topic: 'abc'),
             throwsA(
@@ -472,7 +466,7 @@ void main() {
       });
 
       group('Disconnect', () {
-        test("throws when unused topic is provided", () async {
+        test('throws when unused topic is provided', () async {
           expect(
             () async => await coreA.pairing.disconnect(topic: 'abc'),
             throwsA(

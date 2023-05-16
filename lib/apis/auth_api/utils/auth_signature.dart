@@ -123,11 +123,11 @@ class AuthSignature {
     String projectId,
   ) async {
     try {
-      final String eip1271MagicValue = "0x1626ba7e";
-      final String dynamicTypeOffset =
-          "0000000000000000000000000000000000000000000000000000000000000040";
-      final String dynamicTypeLength =
-          "0000000000000000000000000000000000000000000000000000000000000041";
+      const String eip1271MagicValue = '0x1626ba7e';
+      const String dynamicTypeOffset =
+          '0000000000000000000000000000000000000000000000000000000000000040';
+      const String dynamicTypeLength =
+          '0000000000000000000000000000000000000000000000000000000000000041';
       final String nonPrefixedSignature = cacaoSignature.substring(2);
       final String nonPrefixedHashedMessage =
           hex.encode(hashMessage(reconstructedMessage)).substring(2);
@@ -142,10 +142,10 @@ class AuthSignature {
         '${AuthConstants.AUTH_DEFAULT_URL}/?chainId=$chainId&projectId=$projectId',
       );
       final Map<String, dynamic> body = JsonRpcUtils.formatJsonRpcRequest(
-        "eth_call",
+        'eth_call',
         {
-          "to": address,
-          "data": data,
+          'to': address,
+          'data': data,
         },
       );
 
@@ -154,7 +154,7 @@ class AuthSignature {
         body: body,
       );
 
-      print(response.body);
+      // print(response.body);
       // final jsonBody = jsonDecode(response.body);
       final String recoveredValue =
           response.body.substring(0, eip1271MagicValue.length);
@@ -171,13 +171,13 @@ class AuthSignature {
     String chainId,
     String projectId,
   ) async {
-    if (cacaoSignature.t == "eip191") {
+    if (cacaoSignature.t == 'eip191') {
       return isValidEip191Signature(
         address,
         reconstructedMessage,
         cacaoSignature.s,
       );
-    } else if (cacaoSignature.t == "eip1271") {
+    } else if (cacaoSignature.t == 'eip1271') {
       return await isValidEip1271Signature(
         address,
         reconstructedMessage,
@@ -187,7 +187,7 @@ class AuthSignature {
       );
     } else {
       throw Exception(
-        "verifySignature failed: Attempted to verify CacaoSignature with unknown type: ${cacaoSignature.t}",
+        'verifySignature failed: Attempted to verify CacaoSignature with unknown type: ${cacaoSignature.t}',
       );
     }
   }

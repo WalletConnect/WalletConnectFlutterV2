@@ -37,32 +37,24 @@ class SignClientHelpers {
   }) async {
     final start = DateTime.now().millisecondsSinceEpoch;
     final Map<String, RequiredNamespace> reqNamespaces =
-        requiredNamespaces != null
-            ? requiredNamespaces
-            : TEST_REQUIRED_NAMESPACES;
+        requiredNamespaces ?? TEST_REQUIRED_NAMESPACES;
 
     Map<String, Namespace> workingNamespaces =
-        namespaces != null ? namespaces : TEST_NAMESPACES;
+        namespaces ?? TEST_NAMESPACES;
 
-    Map<String, List<String>> workingAccounts = accounts != null
-        ? accounts
-        : {
+    Map<String, List<String>> workingAccounts = accounts ?? {
             TEST_ETHEREUM_CHAIN: [TEST_ETHEREUM_ADDRESS],
             TEST_ARBITRUM_CHAIN: [TEST_ETHEREUM_ADDRESS],
             TEST_AVALANCHE_CHAIN: [TEST_ETHEREUM_ADDRESS],
           };
 
-    Map<String, List<String>> workingMethods = methods != null
-        ? methods
-        : {
+    Map<String, List<String>> workingMethods = methods ?? {
             TEST_ETHEREUM_CHAIN: TEST_METHODS_1,
             TEST_ARBITRUM_CHAIN: TEST_METHODS_1,
             TEST_AVALANCHE_CHAIN: TEST_METHODS_2,
           };
 
-    Map<String, List<String>> workingEvents = events != null
-        ? events
-        : {
+    Map<String, List<String>> workingEvents = events ?? {
             TEST_ETHEREUM_CHAIN: [TEST_EVENT_1],
             TEST_ARBITRUM_CHAIN: [TEST_EVENT_1],
             TEST_AVALANCHE_CHAIN: [TEST_EVENT_2],
@@ -96,7 +88,7 @@ class SignClientHelpers {
 
     // Listen for a proposal via connect to avoid race conditions
     Completer sessionBCompleter = Completer();
-    final f = (SessionProposalEvent? args) async {
+    f(SessionProposalEvent? args) async {
       // print('B Session Proposal');
 
       expect(
@@ -125,7 +117,7 @@ class SignClientHelpers {
 
       // print('B Session assigned: $sessionB');
       // expect(b.core.expirer.has(args.params.id.toString()), true);
-    };
+    }
     b.onSessionProposal.subscribe(f);
 
     // Connect to client b from a, this will trigger the above event
@@ -167,9 +159,9 @@ class SignClientHelpers {
       // If we recieved no pairing topic, then we want to create one
       // e.g. we pair from b to a using the uri created from the connect
       // params (The QR code).
-      final pairTimeoutMs = 15000;
-      final timeout = Timer(Duration(milliseconds: pairTimeoutMs), () {
-        throw Exception("Pair timed out after $pairTimeoutMs ms");
+      const pairTimeoutMs = 15000;
+      final timeout = Timer(const Duration(milliseconds: pairTimeoutMs), () {
+        throw Exception('Pair timed out after $pairTimeoutMs ms');
       });
       // print('pairing B -> A');
       pairingB = await b.pair(uri: uri);
@@ -197,7 +189,7 @@ class SignClientHelpers {
     await sessionBCompleter.future;
 
     // if (sessionA == null) throw Exception("expect session A to be defined");
-    if (sessionB == null) throw Exception("expect session B to be defined");
+    if (sessionB == null) throw Exception('expect session B to be defined');
 
     expect(sessionA.topic, sessionB!.topic);
     // relay
@@ -229,7 +221,7 @@ class SignClientHelpers {
     expect(sessionB!.self.metadata, sessionA.peer.metadata);
 
     // if (pairingA == null) throw Exception("expect pairing A to be defined");
-    if (pairingB == null) throw Exception("expect pairing B to be defined");
+    if (pairingB == null) throw Exception('expect pairing B to be defined');
 
     // update pairing state beforehand
     pairingA = a.pairings.get(pairingA.topic);
@@ -280,18 +272,16 @@ class SignClientHelpers {
   }) async {
     final start = DateTime.now().millisecondsSinceEpoch;
     final Map<String, RequiredNamespace> reqNamespaces =
-        requiredNamespaces != null
-            ? requiredNamespaces
-            : TEST_REQUIRED_NAMESPACES;
+        requiredNamespaces ?? TEST_REQUIRED_NAMESPACES;
 
-    Map<String, Namespace> workingNamespaces =
-        namespaces != null ? namespaces : TEST_NAMESPACES;
+    // Map<String, Namespace> workingNamespaces =
+    //     namespaces != null ? namespaces : TEST_NAMESPACES;
 
-    SessionData? sessionA;
+    // SessionData? sessionA;
 
     // Listen for a proposal via connect to avoid race conditions
     Completer sessionBCompleter = Completer();
-    final f = (SessionProposalEvent? args) async {
+    f(SessionProposalEvent? args) async {
       // print('B Session Proposal');
 
       expect(
@@ -311,7 +301,7 @@ class SignClientHelpers {
 
       // print('B Session assigned: $sessionB');
       // expect(b.core.expirer.has(args.params.id.toString()), true);
-    };
+    }
     b.onSessionProposal.subscribe(f);
 
     // Connect to client b from a, this will trigger the above event
@@ -324,8 +314,7 @@ class SignClientHelpers {
     Uri? uri = connectResponse.uri;
 
     // Track latency
-    final clientAConnectLatencyMs =
-        DateTime.now().millisecondsSinceEpoch - start;
+    final _ = DateTime.now().millisecondsSinceEpoch - start;
 
     // Track pairings from "QR Scans"
     PairingInfo? pairingA;
@@ -353,9 +342,9 @@ class SignClientHelpers {
       // If we recieved no pairing topic, then we want to create one
       // e.g. we pair from b to a using the uri created from the connect
       // params (The QR code).
-      final pairTimeoutMs = 15000;
-      final timeout = Timer(Duration(milliseconds: pairTimeoutMs), () {
-        throw Exception("Pair timed out after $pairTimeoutMs ms");
+      const pairTimeoutMs = 15000;
+      final timeout = Timer(const Duration(milliseconds: pairTimeoutMs), () {
+        throw Exception('Pair timed out after $pairTimeoutMs ms');
       });
       // print('pairing B -> A');
       pairingB = await b.pair(uri: uri);

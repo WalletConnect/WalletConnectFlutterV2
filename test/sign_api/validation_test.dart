@@ -81,7 +81,7 @@ void main() {
         isA<WalletConnectError>().having(
           (e) => e.message,
           'message',
-          "Unsupported chains. test, namespace is a chainId, but chains is not empty",
+          'Unsupported chains. test, namespace is a chainId, but chains is not empty',
         ),
       ),
     );
@@ -118,7 +118,7 @@ void main() {
         isA<WalletConnectError>().having(
           (e) => e.message,
           'message',
-          "Unsupported chains. test requiredNamespace, namespace is a chainId, but chains is not empty",
+          'Unsupported chains. test requiredNamespace, namespace is a chainId, but chains is not empty',
         ),
       ),
     );
@@ -363,11 +363,11 @@ void main() {
       TEST_NAMESPACES_NONCONFORMING_EVENTS,
     ];
     final List errors = [
-      "Unsupported namespace key. test namespaces keys don\'t satisfy requiredNamespaces",
-      "Unsupported namespace key. test namespaces keys don\'t satisfy requiredNamespaces",
-      "Unsupported chains. test namespaces chains don\'t satisfy requiredNamespaces chains for $EVM_NAMESPACE",
-      "Unsupported methods. test namespaces methods don\'t satisfy requiredNamespaces methods for $EVM_NAMESPACE",
-      "Unsupported events. test namespaces events don\'t satisfy requiredNamespaces events for $EVM_NAMESPACE",
+      "Unsupported namespace key. test namespaces keys don't satisfy requiredNamespaces",
+      "Unsupported namespace key. test namespaces keys don't satisfy requiredNamespaces",
+      "Unsupported chains. test namespaces chains don't satisfy requiredNamespaces chains for $EVM_NAMESPACE",
+      "Unsupported methods. test namespaces methods don't satisfy requiredNamespaces methods for $EVM_NAMESPACE",
+      "Unsupported events. test namespaces events don't satisfy requiredNamespaces events for $EVM_NAMESPACE",
     ];
     for (int i = 0; i < nonconformingNamespaces.length; i++) {
       expect(

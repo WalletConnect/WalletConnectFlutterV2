@@ -7,9 +7,9 @@ import 'package:walletconnect_flutter_v2/apis/models/json_rpc_request.dart';
 part 'pairing_models.g.dart';
 
 enum ProtocolType {
-  Pair,
-  Sign,
-  Auth,
+  pair,
+  sign,
+  auth,
 }
 
 @JsonSerializable()
@@ -56,7 +56,7 @@ class PairingMetadata {
     this.redirect,
   });
 
-  factory PairingMetadata.empty() => PairingMetadata(
+  factory PairingMetadata.empty() => const PairingMetadata(
         name: '',
         description: '',
         url: '',

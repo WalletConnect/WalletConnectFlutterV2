@@ -45,7 +45,7 @@ void signPing({
       await clientB.core.relayClient.disconnect();
     });
 
-    test("works from pairing and session", () async {
+    test('works from pairing and session', () async {
       final connectionInfo = await SignClientHelpers.testConnectPairApprove(
         clientA,
         clientB,

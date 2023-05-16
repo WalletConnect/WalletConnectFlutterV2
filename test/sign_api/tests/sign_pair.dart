@@ -5,8 +5,6 @@ import 'package:walletconnect_flutter_v2/apis/sign_api/i_sign_engine_wallet.dart
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 
 import '../../shared/shared_test_values.dart';
-import '../utils/engine_constants.dart';
-import '../utils/sign_client_constants.dart';
 
 void signPair({
   required Future<ISignEngineApp> Function(PairingMetadata) clientACreator,
@@ -31,7 +29,7 @@ void signPair({
     });
 
     test('throws with v1 url', () {
-      final String uri = TEST_URI_V1;
+      const String uri = TEST_URI_V1;
 
       expect(
         () async => await clientB.pair(uri: Uri.parse(uri)),
@@ -46,7 +44,7 @@ void signPair({
     });
 
     test('throws with invalid methods', () {
-      final String uriWithMethods = '$TEST_URI&methods=[wc_swag]';
+      const String uriWithMethods = '$TEST_URI&methods=[wc_swag]';
 
       expect(
         () async => await clientB.pair(uri: Uri.parse(uriWithMethods)),
