@@ -84,6 +84,7 @@ const TEST_FORMATTED_MESSAGE =
     '''localhost:3000 wants you to sign in with your Ethereum account:
 0x06C6A22feB5f8CcEDA0db0D593e6F26A3611d5fa
 
+
 URI: http://localhost:3000/login
 Version: 1
 Chain ID: 1
