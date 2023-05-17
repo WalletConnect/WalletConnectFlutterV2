@@ -200,6 +200,14 @@ class Web3WalletService extends IWeb3WalletService {
           ),
         );
 
+        // EthPrivateKey credentials =
+        //     EthPrivateKey.fromHex(chainKeys.first.privateKey);
+        // final String sig = utf8.decode(
+        //   credentials.signPersonalMessageToUint8List(
+        //     Uint8List.fromList(message.codeUnits),
+        //   ),
+        // );
+
         final String sig = EthSigUtil.signPersonalMessage(
           message: Uint8List.fromList(message.codeUnits),
           privateKey: chainKeys.first.privateKey,

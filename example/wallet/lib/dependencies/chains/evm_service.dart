@@ -1,4 +1,7 @@
+// ignore_for_file: depend_on_referenced_packages
+
 import 'dart:convert';
+import 'package:http/http.dart' as http;
 import 'dart:typed_data';
 
 import 'package:convert/convert.dart';
@@ -11,13 +14,11 @@ import 'package:walletconnect_flutter_v2_wallet/dependencies/i_web3wallet_servic
 import 'package:walletconnect_flutter_v2_wallet/dependencies/key_service/chain_key.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/key_service/i_key_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/models/eth/ethereum_transaction.dart';
+import 'package:walletconnect_flutter_v2_wallet/utils/eth_utils.dart';
 import 'package:walletconnect_flutter_v2_wallet/widgets/wc_connection_widget/wc_connection_model.dart';
 import 'package:walletconnect_flutter_v2_wallet/widgets/wc_connection_widget/wc_connection_widget.dart';
 import 'package:walletconnect_flutter_v2_wallet/widgets/wc_request_widget.dart/wc_request_widget.dart';
 import 'package:web3dart/web3dart.dart';
-
-// ignore: implementation_imports
-import 'package:web3dart/src/utils/rlp.dart' as rlp;
 
 enum EVMChainId {
   ethereum,
@@ -63,9 +64,15 @@ class EVMService extends IChain {
 
   final EVMChainId reference;
 
+  final Web3Client ethClient;
+
   EVMService({
     required this.reference,
-  }) {
+    Web3Client? ethClient,
+  }) : ethClient = ethClient ??
+            Web3Client(
+                'https://mainnet.infura.io/v3/51716d2096df4e73bec298680a51f0c5',
+                http.Client()) {
     final Web3Wallet wallet = _web3WalletService.getWeb3Wallet();
     for (final String event in getEvents()) {
       wallet.registerEventEmitter(chainId: getChainId(), event: event);
@@ -136,7 +143,9 @@ class EVMService extends IChain {
   Future personalSign(String topic, dynamic parameters) async {
     print('received personal sign request: $parameters');
 
-    final String? authAcquired = await requestAuthorization(parameters[0]);
+    final String message = EthUtils.getUtf8Message(parameters[0]);
+
+    final String? authAcquired = await requestAuthorization(message);
     if (authAcquired != null) {
       return authAcquired;
     }
@@ -151,7 +160,7 @@ class EVMService extends IChain {
       final String signature = hex.encode(
         credentials.signPersonalMessageToUint8List(
           Uint8List.fromList(
-            (parameters[0] as String).codeUnits,
+            utf8.encode(message),
           ),
         ),
       );
@@ -165,7 +174,10 @@ class EVMService extends IChain {
 
   Future ethSign(String topic, dynamic parameters) async {
     print('received eth sign request: $parameters');
-    final String? authAcquired = await requestAuthorization(parameters[1]);
+
+    final String message = EthUtils.getUtf8Message(parameters[1]);
+
+    final String? authAcquired = await requestAuthorization(message);
     if (authAcquired != null) {
       return authAcquired;
     }
@@ -175,18 +187,30 @@ class EVMService extends IChain {
       final List<ChainKey> keys = GetIt.I<IKeyService>().getKeysForChain(
         getChainId(),
       );
-      final Credentials credentials = EthPrivateKey.fromHex(keys[0].privateKey);
+      // print('private key');
+      // print(keys[0].privateKey);
 
+      // final String signature = EthSigUtil.signMessage(
+      //   message: Uint8List.fromList(
+      //     utf8.encode(message),
+      //   ),
+      //   privateKey: keys[0].privateKey,
+      // );
+      final EthPrivateKey credentials = EthPrivateKey.fromHex(
+        keys[0].privateKey,
+      );
       final String signature = hex.encode(
         credentials.signPersonalMessageToUint8List(
           Uint8List.fromList(
-            (parameters[1] as String).codeUnits,
+            utf8.encode(message),
           ),
         ),
       );
+      print(signature);
 
       return '0x$signature';
     } catch (e) {
+      print('error:');
       print(e);
       return 'Failed';
     }
@@ -207,7 +231,9 @@ class EVMService extends IChain {
     final List<ChainKey> keys = GetIt.I<IKeyService>().getKeysForChain(
       getChainId(),
     );
-    final Credentials credentials = EthPrivateKey.fromHex(keys[0].privateKey);
+    final Credentials credentials = EthPrivateKey.fromHex(
+      '0x${keys[0].privateKey}',
+    );
 
     EthereumTransaction ethTransaction = EthereumTransaction.fromJson(
       parameters[0],
@@ -242,29 +268,31 @@ class EVMService extends IChain {
           : null,
       maxGas: int.tryParse(ethTransaction.gasLimit ?? ''),
       nonce: int.tryParse(ethTransaction.nonce ?? ''),
-      data: (ethTransaction.data != null)
+      data: (ethTransaction.data != null && ethTransaction.data != '0x')
           ? Uint8List.fromList(hex.decode(ethTransaction.data!))
           : null,
     );
 
-    // Sign the transaction
-    final String signedTx = hex.encode(
-      credentials.signToUint8List(
-        Uint8List.fromList(
-          rlp.encode(
-            transaction.toString(),
-          ),
-        ),
-      ),
-    );
+    try {
+      final Uint8List sig = await ethClient.signTransaction(
+        credentials,
+        transaction,
+      );
 
-    // Return the signed transaction as a hexadecimal string
-    return '0x$signedTx';
+      // Sign the transaction
+      final String signedTx = hex.encode(sig);
+
+      // Return the signed transaction as a hexadecimal string
+      return '0x$signedTx';
+    } catch (e) {
+      print(e);
+      return 'Failed';
+    }
   }
 
   Future ethSignTypedData(String topic, dynamic parameters) async {
     print('received eth sign typed data request: $parameters');
-    final String data = jsonEncode(parameters[1]);
+    final String data = parameters[1];
     final String? authAcquired = await requestAuthorization(data);
     if (authAcquired != null) {
       return authAcquired;
@@ -273,6 +301,9 @@ class EVMService extends IChain {
     final List<ChainKey> keys = GetIt.I<IKeyService>().getKeysForChain(
       getChainId(),
     );
+
+    // EthPrivateKey credentials = EthPrivateKey.fromHex(keys[0].privateKey);
+    // credentials.
 
     return EthSigUtil.signTypedData(
       privateKey: keys[0].privateKey,

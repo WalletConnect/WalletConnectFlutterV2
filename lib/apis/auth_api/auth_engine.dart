@@ -363,13 +363,9 @@ class AuthEngine implements IAuthEngine {
     final message = [
       header,
       walletAddress,
-      ...cacaoPayload.statement == null
-          ? ['']
-          : [
-              '',
-              cacaoPayload.statement,
-              '',
-            ],
+      '',
+      cacaoPayload.statement,
+      '',
       uri,
       version,
       chainId,

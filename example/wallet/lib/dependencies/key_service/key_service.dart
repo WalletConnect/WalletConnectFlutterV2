@@ -21,9 +21,9 @@ class KeyService extends IKeyService {
         'eip155:80001',
       ],
       privateKey:
-          '5c863219aac113b78823027ed8fd3e287b38bc0f5a65756e1797c8f7fce56b8e',
+          '300851edb635b2dbb2d4e70615444925afeb60bf95c19365aff88740e09d7345',
       publicKey:
-          '0x83ba3013f776d4e2801010ee88581aedf5349b43', // Eth Address, not actual public key
+          '0xeaa05f75445a4beacc73e8fbf07ddb3a76a80a0c', // Eth Address, not actual public key
     )
   ];
 

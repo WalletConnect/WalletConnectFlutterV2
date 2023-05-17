@@ -102,7 +102,7 @@ void signEmitSessionEvent({
         );
 
         // Events receive no responses
-      } on JsonRpcError catch (e) {
+      } on JsonRpcError catch (_) {
         // print(e);
         expect(false, true);
       }
