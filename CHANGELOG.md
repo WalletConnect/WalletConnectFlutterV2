@@ -1,3 +1,7 @@
+## 2.0.6
+
+- Reverted auth to match eip spec
+
 ## 2.0.5
 
 - Added analysis options and enforced them
