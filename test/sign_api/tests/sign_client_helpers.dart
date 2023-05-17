@@ -39,26 +39,28 @@ class SignClientHelpers {
     final Map<String, RequiredNamespace> reqNamespaces =
         requiredNamespaces ?? TEST_REQUIRED_NAMESPACES;
 
-    Map<String, Namespace> workingNamespaces =
-        namespaces ?? TEST_NAMESPACES;
+    Map<String, Namespace> workingNamespaces = namespaces ?? TEST_NAMESPACES;
 
-    Map<String, List<String>> workingAccounts = accounts ?? {
-            TEST_ETHEREUM_CHAIN: [TEST_ETHEREUM_ADDRESS],
-            TEST_ARBITRUM_CHAIN: [TEST_ETHEREUM_ADDRESS],
-            TEST_AVALANCHE_CHAIN: [TEST_ETHEREUM_ADDRESS],
-          };
+    Map<String, List<String>> workingAccounts = accounts ??
+        {
+          TEST_ETHEREUM_CHAIN: [TEST_ETHEREUM_ADDRESS],
+          TEST_ARBITRUM_CHAIN: [TEST_ETHEREUM_ADDRESS],
+          TEST_AVALANCHE_CHAIN: [TEST_ETHEREUM_ADDRESS],
+        };
 
-    Map<String, List<String>> workingMethods = methods ?? {
-            TEST_ETHEREUM_CHAIN: TEST_METHODS_1,
-            TEST_ARBITRUM_CHAIN: TEST_METHODS_1,
-            TEST_AVALANCHE_CHAIN: TEST_METHODS_2,
-          };
+    Map<String, List<String>> workingMethods = methods ??
+        {
+          TEST_ETHEREUM_CHAIN: TEST_METHODS_1,
+          TEST_ARBITRUM_CHAIN: TEST_METHODS_1,
+          TEST_AVALANCHE_CHAIN: TEST_METHODS_2,
+        };
 
-    Map<String, List<String>> workingEvents = events ?? {
-            TEST_ETHEREUM_CHAIN: [TEST_EVENT_1],
-            TEST_ARBITRUM_CHAIN: [TEST_EVENT_1],
-            TEST_AVALANCHE_CHAIN: [TEST_EVENT_2],
-          };
+    Map<String, List<String>> workingEvents = events ??
+        {
+          TEST_ETHEREUM_CHAIN: [TEST_EVENT_1],
+          TEST_ARBITRUM_CHAIN: [TEST_EVENT_1],
+          TEST_AVALANCHE_CHAIN: [TEST_EVENT_2],
+        };
 
     // Register the data: accounts, methods, events
     for (final chainId in workingAccounts.keys) {
@@ -118,6 +120,7 @@ class SignClientHelpers {
       // print('B Session assigned: $sessionB');
       // expect(b.core.expirer.has(args.params.id.toString()), true);
     }
+
     b.onSessionProposal.subscribe(f);
 
     // Connect to client b from a, this will trigger the above event
@@ -282,8 +285,6 @@ class SignClientHelpers {
     // Listen for a proposal via connect to avoid race conditions
     Completer sessionBCompleter = Completer();
     f(SessionProposalEvent? args) async {
-      // print('B Session Proposal');
-
       expect(
         args!.params.requiredNamespaces,
         reqNamespaces,
@@ -302,6 +303,7 @@ class SignClientHelpers {
       // print('B Session assigned: $sessionB');
       // expect(b.core.expirer.has(args.params.id.toString()), true);
     }
+
     b.onSessionProposal.subscribe(f);
 
     // Connect to client b from a, this will trigger the above event
