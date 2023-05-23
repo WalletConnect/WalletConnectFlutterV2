@@ -272,7 +272,7 @@ class ConnectPageState extends State<ConnectPage> {
             child: Center(
               child: Column(
                 children: [
-                  QrImage(
+                  QrImageView(
                     data: response.uri!.toString(),
                   ),
                   const SizedBox(

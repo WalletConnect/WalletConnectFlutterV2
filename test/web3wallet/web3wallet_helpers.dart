@@ -115,6 +115,7 @@ class Web3WalletHelpers {
       pairingTopic: connectResponse.pairingTopic,
     );
     expect(connectResponse.pairingTopic, authReqResponse.pairingTopic);
+    expect(authReqResponse.uri, null);
 
     // Track latency
     final clientAConnectLatencyMs =
@@ -167,15 +168,17 @@ class Web3WalletHelpers {
     // Assign session now that we have paired
     // print('Waiting for connect response');
     sessionA = await connectResponse.session.future;
-    // print('Waiting for auth response');
+    // print(
+    //     'Waiting for auth response: ${authReqResponse.completer.isCompleted}');
     authResponse = await authReqResponse.completer.future;
 
     final settlePairingLatencyMs = DateTime.now().millisecondsSinceEpoch -
         start -
         (qrCodeScanLatencyMs ?? 0);
 
-    // await Future.delayed(Duration(milliseconds: 200));
+    // print('here 1');
     await signCompleter.future;
+    // print('here 2');
     await authCompleter.future;
 
     // if (sessionA == null) throw Exception("expect session A to be defined");

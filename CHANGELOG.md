@@ -1,3 +1,9 @@
+## 2.0.7
+
+- Bumped multiple versions
+- Fixed issue with tests not being deterministic
+- dApp example updated based on version bumps
+
 ## 2.0.6
 
 - Reverted auth to match eip spec

@@ -96,10 +96,14 @@ void runTests({
         final connectionInfo = await Web3WalletHelpers.testWeb3Wallet(
           clientA,
           clientB,
+          qrCodeScanLatencyMs: 1000,
         );
 
+        // print('swag 1');
         await completer.future;
+        // print('swag 2');
         await completerBSign.future;
+        // print('swag 3');
         await completerBAuth.future;
 
         expect(counterA, 1);
@@ -129,8 +133,11 @@ void runTests({
           pairingTopic: connectionInfo.pairing.topic,
         );
 
+        // print('swag 4');
         await completer.future;
+        // print('swag 5');
         await completerBSign.future;
+        // print('swag 6');
         await completerBAuth.future;
 
         expect(counterA, 2);

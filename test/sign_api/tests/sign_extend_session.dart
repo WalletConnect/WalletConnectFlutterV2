@@ -70,6 +70,7 @@ void signExtendSession({
         completer.complete();
       });
 
+      // This is used to ensure that new expiry is different from the old one
       const offset = 100;
       await Future.delayed(const Duration(milliseconds: offset));
 
@@ -78,7 +79,10 @@ void signExtendSession({
       );
 
       // await Future.delayed(Duration(milliseconds: 100));
-      await completer.future;
+
+      if (!completer.isCompleted) {
+        await completer.future;
+      }
 
       final endingExpiryA =
           clientA.sessions.get(connectionInfo.session.topic)!.expiry;

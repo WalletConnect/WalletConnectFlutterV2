@@ -378,7 +378,7 @@ class Pairing implements IPairing {
       params,
       id: id,
     );
-    // final JsonRpcRequest request = JsonRpcRequest.fromJson(payload);
+    // print('sending request: $payload');
 
     final String? message = await core.crypto.encode(
       topic,
@@ -395,18 +395,6 @@ class Pairing implements IPairing {
       opts = opts.copyWith(ttl: ttl);
     }
 
-    // await history.set(
-    //   payload['id'].toString(),
-    //   JsonRpcRecord(
-    //     id: payload['id'],
-    //     topic: topic,
-    //     method: method,
-    //     params: params,
-    //     expiry: WalletConnectUtils.calculateExpiry(
-    //       WalletConnectConstants.ONE_DAY,
-    //     ),
-    //   ),
-    // );
     final Completer completer = Completer();
     // print('adding payload to pending requests: ${payload['id']}');
     pendingRequests[payload['id']] = completer;
