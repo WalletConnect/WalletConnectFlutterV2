@@ -82,7 +82,6 @@ class WebSocketHandler implements IWebSocketHandler {
 
       await _socket!.ready;
       // print('websocket ready');
-
     } catch (e) {
       // If the request failed, handle the error
       // debugPrint(
