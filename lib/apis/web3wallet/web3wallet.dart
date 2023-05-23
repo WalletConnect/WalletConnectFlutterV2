@@ -14,6 +14,7 @@ class Web3Wallet implements IWeb3Wallet {
   static Future<Web3Wallet> createInstance({
     required String projectId,
     String relayUrl = WalletConnectConstants.DEFAULT_RELAY_URL,
+    String pushUrl = WalletConnectConstants.DEFAULT_PUSH_URL,
     required PairingMetadata metadata,
     bool memoryStore = false,
     IHttpClient httpClient = const HttpWrapper(),
@@ -24,6 +25,7 @@ class Web3Wallet implements IWeb3Wallet {
         relayUrl: relayUrl,
         memoryStore: memoryStore,
         httpClient: httpClient,
+        pushUrl: pushUrl,
       ),
       metadata: metadata,
     );
