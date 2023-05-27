@@ -59,8 +59,9 @@ WcSessionProposeRequest _$WcSessionProposeRequestFromJson(
 Map<String, dynamic> _$WcSessionProposeRequestToJson(
     WcSessionProposeRequest instance) {
   final val = <String, dynamic>{
-    'relays': instance.relays,
-    'requiredNamespaces': instance.requiredNamespaces,
+    'relays': instance.relays.map((e) => e.toJson()).toList(),
+    'requiredNamespaces':
+        instance.requiredNamespaces.map((k, e) => MapEntry(k, e.toJson())),
   };
 
   void writeNotNull(String key, dynamic value) {
@@ -69,9 +70,10 @@ Map<String, dynamic> _$WcSessionProposeRequestToJson(
     }
   }
 
-  writeNotNull('optionalNamespaces', instance.optionalNamespaces);
+  writeNotNull('optionalNamespaces',
+      instance.optionalNamespaces?.map((k, e) => MapEntry(k, e.toJson())));
   writeNotNull('sessionProperties', instance.sessionProperties);
-  val['proposer'] = instance.proposer;
+  val['proposer'] = instance.proposer.toJson();
   return val;
 }
 
@@ -85,7 +87,7 @@ WcSessionProposeResponse _$WcSessionProposeResponseFromJson(
 Map<String, dynamic> _$WcSessionProposeResponseToJson(
         WcSessionProposeResponse instance) =>
     <String, dynamic>{
-      'relay': instance.relay,
+      'relay': instance.relay.toJson(),
       'responderPublicKey': instance.responderPublicKey,
     };
 
@@ -118,8 +120,8 @@ WcSessionSettleRequest _$WcSessionSettleRequestFromJson(
 Map<String, dynamic> _$WcSessionSettleRequestToJson(
     WcSessionSettleRequest instance) {
   final val = <String, dynamic>{
-    'relay': instance.relay,
-    'namespaces': instance.namespaces,
+    'relay': instance.relay.toJson(),
+    'namespaces': instance.namespaces.map((k, e) => MapEntry(k, e.toJson())),
   };
 
   void writeNotNull(String key, dynamic value) {
@@ -128,11 +130,13 @@ Map<String, dynamic> _$WcSessionSettleRequestToJson(
     }
   }
 
-  writeNotNull('requiredNamespaces', instance.requiredNamespaces);
-  writeNotNull('optionalNamespaces', instance.optionalNamespaces);
+  writeNotNull('requiredNamespaces',
+      instance.requiredNamespaces?.map((k, e) => MapEntry(k, e.toJson())));
+  writeNotNull('optionalNamespaces',
+      instance.optionalNamespaces?.map((k, e) => MapEntry(k, e.toJson())));
   writeNotNull('sessionProperties', instance.sessionProperties);
   val['expiry'] = instance.expiry;
-  val['controller'] = instance.controller;
+  val['controller'] = instance.controller.toJson();
   return val;
 }
 
@@ -147,7 +151,7 @@ WcSessionUpdateRequest _$WcSessionUpdateRequestFromJson(
 Map<String, dynamic> _$WcSessionUpdateRequestToJson(
         WcSessionUpdateRequest instance) =>
     <String, dynamic>{
-      'namespaces': instance.namespaces,
+      'namespaces': instance.namespaces.map((k, e) => MapEntry(k, e.toJson())),
     };
 
 WcSessionExtendRequest _$WcSessionExtendRequestFromJson(
@@ -227,7 +231,7 @@ Map<String, dynamic> _$WcSessionRequestRequestToJson(
         WcSessionRequestRequest instance) =>
     <String, dynamic>{
       'chainId': instance.chainId,
-      'request': instance.request,
+      'request': instance.request.toJson(),
     };
 
 SessionRequestParams _$SessionRequestParamsFromJson(
@@ -255,7 +259,7 @@ Map<String, dynamic> _$WcSessionEventRequestToJson(
         WcSessionEventRequest instance) =>
     <String, dynamic>{
       'chainId': instance.chainId,
-      'event': instance.event,
+      'event': instance.event.toJson(),
     };
 
 SessionEventParams _$SessionEventParamsFromJson(Map<String, dynamic> json) =>

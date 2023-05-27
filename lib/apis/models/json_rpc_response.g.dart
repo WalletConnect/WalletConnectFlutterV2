@@ -26,7 +26,7 @@ Map<String, dynamic> _$JsonRpcResponseToJson<T>(
     <String, dynamic>{
       'id': instance.id,
       'jsonrpc': instance.jsonrpc,
-      'error': instance.error,
+      'error': instance.error?.toJson(),
       'result': _$nullableGenericToJson(instance.result, toJsonT),
     };
 
