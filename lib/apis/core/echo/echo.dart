@@ -15,7 +15,7 @@ class Echo implements IEcho {
     final clientId = await core.crypto.getClientId();
     final response = await echoClient.register(
       projectId: projectId,
-      clientId: clientId.split(':').last,
+      clientId: clientId,
       firebaseAccessToken: firebaseAccessToken,
     );
 
@@ -34,7 +34,7 @@ class Echo implements IEcho {
     final clientId = await core.crypto.getClientId();
     final response = await echoClient.unregister(
       projectId: projectId,
-      clientId: clientId.split(':').last,
+      clientId: clientId,
     );
 
     if (response.status != SUCCESS_STATUS) {

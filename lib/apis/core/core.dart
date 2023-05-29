@@ -126,7 +126,10 @@ class Core implements ICore {
     );
     echo = Echo(
       core: this,
-      echoClient: EchoClient(pushUrl),
+      echoClient: EchoClient(
+        baseUrl: pushUrl,
+        httpClient: httpClient,
+      ),
     );
   }
 

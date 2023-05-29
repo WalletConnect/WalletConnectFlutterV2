@@ -4,12 +4,14 @@ import 'package:http/http.dart' as http;
 import 'package:walletconnect_flutter_v2/apis/core/echo/i_echo_client.dart';
 import 'package:walletconnect_flutter_v2/apis/core/echo/models/echo_body.dart';
 import 'package:walletconnect_flutter_v2/apis/core/echo/models/echo_response.dart';
+import 'package:walletconnect_flutter_v2/apis/core/relay_client/websocket/i_http_client.dart';
 
 class EchoClient implements IEchoClient {
   static const headers = {'Content-Type': 'application/json'};
+  final IHttpClient httpClient;
   final String baseUrl;
 
-  EchoClient(this.baseUrl);
+  EchoClient({required this.baseUrl, required this.httpClient});
 
   @override
   Future<EchoResponse> register({
@@ -20,7 +22,7 @@ class EchoClient implements IEchoClient {
     final body = EchoBody(clientId: clientId, token: firebaseAccessToken);
 
     final url = Uri.parse('$baseUrl/$projectId/clients?auth=$clientId');
-    final http.Response response = await http.post(
+    final http.Response response = await httpClient.post(
       url,
       headers: headers,
       body: jsonEncode(body.toJson()),
@@ -36,7 +38,8 @@ class EchoClient implements IEchoClient {
     required String clientId,
   }) async {
     final url = Uri.parse('$baseUrl/$projectId/clients/$clientId');
-    final http.Response response = await http.delete(url, headers: headers);
+    final http.Response response =
+        await httpClient.delete(url, headers: headers);
 
     final jsonMap = json.decode(response.body);
     return EchoResponse.fromJson(jsonMap);
