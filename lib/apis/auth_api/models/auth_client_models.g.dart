@@ -175,9 +175,9 @@ Cacao _$CacaoFromJson(Map<String, dynamic> json) => Cacao(
     );
 
 Map<String, dynamic> _$CacaoToJson(Cacao instance) => <String, dynamic>{
-      'h': instance.h,
-      'p': instance.p,
-      's': instance.s,
+      'h': instance.h.toJson(),
+      'p': instance.p.toJson(),
+      's': instance.s.toJson(),
     };
 
 StoredCacao _$StoredCacaoFromJson(Map<String, dynamic> json) => StoredCacao(
@@ -190,9 +190,9 @@ StoredCacao _$StoredCacaoFromJson(Map<String, dynamic> json) => StoredCacao(
 
 Map<String, dynamic> _$StoredCacaoToJson(StoredCacao instance) =>
     <String, dynamic>{
-      'h': instance.h,
-      'p': instance.p,
-      's': instance.s,
+      'h': instance.h.toJson(),
+      'p': instance.p.toJson(),
+      's': instance.s.toJson(),
       'id': instance.id,
       'pairingTopic': instance.pairingTopic,
     };
@@ -211,6 +211,6 @@ Map<String, dynamic> _$PendingAuthRequestToJson(PendingAuthRequest instance) =>
     <String, dynamic>{
       'id': instance.id,
       'pairingTopic': instance.pairingTopic,
-      'metadata': instance.metadata,
-      'cacaoPayload': instance.cacaoPayload,
+      'metadata': instance.metadata.toJson(),
+      'cacaoPayload': instance.cacaoPayload.toJson(),
     };
