@@ -18,8 +18,8 @@ WcAuthRequestRequest _$WcAuthRequestRequestFromJson(
 Map<String, dynamic> _$WcAuthRequestRequestToJson(
         WcAuthRequestRequest instance) =>
     <String, dynamic>{
-      'payloadParams': instance.payloadParams,
-      'requester': instance.requester,
+      'payloadParams': instance.payloadParams.toJson(),
+      'requester': instance.requester.toJson(),
     };
 
 WcAuthRequestResult _$WcAuthRequestResultFromJson(Map<String, dynamic> json) =>
@@ -30,5 +30,5 @@ WcAuthRequestResult _$WcAuthRequestResultFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$WcAuthRequestResultToJson(
         WcAuthRequestResult instance) =>
     <String, dynamic>{
-      'cacao': instance.cacao,
+      'cacao': instance.cacao.toJson(),
     };

@@ -53,11 +53,11 @@ Map<String, dynamic> _$SessionDataToJson(SessionData instance) {
   final val = <String, dynamic>{
     'topic': instance.topic,
     'pairingTopic': instance.pairingTopic,
-    'relay': instance.relay,
+    'relay': instance.relay.toJson(),
     'expiry': instance.expiry,
     'acknowledged': instance.acknowledged,
     'controller': instance.controller,
-    'namespaces': instance.namespaces,
+    'namespaces': instance.namespaces.map((k, e) => MapEntry(k, e.toJson())),
   };
 
   void writeNotNull(String key, dynamic value) {
@@ -66,11 +66,13 @@ Map<String, dynamic> _$SessionDataToJson(SessionData instance) {
     }
   }
 
-  writeNotNull('requiredNamespaces', instance.requiredNamespaces);
-  writeNotNull('optionalNamespaces', instance.optionalNamespaces);
+  writeNotNull('requiredNamespaces',
+      instance.requiredNamespaces?.map((k, e) => MapEntry(k, e.toJson())));
+  writeNotNull('optionalNamespaces',
+      instance.optionalNamespaces?.map((k, e) => MapEntry(k, e.toJson())));
   writeNotNull('sessionProperties', instance.sessionProperties);
-  val['self'] = instance.self;
-  val['peer'] = instance.peer;
+  val['self'] = instance.self.toJson();
+  val['peer'] = instance.peer.toJson();
   return val;
 }
 

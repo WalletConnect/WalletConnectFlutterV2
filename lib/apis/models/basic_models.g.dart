@@ -39,5 +39,5 @@ ConnectionMetadata _$ConnectionMetadataFromJson(Map<String, dynamic> json) =>
 Map<String, dynamic> _$ConnectionMetadataToJson(ConnectionMetadata instance) =>
     <String, dynamic>{
       'publicKey': instance.publicKey,
-      'metadata': instance.metadata,
+      'metadata': instance.metadata.toJson(),
     };

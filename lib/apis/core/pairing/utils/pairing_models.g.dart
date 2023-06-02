@@ -21,9 +21,9 @@ Map<String, dynamic> _$PairingInfoToJson(PairingInfo instance) =>
     <String, dynamic>{
       'topic': instance.topic,
       'expiry': instance.expiry,
-      'relay': instance.relay,
+      'relay': instance.relay.toJson(),
       'active': instance.active,
-      'peerMetadata': instance.peerMetadata,
+      'peerMetadata': instance.peerMetadata?.toJson(),
     };
 
 PairingMetadata _$PairingMetadataFromJson(Map<String, dynamic> json) =>
@@ -43,7 +43,7 @@ Map<String, dynamic> _$PairingMetadataToJson(PairingMetadata instance) =>
       'description': instance.description,
       'url': instance.url,
       'icons': instance.icons,
-      'redirect': instance.redirect,
+      'redirect': instance.redirect?.toJson(),
     };
 
 Redirect _$RedirectFromJson(Map<String, dynamic> json) => Redirect(
