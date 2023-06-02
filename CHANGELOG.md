@@ -1,3 +1,8 @@
+## 2.0.8
+
+- Added echo client
+- Multiple bug fixes
+
 ## 2.0.7
 
 - Bumped multiple versions
