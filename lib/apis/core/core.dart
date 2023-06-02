@@ -1,5 +1,8 @@
 import 'package:walletconnect_flutter_v2/apis/core/crypto/crypto.dart';
 import 'package:walletconnect_flutter_v2/apis/core/crypto/i_crypto.dart';
+import 'package:walletconnect_flutter_v2/apis/core/echo/echo.dart';
+import 'package:walletconnect_flutter_v2/apis/core/echo/echo_client.dart';
+import 'package:walletconnect_flutter_v2/apis/core/echo/i_echo.dart';
 import 'package:walletconnect_flutter_v2/apis/core/i_core.dart';
 import 'package:walletconnect_flutter_v2/apis/core/pairing/expirer.dart';
 import 'package:walletconnect_flutter_v2/apis/core/pairing/i_expirer.dart';
@@ -32,6 +35,9 @@ class Core implements ICore {
   final String projectId;
 
   @override
+  final String pushUrl;
+
+  @override
   late ICrypto crypto;
 
   @override
@@ -47,11 +53,15 @@ class Core implements ICore {
   late IPairing pairing;
 
   @override
+  late IEcho echo;
+
+  @override
   late IStore<Map<String, dynamic>> storage;
 
   Core({
     this.relayUrl = WalletConnectConstants.DEFAULT_RELAY_URL,
     required this.projectId,
+    this.pushUrl = WalletConnectConstants.DEFAULT_PUSH_URL,
     bool memoryStore = false,
     IHttpClient httpClient = const HttpWrapper(),
   }) {
@@ -112,6 +122,13 @@ class Core implements ICore {
         context: StoreVersions.CONTEXT_TOPIC_TO_RECEIVER_PUBLIC_KEY,
         version: StoreVersions.VERSION_TOPIC_TO_RECEIVER_PUBLIC_KEY,
         fromJson: (dynamic value) => ReceiverPublicKey.fromJson(value),
+      ),
+    );
+    echo = Echo(
+      core: this,
+      echoClient: EchoClient(
+        baseUrl: pushUrl,
+        httpClient: httpClient,
       ),
     );
   }

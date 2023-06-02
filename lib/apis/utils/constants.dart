@@ -19,6 +19,8 @@ class WalletConnectConstants {
   static const THIRTY_DAYS = ONE_DAY * 30;
 
   static const RELAYER_DEFAULT_PROTOCOL = 'irn';
+
+  static const DEFAULT_PUSH_URL = 'https://echo.walletconnect.com';
 }
 
 class StoreVersions {

@@ -23,6 +23,7 @@ import 'shared_test_utils.mocks.dart';
   Crypto,
   MessageTracker,
   HttpWrapper,
+  Core,
 ])
 class SharedTestUtils {}
 
