@@ -55,22 +55,15 @@ void signHappyPath({
         clientB,
       );
 
-      // await Future.delayed(Duration(milliseconds: 100));
-      await completerA.future;
-      await completerB.future;
+      if (!completerA.isCompleted) {
+        await completerA.future;
+      }
+      if (!completerB.isCompleted) {
+        await completerB.future;
+      }
 
       completerA = Completer();
       completerB = Completer();
-      // clientA.onSessionConnect.unsubscribeAll();
-      // clientB.onSessionProposal.unsubscribeAll();
-      // clientA.onSessionConnect.subscribe((args) {
-      //   counterA++;
-      //   completerA.complete();
-      // });
-      // clientB.onSessionProposal.subscribe((args) {
-      //   counterB++;
-      //   completerB.complete();
-      // });
 
       expect(counterA, 1);
       expect(counterB, 1);
@@ -103,9 +96,12 @@ void signHappyPath({
         pairingTopic: connectionInfo.pairing.topic,
       );
 
-      // await Future.delayed(Duration(milliseconds: 100));
-      await completerA.future;
-      await completerB.future;
+      if (!completerA.isCompleted) {
+        await completerA.future;
+      }
+      if (!completerB.isCompleted) {
+        await completerB.future;
+      }
 
       expect(counterA, 2);
       expect(counterB, 2);

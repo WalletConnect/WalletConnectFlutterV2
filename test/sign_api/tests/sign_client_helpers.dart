@@ -85,7 +85,7 @@ class SignClientHelpers {
       }
     }
 
-    SessionData? sessionA;
+    late SessionData sessionA;
     SessionData? sessionB;
 
     // Listen for a proposal via connect to avoid race conditions
@@ -113,7 +113,11 @@ class SignClientHelpers {
         namespaces: workingNamespaces,
       );
       sessionB = response.session;
-      await completer.future;
+
+      if (!completer.isCompleted) {
+        await completer.future;
+      }
+
       b.onSessionConnect.unsubscribeAll();
       sessionBCompleter.complete();
 
@@ -129,6 +133,9 @@ class SignClientHelpers {
       requiredNamespaces: reqNamespaces,
       pairingTopic: pairingTopic,
       relays: relays,
+    );
+    connectResponse.session.future.then(
+      (value) => sessionA = value,
     );
     Uri? uri = connectResponse.uri;
 
@@ -181,14 +188,15 @@ class SignClientHelpers {
     }
 
     // Assign session now that we have paired
-    // print('Waiting for connect response');
-    sessionA = await connectResponse.session.future;
+    if (!connectResponse.session.isCompleted) {
+      // print('Waiting for connect response');
+      await connectResponse.session.future;
+    }
 
     final settlePairingLatencyMs = DateTime.now().millisecondsSinceEpoch -
         start -
         (qrCodeScanLatencyMs ?? 0);
 
-    // await Future.delayed(Duration(milliseconds: 200));
     if (!sessionBCompleter.isCompleted) {
       await sessionBCompleter.future;
     }

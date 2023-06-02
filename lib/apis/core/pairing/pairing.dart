@@ -21,6 +21,18 @@ import 'package:walletconnect_flutter_v2/apis/utils/errors.dart';
 import 'package:walletconnect_flutter_v2/apis/utils/method_constants.dart';
 import 'package:walletconnect_flutter_v2/apis/utils/walletconnect_utils.dart';
 
+class PendingRequestResponse {
+  Completer completer;
+  dynamic response;
+  JsonRpcError? error;
+
+  PendingRequestResponse({
+    required this.completer,
+    this.response,
+    this.error,
+  });
+}
+
 class Pairing implements IPairing {
   bool _initialized = false;
 
@@ -40,7 +52,7 @@ class Pairing implements IPairing {
   final Event<PairingEvent> onPairingExpire = Event<PairingEvent>();
 
   /// Stores all the pending requests
-  Map<int, Completer> pendingRequests = {};
+  Map<int, PendingRequestResponse> pendingRequests = {};
 
   final ICore core;
   final IPairingStore pairings;
@@ -395,11 +407,17 @@ class Pairing implements IPairing {
       opts = opts.copyWith(ttl: ttl);
     }
 
-    final Completer completer = Completer();
     // print('adding payload to pending requests: ${payload['id']}');
-    pendingRequests[payload['id']] = completer;
+    final PendingRequestResponse resp = PendingRequestResponse(
+      completer: Completer(),
+    );
+    resp.completer.future.catchError((_) {
+      // Catch the error so that it won't throw an uncaught error
+      // print('inner caught error: $err');
+    });
+    pendingRequests[payload['id']] = resp;
     // print('sent request');
-    core.relayClient.publish(
+    await core.relayClient.publish(
       topic: topic,
       message: message,
       ttl: opts.ttl,
@@ -408,12 +426,18 @@ class Pairing implements IPairing {
 
     // Get the result from the completer, if it's an error, throw it
     try {
-      final result = await completer.future;
-      // if (result is JsonRpcError) {
-      //   throw result;
-      // }
+      // print('checking error');
+      if (resp.error != null) {
+        throw resp.error!;
+      }
 
-      return result;
+      // print('checking if completed');
+      if (resp.completer.isCompleted) {
+        return resp.response;
+      }
+
+      // print('waiting for response');
+      return await resp.completer.future;
     } catch (e) {
       // print('caught error: $e');
       rethrow;
@@ -636,15 +660,16 @@ class Pairing implements IPairing {
       // );
       if (pendingRequests.containsKey(response.id)) {
         if (response.error != null) {
-          // print(
-          //   'erroring: ${response.error}',
-          // );
-          pendingRequests.remove(response.id)!.completeError(response.error!);
+          pendingRequests[response.id]!.error = response.error;
+          pendingRequests[response.id]!
+              .completer
+              .completeError(response.error!);
         } else {
           // print(
           //   'completing: ${response.result}',
           // );
-          pendingRequests.remove(response.id)!.complete(response.result);
+          pendingRequests[response.id]!.response = response.result;
+          pendingRequests[response.id]!.completer.complete(response.result);
         }
       }
     }

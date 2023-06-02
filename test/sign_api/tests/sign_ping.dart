@@ -73,8 +73,12 @@ void signPing({
       await clientA.ping(topic: sessionTopic);
       await clientA.ping(topic: pairingTopic);
 
-      await completerA.future;
-      await completerB.future;
+      if (!completerA.isCompleted) {
+        await completerA.future;
+      }
+      if (!completerB.isCompleted) {
+        await completerB.future;
+      }
 
       expect(counterAP, 1);
       expect(counterBP, 1);
@@ -123,9 +127,12 @@ void signPing({
         ),
       );
 
-      // await Future.delayed(Duration(milliseconds: 150));
-      await completer.future;
-      await completerSession.future;
+      if (!completer.isCompleted) {
+        await completer.future;
+      }
+      if (!completerSession.isCompleted) {
+        await completerSession.future;
+      }
 
       expect(
         clientA.sessions.has(

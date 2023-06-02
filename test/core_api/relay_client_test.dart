@@ -250,8 +250,12 @@ void main() {
           tag: 0,
         );
 
-        await completerA.future;
-        await completerB.future;
+        if (!completerA.isCompleted) {
+          await completerA.future;
+        }
+        if (!completerB.isCompleted) {
+          await completerB.future;
+        }
 
         expect(counterA, 1);
         expect(counterB, 1);

@@ -56,6 +56,7 @@ void signRequestAndHandler({
       final sessionTopic = connectionInfo.session.topic;
 
       // No handler
+      // print('swag 1');
       try {
         final _ = await clientA.request(
           topic: connectionInfo.session.topic,
@@ -100,6 +101,7 @@ void signRequestAndHandler({
       });
 
       try {
+        // print('swag 2');
         final Map<String, dynamic> response = await clientA.request(
           topic: connectionInfo.session.topic,
           chainId: TEST_ETHEREUM_CHAIN,
@@ -113,8 +115,7 @@ void signRequestAndHandler({
 
         await clientBReady.future;
 
-        // await Future.delayed(Duration(milliseconds: 500));
-
+        // print('swag 3');
         final String response2 = await clientA.request(
           topic: connectionInfo.session.topic,
           chainId: TEST_ETHEREUM_CHAIN,
@@ -128,8 +129,6 @@ void signRequestAndHandler({
 
         await clientBReady.future;
         clientB.sessions.onSync.unsubscribeAll();
-
-        // await Future.delayed(Duration(milliseconds: 500));
       } on JsonRpcError catch (e) {
         print(e);
         expect(false, true);
@@ -209,8 +208,6 @@ void signRequestAndHandler({
         );
       }
 
-      // await Future.delayed(Duration(milliseconds: 500));
-
       Completer pendingRequestCompleter = Completer();
       Completer sessionRequestCompleter = Completer();
       clientB.pendingRequests.onSync.subscribe((_) {
@@ -222,8 +219,13 @@ void signRequestAndHandler({
         sessionRequestCompleter.complete();
         sessionRequestCompleter = Completer();
       });
-      await pendingRequestCompleter.future;
-      await sessionRequestCompleter.future;
+
+      if (!pendingRequestCompleter.isCompleted) {
+        await pendingRequestCompleter.future;
+      }
+      if (!sessionRequestCompleter.isCompleted) {
+        await sessionRequestCompleter.future;
+      }
       clientB.pendingRequests.onSync.unsubscribeAll();
       clientB.onSessionRequest.unsubscribeAll();
       expect(clientB.getPendingSessionRequests().length, 0);
