@@ -7,4 +7,15 @@ abstract class IHttpClient {
     Uri url, {
     Map<String, String>? headers,
   });
+
+  Future<http.Response> post(
+    Uri url, {
+    Map<String, String>? headers,
+    Object? body,
+  });
+
+  Future<http.Response> delete(
+    Uri url, {
+    Map<String, String>? headers,
+  });
 }

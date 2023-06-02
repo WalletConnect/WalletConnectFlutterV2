@@ -1,4 +1,5 @@
 import 'package:walletconnect_flutter_v2/apis/core/crypto/i_crypto.dart';
+import 'package:walletconnect_flutter_v2/apis/core/echo/i_echo.dart';
 import 'package:walletconnect_flutter_v2/apis/core/pairing/i_expirer.dart';
 import 'package:walletconnect_flutter_v2/apis/core/pairing/i_pairing.dart';
 import 'package:walletconnect_flutter_v2/apis/core/relay_client/i_relay_client.dart';
@@ -10,6 +11,7 @@ abstract class ICore {
 
   abstract final String relayUrl;
   abstract final String projectId;
+  abstract final String pushUrl;
 
   // abstract IHeartBeat heartbeat;
   abstract ICrypto crypto;
@@ -18,6 +20,7 @@ abstract class ICore {
   // abstract IJsonRpcHistory history;
   abstract IExpirer expirer;
   abstract IPairing pairing;
+  abstract IEcho echo;
 
   Future<void> start();
 }
