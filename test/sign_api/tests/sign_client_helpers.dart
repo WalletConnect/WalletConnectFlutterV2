@@ -220,7 +220,8 @@ class SignClientHelpers {
     expect(a.core.expirer.has(sessionA.topic), true);
     expect(b.core.expirer.has(sessionB!.topic), true);
     // acknowledged
-    expect(sessionA.acknowledged, sessionB!.acknowledged);
+    expect(sessionA.acknowledged, true);
+    expect(sessionB!.acknowledged, true);
     // participants
     expect(sessionA.self, sessionB!.peer);
     expect(sessionA.peer, sessionB!.self);
