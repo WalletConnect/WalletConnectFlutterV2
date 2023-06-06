@@ -110,6 +110,23 @@ class SessionData {
 
   Map<String, dynamic> toJson() => _$SessionDataToJson(this);
 
+  SessionData withAcknowledged(bool value) {
+    return SessionData(
+      topic: topic,
+      pairingTopic: pairingTopic,
+      relay: relay,
+      expiry: expiry,
+      acknowledged: value,
+      controller: controller,
+      namespaces: namespaces,
+      self: self,
+      peer: peer,
+      requiredNamespaces: requiredNamespaces,
+      optionalNamespaces: optionalNamespaces,
+      sessionProperties: sessionProperties,
+    );
+  }
+
   @override
   String toString() {
     return 'SessionData(topic: $topic, pairingTopic: $pairingTopic, relay: $relay, expiry: $expiry, acknowledged: $acknowledged, controller: $controller, namespaces: $namespaces, requiredNamespaces: $requiredNamespaces, optionalNamespaces: $optionalNamespaces, sessionProperties: $sessionProperties, self: $self, peer: $peer)';

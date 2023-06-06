@@ -94,4 +94,9 @@ class ProposalData {
       _$ProposalDataFromJson(json);
 
   Map<String, dynamic> toJson() => _$ProposalDataToJson(this);
+
+  @override
+  String toString() {
+    return 'ProposalData(id: $id, expiry: $expiry, relays: $relays, proposer: $proposer, requiredNamespaces: $requiredNamespaces, optionalNamespaces: $optionalNamespaces, sessionProperties: $sessionProperties, pairingTopic: $pairingTopic, generatedNamespaces: $generatedNamespaces)';
+  }
 }

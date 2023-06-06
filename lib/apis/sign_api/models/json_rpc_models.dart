@@ -67,6 +67,11 @@ class WcSessionProposeResponse {
       _$WcSessionProposeResponseFromJson(json);
 
   Map<String, dynamic> toJson() => _$WcSessionProposeResponseToJson(this);
+
+  @override
+  String toString() {
+    return 'WcSessionProposeResponse(relay: $relay, responderPublicKey: $responderPublicKey)';
+  }
 }
 
 @JsonSerializable(includeIfNull: false)
@@ -93,6 +98,11 @@ class WcSessionSettleRequest {
       _$WcSessionSettleRequestFromJson(json);
 
   Map<String, dynamic> toJson() => _$WcSessionSettleRequestToJson(this);
+
+  @override
+  String toString() {
+    return 'WcSessionSettleRequest(relay: $relay, namespaces: $namespaces, requiredNamespaces: $requiredNamespaces, optionalNamespaces: $optionalNamespaces, sessionProperties: $sessionProperties, expiry: $expiry, controller: $controller)';
+  }
 }
 
 @JsonSerializable()

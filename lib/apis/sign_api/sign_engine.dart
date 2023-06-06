@@ -1,22 +1,22 @@
 import 'dart:async';
 
 import 'package:event/event.dart';
-import 'package:walletconnect_flutter_v2/apis/core/store/i_generic_store.dart';
+import 'package:walletconnect_flutter_v2/apis/core/i_core.dart';
 import 'package:walletconnect_flutter_v2/apis/core/pairing/i_pairing_store.dart';
 import 'package:walletconnect_flutter_v2/apis/core/pairing/utils/json_rpc_utils.dart';
 import 'package:walletconnect_flutter_v2/apis/core/pairing/utils/pairing_models.dart';
-import 'package:walletconnect_flutter_v2/apis/core/i_core.dart';
 import 'package:walletconnect_flutter_v2/apis/core/relay_client/relay_client_models.dart';
+import 'package:walletconnect_flutter_v2/apis/core/store/i_generic_store.dart';
+import 'package:walletconnect_flutter_v2/apis/models/basic_models.dart';
 import 'package:walletconnect_flutter_v2/apis/models/json_rpc_error.dart';
 import 'package:walletconnect_flutter_v2/apis/models/json_rpc_request.dart';
-import 'package:walletconnect_flutter_v2/apis/models/basic_models.dart';
 import 'package:walletconnect_flutter_v2/apis/models/json_rpc_response.dart';
+import 'package:walletconnect_flutter_v2/apis/sign_api/i_sessions.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/i_sign_engine.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/models/json_rpc_models.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/models/proposal_models.dart';
-import 'package:walletconnect_flutter_v2/apis/sign_api/models/sign_client_events.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/models/session_models.dart';
-import 'package:walletconnect_flutter_v2/apis/sign_api/i_sessions.dart';
+import 'package:walletconnect_flutter_v2/apis/sign_api/models/sign_client_events.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/models/sign_client_models.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/utils/sign_api_validator_utils.dart';
 import 'package:walletconnect_flutter_v2/apis/utils/constants.dart';
@@ -276,20 +276,9 @@ class SignEngine implements ISignEngine {
     final relay = Relay(
       relayProtocol ?? 'irn',
     );
+
     final int expiry = WalletConnectUtils.calculateExpiry(
       WalletConnectConstants.SEVEN_DAYS,
-    );
-    final request = WcSessionSettleRequest(
-      relay: relay,
-      namespaces: namespaces,
-      requiredNamespaces: proposal.requiredNamespaces,
-      optionalNamespaces: proposal.optionalNamespaces,
-      sessionProperties: sessionProperties,
-      expiry: expiry,
-      controller: ConnectionMetadata(
-        publicKey: selfPubKey,
-        metadata: metadata,
-      ),
     );
 
     // Respond to the proposal
@@ -313,22 +302,14 @@ class SignEngine implements ISignEngine {
       metadata: proposal.proposer.metadata,
     );
 
-    // print('swag 2');
     await core.relayClient.subscribe(topic: sessionTopic);
-    // print('swag 3');
-    bool acknowledged = await core.pairing.sendRequest(
-      sessionTopic,
-      MethodConstants.WC_SESSION_SETTLE,
-      request,
-    );
-    // print('swag 4');
 
     SessionData session = SessionData(
       topic: sessionTopic,
       pairingTopic: proposal.pairingTopic,
       relay: relay,
       expiry: expiry,
-      acknowledged: acknowledged,
+      acknowledged: false,
       controller: selfPubKey,
       namespaces: namespaces,
       requiredNamespaces: proposal.requiredNamespaces,
@@ -341,14 +322,40 @@ class SignEngine implements ISignEngine {
     );
 
     // print('session connect');
-    onSessionConnect.broadcast(
-      SessionConnect(
-        session,
-      ),
-    );
+    onSessionConnect.broadcast(SessionConnect(session));
 
     await sessions.set(sessionTopic, session);
     await _setSessionExpiry(sessionTopic, expiry);
+
+    // `wc_sessionSettle` is not critical throughout the entire session.
+    bool acknowledged = await core.pairing
+        .sendRequest(
+          sessionTopic,
+          MethodConstants.WC_SESSION_SETTLE,
+          WcSessionSettleRequest(
+            relay: relay,
+            namespaces: namespaces,
+            requiredNamespaces: proposal.requiredNamespaces,
+            optionalNamespaces: proposal.optionalNamespaces,
+            sessionProperties: sessionProperties,
+            expiry: expiry,
+            controller: ConnectionMetadata(
+              publicKey: selfPubKey,
+              metadata: metadata,
+            ),
+          ),
+        )
+        // Sometimes we don't receive any response for a long time,
+        // in which case we manually time out to prevent waiting indefinitely.
+        .timeout(const Duration(seconds: 15))
+        .catchError((_) {
+      return false;
+    });
+
+    if (acknowledged && sessions.has(sessionTopic)) {
+      // We directly update the latest value.
+      await sessions.set(sessionTopic, session.withAcknowledged(acknowledged));
+    }
 
     return ApproveResponse(
       topic: sessionTopic,
