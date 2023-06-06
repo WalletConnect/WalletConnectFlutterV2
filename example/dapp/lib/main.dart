@@ -60,6 +60,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> initialize() async {
     // try {
+    print('Project ID: ${DartDefines.projectId}');
     _web3App = await Web3App.createInstance(
       projectId: DartDefines.projectId,
       metadata: const PairingMetadata(
