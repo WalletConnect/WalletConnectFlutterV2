@@ -352,7 +352,7 @@ class SignEngine implements ISignEngine {
       return false;
     });
 
-    if (acknowledged) {
+    if (acknowledged && sessions.has(sessionTopic)) {
       // We directly update the latest value.
       await sessions.set(sessionTopic, session.withAcknowledged(acknowledged));
     }
