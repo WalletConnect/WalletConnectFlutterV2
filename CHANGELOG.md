@@ -1,3 +1,7 @@
+## 2.0.9
+
+- Fixed issue with hanging websocket connection (Missing session)
+
 ## 2.0.8
 
 - Added echo client

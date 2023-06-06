@@ -283,7 +283,7 @@ This library requires that you add the following to your `DebugProfile.entitleme
 # To Test
 
 Run tests using `flutter test --dart-define=PROJECT_ID=xxx`.
-Expected flutter version is: >`3.3.10`
+Expected flutter version is: >`3.0.0`
 
 # Commands Run in CI
 
