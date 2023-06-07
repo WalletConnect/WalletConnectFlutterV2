@@ -90,7 +90,7 @@ class SignClientHelpers {
 
     // Listen for a proposal via connect to avoid race conditions
     Completer sessionBCompleter = Completer();
-    f(SessionProposalEvent? args) async {
+    func(SessionProposalEvent? args) async {
       // print('B Session Proposal');
 
       expect(
@@ -125,7 +125,7 @@ class SignClientHelpers {
       // expect(b.core.expirer.has(args.params.id.toString()), true);
     }
 
-    b.onSessionProposal.subscribe(f);
+    b.onSessionProposal.subscribe(func);
 
     // Connect to client b from a, this will trigger the above event
     // print('connecting');
@@ -265,7 +265,7 @@ class SignClientHelpers {
       sessionB!.peer.metadata,
     );
 
-    b.onSessionProposal.unsubscribe(f);
+    b.onSessionProposal.unsubscribe(func);
 
     return TestConnectMethodReturn(
       pairingA,
