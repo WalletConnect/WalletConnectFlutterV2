@@ -1,3 +1,4 @@
+import 'package:logger/logger.dart';
 import 'package:walletconnect_flutter_v2/apis/core/crypto/crypto.dart';
 import 'package:walletconnect_flutter_v2/apis/core/crypto/i_crypto.dart';
 import 'package:walletconnect_flutter_v2/apis/core/echo/echo.dart';
@@ -56,6 +57,12 @@ class Core implements ICore {
   late IEcho echo;
 
   @override
+  final Logger logger = Logger(
+    level: Level.nothing,
+    printer: PrettyPrinter(),
+  );
+
+  @override
   late IStore<Map<String, dynamic>> storage;
 
   Core({
@@ -63,6 +70,7 @@ class Core implements ICore {
     required this.projectId,
     this.pushUrl = WalletConnectConstants.DEFAULT_PUSH_URL,
     bool memoryStore = false,
+    Level logLevel = Level.nothing,
     IHttpClient httpClient = const HttpWrapper(),
   }) {
     storage = SharedPrefsStores(

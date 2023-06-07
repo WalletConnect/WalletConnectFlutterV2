@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
+import 'package:logger/logger.dart';
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 
 import '../shared/shared_test_utils.dart';
@@ -15,6 +16,7 @@ void main() {
           relayUrl: TEST_RELAY_URL,
           memoryStore: true,
           metadata: metadata,
+          logLevel: Level.warning,
           httpClient: getHttpWrapper(),
         ),
   ];
@@ -24,6 +26,7 @@ void main() {
           relayUrl: TEST_RELAY_URL,
           memoryStore: true,
           metadata: metadata,
+          logLevel: Level.warning,
           httpClient: getHttpWrapper(),
         ),
   ];

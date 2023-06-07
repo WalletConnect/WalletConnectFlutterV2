@@ -115,12 +115,12 @@ class RelayClient implements IRelayClient {
     };
 
     try {
+      await messageTracker.recordMessageEvent(topic, message);
       var _ = await _sendJsonRpcRequest(
         _buildMethod(JSON_RPC_PUBLISH),
         data,
         JsonRpcUtils.payloadId(entropy: 6),
       );
-      await messageTracker.recordMessageEvent(topic, message);
     } catch (e) {
       // print(e);
       onRelayClientError.broadcast(ErrorEvent(e));
@@ -156,7 +156,7 @@ class RelayClient implements IRelayClient {
       onRelayClientError.broadcast(ErrorEvent(e));
     }
 
-    // Temove the subscription
+    // Remove the subscription
     pendingSubscriptions.remove(topic);
     await topicMap.delete(topic);
 
@@ -210,7 +210,7 @@ class RelayClient implements IRelayClient {
         origin: core.projectId,
       );
 
-      // print('got here');
+      core.logger.v('Initializing WebSocket with $url');
       await socket.init();
 
       jsonRPC = Peer(socket.channel!);
@@ -243,7 +243,7 @@ class RelayClient implements IRelayClient {
   }
 
   Future<void> _reconnect(EventArgs? args) async {
-    // print('disconnected, reconnecting');
+    core.logger.v('WebSocket disconnected, reconnecting');
     await connect();
   }
 
@@ -251,8 +251,8 @@ class RelayClient implements IRelayClient {
     _heartbeatTimer = Timer.periodic(
       Duration(seconds: heartbeatPeriod),
       (timer) async {
-        // print('heartbeat');
         if (jsonRPC.isClosed) {
+          core.logger.v('Heartbeat, WebSocket closed, reconnecting');
           await connect();
         }
         //  else {
@@ -274,9 +274,12 @@ class RelayClient implements IRelayClient {
   /// JSON RPC MESSAGE HANDLERS
 
   Future<bool> handlePublish(String topic, String message) async {
-    // print('handle publish');
+    core.logger.v('Handling Publish Message: $topic, $message');
     // If we want to ignore the message, stop
-    if (await _shouldIgnoreMessageEvent(topic, message)) return false;
+    if (await _shouldIgnoreMessageEvent(topic, message)) {
+      core.logger.w('Ignoring Message: $topic, $message');
+      return false;
+    }
 
     // Record a message event
     await messageTracker.recordMessageEvent(topic, message);
@@ -291,24 +294,13 @@ class RelayClient implements IRelayClient {
     return true;
   }
 
-  // Future<bool> _handlePublish(Parameters params) async {
-  //   // print('handle publish');
-  //   String topic = params['topic'].value;
-  //   String message = params['message'].value;
-  //   return await handlePublish(topic, message);
-  // }
-
   Future<bool> _handleSubscription(Parameters params) async {
-    // print('handle subscription.');
     String topic = params['data']['topic'].value;
     String message = params['data']['message'].value;
-    // print(topic);
-    // print(message);
     return await handlePublish(topic, message);
   }
 
   int _handleSubscribe(Parameters params) {
-    // print('handle subscribe');
     return params.hashCode;
   }
 
@@ -338,7 +330,7 @@ class RelayClient implements IRelayClient {
       );
     } on StateError catch (_) {
       // Reconnect to the websocket
-      // print('StateError, reconnecting: $_');
+      core.logger.v('StateError, reconnecting: $_');
       await connect();
       response = await jsonRPC.sendRequest(
         method,
@@ -346,8 +338,6 @@ class RelayClient implements IRelayClient {
         id,
       );
     }
-
-    // print('onSubscribe response $requestId');
 
     return response;
   }
@@ -362,6 +352,7 @@ class RelayClient implements IRelayClient {
       );
     } catch (e) {
       // print('onSubscribe error: $e');
+      core.logger.e('RelayClient, onSubscribe error: $e, Topic: $topic');
       onRelayClientError.broadcast(ErrorEvent(e));
     }
 

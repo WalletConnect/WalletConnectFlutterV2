@@ -1,6 +1,7 @@
 ## 2.0.9
 
 - Fixed issue with hanging websocket connection (Missing session)
+- Added logs to certain packages to help with debugging
 
 ## 2.0.8
 

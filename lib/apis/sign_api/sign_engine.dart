@@ -969,7 +969,7 @@ class SignEngine implements ISignEngine {
 
       final SessionProposalCompleter sProposalCompleter =
           pendingProposals.removeLast();
-      print(sProposalCompleter);
+      // print(sProposalCompleter);
 
       // Create the session
       final SessionData session = SessionData(
