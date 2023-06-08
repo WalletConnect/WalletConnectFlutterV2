@@ -94,7 +94,8 @@ void signRequestAndHandler({
 
       Completer clientBReady = Completer();
       clientB.pendingRequests.onSync.subscribe((args) {
-        if (clientB.getPendingSessionRequests().isEmpty) {
+        if (clientB.getPendingSessionRequests().isEmpty &&
+            !clientBReady.isCompleted) {
           clientBReady.complete();
         }
       });
@@ -229,12 +230,12 @@ void signRequestAndHandler({
         sessionRequestCompleter = Completer();
       });
 
-      clientA.core.logger.i('waiting pendingRequestCompleter');
       if (!pendingRequestCompleter.isCompleted) {
+        clientA.core.logger.i('waiting pendingRequestCompleter');
         await pendingRequestCompleter.future;
       }
-      clientA.core.logger.i('waiting sessionRequestComplete');
       if (!sessionRequestCompleter.isCompleted) {
+        clientA.core.logger.i('waiting sessionRequestComplete');
         await sessionRequestCompleter.future;
       }
       clientB.pendingRequests.onSync.unsubscribeAll();
