@@ -2,6 +2,7 @@
 
 - Fixed issue with hanging websocket connection (Missing session)
 - Added logs to certain packages to help with debugging
+- Updated multiple tests to be more deterministic
 
 ## 2.0.8
 
