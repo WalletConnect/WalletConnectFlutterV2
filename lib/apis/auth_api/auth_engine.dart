@@ -132,7 +132,7 @@ class AuthEngine implements IAuthEngine {
       expiry: expiry,
     );
 
-    Completer<AuthResponse> completer = Completer.sync();
+    Completer<AuthResponse> completer = Completer();
 
     _requestAuthResponseHandler(
       pairingTopic: pTopic,
@@ -162,6 +162,7 @@ class AuthEngine implements IAuthEngine {
     Map<String, dynamic>? resp;
 
     // Subscribe to the responseTopic because we expect the response to use this topic
+    print('got here');
     await core.relayClient.subscribe(topic: responseTopic);
 
     try {

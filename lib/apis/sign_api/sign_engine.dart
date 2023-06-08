@@ -282,7 +282,6 @@ class SignEngine implements ISignEngine {
     );
 
     // Respond to the proposal
-    // print('swag 1');
     await core.pairing.sendResult(
       id,
       proposal.pairingTopic,
@@ -868,7 +867,9 @@ class SignEngine implements ISignEngine {
     JsonRpcRequest payload,
   ) async {
     try {
-      // print(payload.params);
+      core.logger.v(
+        '_onSessionProposeRequest, topic: $topic, payload: $payload',
+      );
       final proposeRequest = WcSessionProposeRequest.fromJson(payload.params);
       await _isValidConnect(
         requiredNamespaces: proposeRequest.requiredNamespaces,
@@ -881,9 +882,6 @@ class SignEngine implements ISignEngine {
       // If there are accounts and event emitters, then handle the Namespace generate automatically
       Map<String, Namespace>? namespaces;
       if (_accounts.isNotEmpty || _eventEmitters.isNotEmpty) {
-        // print(_accounts);
-        // print(_methodHandlers.keys.toSet());
-        // print(_eventEmitters);
         namespaces = NamespaceUtils.constructNamespaces(
           availableAccounts: _accounts,
           availableMethods: _methodHandlers.keys.toSet(),
@@ -891,9 +889,6 @@ class SignEngine implements ISignEngine {
           requiredNamespaces: proposeRequest.requiredNamespaces,
           optionalNamespaces: proposeRequest.optionalNamespaces,
         );
-        // print(proposeRequest.requiredNamespaces);
-        // print(proposeRequest.optionalNamespaces);
-        // print(namespaces);
 
         // Check that the namespaces are conforming
         try {
@@ -904,6 +899,9 @@ class SignEngine implements ISignEngine {
           );
         } on WalletConnectError catch (err) {
           // If they aren't, send an error
+          core.logger.v(
+            '_onSessionProposeRequest WalletConnectError: $err',
+          );
           await core.pairing.sendError(
             payload.id,
             topic,
@@ -947,6 +945,7 @@ class SignEngine implements ISignEngine {
         proposal,
       ));
     } on WalletConnectError catch (err) {
+      core.logger.e('_onSessionProposeRequest Error: $err');
       await core.pairing.sendError(
         payload.id,
         topic,
@@ -1014,7 +1013,7 @@ class SignEngine implements ISignEngine {
         SessionConnect(session),
       );
     } on WalletConnectError catch (err) {
-      // print(err);
+      core.logger.e('_onSessionSettleRequest Error: $err');
       await core.pairing.sendError(
         payload.id,
         topic,
@@ -1052,6 +1051,7 @@ class SignEngine implements ISignEngine {
         ),
       );
     } on WalletConnectError catch (err) {
+      core.logger.e('_onSessionUpdateRequest Error: $err');
       await core.pairing.sendError(
         payload.id,
         topic,
@@ -1346,12 +1346,6 @@ class SignEngine implements ISignEngine {
     // print('Session: relay connected');
     await _resubscribeAll();
   }
-
-  // void _deregisterInternalEvents() {
-  //   core.expirer.onExpire.unsubscribe(_onExpired);
-  //   core.pairing.onPairingDelete.unsubscribe(_onPairingDelete);
-  //   core.pairing.onPairingExpire.unsubscribe(_onPairingDelete);
-  // }
 
   Future<void> _onPairingDelete(PairingEvent? event) async {
     // Delete all the sessions associated with the pairing

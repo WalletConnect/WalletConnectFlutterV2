@@ -58,8 +58,9 @@ class Core implements ICore {
 
   @override
   final Logger logger = Logger(
-    level: Level.nothing,
-    printer: PrettyPrinter(),
+    printer: PrettyPrinter(
+      methodCount: 25,
+    ),
   );
 
   @override
@@ -70,9 +71,10 @@ class Core implements ICore {
     required this.projectId,
     this.pushUrl = WalletConnectConstants.DEFAULT_PUSH_URL,
     bool memoryStore = false,
-    Level logLevel = Level.nothing,
+    Level logLevel = Level.warning,
     IHttpClient httpClient = const HttpWrapper(),
   }) {
+    Logger.level = logLevel;
     storage = SharedPrefsStores(
       memoryStore: memoryStore,
     );

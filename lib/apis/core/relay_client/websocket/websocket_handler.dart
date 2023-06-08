@@ -39,7 +39,10 @@ class WebSocketHandler implements IWebSocketHandler {
 
   @override
   Future<void> close() async {
-    await _socket?.sink.close();
+    try {
+      await _socket?.sink.close();
+    } catch (_) {}
+    _socket = null;
     // await _streamController?.close();
   }
 
