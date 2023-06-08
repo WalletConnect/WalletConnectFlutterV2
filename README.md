@@ -285,7 +285,7 @@ This library requires that you add the following to your `DebugProfile.entitleme
 Run tests using `flutter test --dart-define=PROJECT_ID=xxx`.
 Expected flutter version is: >`3.0.0`
 
-To output logs while testing, you can set the `core.logger.level = Level.warning` to see only warnings and errors, or `Level.info` to see all logs.
+To output logs while testing, you can set the `core.logger.level = Level.info` to see only warnings and errors, or `Level.info` to see all logs.
 
 # Commands Run in CI
 

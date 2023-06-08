@@ -189,6 +189,7 @@ class SignClientHelpers {
 
     // Assign session now that we have paired
     if (!connectResponse.session.isCompleted) {
+      a.core.logger.i('signClientHelpers waiting connectResponseCompleter');
       // print('Waiting for connect response');
       await connectResponse.session.future;
     }
@@ -198,6 +199,7 @@ class SignClientHelpers {
         (qrCodeScanLatencyMs ?? 0);
 
     if (!sessionBCompleter.isCompleted) {
+      a.core.logger.i('signClientHelpers waiting sessionBCompleter');
       await sessionBCompleter.future;
     }
 
@@ -376,7 +378,10 @@ class SignClientHelpers {
     // Assign session now that we have paired
     // print('Waiting for connect response');
     try {
-      await connectResponse.session.future;
+      if (!connectResponse.session.isCompleted) {
+        // print('Waiting for connect response');
+        await connectResponse.session.future;
+      }
       await sessionBCompleter.future;
     } catch (e) {
       b.onSessionProposal.unsubscribe(f);

@@ -17,7 +17,7 @@ void main() {
       relayUrl: TEST_RELAY_URL,
       metadata: metadata,
       memoryStore: true,
-      logLevel: Level.warning,
+      logLevel: Level.info,
       httpClient: getHttpWrapper(),
     ),
     clientBCreator: (PairingMetadata metadata) async =>
@@ -26,7 +26,7 @@ void main() {
       relayUrl: TEST_RELAY_URL,
       metadata: metadata,
       memoryStore: true,
-      logLevel: Level.warning,
+      logLevel: Level.info,
       httpClient: getHttpWrapper(),
     ),
   );

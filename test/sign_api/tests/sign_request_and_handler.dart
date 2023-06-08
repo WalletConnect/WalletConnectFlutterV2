@@ -56,7 +56,7 @@ void signRequestAndHandler({
       final sessionTopic = connectionInfo.session.topic;
 
       // No handler
-      // print('swag 1');
+      clientA.core.logger.i('No handler');
       try {
         final _ = await clientA.request(
           topic: connectionInfo.session.topic,
@@ -96,12 +96,11 @@ void signRequestAndHandler({
       clientB.pendingRequests.onSync.subscribe((args) {
         if (clientB.getPendingSessionRequests().isEmpty) {
           clientBReady.complete();
-          clientBReady = Completer();
         }
       });
 
       try {
-        // print('swag 2');
+        clientA.core.logger.i('Request handler 1');
         final Map<String, dynamic> response = await clientA.request(
           topic: connectionInfo.session.topic,
           chainId: TEST_ETHEREUM_CHAIN,
@@ -113,9 +112,16 @@ void signRequestAndHandler({
 
         expect(response, TEST_MESSAGE_1);
 
-        await clientBReady.future;
+        clientA.core.logger.i('Request handler 1, waiting for clientBReady');
+        if (clientBReady.isCompleted) {
+          clientBReady = Completer();
+        } else {
+          await clientBReady.future;
+          clientBReady = Completer();
+        }
 
         // print('swag 3');
+        clientA.core.logger.i('Request handler 2');
         final String response2 = await clientA.request(
           topic: connectionInfo.session.topic,
           chainId: TEST_ETHEREUM_CHAIN,
@@ -127,7 +133,11 @@ void signRequestAndHandler({
 
         expect(response2, TEST_MESSAGE_2);
 
-        await clientBReady.future;
+        clientA.core.logger.i('Request handler 2, waiting for clientBReady');
+        if (!clientBReady.isCompleted) {
+          await clientBReady.future;
+        }
+
         clientB.sessions.onSync.unsubscribeAll();
       } on JsonRpcError catch (e) {
         print(e);
@@ -190,7 +200,6 @@ void signRequestAndHandler({
       }
 
       try {
-        // print('sessions: ${clientA.sessions.getAll()}');
         final _ = await clientA.request(
           topic: connectionInfo.session.topic,
           chainId: TEST_ETHEREUM_CHAIN,
@@ -220,9 +229,11 @@ void signRequestAndHandler({
         sessionRequestCompleter = Completer();
       });
 
+      clientA.core.logger.i('waiting pendingRequestCompleter');
       if (!pendingRequestCompleter.isCompleted) {
         await pendingRequestCompleter.future;
       }
+      clientA.core.logger.i('waiting sessionRequestComplete');
       if (!sessionRequestCompleter.isCompleted) {
         await sessionRequestCompleter.future;
       }

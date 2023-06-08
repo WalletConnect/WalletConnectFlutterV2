@@ -71,7 +71,7 @@ class Core implements ICore {
     required this.projectId,
     this.pushUrl = WalletConnectConstants.DEFAULT_PUSH_URL,
     bool memoryStore = false,
-    Level logLevel = Level.warning,
+    Level logLevel = Level.info,
     IHttpClient httpClient = const HttpWrapper(),
   }) {
     Logger.level = logLevel;

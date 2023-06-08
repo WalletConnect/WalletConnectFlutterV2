@@ -16,7 +16,7 @@ void main() {
           relayUrl: TEST_RELAY_URL,
           memoryStore: true,
           metadata: metadata,
-          logLevel: Level.warning,
+          logLevel: Level.info,
           httpClient: getHttpWrapper(),
         ),
   ];
@@ -26,7 +26,7 @@ void main() {
           relayUrl: TEST_RELAY_URL,
           memoryStore: true,
           metadata: metadata,
-          logLevel: Level.warning,
+          logLevel: Level.info,
           httpClient: getHttpWrapper(),
         ),
   ];

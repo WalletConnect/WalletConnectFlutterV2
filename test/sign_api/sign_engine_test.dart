@@ -18,7 +18,7 @@ void main() {
         projectId: TEST_PROJECT_ID,
         relayUrl: TEST_RELAY_URL,
         memoryStore: true,
-        logLevel: Level.warning,
+        logLevel: Level.info,
         httpClient: getHttpWrapper(),
       );
       ISignEngine e = SignEngine(
@@ -59,7 +59,7 @@ void main() {
         projectId: TEST_PROJECT_ID,
         relayUrl: TEST_RELAY_URL,
         memoryStore: true,
-        logLevel: Level.warning,
+        logLevel: Level.info,
         httpClient: getHttpWrapper(),
       );
       ISignEngine e = SignEngine(
