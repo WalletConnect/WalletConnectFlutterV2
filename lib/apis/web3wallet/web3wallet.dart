@@ -25,9 +25,10 @@ class Web3Wallet implements IWeb3Wallet {
       core: Core(
         projectId: projectId,
         relayUrl: relayUrl,
-        memoryStore: memoryStore,
-        httpClient: httpClient,
         pushUrl: pushUrl,
+        memoryStore: memoryStore,
+        logLevel: logLevel,
+        httpClient: httpClient,
       ),
       metadata: metadata,
     );

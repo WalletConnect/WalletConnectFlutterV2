@@ -34,6 +34,7 @@ class Web3App implements IWeb3App {
         projectId: projectId,
         relayUrl: relayUrl,
         memoryStore: memoryStore,
+        logLevel: logLevel,
         httpClient: httpClient,
       ),
       metadata: metadata,
