@@ -1,13 +1,19 @@
+import 'dart:io';
+
 import 'package:walletconnect_flutter_v2/apis/core/crypto/crypto_models.dart';
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 
-const TEST_RELAY_URL = String.fromEnvironment(
-  'RELAY_ENDPOINT',
-  defaultValue: 'wss://relay.walletconnect.com',
-);
-const TEST_PROJECT_ID = String.fromEnvironment(
-  'PROJECT_ID',
-);
+final TEST_RELAY_URL =
+    Platform.environment['RELAY_ENDPOINT'] ?? 'wss://relay.walletconnect.com';
+final TEST_PROJECT_ID = _getTestProjectId();
+
+String _getTestProjectId() {
+  final projectId = Platform.environment['PROJECT_ID'];
+  if (projectId == null) {
+    throw Exception('PROJECT_ID is not set in enviorment');
+  }
+  return projectId;
+}
 
 const PROPOSER = PairingMetadata(
   name: 'App A (Proposer, dapp)',

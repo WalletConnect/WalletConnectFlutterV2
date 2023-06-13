@@ -8,7 +8,6 @@ import '../shared/shared_test_values.dart';
 import 'utils/signature_constants.dart';
 
 void main() {
-
   group('AuthSignature', () {
     test('Test EIP-191 Personal Message Hash', () {
       final messages = [
