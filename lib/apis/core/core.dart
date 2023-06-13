@@ -19,7 +19,7 @@ import 'package:walletconnect_flutter_v2/apis/core/store/generic_store.dart';
 import 'package:walletconnect_flutter_v2/apis/core/store/i_store.dart';
 import 'package:walletconnect_flutter_v2/apis/core/relay_client/i_relay_client.dart';
 import 'package:walletconnect_flutter_v2/apis/core/pairing/i_pairing.dart';
-import 'package:walletconnect_flutter_v2/apis/core/store/shared_prefs_store.dart';
+import 'package:walletconnect_flutter_v2/apis/core/store/memory_store.dart';
 import 'package:walletconnect_flutter_v2/apis/utils/constants.dart';
 import 'package:walletconnect_flutter_v2/apis/utils/walletconnect_utils.dart';
 
@@ -72,12 +72,11 @@ class Core implements ICore {
     this.pushUrl = WalletConnectConstants.DEFAULT_PUSH_URL,
     bool memoryStore = false,
     Level logLevel = Level.info,
+    IStore<Map<String, dynamic>>? store,
     IHttpClient httpClient = const HttpWrapper(),
   }) {
     Logger.level = logLevel;
-    storage = SharedPrefsStores(
-      memoryStore: memoryStore,
-    );
+    storage = store ?? MemoryStore();
     crypto = Crypto(
       core: this,
       keyChain: GenericStore<String>(
