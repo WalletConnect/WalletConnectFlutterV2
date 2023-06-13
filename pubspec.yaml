@@ -4,7 +4,7 @@ version: 2.0.9
 repository: https://github.com/WalletConnect/WalletConnectFlutterV2
 
 environment:
-  sdk: '>=2.17.0 <4.0.0'
+  sdk: ">=2.17.0 <4.0.0"
 
 dependencies:
   web_socket_channel: ^2.3.0
@@ -19,7 +19,6 @@ dependencies:
   # json_rpc_2: ^3.0.2
   event: ^2.1.2
   stream_channel: ^2.1.0
-  # shared_preferences: ^2.0.17
   universal_io: ^2.0.4
   stack_trace: ^1.10.0
   web3dart: ^2.5.1
