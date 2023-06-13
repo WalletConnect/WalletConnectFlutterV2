@@ -21,7 +21,7 @@ dependencies:
   stream_channel: ^2.1.0
   universal_io: ^2.0.4
   stack_trace: ^1.10.0
-  web3dart: ^2.5.0
+  web3dart: ^2.4.0
   logger: ^1.4.0
 
 dev_dependencies:
