@@ -1,4 +1,3 @@
-import 'package:test/test.dart';
 import 'package:logger/logger.dart';
 import 'package:walletconnect_flutter_v2/apis/core/store/generic_store.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/sign_engine.dart';
