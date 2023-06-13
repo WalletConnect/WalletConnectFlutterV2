@@ -1,11 +1,9 @@
-import 'package:flutter_test/flutter_test.dart';
+import 'package:test/test.dart';
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 
 import '../shared/shared_test_values.dart';
 
 void main() {
-  TestWidgetsFlutterBinding.ensureInitialized();
-
   group('URIParse', () {
     test('parsed v2 url properly', () {
       URIParseResult parsed = WalletConnectUtils.parseUri(Uri.parse(TEST_URI));

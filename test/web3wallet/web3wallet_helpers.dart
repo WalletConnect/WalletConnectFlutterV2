@@ -2,7 +2,7 @@ import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:eth_sig_util/eth_sig_util.dart';
-import 'package:flutter_test/flutter_test.dart';
+import 'package:test/test.dart';
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 
 import '../auth_api/utils/engine_constants.dart';

@@ -1,6 +1,6 @@
 # Overview
 
-WalletConnect Dart v2 library for Flutter, heavily inspired by the WalletConnect V2 Javascript Monorepo.  
+A pure dart fork of WalletConnect/WalletConnectFlutterV2
 
 Original work for this library is attributed to [Eucalyptus Labs](https://eucalyptuslabs.com/) and Sterling Long for [Koala Wallet](https://koalawallet.io/), a wallet built for the Kadena blockchain.
 
@@ -9,6 +9,7 @@ Original work for this library is attributed to [Eucalyptus Labs](https://eucaly
 ## Pair, Approve, and Sign/Auth
 
 ### dApp Flow
+
 ```dart
 // To create both an Auth and Sign API, you can use the Web3App
 // If you just need one of the other, replace Web3App with SignClient or AuthClient
@@ -95,6 +96,7 @@ wcClient.registerEventHandler(
 ```
 
 ### Wallet Flow
+
 ```dart
 Web3Wallet wcClient = await Web3Wallet.createInstance(
   relayUrl: 'wss://relay.walletconnect.com', // The relay websocket URL, leave blank to use the default
@@ -119,7 +121,7 @@ wcClient.onSessionProposal.subscribe((SessionProposal? args) async {
 final kadenaSignV1RequestHandler = (String topic, dynamic parameters) async {
   // Handling Steps
   // 1. Parse the request, if there are any errors thrown while trying to parse
-  // the client will automatically respond to the requester with a 
+  // the client will automatically respond to the requester with a
   // JsonRpcError.invalidParams error
   final parsedResponse = parameters;
 
@@ -172,7 +174,7 @@ wcClient.registerRequestHandler(
 // Setup the auth handling
 clientB.onAuthRequest.subscribe((AuthRequest? args) async {
 
-  // This is where you would 
+  // This is where you would
   // 1. Store the information to be signed
   // 2. Display to the user that an auth request has been received
 
@@ -282,25 +284,31 @@ This library requires that you add the following to your `DebugProfile.entitleme
 
 # To Test
 
-Run tests using `flutter test --dart-define=PROJECT_ID=xxx`.
+Run tests using
+
+```bash
+export PROJECT_ID=xxx
+dart test
+```
+
 Expected flutter version is: >`3.0.0`
 
 To output logs while testing, you can set the `core.logger.level = Level.info` to see only warnings and errors, or `Level.info` to see all logs.
 
 # Commands Run in CI
 
-* `flutter analyze`
-* `dart format --output=none --set-exit-if-changed .`
+- `flutter analyze`
+- `dart format --output=none --set-exit-if-changed .`
 
 # Useful Commands
 
-* `flutter pub run build_runner build --delete-conflicting-outputs` - Regenerates JSON Generators
-* `flutter doctor -v` - get paths of everything installed.
-* `flutter pub get`
-* `flutter upgrade`
-* `flutter clean`
-* `flutter pub cache clean`
-* `flutter pub deps`
-* `flutter pub run dependency_validator` - show unused dependencies and more
-* `dart format lib/* -l 120`
-* `flutter analyze`
+- `flutter pub run build_runner build --delete-conflicting-outputs` - Regenerates JSON Generators
+- `flutter doctor -v` - get paths of everything installed.
+- `flutter pub get`
+- `flutter upgrade`
+- `flutter clean`
+- `flutter pub cache clean`
+- `flutter pub deps`
+- `flutter pub run dependency_validator` - show unused dependencies and more
+- `dart format lib/* -l 120`
+- `flutter analyze`

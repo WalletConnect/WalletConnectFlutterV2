@@ -1,9 +1,9 @@
 import 'package:event/event.dart';
-import 'package:flutter/material.dart';
 import 'package:walletconnect_flutter_v2/apis/core/store/i_generic_store.dart';
 import 'package:walletconnect_flutter_v2/apis/core/store/i_store.dart';
 import 'package:walletconnect_flutter_v2/apis/core/store/store_models.dart';
 import 'package:walletconnect_flutter_v2/apis/utils/errors.dart';
+import 'package:meta/meta.dart';
 
 class GenericStore<T> implements IGenericStore<T> {
   @override

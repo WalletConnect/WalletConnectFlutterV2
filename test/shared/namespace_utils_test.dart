@@ -1,4 +1,4 @@
-import 'package:flutter_test/flutter_test.dart';
+import 'package:test/test.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/utils/sign_api_validator_utils.dart';
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 
@@ -6,8 +6,6 @@ import '../shared/shared_test_values.dart';
 import '../sign_api/utils/sign_client_constants.dart';
 
 void main() {
-  TestWidgetsFlutterBinding.ensureInitialized();
-
   group('NamespaceUtils', () {
     test('isValidChainId', () {
       expect(

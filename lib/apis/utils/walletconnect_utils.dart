@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:universal_io/io.dart';
-import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:walletconnect_flutter_v2/apis/core/relay_client/relay_client_models.dart';
 import 'package:walletconnect_flutter_v2/apis/models/basic_models.dart';
 import 'package:walletconnect_flutter_v2/apis/models/uri_parse_result.dart';
@@ -40,8 +39,6 @@ class WalletConnectUtils {
       return 'macos';
     } else if (Platform.isWindows) {
       return 'windows';
-    } else if (kIsWeb) {
-      return 'web';
     } else {
       return 'unknown';
     }

@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter_test/flutter_test.dart';
+import 'package:test/test.dart';
 import 'package:walletconnect_flutter_v2/apis/core/core.dart';
 import 'package:walletconnect_flutter_v2/apis/core/i_core.dart';
 import 'package:walletconnect_flutter_v2/apis/core/pairing/utils/pairing_models.dart';
@@ -16,7 +16,6 @@ import '../shared/shared_test_utils.dart';
 import '../shared/shared_test_values.dart';
 
 void main() {
-  TestWidgetsFlutterBinding.ensureInitialized();
 
   test('Format and parses URI correctly', () {
     Uri response = WalletConnectUtils.formatUri(

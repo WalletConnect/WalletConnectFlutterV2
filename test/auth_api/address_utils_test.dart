@@ -1,12 +1,10 @@
-import 'package:flutter_test/flutter_test.dart';
+import 'package:test/test.dart';
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 
 import '../shared/shared_test_values.dart';
 import 'utils/signature_constants.dart';
 
 void main() {
-  TestWidgetsFlutterBinding.ensureInitialized();
-
   group('AddressUtils', () {
     test('getDidAddress', () async {
       expect(

@@ -1,12 +1,9 @@
-import 'dart:convert';
 
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:walletconnect_flutter_v2/apis/core/store/i_store.dart';
 import 'package:walletconnect_flutter_v2/apis/utils/constants.dart';
 import 'package:walletconnect_flutter_v2/apis/utils/errors.dart';
 
-class SharedPrefsStores implements IStore<Map<String, dynamic>> {
-  late SharedPreferences prefs;
+class MemoryStore implements IStore<Map<String, dynamic>> {
   bool _initialized = false;
 
   final Map<String, Map<String, dynamic>> _map;
@@ -23,11 +20,8 @@ class SharedPrefsStores implements IStore<Map<String, dynamic>> {
   @override
   String get storagePrefix => WalletConnectConstants.CORE_STORAGE_PREFIX;
 
-  final bool memoryStore;
-
-  SharedPrefsStores({
+  MemoryStore({
     Map<String, Map<String, dynamic>>? defaultValue,
-    this.memoryStore = false,
   }) : _map = defaultValue ?? {};
 
   /// Initializes the store, loading all persistent values into memory.
@@ -35,10 +29,6 @@ class SharedPrefsStores implements IStore<Map<String, dynamic>> {
   Future<void> init() async {
     if (_initialized) {
       return;
-    }
-
-    if (!memoryStore) {
-      prefs = await SharedPreferences.getInstance();
     }
 
     _initialized = true;
@@ -55,20 +45,13 @@ class SharedPrefsStores implements IStore<Map<String, dynamic>> {
       return _map[keyWithPrefix];
     }
 
-    Map<String, dynamic>? value = _getPref(keyWithPrefix);
-    if (value != null) {
-      _map[keyWithPrefix] = value;
-    }
-    return value;
+    return null;
   }
 
   @override
   bool has(String key) {
     final String keyWithPrefix = _addPrefix(key);
-    if (memoryStore) {
-      return _map.containsKey(keyWithPrefix);
-    }
-    return prefs.containsKey(keyWithPrefix);
+    return _map.containsKey(keyWithPrefix);
   }
 
   /// Gets all of the values of the store
@@ -85,7 +68,6 @@ class SharedPrefsStores implements IStore<Map<String, dynamic>> {
 
     final String keyWithPrefix = _addPrefix(key);
     _map[keyWithPrefix] = value;
-    await _updatePref(keyWithPrefix, value);
   }
 
   /// Updates the value of a key. Fails if it does not exist.
@@ -98,7 +80,6 @@ class SharedPrefsStores implements IStore<Map<String, dynamic>> {
       throw Errors.getInternalError(Errors.NO_MATCHING_KEY);
     } else {
       _map[keyWithPrefix] = value;
-      await _updatePref(keyWithPrefix, value);
     }
   }
 
@@ -109,43 +90,6 @@ class SharedPrefsStores implements IStore<Map<String, dynamic>> {
 
     final String keyWithPrefix = _addPrefix(key);
     _map.remove(keyWithPrefix);
-    await _removePref(keyWithPrefix);
-  }
-
-  Map<String, dynamic>? _getPref(String key) {
-    if (memoryStore) {
-      return null;
-    }
-
-    if (prefs.containsKey(key)) {
-      final value = prefs.getString(key)!;
-      return jsonDecode(value);
-    } else {
-      throw Errors.getInternalError(Errors.NO_MATCHING_KEY);
-    }
-  }
-
-  Future<void> _updatePref(String key, Map<String, dynamic> value) async {
-    if (memoryStore) {
-      return;
-    }
-
-    try {
-      final stringValue = jsonEncode(value);
-      await prefs.setString(key, stringValue);
-    } on Exception catch (e) {
-      throw Errors.getInternalError(
-        Errors.MISSING_OR_INVALID,
-        context: e.toString(),
-      );
-    }
-  }
-
-  Future<void> _removePref(String key) async {
-    if (memoryStore) {
-      return;
-    }
-    await prefs.remove(key);
   }
 
   String _addPrefix(String key) {

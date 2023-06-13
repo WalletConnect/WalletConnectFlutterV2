@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter_test/flutter_test.dart';
+import 'package:test/test.dart';
 import 'package:logger/logger.dart';
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 
@@ -9,7 +9,6 @@ import '../shared/shared_test_values.dart';
 import 'web3wallet_helpers.dart';
 
 void main() {
-  TestWidgetsFlutterBinding.ensureInitialized();
   final List<Future<IWeb3App> Function(PairingMetadata)> appCreators = [
     (PairingMetadata metadata) async => await Web3App.createInstance(
           projectId: TEST_PROJECT_ID,
