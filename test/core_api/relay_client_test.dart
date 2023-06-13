@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart';
 import 'package:mockito/mockito.dart';
+import 'package:test/test.dart';
 import 'package:walletconnect_flutter_v2/apis/core/core.dart';
 import 'package:walletconnect_flutter_v2/apis/core/i_core.dart';
 import 'package:walletconnect_flutter_v2/apis/core/pairing/utils/pairing_models.dart';
@@ -16,8 +16,6 @@ import '../shared/shared_test_utils.dart';
 import '../shared/shared_test_utils.mocks.dart';
 
 void main() {
-  TestWidgetsFlutterBinding.ensureInitialized();
-
   const TEST_TOPIC = 'abc123';
   const TEST_MESSAGE = 'swagmasterss';
 

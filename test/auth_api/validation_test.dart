@@ -1,12 +1,10 @@
-import 'package:flutter_test/flutter_test.dart';
+import 'package:test/test.dart';
 import 'package:walletconnect_flutter_v2/apis/auth_api/utils/auth_constants.dart';
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 
 import 'utils/engine_constants.dart';
 
 void main() {
-  TestWidgetsFlutterBinding.ensureInitialized();
-
   group('AuthValidators', () {
     test('isValidRequestExpiry', () {
       final List<int> expiries = [

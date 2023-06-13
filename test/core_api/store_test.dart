@@ -1,6 +1,6 @@
 import 'dart:async';
 
-import 'package:flutter_test/flutter_test.dart';
+import 'package:test/test.dart';
 import 'package:walletconnect_flutter_v2/apis/core/pairing/i_json_rpc_history.dart';
 import 'package:walletconnect_flutter_v2/apis/core/pairing/i_pairing_store.dart';
 import 'package:walletconnect_flutter_v2/apis/core/pairing/json_rpc_history.dart';
@@ -12,20 +12,16 @@ import 'package:walletconnect_flutter_v2/apis/core/relay_client/relay_client_mod
 import 'package:walletconnect_flutter_v2/apis/core/store/generic_store.dart';
 import 'package:walletconnect_flutter_v2/apis/core/store/i_generic_store.dart';
 import 'package:walletconnect_flutter_v2/apis/core/store/i_store.dart';
-import 'package:walletconnect_flutter_v2/apis/core/store/shared_prefs_store.dart';
+import 'package:walletconnect_flutter_v2/apis/core/store/memory_store.dart';
 import 'package:walletconnect_flutter_v2/apis/utils/constants.dart';
 import 'package:walletconnect_flutter_v2/apis/utils/walletconnect_utils.dart';
 
 void main() {
-  TestWidgetsFlutterBinding.ensureInitialized();
-
   group('Store', () {
     late IStore<Map<String, dynamic>> store;
 
     setUp(() async {
-      store = SharedPrefsStores(
-        memoryStore: true,
-      );
+      store = MemoryStore();
       await store.init();
     });
 
@@ -92,7 +88,7 @@ void main() {
       });
 
       test('restores properly', () async {
-        store = SharedPrefsStores(
+        store = MemoryStore(
           defaultValue: {
             '${WalletConnectConstants.CORE_STORAGE_PREFIX}swag//keychain': {
               'key': 'value',
@@ -109,7 +105,6 @@ void main() {
               'version': 'swag',
             },
           },
-          memoryStore: true,
         );
         await store.init();
 
