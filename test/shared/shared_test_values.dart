@@ -88,6 +88,18 @@ final Map<String, RequiredNamespace> requiredNamespacesInAvailable = {
   ),
 };
 
+final Map<String, RequiredNamespace> requiredNamespacesInAvailable2 = {
+  'namespace1': const RequiredNamespace(
+    methods: ['method1'],
+    events: ['event1'],
+  ),
+  'namespace2': const RequiredNamespace(
+    chains: ['namespace2:chain1', 'namespace2:chain2'],
+    methods: ['method3'],
+    events: ['event3'],
+  ),
+};
+
 final Map<String, RequiredNamespace> requiredNamespacesMatchingAvailable1 = {
   'namespace1:chain1': const RequiredNamespace(
     methods: ['method1', 'method2'],

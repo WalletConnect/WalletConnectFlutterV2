@@ -228,6 +228,50 @@ void main() {
           availableAccounts: availableAccounts,
           availableMethods: availableMethods,
           availableEvents: availableEvents,
+          requiredNamespaces: requiredNamespacesInAvailable2,
+        );
+
+        expect(namespaces.length, 2);
+        expect(
+          namespaces['namespace1']!.accounts,
+          ['namespace1:chain1:address1', 'namespace1:chain1:address2'],
+        );
+        expect(
+          namespaces['namespace1']!.methods,
+          ['method1'],
+        );
+        expect(
+          namespaces['namespace1']!.events,
+          ['event1'],
+        );
+
+        expect(namespaces['namespace2']!.accounts, [
+          'namespace2:chain1:address3',
+          'namespace2:chain1:address4',
+          'namespace2:chain2:address5',
+        ]);
+        expect(
+          namespaces['namespace2']!.methods,
+          ['method3'],
+        );
+        expect(
+          namespaces['namespace2']!.events,
+          ['event3'],
+        );
+
+        expect(
+          SignApiValidatorUtils.isConformingNamespaces(
+            requiredNamespaces: requiredNamespacesInAvailable2,
+            namespaces: namespaces,
+            context: '',
+          ),
+          true,
+        );
+
+        namespaces = NamespaceUtils.constructNamespaces(
+          availableAccounts: availableAccounts,
+          availableMethods: availableMethods,
+          availableEvents: availableEvents,
           requiredNamespaces: requiredNamespacesMatchingAvailable1,
         );
 

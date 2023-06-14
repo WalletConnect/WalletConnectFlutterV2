@@ -1,6 +1,6 @@
 name: walletconnect_flutter_v2
 description: WalletConnect v2 client made in dart for flutter.
-version: 2.0.9
+version: 2.0.10
 repository: https://github.com/WalletConnect/WalletConnectFlutterV2
 
 environment:

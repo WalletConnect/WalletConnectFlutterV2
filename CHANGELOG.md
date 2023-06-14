@@ -1,3 +1,8 @@
+## 2.0.10
+
+- Added logger level where missing
+- Updated the `NamespaceUtils` and `SignApiValidatorUtils` to follow [CAIP-217](https://chainagnostic.org/CAIPs/caip-217)
+
 ## 2.0.9
 
 - Fixed issue with hanging websocket connection (Missing session)

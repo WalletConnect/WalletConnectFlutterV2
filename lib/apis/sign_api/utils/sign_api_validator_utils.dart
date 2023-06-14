@@ -8,8 +8,11 @@ class SignApiValidatorUtils {
     required List<dynamic> container,
     required List<dynamic> contained,
   }) {
-    List<dynamic> matches =
-        contained.where((x) => container.contains(x)).toList();
+    List<dynamic> matches = contained
+        .where(
+          (x) => container.contains(x),
+        )
+        .toList();
     return matches.length == contained.length;
   }
 
