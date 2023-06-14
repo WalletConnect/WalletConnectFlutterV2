@@ -292,7 +292,7 @@ class NamespaceUtils {
       final List<String> accounts = [];
       final List<String> events = [];
       final List<String> methods = [];
-
+      final namespace = requiredNamespaces[namespaceOrChainId]!;
       if (NamespaceUtils.isValidChainId(namespaceOrChainId)) {
         // Add the chain specific availableAccounts
         accounts.addAll(
@@ -307,7 +307,7 @@ class NamespaceUtils {
           _getMatching(
             chainId: namespaceOrChainId,
             available: availableEvents,
-            requested: requiredNamespaces[namespaceOrChainId]!.events.toSet(),
+            requested: namespace.events.toSet(),
           ),
         );
         // Add the chain specific methods
@@ -315,55 +315,56 @@ class NamespaceUtils {
           _getMatching(
             chainId: namespaceOrChainId,
             available: availableMethods,
-            requested: requiredNamespaces[namespaceOrChainId]!.methods.toSet(),
+            requested: namespace.methods.toSet(),
           ),
         );
       } else {
-        // Add the namespace specific functions
-        List<Set<String>> chainMethodSets = [];
-        List<Set<String>> chainEventSets = [];
-        // Loop through all of the chains
-        for (final String chainId
-            in requiredNamespaces[namespaceOrChainId]!.chains!) {
-          // Add the chain specific availableAccounts
-          accounts.addAll(
-            _getMatching(
-              chainId: chainId,
-              available: availableAccounts,
-            ).map((e) => '$chainId:$e'),
-          );
-          // Add the chain specific events
-          chainEventSets.add(
-            _getMatching(
-              chainId: chainId,
-              available: availableEvents,
-              requested: requiredNamespaces[namespaceOrChainId]!.events.toSet(),
-            ),
-          );
-          // Add the chain specific methods
-          chainMethodSets.add(
-            _getMatching(
-              chainId: chainId,
-              available: availableMethods,
-              requested:
-                  requiredNamespaces[namespaceOrChainId]!.methods.toSet(),
-            ),
-          );
-        }
+        final chians = namespace.chains;
+        if (chians == null || chians.isEmpty) {
+          final aMethods = availableMethods
+              .map((e) => e.split(':').last)
+              .toSet()
+              .intersection(namespace.methods.toSet());
+          final aEvents = availableEvents
+              .map((e) => e.split(':').last)
+              .toSet()
+              .intersection(namespace.events.toSet());
+          methods.addAll(aMethods);
+          events.addAll(aEvents);
+        } else {
+          // Add the namespace specific functions
+          final List<Set<String>> chainMethodSets = [];
+          final List<Set<String>> chainEventSets = [];
+          // Loop through all of the chains
+          for (final String chainId in chians) {
+            // Add the chain specific availableAccounts
+            accounts.addAll(
+              _getMatching(
+                chainId: chainId,
+                available: availableAccounts,
+              ).map((e) => '$chainId:$e'),
+            );
+            // Add the chain specific events
+            chainEventSets.add(
+              _getMatching(
+                chainId: chainId,
+                available: availableEvents,
+                requested: namespace.events.toSet(),
+              ),
+            );
+            // Add the chain specific methods
+            chainMethodSets.add(
+              _getMatching(
+                chainId: chainId,
+                available: availableMethods,
+                requested: namespace.methods.toSet(),
+              ),
+            );
+          }
 
-        // Get the intersection of the chainMethodSets
-        Set<String> intersectionMethods = chainMethodSets.first;
-        Set<String> intersectionEvents = chainEventSets.first;
-
-        for (final Set<String> chainMethods in chainMethodSets) {
-          intersectionMethods = intersectionMethods.intersection(chainMethods);
+          methods.addAll(chainMethodSets.reduce((v, e) => v.intersection(e)));
+          events.addAll(chainEventSets.reduce((v, e) => v.intersection(e)));
         }
-        for (final Set<String> chainEvents in chainEventSets) {
-          intersectionEvents = intersectionEvents.intersection(chainEvents);
-        }
-
-        methods.addAll(intersectionMethods);
-        events.addAll(intersectionEvents);
       }
       // print(availableAccounts);
       // print(accounts);
