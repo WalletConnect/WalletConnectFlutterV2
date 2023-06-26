@@ -36,16 +36,32 @@ void main() {
         httpClient: http,
       );
 
-      expect(
-        () async => await core.start(),
-        throwsA(
-          isA<WalletConnectError>().having(
-            (e) => e.message,
-            'Invalid project id',
-            'WebSocket connection failed, this could be: 1. Missing project id, 2. Invalid project id, 3. Too many requests',
-          ),
-        ),
-      );
+      Completer completer = Completer();
+      core.relayClient.onRelayClientError.subscribe((args) {
+        expect(args!.error, isA<WalletConnectError>());
+        expect(
+          args.error.message,
+          WebSocketErrors.INVALID_PROJECT_ID_OR_JWT,
+        );
+        completer.complete();
+      });
+
+      await core.start();
+
+      await completer.future;
+
+      core.relayClient.onRelayClientError.unsubscribeAll();
+
+      // expect(
+      //   () async => await core.start(),
+      //   throwsA(
+      //     isA<WalletConnectError>().having(
+      //       (e) => e.message,
+      //       'Invalid project id',
+      //       'WebSocket connection failed, this could be: 1. Missing project id, 2. Invalid project id, 3. Too many requests',
+      //     ),
+      //   ),
+      // );
       // expect(
       //   () async => await core.start(),
       //   throwsA(
@@ -100,8 +116,16 @@ void main() {
     await coreA.start();
     await coreB.start();
 
-    await completerA.future;
-    await completerC.future;
+    if (!completerA.isCompleted) {
+      print('A');
+      coreA.logger.i('relay client test waiting sessionACompleter');
+      await completerA.future;
+    }
+    if (!completerC.isCompleted) {
+      print('C');
+      coreA.logger.i('relay client test waiting sessionCCompleter');
+      await completerC.future;
+    }
 
     expect(counterA, 1);
     expect(counterC, 1);
@@ -109,8 +133,16 @@ void main() {
     await coreA.relayClient.disconnect();
     await coreB.relayClient.disconnect();
 
-    await completerB.future;
-    await completerD.future;
+    if (!completerB.isCompleted) {
+      print('B');
+      coreA.logger.i('relay client test waiting sessionBCompleter');
+      await completerB.future;
+    }
+    if (!completerD.isCompleted) {
+      print('D');
+      coreA.logger.i('relay client test waiting sessionDCompleter');
+      await completerD.future;
+    }
 
     expect(counterB, 1);
     expect(counterD, 1);

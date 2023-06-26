@@ -186,6 +186,7 @@ class Crypto implements ICrypto {
   @override
   Future<String> signJWT(String aud) async {
     _checkInitialized();
+
     final Uint8List seed = await _getClientSeed();
     final RelayAuthKeyPair keyPair = await relayAuth.generateKeyPair(seed);
     String sub = utils.generateRandomBytes32();

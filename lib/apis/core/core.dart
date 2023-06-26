@@ -59,8 +59,8 @@ class Core implements ICore {
   @override
   final Logger logger = Logger(
     printer: PrettyPrinter(
-      methodCount: 25,
-    ),
+        // methodCount: 3,
+        ),
   );
 
   @override

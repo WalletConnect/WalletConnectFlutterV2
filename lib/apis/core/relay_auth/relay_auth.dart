@@ -44,7 +44,7 @@ class RelayAuth implements IRelayAuth {
     required RelayAuthKeyPair keyPair,
     int? iat,
   }) async {
-    iat ??= DateTime.now().millisecondsSinceEpoch ~/ 1000;
+    iat ??= DateTime.now().millisecondsSinceEpoch ~/ 1000 - 60;
     final JWTHeader header = JWTHeader();
     final String iss = encodeIss(keyPair.publicKeyBytes);
     final int exp = iat + ttl;
@@ -55,7 +55,7 @@ class RelayAuth implements IRelayAuth {
       iat,
       exp,
     );
-    final data = encodeData(
+    final Uint8List data = encodeData(
       JWTData(
         header,
         payload,
