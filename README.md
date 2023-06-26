@@ -155,7 +155,7 @@ final kadenaSignV1RequestHandler = (String topic, dynamic parameters) async {
 
   // 3. Respond to the dApp based on user response
   if (userApproved) {
-    // Returned value must by a primitive, or a JSON serializable object: Map, List, etc.
+    // Returned value must be a primitive, or a JSON serializable object: Map, List, etc.
     return 'Signed!';
   }
   else {
