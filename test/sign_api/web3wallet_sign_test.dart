@@ -11,15 +11,20 @@ void main() {
 
   signEngineTests(
     context: 'Web3App/Wallet',
-    clientACreator: (PairingMetadata metadata) async =>
-        await Web3App.createInstance(
-      projectId: TEST_PROJECT_ID,
-      relayUrl: TEST_RELAY_URL,
-      metadata: metadata,
-      memoryStore: true,
-      logLevel: Level.info,
-      httpClient: getHttpWrapper(),
-    ),
+    clientACreator: (PairingMetadata metadata) async {
+      final app = Web3App(
+        core: Core(
+          projectId: TEST_PROJECT_ID,
+          relayUrl: TEST_RELAY_URL,
+          memoryStore: true,
+          logLevel: Level.info,
+          httpClient: getHttpWrapper(),
+        ),
+        metadata: metadata,
+      );
+      await app.init();
+      return app;
+    },
     clientBCreator: (PairingMetadata metadata) async =>
         await Web3Wallet.createInstance(
       projectId: TEST_PROJECT_ID,

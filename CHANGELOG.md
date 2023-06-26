@@ -1,3 +1,7 @@
+## 2.0.11
+
+- Updated relay client's error messages to be accurate and descriptive.
+
 ## 2.0.10
 
 - Added logger level where missing
