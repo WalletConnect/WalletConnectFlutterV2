@@ -3,7 +3,6 @@ import 'dart:async';
 import 'package:stream_channel/stream_channel.dart';
 import 'package:walletconnect_flutter_v2/apis/core/relay_client/websocket/i_http_client.dart';
 import 'package:walletconnect_flutter_v2/apis/core/relay_client/websocket/i_websocket_handler.dart';
-import 'package:walletconnect_flutter_v2/apis/models/basic_models.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 class WebSocketHandler implements IWebSocketHandler {

@@ -1,3 +1,7 @@
+## 2.0.12
+
+- Fixed regression with default relay URL, added tests to ensure it doesn't happen again
+
 ## 2.0.11
 
 - Updated relay client's error messages to be accurate and descriptive.

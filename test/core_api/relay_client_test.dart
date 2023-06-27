@@ -3,13 +3,8 @@ import 'dart:async';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart';
 import 'package:mockito/mockito.dart';
-import 'package:walletconnect_flutter_v2/apis/core/core.dart';
-import 'package:walletconnect_flutter_v2/apis/core/i_core.dart';
-import 'package:walletconnect_flutter_v2/apis/core/pairing/utils/pairing_models.dart';
 import 'package:walletconnect_flutter_v2/apis/core/relay_client/relay_client.dart';
-import 'package:walletconnect_flutter_v2/apis/core/relay_client/relay_client_models.dart';
-import 'package:walletconnect_flutter_v2/apis/models/basic_models.dart';
-import 'package:walletconnect_flutter_v2/apis/utils/errors.dart';
+import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 
 import '../shared/shared_test_values.dart';
 import '../shared/shared_test_utils.dart';
@@ -20,6 +15,17 @@ void main() {
 
   const TEST_TOPIC = 'abc123';
   const TEST_MESSAGE = 'swagmasterss';
+
+  test('relays are correct', () {
+    expect(
+      WalletConnectConstants.DEFAULT_RELAY_URL,
+      'wss://relay.walletconnect.com',
+    );
+    expect(
+      WalletConnectConstants.DEFAULT_PUSH_URL,
+      'https://echo.walletconnect.com',
+    );
+  });
 
   group('Relay throws errors', () {
     test('when connection parameters are invalid', () async {
