@@ -231,7 +231,7 @@ class AuthEngine implements IAuthEngine {
       final resp = AuthResponse(
         id: id,
         topic: responseTopic,
-        error: WalletConnectError(
+        error: const WalletConnectError(
           code: -1,
           message: 'Invalid signature',
         ),

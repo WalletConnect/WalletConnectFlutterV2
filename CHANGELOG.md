@@ -1,7 +1,9 @@
 ## 2.0.13
 
 - Made message in json response nullable to resolve issues with rejection messages
-
+- Updated readme, added events to RequiredNamespace
+- Swapped to `freezed` for all models
+- Resolved issue with non-null resources for auth throwing errors
 
 ## 2.0.12
 

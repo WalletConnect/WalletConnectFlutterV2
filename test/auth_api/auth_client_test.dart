@@ -231,6 +231,8 @@ void runTests({
         clientA.onAuthResponse.subscribe((AuthResponse? args) {
           counterA++;
           completerA.complete();
+
+          expect(args!.result, isNotNull);
         });
         clientB.onAuthRequest.subscribe((AuthRequest? args) async {
           counterB++;

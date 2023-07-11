@@ -4,7 +4,6 @@ import 'package:walletconnect_flutter_v2_dapp/models/chain_metadata.dart';
 import 'package:walletconnect_flutter_v2_dapp/utils/constants.dart';
 import 'package:walletconnect_flutter_v2_dapp/utils/crypto/eip155.dart';
 import 'package:walletconnect_flutter_v2_dapp/utils/crypto/helpers.dart';
-import 'package:walletconnect_flutter_v2_dapp/utils/crypto/kadena.dart';
 import 'package:walletconnect_flutter_v2_dapp/utils/string_constants.dart';
 import 'package:walletconnect_flutter_v2_dapp/widgets/method_dialog.dart';
 
@@ -276,14 +275,14 @@ class SessionWidgetState extends State<SessionWidget> {
           chainId: chainMetadata.chainId,
           address: address.toLowerCase(),
         );
-      case ChainType.kadena:
-        return Kadena.callMethod(
-          web3App: widget.web3App,
-          topic: widget.session.topic,
-          method: method.toKadenaMethod()!,
-          chainId: chainMetadata.chainId,
-          address: address.toLowerCase(),
-        );
+      // case ChainType.kadena:
+      //   return Kadena.callMethod(
+      //     web3App: widget.web3App,
+      //     topic: widget.session.topic,
+      //     method: method.toKadenaMethod()!,
+      //     chainId: chainMetadata.chainId,
+      //     address: address.toLowerCase(),
+      //   );
       default:
         return Future<dynamic>.value();
     }

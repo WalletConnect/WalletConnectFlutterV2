@@ -30,16 +30,16 @@ class ChainData {
     //     "https://solana-api.projectserum.com",
     //   ],
     // ),
-    ChainMetadata(
-      type: ChainType.kadena,
-      chainId: 'kadena:mainnet01',
-      name: 'Kadena',
-      logo: 'TODO',
-      color: Colors.purple.shade600,
-      rpc: [
-        "https://api.testnet.chainweb.com",
-      ],
-    ),
+    // ChainMetadata(
+    //   type: ChainType.kadena,
+    //   chainId: 'kadena:mainnet01',
+    //   name: 'Kadena',
+    //   logo: 'TODO',
+    //   color: Colors.purple.shade600,
+    //   rpc: [
+    //     "https://api.testnet.chainweb.com",
+    //   ],
+    // ),
   ];
 
   static final List<ChainMetadata> testChains = [

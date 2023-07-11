@@ -4,7 +4,6 @@ import 'package:walletconnect_flutter_v2_wallet/dependencies/bottom_sheet/bottom
 import 'package:walletconnect_flutter_v2_wallet/dependencies/bottom_sheet/bottom_sheet_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/chains/evm_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/chains/i_chain.dart';
-import 'package:walletconnect_flutter_v2_wallet/dependencies/chains/kadena_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/bottom_sheet/i_bottom_sheet_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/i_web3wallet_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/key_service/i_key_service.dart';
@@ -131,12 +130,12 @@ class _MyHomePageState extends State<MyHomePage> with GetItStateMixin {
     web3WalletService.create();
     GetIt.I.registerSingleton<IWeb3WalletService>(web3WalletService);
 
-    for (final cId in KadenaChainId.values) {
-      GetIt.I.registerSingleton<IChain>(
-        KadenaService(reference: cId),
-        instanceName: cId.chain,
-      );
-    }
+    // for (final cId in KadenaChainId.values) {
+    //   GetIt.I.registerSingleton<IChain>(
+    //     KadenaService(reference: cId),
+    //     instanceName: cId.chain,
+    //   );
+    // }
 
     for (final cId in EVMChainId.values) {
       GetIt.I.registerSingleton<IChain>(

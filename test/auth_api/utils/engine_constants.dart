@@ -33,6 +33,7 @@ final defaultRequestParams = AuthRequestParams(
   chainId: TEST_ETHEREUM_CHAIN,
   domain: 'localhost:3000',
   aud: TEST_AUD,
+  resources: ['test'],
 );
 
 final testAuthRequestParamsValid = AuthRequestParams(
