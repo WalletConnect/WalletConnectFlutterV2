@@ -403,10 +403,12 @@ void main() {
       TEST_NAMESPACES_NONCONFORMING_EVENTS,
     ];
     for (int i = 0; i < nonconformingNamespaces.length; i++) {
-      testSessionValid.namespaces = nonconformingNamespaces[i];
+      final SessionData newSessionData = testSessionValid.copyWith(
+        namespaces: nonconformingNamespaces[i],
+      );
       expect(
         SignApiValidatorUtils.isSessionCompatible(
-          session: testSessionValid,
+          session: newSessionData,
           requiredNamespaces: TEST_REQUIRED_NAMESPACES,
         ),
         false,

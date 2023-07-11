@@ -476,7 +476,7 @@ void runTests({
       test('works', () {
         final String message = clientA.formatAuthMessage(
           iss: TEST_ISSUER_EIP191,
-          cacaoPayload: testCacaoPayload,
+          cacaoPayload: CacaoRequestPayload.fromCacaoPayload(testCacaoPayload),
         );
         expect(message, TEST_FORMATTED_MESSAGE);
       });

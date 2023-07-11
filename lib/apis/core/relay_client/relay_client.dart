@@ -54,6 +54,9 @@ class RelayClient implements IRelayClient {
   @override
   final Event<EventArgs> onSubscriptionSync = Event();
 
+  @override
+  bool get isConnected => jsonRPC != null && !jsonRPC!.isClosed;
+
   bool _initialized = false;
   bool _active = true;
   bool _handledClose = false;
@@ -169,7 +172,7 @@ class RelayClient implements IRelayClient {
   Future<void> connect({String? relayUrl}) async {
     _checkInitialized();
 
-    if (jsonRPC != null && !jsonRPC!.isClosed) {
+    if (isConnected) {
       return;
     }
     // print('connecting to relay server');
@@ -187,7 +190,9 @@ class RelayClient implements IRelayClient {
   Future<void> disconnect() async {
     _checkInitialized();
 
-    core.logger.v('Disconnecting from relay server');
+    core.logger.v('RelayClient: Disconnecting from relay');
+
+    _active = false;
 
     await jsonRPC?.close();
     jsonRPC = null;
@@ -197,8 +202,6 @@ class RelayClient implements IRelayClient {
     _heartbeatTimer = null;
 
     onRelayClientDisconnect.broadcast();
-
-    _active = false;
   }
 
   /// PRIVATE FUNCTIONS ///
@@ -312,10 +315,6 @@ class RelayClient implements IRelayClient {
         );
       }
     }
-  }
-
-  Future<void> _reconnect(EventArgs? args) async {
-    if (_initialized) {}
   }
 
   void _startHeartbeat() {

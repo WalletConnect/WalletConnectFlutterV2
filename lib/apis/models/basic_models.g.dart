@@ -6,37 +6,32 @@ part of 'basic_models.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-WalletConnectError _$WalletConnectErrorFromJson(Map<String, dynamic> json) =>
-    WalletConnectError(
+_$_WalletConnectError _$$_WalletConnectErrorFromJson(
+        Map<String, dynamic> json) =>
+    _$_WalletConnectError(
       code: json['code'] as int,
       message: json['message'] as String,
       data: json['data'] as String?,
     );
 
-Map<String, dynamic> _$WalletConnectErrorToJson(WalletConnectError instance) {
-  final val = <String, dynamic>{
-    'code': instance.code,
-    'message': instance.message,
-  };
+Map<String, dynamic> _$$_WalletConnectErrorToJson(
+        _$_WalletConnectError instance) =>
+    <String, dynamic>{
+      'code': instance.code,
+      'message': instance.message,
+      'data': instance.data,
+    };
 
-  void writeNotNull(String key, dynamic value) {
-    if (value != null) {
-      val[key] = value;
-    }
-  }
-
-  writeNotNull('data', instance.data);
-  return val;
-}
-
-ConnectionMetadata _$ConnectionMetadataFromJson(Map<String, dynamic> json) =>
-    ConnectionMetadata(
+_$_ConnectionMetadata _$$_ConnectionMetadataFromJson(
+        Map<String, dynamic> json) =>
+    _$_ConnectionMetadata(
       publicKey: json['publicKey'] as String,
       metadata:
           PairingMetadata.fromJson(json['metadata'] as Map<String, dynamic>),
     );
 
-Map<String, dynamic> _$ConnectionMetadataToJson(ConnectionMetadata instance) =>
+Map<String, dynamic> _$$_ConnectionMetadataToJson(
+        _$_ConnectionMetadata instance) =>
     <String, dynamic>{
       'publicKey': instance.publicKey,
       'metadata': instance.metadata.toJson(),

@@ -6,7 +6,7 @@ part of 'session_models.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-Namespace _$NamespaceFromJson(Map<String, dynamic> json) => Namespace(
+_$_Namespace _$$_NamespaceFromJson(Map<String, dynamic> json) => _$_Namespace(
       accounts:
           (json['accounts'] as List<dynamic>).map((e) => e as String).toList(),
       methods:
@@ -15,13 +15,15 @@ Namespace _$NamespaceFromJson(Map<String, dynamic> json) => Namespace(
           (json['events'] as List<dynamic>).map((e) => e as String).toList(),
     );
 
-Map<String, dynamic> _$NamespaceToJson(Namespace instance) => <String, dynamic>{
+Map<String, dynamic> _$$_NamespaceToJson(_$_Namespace instance) =>
+    <String, dynamic>{
       'accounts': instance.accounts,
       'methods': instance.methods,
       'events': instance.events,
     };
 
-SessionData _$SessionDataFromJson(Map<String, dynamic> json) => SessionData(
+_$_SessionData _$$_SessionDataFromJson(Map<String, dynamic> json) =>
+    _$_SessionData(
       topic: json['topic'] as String,
       pairingTopic: json['pairingTopic'] as String,
       relay: Relay.fromJson(json['relay'] as Map<String, dynamic>),
@@ -49,7 +51,7 @@ SessionData _$SessionDataFromJson(Map<String, dynamic> json) => SessionData(
       peer: ConnectionMetadata.fromJson(json['peer'] as Map<String, dynamic>),
     );
 
-Map<String, dynamic> _$SessionDataToJson(SessionData instance) {
+Map<String, dynamic> _$$_SessionDataToJson(_$_SessionData instance) {
   final val = <String, dynamic>{
     'topic': instance.topic,
     'pairingTopic': instance.pairingTopic,
@@ -76,8 +78,8 @@ Map<String, dynamic> _$SessionDataToJson(SessionData instance) {
   return val;
 }
 
-SessionRequest _$SessionRequestFromJson(Map<String, dynamic> json) =>
-    SessionRequest(
+_$_SessionRequest _$$_SessionRequestFromJson(Map<String, dynamic> json) =>
+    _$_SessionRequest(
       id: json['id'] as int,
       topic: json['topic'] as String,
       method: json['method'] as String,
@@ -85,7 +87,7 @@ SessionRequest _$SessionRequestFromJson(Map<String, dynamic> json) =>
       params: json['params'],
     );
 
-Map<String, dynamic> _$SessionRequestToJson(SessionRequest instance) =>
+Map<String, dynamic> _$$_SessionRequestToJson(_$_SessionRequest instance) =>
     <String, dynamic>{
       'id': instance.id,
       'topic': instance.topic,

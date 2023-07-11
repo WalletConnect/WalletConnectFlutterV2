@@ -1,26 +1,19 @@
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'json_rpc_request.g.dart';
+part 'json_rpc_request.freezed.dart';
 
-@JsonSerializable()
-class JsonRpcRequest {
-  final int id;
-  final String jsonrpc;
-  final String method;
-  final dynamic params;
-
-  JsonRpcRequest({
-    required this.id,
-    this.jsonrpc = '2.0',
-    required this.method,
-    this.params,
-  });
+@freezed
+class JsonRpcRequest with _$JsonRpcRequest {
+  @JsonSerializable()
+  const factory JsonRpcRequest({
+    required int id,
+    @Default('2.0') String jsonrpc,
+    required String method,
+    dynamic params,
+  }) = _JsonRpcRequest;
 
   factory JsonRpcRequest.fromJson(Map<String, dynamic> json) =>
       _$JsonRpcRequestFromJson(json);
-  Map<String, dynamic> toJson() => _$JsonRpcRequestToJson(this);
-
-  @override
-  String toString() =>
-      'JsonRpcRequest(id: $id, jsonrpc: $jsonrpc, method: $method, params: $params)';
 }

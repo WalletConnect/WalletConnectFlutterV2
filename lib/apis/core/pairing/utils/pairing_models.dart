@@ -1,10 +1,12 @@
 import 'package:event/event.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:walletconnect_flutter_v2/apis/core/relay_client/relay_client_models.dart';
 import 'package:walletconnect_flutter_v2/apis/models/json_rpc_error.dart';
 import 'package:walletconnect_flutter_v2/apis/models/json_rpc_request.dart';
 
 part 'pairing_models.g.dart';
+part 'pairing_models.freezed.dart';
 
 enum ProtocolType {
   pair,
@@ -12,49 +14,31 @@ enum ProtocolType {
   auth,
 }
 
-@JsonSerializable()
-class PairingInfo {
-  String topic;
-  // Value in seconds
-  int expiry;
-  Relay relay;
-  bool active;
-  PairingMetadata? peerMetadata;
-
-  PairingInfo({
-    required this.topic,
-    required this.expiry,
-    required this.relay,
-    required this.active,
-    this.peerMetadata,
-  });
+@freezed
+class PairingInfo with _$PairingInfo {
+  @JsonSerializable()
+  const factory PairingInfo({
+    required String topic,
+    required int expiry,
+    required Relay relay,
+    required bool active,
+    PairingMetadata? peerMetadata,
+  }) = _PairingInfo;
 
   factory PairingInfo.fromJson(Map<String, dynamic> json) =>
       _$PairingInfoFromJson(json);
-
-  Map<String, dynamic> toJson() => _$PairingInfoToJson(this);
-
-  @override
-  String toString() {
-    return 'PairingInfo(topic: $topic, expiry: $expiry, relay: $relay, active: $active, peerMetadata: $peerMetadata)';
-  }
 }
 
-@JsonSerializable()
-class PairingMetadata {
-  final String name;
-  final String description;
-  final String url;
-  final List<String> icons;
-  final Redirect? redirect;
-
-  const PairingMetadata({
-    required this.name,
-    required this.description,
-    required this.url,
-    required this.icons,
-    this.redirect,
-  });
+@freezed
+class PairingMetadata with _$PairingMetadata {
+  @JsonSerializable(includeIfNull: false)
+  const factory PairingMetadata({
+    required String name,
+    required String description,
+    required String url,
+    required List<String> icons,
+    Redirect? redirect,
+  }) = _PairingMetadata;
 
   factory PairingMetadata.empty() => const PairingMetadata(
         name: '',
@@ -65,60 +49,18 @@ class PairingMetadata {
 
   factory PairingMetadata.fromJson(Map<String, dynamic> json) =>
       _$PairingMetadataFromJson(json);
-
-  Map<String, dynamic> toJson() => _$PairingMetadataToJson(this);
-
-  @override
-  String toString() {
-    return 'PairingMetadata(name: $name, description: $description, url: $url, icons: $icons, redirect: $redirect)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return other is PairingMetadata && hashCode == other.hashCode;
-  }
-
-  @override
-  int get hashCode =>
-      name.hashCode +
-      description.hashCode +
-      url.hashCode +
-      icons.fold<int>(
-        0,
-        (prevValue, element) => prevValue + element.hashCode,
-      ) +
-      (redirect == null ? 1 : redirect.hashCode);
 }
 
-@JsonSerializable()
-class Redirect {
-  final String? native;
-  final String? universal;
-
-  Redirect({
-    this.native,
-    this.universal,
-  });
+@freezed
+class Redirect with _$Redirect {
+  @JsonSerializable()
+  const factory Redirect({
+    String? native,
+    String? universal,
+  }) = _Redirect;
 
   factory Redirect.fromJson(Map<String, dynamic> json) =>
       _$RedirectFromJson(json);
-
-  Map<String, dynamic> toJson() => _$RedirectToJson(this);
-
-  @override
-  String toString() {
-    return 'Redirect(native: $native, universal: $universal)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return other is Redirect && hashCode == other.hashCode;
-  }
-
-  @override
-  int get hashCode =>
-      (native == null ? 1 : native!.hashCode) +
-      (universal == null ? 1 : universal!.hashCode);
 }
 
 class CreateResponse {
@@ -209,57 +151,34 @@ class PairingActivateEvent extends EventArgs {
   }
 }
 
-@JsonSerializable(includeIfNull: false)
-class JsonRpcRecord {
-  int id;
-  String topic;
-  String method;
-  dynamic params;
-  dynamic response;
-  String? chainId;
-  int? expiry;
-
-  JsonRpcRecord({
-    required this.id,
-    required this.topic,
-    required this.method,
-    required this.params,
-    this.chainId,
-    this.expiry,
-  });
+@freezed
+class JsonRpcRecord with _$JsonRpcRecord {
+  @JsonSerializable(includeIfNull: false)
+  const factory JsonRpcRecord({
+    required int id,
+    required String topic,
+    required String method,
+    required dynamic params,
+    String? chainId,
+    int? expiry,
+    dynamic response,
+  }) = _JsonRpcRecord;
 
   factory JsonRpcRecord.fromJson(Map<String, dynamic> json) =>
       _$JsonRpcRecordFromJson(json);
-
-  Map<String, dynamic> toJson() => _$JsonRpcRecordToJson(this);
-
-  @override
-  String toString() {
-    return 'JsonRpcRecord(id: $id, topic: $topic, method: $method, params: $params, response: $response, chainId: $chainId, expiry: $expiry)';
-  }
 }
 
-@JsonSerializable(includeIfNull: false)
-class ReceiverPublicKey {
-  String topic;
-  String publicKey;
-  int expiry;
-
-  ReceiverPublicKey({
-    required this.topic,
-    required this.publicKey,
-    required this.expiry,
-  });
+@freezed
+class ReceiverPublicKey with _$ReceiverPublicKey {
+  @JsonSerializable(includeIfNull: false)
+  const factory ReceiverPublicKey({
+    required String topic,
+    required String publicKey,
+    required int expiry,
+  }) = _ReceiverPublicKey;
 
   factory ReceiverPublicKey.fromJson(Map<String, dynamic> json) =>
       _$ReceiverPublicKeyFromJson(json);
-
-  Map<String, dynamic> toJson() => _$ReceiverPublicKeyToJson(this);
-
-  @override
-  String toString() {
-    return 'Receiver(topic: $topic, publicKey: $publicKey, expiry: $expiry)';
-  }
 }
 
 class RegisteredFunction {

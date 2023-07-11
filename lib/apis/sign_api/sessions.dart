@@ -25,10 +25,10 @@ class Sessions extends GenericStore<SessionData> implements ISessions {
     }
 
     if (expiry != null) {
-      info.expiry = expiry;
+      info = info.copyWith(expiry: expiry);
     }
     if (namespaces != null) {
-      info.namespaces = namespaces;
+      info = info.copyWith(namespaces: namespaces);
     }
 
     await set(topic, info);

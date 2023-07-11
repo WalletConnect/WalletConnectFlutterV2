@@ -1,3 +1,8 @@
+## 2.0.13
+
+- Made message in json response nullable to resolve issues with rejection messages
+
+
 ## 2.0.12
 
 - Fixed regression with default relay URL, added tests to ensure it doesn't happen again

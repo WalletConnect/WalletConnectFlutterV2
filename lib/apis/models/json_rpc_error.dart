@@ -1,16 +1,15 @@
-import 'package:json_annotation/json_annotation.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 
 part 'json_rpc_error.g.dart';
+part 'json_rpc_error.freezed.dart';
 
-@JsonSerializable()
-class JsonRpcError {
-  final int code;
-  final String message;
-
-  JsonRpcError({
-    required this.code,
-    required this.message,
-  });
+@freezed
+class JsonRpcError with _$JsonRpcError {
+  @JsonSerializable(includeIfNull: false)
+  const factory JsonRpcError({
+    required int code,
+    String? message,
+  }) = _JsonRpcError;
 
   factory JsonRpcError.serverError(String message) =>
       JsonRpcError(code: -32000, message: message);
@@ -25,8 +24,4 @@ class JsonRpcError {
 
   factory JsonRpcError.fromJson(Map<String, dynamic> json) =>
       _$JsonRpcErrorFromJson(json);
-  Map<String, dynamic> toJson() => _$JsonRpcErrorToJson(this);
-
-  @override
-  String toString() => 'JsonRpcError(code: $code, message: $message)';
 }

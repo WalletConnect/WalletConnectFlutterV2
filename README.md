@@ -32,10 +32,12 @@ ConnectResponse resp = await wcClient.connect(
     'eip155': RequiredNamespace(
       chains: ['eip155:1'], // Ethereum chain
       methods: ['eth_signTransaction'], // Requestable Methods
+      events: ['eth_sendTransaction'], // Requestable Events
     ),
     'kadena': RequiredNamespace(
       chains: ['kadena:mainnet01'], // Kadena chain
       methods: ['kadena_quicksign_v1'], // Requestable Methods
+      events: ['kadena_transaction_updated'], // Requestable Events
     ),
   }
 );

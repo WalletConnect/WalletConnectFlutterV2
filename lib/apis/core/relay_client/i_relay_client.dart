@@ -31,6 +31,9 @@ abstract class IRelayClient {
   abstract final Event onSubscriptionSync;
   abstract final Event onSubscriptionResubscribed;
 
+  /// Returns true if the client is connected to a relay server
+  bool get isConnected;
+
   Future<void> init();
   Future<void> publish({
     required String topic,

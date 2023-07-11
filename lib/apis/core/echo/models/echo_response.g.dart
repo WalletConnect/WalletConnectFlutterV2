@@ -18,8 +18,8 @@ EchoResponse _$EchoResponseFromJson(Map<String, dynamic> json) => EchoResponse(
 
 Map<String, dynamic> _$EchoResponseToJson(EchoResponse instance) =>
     <String, dynamic>{
-      'errors': instance.errors,
-      'fields': instance.fields,
+      'errors': instance.errors?.map((e) => e.toJson()).toList(),
+      'fields': instance.fields?.map((e) => e.toJson()).toList(),
       'status': instance.status,
     };
 

@@ -353,7 +353,9 @@ class SignEngine implements ISignEngine {
       },
     );
 
-    session.acknowledged = acknowledged;
+    session = session.copyWith(
+      acknowledged: acknowledged,
+    );
 
     if (acknowledged && sessions.has(sessionTopic)) {
       // We directly update the latest value.

@@ -6,8 +6,8 @@ part of 'proposal_models.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-RequiredNamespace _$RequiredNamespaceFromJson(Map<String, dynamic> json) =>
-    RequiredNamespace(
+_$_RequiredNamespace _$$_RequiredNamespaceFromJson(Map<String, dynamic> json) =>
+    _$_RequiredNamespace(
       chains:
           (json['chains'] as List<dynamic>?)?.map((e) => e as String).toList(),
       methods:
@@ -16,7 +16,8 @@ RequiredNamespace _$RequiredNamespaceFromJson(Map<String, dynamic> json) =>
           (json['events'] as List<dynamic>).map((e) => e as String).toList(),
     );
 
-Map<String, dynamic> _$RequiredNamespaceToJson(RequiredNamespace instance) {
+Map<String, dynamic> _$$_RequiredNamespaceToJson(
+    _$_RequiredNamespace instance) {
   final val = <String, dynamic>{};
 
   void writeNotNull(String key, dynamic value) {
@@ -31,19 +32,20 @@ Map<String, dynamic> _$RequiredNamespaceToJson(RequiredNamespace instance) {
   return val;
 }
 
-SessionProposal _$SessionProposalFromJson(Map<String, dynamic> json) =>
-    SessionProposal(
+_$_SessionProposal _$$_SessionProposalFromJson(Map<String, dynamic> json) =>
+    _$_SessionProposal(
       id: json['id'] as int,
       params: ProposalData.fromJson(json['params'] as Map<String, dynamic>),
     );
 
-Map<String, dynamic> _$SessionProposalToJson(SessionProposal instance) =>
+Map<String, dynamic> _$$_SessionProposalToJson(_$_SessionProposal instance) =>
     <String, dynamic>{
       'id': instance.id,
       'params': instance.params.toJson(),
     };
 
-ProposalData _$ProposalDataFromJson(Map<String, dynamic> json) => ProposalData(
+_$_ProposalData _$$_ProposalDataFromJson(Map<String, dynamic> json) =>
+    _$_ProposalData(
       id: json['id'] as int,
       expiry: json['expiry'] as int,
       relays: (json['relays'] as List<dynamic>)
@@ -72,7 +74,7 @@ ProposalData _$ProposalDataFromJson(Map<String, dynamic> json) => ProposalData(
       ),
     );
 
-Map<String, dynamic> _$ProposalDataToJson(ProposalData instance) {
+Map<String, dynamic> _$$_ProposalDataToJson(_$_ProposalData instance) {
   final val = <String, dynamic>{
     'id': instance.id,
     'expiry': instance.expiry,
@@ -82,6 +84,7 @@ Map<String, dynamic> _$ProposalDataToJson(ProposalData instance) {
         instance.requiredNamespaces.map((k, e) => MapEntry(k, e.toJson())),
     'optionalNamespaces':
         instance.optionalNamespaces.map((k, e) => MapEntry(k, e.toJson())),
+    'pairingTopic': instance.pairingTopic,
   };
 
   void writeNotNull(String key, dynamic value) {
@@ -91,7 +94,6 @@ Map<String, dynamic> _$ProposalDataToJson(ProposalData instance) {
   }
 
   writeNotNull('sessionProperties', instance.sessionProperties);
-  val['pairingTopic'] = instance.pairingTopic;
   writeNotNull('generatedNamespaces',
       instance.generatedNamespaces?.map((k, e) => MapEntry(k, e.toJson())));
   return val;

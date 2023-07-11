@@ -200,7 +200,7 @@ class AuthEngine implements IAuthEngine {
 
     final String reconstructed = formatAuthMessage(
       iss: payload.iss,
-      cacaoPayload: payload,
+      cacaoPayload: CacaoRequestPayload.fromCacaoPayload(payload),
     );
 
     final String walletAddress = AddressUtils.getDidAddress(payload.iss);

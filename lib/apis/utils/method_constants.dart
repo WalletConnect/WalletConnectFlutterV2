@@ -19,52 +19,148 @@ class MethodConstants {
 
   static const Map<String, Map<String, RpcOptions>> RPC_OPTS = {
     WC_PAIRING_PING: {
-      'req': RpcOptions(WalletConnectConstants.ONE_DAY, false, 1000),
-      'res': RpcOptions(WalletConnectConstants.ONE_DAY, false, 1001),
+      'req': RpcOptions(
+        ttl: WalletConnectConstants.ONE_DAY,
+        prompt: false,
+        tag: 1000,
+      ),
+      'res': RpcOptions(
+        ttl: WalletConnectConstants.ONE_DAY,
+        prompt: false,
+        tag: 1001,
+      ),
     },
     WC_PAIRING_DELETE: {
-      'req': RpcOptions(WalletConnectConstants.THIRTY_SECONDS, false, 1002),
-      'res': RpcOptions(WalletConnectConstants.THIRTY_SECONDS, false, 1003),
+      'req': RpcOptions(
+        ttl: WalletConnectConstants.THIRTY_SECONDS,
+        prompt: false,
+        tag: 1002,
+      ),
+      'res': RpcOptions(
+        ttl: WalletConnectConstants.THIRTY_SECONDS,
+        prompt: false,
+        tag: 1003,
+      ),
     },
     UNREGISTERED_METHOD: {
-      'req': RpcOptions(WalletConnectConstants.ONE_DAY, false, 0),
-      'res': RpcOptions(WalletConnectConstants.ONE_DAY, false, 0),
+      'req': RpcOptions(
+        ttl: WalletConnectConstants.ONE_DAY,
+        prompt: false,
+        tag: 0,
+      ),
+      'res': RpcOptions(
+        ttl: WalletConnectConstants.ONE_DAY,
+        prompt: false,
+        tag: 0,
+      ),
     },
     WC_SESSION_PROPOSE: {
-      'req': RpcOptions(WalletConnectConstants.FIVE_MINUTES, true, 1100),
-      'res': RpcOptions(WalletConnectConstants.FIVE_MINUTES, false, 1101),
+      'req': RpcOptions(
+        ttl: WalletConnectConstants.FIVE_MINUTES,
+        prompt: true,
+        tag: 1100,
+      ),
+      'res': RpcOptions(
+        ttl: WalletConnectConstants.FIVE_MINUTES,
+        prompt: false,
+        tag: 1101,
+      ),
     },
     WC_SESSION_SETTLE: {
-      'req': RpcOptions(WalletConnectConstants.FIVE_MINUTES, false, 1102),
-      'res': RpcOptions(WalletConnectConstants.FIVE_MINUTES, false, 1103),
+      'req': RpcOptions(
+        ttl: WalletConnectConstants.FIVE_MINUTES,
+        prompt: false,
+        tag: 1102,
+      ),
+      'res': RpcOptions(
+        ttl: WalletConnectConstants.FIVE_MINUTES,
+        prompt: false,
+        tag: 1103,
+      ),
     },
     WC_SESSION_UPDATE: {
-      'req': RpcOptions(WalletConnectConstants.ONE_DAY, false, 1104),
-      'res': RpcOptions(WalletConnectConstants.ONE_DAY, false, 1105),
+      'req': RpcOptions(
+        ttl: WalletConnectConstants.ONE_DAY,
+        prompt: false,
+        tag: 1104,
+      ),
+      'res': RpcOptions(
+        ttl: WalletConnectConstants.ONE_DAY,
+        prompt: false,
+        tag: 1105,
+      ),
     },
     WC_SESSION_EXTEND: {
-      'req': RpcOptions(WalletConnectConstants.ONE_DAY, false, 1106),
-      'res': RpcOptions(WalletConnectConstants.ONE_DAY, false, 1107),
+      'req': RpcOptions(
+        ttl: WalletConnectConstants.ONE_DAY,
+        prompt: false,
+        tag: 1106,
+      ),
+      'res': RpcOptions(
+        ttl: WalletConnectConstants.ONE_DAY,
+        prompt: false,
+        tag: 1107,
+      ),
     },
     WC_SESSION_REQUEST: {
-      'req': RpcOptions(WalletConnectConstants.FIVE_MINUTES, true, 1108),
-      'res': RpcOptions(WalletConnectConstants.FIVE_MINUTES, false, 1109),
+      'req': RpcOptions(
+        ttl: WalletConnectConstants.FIVE_MINUTES,
+        prompt: true,
+        tag: 1108,
+      ),
+      'res': RpcOptions(
+        ttl: WalletConnectConstants.FIVE_MINUTES,
+        prompt: false,
+        tag: 1109,
+      ),
     },
     WC_SESSION_EVENT: {
-      'req': RpcOptions(WalletConnectConstants.FIVE_MINUTES, true, 1110),
-      'res': RpcOptions(WalletConnectConstants.FIVE_MINUTES, false, 1111),
+      'req': RpcOptions(
+        ttl: WalletConnectConstants.FIVE_MINUTES,
+        prompt: true,
+        tag: 1110,
+      ),
+      'res': RpcOptions(
+        ttl: WalletConnectConstants.FIVE_MINUTES,
+        prompt: false,
+        tag: 1111,
+      ),
     },
     WC_SESSION_DELETE: {
-      'req': RpcOptions(WalletConnectConstants.ONE_DAY, false, 1112),
-      'res': RpcOptions(WalletConnectConstants.ONE_DAY, false, 1113),
+      'req': RpcOptions(
+        ttl: WalletConnectConstants.ONE_DAY,
+        prompt: false,
+        tag: 1112,
+      ),
+      'res': RpcOptions(
+        ttl: WalletConnectConstants.ONE_DAY,
+        prompt: false,
+        tag: 1113,
+      ),
     },
     WC_SESSION_PING: {
-      'req': RpcOptions(WalletConnectConstants.THIRTY_SECONDS, false, 1114),
-      'res': RpcOptions(WalletConnectConstants.THIRTY_SECONDS, false, 1115),
+      'req': RpcOptions(
+        ttl: WalletConnectConstants.THIRTY_SECONDS,
+        prompt: false,
+        tag: 1114,
+      ),
+      'res': RpcOptions(
+        ttl: WalletConnectConstants.THIRTY_SECONDS,
+        prompt: false,
+        tag: 1115,
+      ),
     },
     WC_AUTH_REQUEST: {
-      'req': RpcOptions(WalletConnectConstants.ONE_DAY, true, 3000),
-      'res': RpcOptions(WalletConnectConstants.ONE_DAY, false, 3001),
+      'req': RpcOptions(
+        ttl: WalletConnectConstants.ONE_DAY,
+        prompt: true,
+        tag: 3000,
+      ),
+      'res': RpcOptions(
+        ttl: WalletConnectConstants.ONE_DAY,
+        prompt: false,
+        tag: 3001,
+      ),
     },
   };
 }

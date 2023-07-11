@@ -310,7 +310,7 @@ void signRequestAndHandler({
           e.code,
           JsonRpcError.invalidParams('swag').code,
         );
-        expect(e.message.contains(TEST_MESSAGE_1.toString()), true);
+        expect(e.message!.contains(TEST_MESSAGE_1.toString()), true);
       }
 
       // Try an error

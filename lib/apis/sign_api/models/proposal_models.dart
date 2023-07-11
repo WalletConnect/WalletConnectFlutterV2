@@ -1,102 +1,51 @@
-import 'package:json_annotation/json_annotation.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:walletconnect_flutter_v2/apis/core/relay_client/relay_client_models.dart';
 import 'package:walletconnect_flutter_v2/apis/models/basic_models.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/models/session_models.dart';
 
 part 'proposal_models.g.dart';
+part 'proposal_models.freezed.dart';
 
-@JsonSerializable(includeIfNull: false)
-class RequiredNamespace {
-  final List<String>? chains;
-  final List<String> methods;
-  final List<String> events;
-
-  const RequiredNamespace({
-    this.chains,
-    required this.methods,
-    required this.events,
-  });
+@freezed
+class RequiredNamespace with _$RequiredNamespace {
+  @JsonSerializable(includeIfNull: false)
+  const factory RequiredNamespace({
+    List<String>? chains,
+    required List<String> methods,
+    required List<String> events,
+  }) = _RequiredNamespace;
 
   factory RequiredNamespace.fromJson(Map<String, dynamic> json) =>
       _$RequiredNamespaceFromJson(json);
-
-  Map<String, dynamic> toJson() => _$RequiredNamespaceToJson(this);
-
-  @override
-  String toString() {
-    return 'RequiredNamespace(chains: $chains, methods: $methods, events: $events)';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return other is RequiredNamespace && hashCode == other.hashCode;
-  }
-
-  @override
-  int get hashCode =>
-      (chains == null
-          ? 0
-          : chains!.fold<int>(
-              0,
-              (previousValue, element) => previousValue + element.hashCode,
-            )) +
-      methods.fold<int>(
-        0,
-        (prevValue, element) => prevValue + element.hashCode,
-      ) +
-      events.fold<int>(
-        0,
-        (prevValue, element) => prevValue + element.hashCode,
-      );
 }
 
-@JsonSerializable()
-class SessionProposal {
-  final int id;
-  final ProposalData params;
-
-  SessionProposal({
-    required this.id,
-    required this.params,
-  });
+@freezed
+class SessionProposal with _$SessionProposal {
+  @JsonSerializable()
+  const factory SessionProposal({
+    required int id,
+    required ProposalData params,
+  }) = _SessionProposal;
 
   factory SessionProposal.fromJson(Map<String, dynamic> json) =>
       _$SessionProposalFromJson(json);
-
-  Map<String, dynamic> toJson() => _$SessionProposalToJson(this);
 }
 
-@JsonSerializable(includeIfNull: false)
-class ProposalData {
-  final int id;
-  final int expiry;
-  final List<Relay> relays;
-  final ConnectionMetadata proposer;
-  final Map<String, RequiredNamespace> requiredNamespaces;
-  final Map<String, RequiredNamespace> optionalNamespaces;
-  final Map<String, String>? sessionProperties;
-  final String pairingTopic;
-  final Map<String, Namespace>? generatedNamespaces;
-
-  const ProposalData({
-    required this.id,
-    required this.expiry,
-    required this.relays,
-    required this.proposer,
-    required this.requiredNamespaces,
-    required this.optionalNamespaces,
-    required this.pairingTopic,
-    this.sessionProperties,
-    this.generatedNamespaces,
-  });
+@freezed
+class ProposalData with _$ProposalData {
+  @JsonSerializable(includeIfNull: false)
+  const factory ProposalData({
+    required int id,
+    required int expiry,
+    required List<Relay> relays,
+    required ConnectionMetadata proposer,
+    required Map<String, RequiredNamespace> requiredNamespaces,
+    required Map<String, RequiredNamespace> optionalNamespaces,
+    required String pairingTopic,
+    Map<String, String>? sessionProperties,
+    Map<String, Namespace>? generatedNamespaces,
+  }) = _ProposalData;
 
   factory ProposalData.fromJson(Map<String, dynamic> json) =>
       _$ProposalDataFromJson(json);
-
-  Map<String, dynamic> toJson() => _$ProposalDataToJson(this);
-
-  @override
-  String toString() {
-    return 'ProposalData(id: $id, expiry: $expiry, relays: $relays, proposer: $proposer, requiredNamespaces: $requiredNamespaces, optionalNamespaces: $optionalNamespaces, sessionProperties: $sessionProperties, pairingTopic: $pairingTopic, generatedNamespaces: $generatedNamespaces)';
-  }
 }

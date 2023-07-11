@@ -28,8 +28,11 @@ class JsonRpcHistory extends GenericStore<JsonRpcRecord>
       return;
     }
 
-    record.response =
-        response.containsKey('result') ? response['result'] : response['error'];
+    record = record.copyWith(
+      response: response.containsKey('result')
+          ? response['result']
+          : response['error'],
+    );
     await set(sId, record);
   }
 }
