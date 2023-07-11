@@ -71,12 +71,14 @@ class Core implements ICore {
     required this.projectId,
     this.pushUrl = WalletConnectConstants.DEFAULT_PUSH_URL,
     bool memoryStore = false,
+    String extraStoragePrefix = '',
     Level logLevel = Level.info,
     IHttpClient httpClient = const HttpWrapper(),
   }) {
     Logger.level = logLevel;
     storage = SharedPrefsStores(
       memoryStore: memoryStore,
+      extraStoragePrefix: extraStoragePrefix,
     );
     crypto = Crypto(
       core: this,

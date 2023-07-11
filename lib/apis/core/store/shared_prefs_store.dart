@@ -24,11 +24,13 @@ class SharedPrefsStores implements IStore<Map<String, dynamic>> {
   String get storagePrefix => WalletConnectConstants.CORE_STORAGE_PREFIX;
 
   final bool memoryStore;
+  final String extraStoragePrefix;
 
-  SharedPrefsStores({
-    Map<String, Map<String, dynamic>>? defaultValue,
-    this.memoryStore = false,
-  }) : _map = defaultValue ?? {};
+  SharedPrefsStores(
+      {Map<String, Map<String, dynamic>>? defaultValue,
+      this.memoryStore = false,
+      this.extraStoragePrefix = ''})
+      : _map = defaultValue ?? {};
 
   /// Initializes the store, loading all persistent values into memory.
   @override
@@ -149,7 +151,7 @@ class SharedPrefsStores implements IStore<Map<String, dynamic>> {
   }
 
   String _addPrefix(String key) {
-    return '$storagePrefix$key';
+    return '$extraStoragePrefix$storagePrefix$key';
   }
 
   void _checkInitialized() {

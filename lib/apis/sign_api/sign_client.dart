@@ -71,12 +71,14 @@ class SignClient implements ISignClient {
     String relayUrl = WalletConnectConstants.DEFAULT_RELAY_URL,
     required PairingMetadata metadata,
     bool memoryStore = false,
+    String extraStoragePrefix = '',
   }) async {
     final client = SignClient(
       core: Core(
         projectId: projectId,
         relayUrl: relayUrl,
         memoryStore: memoryStore,
+        extraStoragePrefix: extraStoragePrefix,
       ),
       metadata: metadata,
     );

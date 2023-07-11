@@ -26,6 +26,7 @@ class Web3App implements IWeb3App {
     String relayUrl = WalletConnectConstants.DEFAULT_RELAY_URL,
     required PairingMetadata metadata,
     bool memoryStore = false,
+    String extraStoragePrefix = '',
     Level logLevel = Level.nothing,
     HttpWrapper httpClient = const HttpWrapper(),
   }) async {
@@ -34,6 +35,7 @@ class Web3App implements IWeb3App {
         projectId: projectId,
         relayUrl: relayUrl,
         memoryStore: memoryStore,
+        extraStoragePrefix: extraStoragePrefix,
         logLevel: logLevel,
         httpClient: httpClient,
       ),

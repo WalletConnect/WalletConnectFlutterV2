@@ -49,6 +49,7 @@ class AuthClient implements IAuthClient {
     String relayUrl = WalletConnectConstants.DEFAULT_RELAY_URL,
     required PairingMetadata metadata,
     bool memoryStore = false,
+    String extraStoragePrefix = '',
     IHttpClient httpClient = const HttpWrapper(),
   }) async {
     final client = AuthClient(
@@ -56,6 +57,7 @@ class AuthClient implements IAuthClient {
         projectId: projectId,
         relayUrl: relayUrl,
         memoryStore: memoryStore,
+        extraStoragePrefix: extraStoragePrefix,
         httpClient: httpClient,
       ),
       metadata: metadata,
