@@ -256,7 +256,7 @@ class RelayClient implements IRelayClient {
       );
 
       if (jsonRPC!.isClosed) {
-        throw WalletConnectError(
+        throw const WalletConnectError(
           code: 0,
           message: 'WebSocket closed',
         );

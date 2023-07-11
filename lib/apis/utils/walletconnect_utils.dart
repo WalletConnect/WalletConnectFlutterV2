@@ -94,7 +94,7 @@ class WalletConnectUtils {
     String path = uri.path;
     final List<String> splitParams = path.split('@');
     if (splitParams.length == 1) {
-      throw WalletConnectError(
+      throw const WalletConnectError(
         code: 0,
         message: 'Invalid URI: Missing @',
       );

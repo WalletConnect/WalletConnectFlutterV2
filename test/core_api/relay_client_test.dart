@@ -123,12 +123,10 @@ void main() {
     await coreB.start();
 
     if (!completerA.isCompleted) {
-      print('A');
       coreA.logger.i('relay client test waiting sessionACompleter');
       await completerA.future;
     }
     if (!completerC.isCompleted) {
-      print('C');
       coreA.logger.i('relay client test waiting sessionCCompleter');
       await completerC.future;
     }
@@ -140,12 +138,10 @@ void main() {
     await coreB.relayClient.disconnect();
 
     if (!completerB.isCompleted) {
-      print('B');
       coreA.logger.i('relay client test waiting sessionBCompleter');
       await completerB.future;
     }
     if (!completerD.isCompleted) {
-      print('D');
       coreA.logger.i('relay client test waiting sessionDCompleter');
       await completerD.future;
     }

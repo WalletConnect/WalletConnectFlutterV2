@@ -56,7 +56,7 @@ void signEmitSessionEvent({
         await clientB.emitSessionEvent(
           topic: connectionInfo.session.topic,
           chainId: TEST_ETHEREUM_CHAIN,
-          event: SessionEventParams(
+          event: const SessionEventParams(
             name: TEST_EVENT_1,
             data: TEST_MESSAGE_1,
           ),
@@ -95,7 +95,7 @@ void signEmitSessionEvent({
         await clientB.emitSessionEvent(
           topic: connectionInfo.session.topic,
           chainId: TEST_ETHEREUM_CHAIN,
-          event: SessionEventParams(
+          event: const SessionEventParams(
             name: TEST_EVENT_1,
             data: TEST_MESSAGE_1,
           ),
@@ -118,7 +118,7 @@ void signEmitSessionEvent({
         () async => await clientB.emitSessionEvent(
           topic: TEST_SESSION_INVALID_TOPIC,
           chainId: TEST_ETHEREUM_CHAIN,
-          event: SessionEventParams(
+          event: const SessionEventParams(
             name: TEST_EVENT_1,
             data: TEST_MESSAGE_1,
           ),
@@ -148,7 +148,7 @@ void signEmitSessionEvent({
         () async => await clientB.emitSessionEvent(
           topic: TEST_SESSION_EXPIRED_TOPIC,
           chainId: TEST_ETHEREUM_CHAIN,
-          event: SessionEventParams(
+          event: const SessionEventParams(
             name: TEST_EVENT_1,
             data: TEST_MESSAGE_1,
           ),
@@ -183,7 +183,7 @@ void signEmitSessionEvent({
         () async => await clientB.emitSessionEvent(
           topic: TEST_SESSION_VALID_TOPIC,
           chainId: TEST_UNINCLUDED_CHAIN,
-          event: SessionEventParams(
+          event: const SessionEventParams(
             name: TEST_EVENT_1,
             data: TEST_MESSAGE_1,
           ),
@@ -200,7 +200,7 @@ void signEmitSessionEvent({
         () async => await clientB.emitSessionEvent(
           topic: TEST_SESSION_VALID_TOPIC,
           chainId: TEST_ETHEREUM_CHAIN,
-          event: SessionEventParams(
+          event: const SessionEventParams(
             name: TEST_EVENT_INVALID_1,
             data: TEST_MESSAGE_1,
           ),

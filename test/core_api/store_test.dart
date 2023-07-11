@@ -213,7 +213,7 @@ void main() {
 
         await specialStore.set(
           '1',
-          JsonRpcRecord(
+          const JsonRpcRecord(
             id: 1,
             topic: 'test',
             method: 'method',

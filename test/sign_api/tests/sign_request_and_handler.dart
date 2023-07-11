@@ -61,7 +61,7 @@ void signRequestAndHandler({
         final _ = await clientA.request(
           topic: connectionInfo.session.topic,
           chainId: TEST_ETHEREUM_CHAIN,
-          request: SessionRequestParams(
+          request: const SessionRequestParams(
             method: 'nonexistant',
             params: TEST_MESSAGE_1,
           ),
@@ -105,7 +105,7 @@ void signRequestAndHandler({
         final Map<String, dynamic> response = await clientA.request(
           topic: connectionInfo.session.topic,
           chainId: TEST_ETHEREUM_CHAIN,
-          request: SessionRequestParams(
+          request: const SessionRequestParams(
             method: TEST_METHOD_1,
             params: TEST_MESSAGE_1,
           ),
@@ -126,7 +126,7 @@ void signRequestAndHandler({
         final String response2 = await clientA.request(
           topic: connectionInfo.session.topic,
           chainId: TEST_ETHEREUM_CHAIN,
-          request: SessionRequestParams(
+          request: const SessionRequestParams(
             method: TEST_METHOD_1,
             params: TEST_MESSAGE_2,
           ),
@@ -171,7 +171,7 @@ void signRequestAndHandler({
         clientA.request(
           topic: connectionInfo.session.topic,
           chainId: TEST_ETHEREUM_CHAIN,
-          request: SessionRequestParams(
+          request: const SessionRequestParams(
             method: TEST_METHOD_1,
             params: 'silent',
           ),
@@ -181,7 +181,7 @@ void signRequestAndHandler({
         await clientA.request(
           topic: connectionInfo.session.topic,
           chainId: TEST_ETHEREUM_CHAIN,
-          request: SessionRequestParams(
+          request: const SessionRequestParams(
             method: TEST_METHOD_1,
             params: TEST_MESSAGE_2,
           ),
@@ -204,7 +204,7 @@ void signRequestAndHandler({
         final _ = await clientA.request(
           topic: connectionInfo.session.topic,
           chainId: TEST_ETHEREUM_CHAIN,
-          request: SessionRequestParams(
+          request: const SessionRequestParams(
             method: TEST_METHOD_1,
             params: {'test': 'swag'},
           ),
@@ -286,7 +286,7 @@ void signRequestAndHandler({
         Map<String, dynamic> response = await clientA.request(
           topic: connectionInfo.session.topic,
           chainId: TEST_ETHEREUM_CHAIN,
-          request: SessionRequestParams(
+          request: const SessionRequestParams(
             method: TEST_METHOD_1,
             params: TEST_MESSAGE_1,
           ),
@@ -297,7 +297,7 @@ void signRequestAndHandler({
         Map<String, dynamic> _ = await clientA.request(
           topic: connectionInfo.session.topic,
           chainId: TEST_ETHEREUM_CHAIN,
-          request: SessionRequestParams(
+          request: const SessionRequestParams(
             method: TEST_METHOD_2,
             params: TEST_MESSAGE_1,
           ),
@@ -339,7 +339,7 @@ void signRequestAndHandler({
         final _ = await clientA.request(
           topic: connectionInfo.session.topic,
           chainId: TEST_ETHEREUM_CHAIN,
-          request: SessionRequestParams(
+          request: const SessionRequestParams(
             method: TEST_METHOD_1,
             params: TEST_MESSAGE_1,
           ),
@@ -356,7 +356,7 @@ void signRequestAndHandler({
         () async => await clientA.request(
           topic: TEST_SESSION_INVALID_TOPIC,
           chainId: TEST_ETHEREUM_CHAIN,
-          request: SessionRequestParams(
+          request: const SessionRequestParams(
             method: TEST_METHOD_1,
             params: TEST_MESSAGE_1,
           ),
@@ -388,7 +388,7 @@ void signRequestAndHandler({
         () async => await clientA.request(
           topic: TEST_SESSION_EXPIRED_TOPIC,
           chainId: TEST_ETHEREUM_CHAIN,
-          request: SessionRequestParams(
+          request: const SessionRequestParams(
             method: TEST_METHOD_1,
             params: TEST_MESSAGE_1,
           ),
@@ -423,7 +423,7 @@ void signRequestAndHandler({
         () async => await clientA.request(
           topic: TEST_SESSION_VALID_TOPIC,
           chainId: TEST_UNINCLUDED_CHAIN,
-          request: SessionRequestParams(
+          request: const SessionRequestParams(
             method: TEST_METHOD_1,
             params: TEST_MESSAGE_1,
           ),
@@ -440,7 +440,7 @@ void signRequestAndHandler({
         () async => await clientA.request(
           topic: TEST_SESSION_VALID_TOPIC,
           chainId: TEST_ETHEREUM_CHAIN,
-          request: SessionRequestParams(
+          request: const SessionRequestParams(
             method: TEST_METHOD_INVALID_1,
             params: TEST_MESSAGE_1,
           ),

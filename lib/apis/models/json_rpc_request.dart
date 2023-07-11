@@ -1,5 +1,4 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import 'package:json_annotation/json_annotation.dart';
 
 part 'json_rpc_request.g.dart';
 part 'json_rpc_request.freezed.dart';

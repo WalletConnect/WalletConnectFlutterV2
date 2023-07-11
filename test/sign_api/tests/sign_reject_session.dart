@@ -63,7 +63,7 @@ void signRejectSession({
     test('deletes the proposal', () async {
       await clientB.rejectSession(
         id: TEST_PROPOSAL_VALID_ID,
-        reason: WalletConnectError(code: -1, message: 'reason'),
+        reason: const WalletConnectError(code: -1, message: 'reason'),
       );
 
       expect(
@@ -78,7 +78,7 @@ void signRejectSession({
       expect(
         () async => await clientB.rejectSession(
           id: TEST_APPROVE_ID_INVALID,
-          reason: WalletConnectError(code: -1, message: 'reason'),
+          reason: const WalletConnectError(code: -1, message: 'reason'),
         ),
         throwsA(
           isA<WalletConnectError>().having(
@@ -104,7 +104,7 @@ void signRejectSession({
       expect(
         () async => await clientB.rejectSession(
           id: TEST_PROPOSAL_EXPIRED_ID,
-          reason: WalletConnectError(code: -1, message: 'reason'),
+          reason: const WalletConnectError(code: -1, message: 'reason'),
         ),
         throwsA(
           isA<WalletConnectError>().having(

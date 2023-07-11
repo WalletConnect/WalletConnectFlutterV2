@@ -95,7 +95,7 @@ Issued At: 2022-10-10T23:03:35.700Z''';
 const TEST_PENDING_REQUEST_ID = 1;
 const TEST_PENDING_REQUEST_ID_INVALID = -1;
 final testPendingRequests = {
-  TEST_PENDING_REQUEST_ID: PendingAuthRequest(
+  TEST_PENDING_REQUEST_ID: const PendingAuthRequest(
     id: TEST_PENDING_REQUEST_ID,
     pairingTopic: TEST_PAIRING_TOPIC,
     metadata: TEST_CONNECTION_METADATA_REQUESTER,

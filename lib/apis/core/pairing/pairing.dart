@@ -233,7 +233,7 @@ class Pairing implements IPairing {
     required ProtocolType type,
   }) {
     if (routerMapRequest.containsKey(method)) {
-      throw WalletConnectError(
+      throw const WalletConnectError(
         code: -1,
         message: 'Method already exists',
       );
@@ -277,7 +277,7 @@ class Pairing implements IPairing {
         WalletConnectUtils.calculateExpiry(
           WalletConnectConstants.THIRTY_DAYS,
         )) {
-      throw WalletConnectError(
+      throw const WalletConnectError(
         code: -1,
         message: 'Expiry cannot be more than 30 days away',
       );

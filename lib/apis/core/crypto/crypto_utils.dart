@@ -101,7 +101,7 @@ class CryptoUtils extends ICryptoUtils {
 
     // Check for type 1 envelope, throw an error if data is invalid
     if (decodedType == EncodeOptions.TYPE_1 && senderPublicKey == null) {
-      throw WalletConnectError(
+      throw const WalletConnectError(
         code: -1,
         message: 'Missing sender public key for type 1 envelope',
       );
@@ -157,7 +157,7 @@ class CryptoUtils extends ICryptoUtils {
 
     if (type == EncodeOptions.TYPE_1) {
       if (senderPublicKey == null) {
-        throw WalletConnectError(
+        throw const WalletConnectError(
           code: -1,
           message: 'Missing sender public key for type 1 envelope',
         );
@@ -225,11 +225,11 @@ class CryptoUtils extends ICryptoUtils {
     final int t = type ?? EncodeOptions.TYPE_0;
     if (t == EncodeOptions.TYPE_1) {
       if (senderPublicKey == null) {
-        throw WalletConnectError(
+        throw const WalletConnectError(
             code: -1, message: 'Missing sender public key');
       }
       if (receiverPublicKey == null) {
-        throw WalletConnectError(
+        throw const WalletConnectError(
             code: -1, message: 'Missing receiver public key');
       }
     }

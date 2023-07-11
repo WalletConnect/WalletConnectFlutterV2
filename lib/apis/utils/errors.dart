@@ -239,7 +239,8 @@ class Errors {
             : INTERNAL_ERRORS[key]!['message']! as String,
       );
     }
-    return WalletConnectError(code: -1, message: 'UNKNOWN INTERNAL ERROR');
+    return const WalletConnectError(
+        code: -1, message: 'UNKNOWN INTERNAL ERROR');
   }
 
   static WalletConnectError getSdkError(
@@ -254,7 +255,7 @@ class Errors {
             : SDK_ERRORS[key]!['message']! as String,
       );
     }
-    return WalletConnectError(code: -1, message: 'UNKNOWN SDK ERROR');
+    return const WalletConnectError(code: -1, message: 'UNKNOWN SDK ERROR');
   }
 }
 
