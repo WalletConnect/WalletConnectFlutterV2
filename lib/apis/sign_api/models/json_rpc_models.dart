@@ -36,7 +36,7 @@ class WcSessionProposeRequest with _$WcSessionProposeRequest {
   const factory WcSessionProposeRequest({
     required List<Relay> relays,
     required Map<String, RequiredNamespace> requiredNamespaces,
-    required Map<String, RequiredNamespace> optionalNamespaces,
+    Map<String, RequiredNamespace>? optionalNamespaces,
     Map<String, String>? sessionProperties,
     required ConnectionMetadata proposer,
   }) = _WcSessionProposeRequest;

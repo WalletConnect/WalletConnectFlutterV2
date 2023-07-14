@@ -1,3 +1,7 @@
+## 2.0.14
+
+- Fixed regression of optionalNamespaces not being nullable
+
 ## 2.0.13
 
 - Made message in json response nullable to resolve issues with rejection messages

@@ -44,7 +44,7 @@ _$_WcSessionProposeRequest _$$_WcSessionProposeRequestFromJson(
             MapEntry(k, RequiredNamespace.fromJson(e as Map<String, dynamic>)),
       ),
       optionalNamespaces:
-          (json['optionalNamespaces'] as Map<String, dynamic>).map(
+          (json['optionalNamespaces'] as Map<String, dynamic>?)?.map(
         (k, e) =>
             MapEntry(k, RequiredNamespace.fromJson(e as Map<String, dynamic>)),
       ),
@@ -62,8 +62,6 @@ Map<String, dynamic> _$$_WcSessionProposeRequestToJson(
     'relays': instance.relays.map((e) => e.toJson()).toList(),
     'requiredNamespaces':
         instance.requiredNamespaces.map((k, e) => MapEntry(k, e.toJson())),
-    'optionalNamespaces':
-        instance.optionalNamespaces.map((k, e) => MapEntry(k, e.toJson())),
   };
 
   void writeNotNull(String key, dynamic value) {
@@ -72,6 +70,8 @@ Map<String, dynamic> _$$_WcSessionProposeRequestToJson(
     }
   }
 
+  writeNotNull('optionalNamespaces',
+      instance.optionalNamespaces?.map((k, e) => MapEntry(k, e.toJson())));
   writeNotNull('sessionProperties', instance.sessionProperties);
   val['proposer'] = instance.proposer.toJson();
   return val;

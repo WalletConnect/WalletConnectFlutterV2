@@ -330,7 +330,7 @@ mixin _$WcSessionProposeRequest {
   List<Relay> get relays => throw _privateConstructorUsedError;
   Map<String, RequiredNamespace> get requiredNamespaces =>
       throw _privateConstructorUsedError;
-  Map<String, RequiredNamespace> get optionalNamespaces =>
+  Map<String, RequiredNamespace>? get optionalNamespaces =>
       throw _privateConstructorUsedError;
   Map<String, String>? get sessionProperties =>
       throw _privateConstructorUsedError;
@@ -351,7 +351,7 @@ abstract class $WcSessionProposeRequestCopyWith<$Res> {
   $Res call(
       {List<Relay> relays,
       Map<String, RequiredNamespace> requiredNamespaces,
-      Map<String, RequiredNamespace> optionalNamespaces,
+      Map<String, RequiredNamespace>? optionalNamespaces,
       Map<String, String>? sessionProperties,
       ConnectionMetadata proposer});
 
@@ -374,7 +374,7 @@ class _$WcSessionProposeRequestCopyWithImpl<$Res,
   $Res call({
     Object? relays = null,
     Object? requiredNamespaces = null,
-    Object? optionalNamespaces = null,
+    Object? optionalNamespaces = freezed,
     Object? sessionProperties = freezed,
     Object? proposer = null,
   }) {
@@ -387,10 +387,10 @@ class _$WcSessionProposeRequestCopyWithImpl<$Res,
           ? _value.requiredNamespaces
           : requiredNamespaces // ignore: cast_nullable_to_non_nullable
               as Map<String, RequiredNamespace>,
-      optionalNamespaces: null == optionalNamespaces
+      optionalNamespaces: freezed == optionalNamespaces
           ? _value.optionalNamespaces
           : optionalNamespaces // ignore: cast_nullable_to_non_nullable
-              as Map<String, RequiredNamespace>,
+              as Map<String, RequiredNamespace>?,
       sessionProperties: freezed == sessionProperties
           ? _value.sessionProperties
           : sessionProperties // ignore: cast_nullable_to_non_nullable
@@ -422,7 +422,7 @@ abstract class _$$_WcSessionProposeRequestCopyWith<$Res>
   $Res call(
       {List<Relay> relays,
       Map<String, RequiredNamespace> requiredNamespaces,
-      Map<String, RequiredNamespace> optionalNamespaces,
+      Map<String, RequiredNamespace>? optionalNamespaces,
       Map<String, String>? sessionProperties,
       ConnectionMetadata proposer});
 
@@ -444,7 +444,7 @@ class __$$_WcSessionProposeRequestCopyWithImpl<$Res>
   $Res call({
     Object? relays = null,
     Object? requiredNamespaces = null,
-    Object? optionalNamespaces = null,
+    Object? optionalNamespaces = freezed,
     Object? sessionProperties = freezed,
     Object? proposer = null,
   }) {
@@ -457,10 +457,10 @@ class __$$_WcSessionProposeRequestCopyWithImpl<$Res>
           ? _value._requiredNamespaces
           : requiredNamespaces // ignore: cast_nullable_to_non_nullable
               as Map<String, RequiredNamespace>,
-      optionalNamespaces: null == optionalNamespaces
+      optionalNamespaces: freezed == optionalNamespaces
           ? _value._optionalNamespaces
           : optionalNamespaces // ignore: cast_nullable_to_non_nullable
-              as Map<String, RequiredNamespace>,
+              as Map<String, RequiredNamespace>?,
       sessionProperties: freezed == sessionProperties
           ? _value._sessionProperties
           : sessionProperties // ignore: cast_nullable_to_non_nullable
@@ -480,7 +480,7 @@ class _$_WcSessionProposeRequest implements _WcSessionProposeRequest {
   const _$_WcSessionProposeRequest(
       {required final List<Relay> relays,
       required final Map<String, RequiredNamespace> requiredNamespaces,
-      required final Map<String, RequiredNamespace> optionalNamespaces,
+      final Map<String, RequiredNamespace>? optionalNamespaces,
       final Map<String, String>? sessionProperties,
       required this.proposer})
       : _relays = relays,
@@ -508,13 +508,15 @@ class _$_WcSessionProposeRequest implements _WcSessionProposeRequest {
     return EqualUnmodifiableMapView(_requiredNamespaces);
   }
 
-  final Map<String, RequiredNamespace> _optionalNamespaces;
+  final Map<String, RequiredNamespace>? _optionalNamespaces;
   @override
-  Map<String, RequiredNamespace> get optionalNamespaces {
+  Map<String, RequiredNamespace>? get optionalNamespaces {
+    final value = _optionalNamespaces;
+    if (value == null) return null;
     if (_optionalNamespaces is EqualUnmodifiableMapView)
       return _optionalNamespaces;
     // ignore: implicit_dynamic_type
-    return EqualUnmodifiableMapView(_optionalNamespaces);
+    return EqualUnmodifiableMapView(value);
   }
 
   final Map<String, String>? _sessionProperties;
@@ -582,7 +584,7 @@ abstract class _WcSessionProposeRequest implements WcSessionProposeRequest {
   const factory _WcSessionProposeRequest(
       {required final List<Relay> relays,
       required final Map<String, RequiredNamespace> requiredNamespaces,
-      required final Map<String, RequiredNamespace> optionalNamespaces,
+      final Map<String, RequiredNamespace>? optionalNamespaces,
       final Map<String, String>? sessionProperties,
       required final ConnectionMetadata proposer}) = _$_WcSessionProposeRequest;
 
@@ -594,7 +596,7 @@ abstract class _WcSessionProposeRequest implements WcSessionProposeRequest {
   @override
   Map<String, RequiredNamespace> get requiredNamespaces;
   @override
-  Map<String, RequiredNamespace> get optionalNamespaces;
+  Map<String, RequiredNamespace>? get optionalNamespaces;
   @override
   Map<String, String>? get sessionProperties;
   @override
