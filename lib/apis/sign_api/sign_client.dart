@@ -324,6 +324,21 @@ class SignClient implements ISignClient {
   }
 
   @override
+  void unregisterAccount({
+    required String chainId,
+    required String accountAddress,
+  }) {
+    try {
+      return engine.unregisterAccount(
+        chainId: chainId,
+        accountAddress: accountAddress,
+      );
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
   Future<void> emit({
     required String topic,
     required String chainId,

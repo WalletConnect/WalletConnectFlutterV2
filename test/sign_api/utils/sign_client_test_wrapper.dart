@@ -282,6 +282,21 @@ class SignClientTestWrapper implements ISignEngine {
   }
 
   @override
+  void unregisterAccount({
+    required String chainId,
+    required String accountAddress,
+  }) {
+    try {
+      return client.unregisterAccount(
+        chainId: chainId,
+        accountAddress: accountAddress,
+      );
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
   Future<void> emitSessionEvent({
     required String topic,
     required String chainId,

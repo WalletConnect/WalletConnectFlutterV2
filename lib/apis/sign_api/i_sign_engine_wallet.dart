@@ -67,6 +67,15 @@ abstract class ISignEngineWallet extends ISignEngineCommon {
     required String accountAddress,
   });
 
+  /// Unregister accounts for a given namespace or chainId so that it's not included
+  /// anymore in subsequent session proposals.
+  /// Used to construct the Namespaces map for the session proposal.
+  /// Each account must follow the namespace:chainId:address format or this will throw an error.
+  void unregisterAccount({
+    required String chainId,
+    required String accountAddress,
+  });
+
   /// Construct the Namespaces map for a session proposal.
   /// Uses the registered methods, events, and keys to build them.
   /// If the required namespaces is not satisfied, this function will throw a [WalletConnectError].

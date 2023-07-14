@@ -704,6 +704,27 @@ class SignEngine implements ISignEngine {
     _accounts.add(value);
   }
 
+  @override
+  void unregisterAccount({
+    required String chainId,
+    required String accountAddress,
+  }) {
+    final bool isChainId = NamespaceUtils.isValidChainId(chainId);
+    if (!isChainId) {
+      throw Errors.getSdkError(
+        Errors.UNSUPPORTED_CHAINS,
+        context:
+            'unregisterAccount, chain $chainId should conform to "namespace:chainId" format',
+      );
+    }
+    final String value = _getRegisterKey(chainId, accountAddress);
+    SignApiValidatorUtils.isValidAccounts(
+      accounts: [value],
+      context: 'registerAccount',
+    );
+    _accounts.remove(value);
+  }
+
   /// ---- PRIVATE HELPERS ---- ////
 
   Future<void> _resubscribeAll() async {

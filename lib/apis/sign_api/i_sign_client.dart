@@ -116,4 +116,13 @@ abstract class ISignClient {
     required String chainId,
     required String accountAddress,
   });
+
+  /// Unregister accounts for a given namespace or chainId so that it's not included
+  /// anymore in subsequent session proposals.
+  /// Used to construct the Namespaces map for the session proposal.
+  /// Each account must follow the namespace:chainId:address format or this will throw an error.
+  void unregisterAccount({
+    required String chainId,
+    required String accountAddress,
+  });
 }
