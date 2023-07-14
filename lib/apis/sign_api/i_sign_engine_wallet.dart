@@ -76,6 +76,8 @@ abstract class ISignEngineWallet extends ISignEngineCommon {
     required String accountAddress,
   });
 
+  void clearRegisteredAccounts();
+
   /// Construct the Namespaces map for a session proposal.
   /// Uses the registered methods, events, and keys to build them.
   /// If the required namespaces is not satisfied, this function will throw a [WalletConnectError].

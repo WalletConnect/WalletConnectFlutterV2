@@ -317,6 +317,15 @@ class Web3Wallet implements IWeb3Wallet {
   }
 
   @override
+  void clearRegisteredAccounts() {
+    try {
+      return signEngine.clearRegisteredAccounts();
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
   Future<void> emitSessionEvent({
     required String topic,
     required String chainId,

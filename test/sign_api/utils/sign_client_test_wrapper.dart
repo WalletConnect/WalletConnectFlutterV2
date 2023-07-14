@@ -297,6 +297,15 @@ class SignClientTestWrapper implements ISignEngine {
   }
 
   @override
+  void clearRegisteredAccounts() {
+    try {
+      return client.clearRegisteredAccounts();
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
   Future<void> emitSessionEvent({
     required String topic,
     required String chainId,
