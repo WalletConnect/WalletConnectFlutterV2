@@ -27,7 +27,7 @@ abstract class ISignEngineApp extends ISignEngineCommon {
   void registerEventHandler({
     required String chainId,
     required String event,
-    required dynamic Function(String, dynamic)? handler,
+    dynamic Function(String, dynamic)? handler,
   });
   Future<void> ping({
     required String topic,
