@@ -1,3 +1,7 @@
+## 2.0.15
+
+- Added 1002 and 1005 to relay auto-reconnect
+
 ## 2.0.14
 
 - Fixed regression of optionalNamespaces not being nullable
