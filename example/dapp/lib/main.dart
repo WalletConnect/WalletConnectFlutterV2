@@ -71,8 +71,6 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     );
 
-    // Register event handlers
-
     // Loop through all the chain data
     for (final ChainMetadata chain in ChainData.allChains) {
       // Loop through the events for that chain
@@ -81,6 +79,7 @@ class _MyHomePageState extends State<MyHomePage> {
       }
     }
 
+    // Register event handlers
     _web3App!.onSessionPing.subscribe(_onSessionPing);
     _web3App!.onSessionEvent.subscribe(_onSessionEvent);
 
@@ -118,6 +117,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void dispose() {
     _web3App!.onSessionPing.unsubscribe(_onSessionPing);
+    _web3App!.onSessionEvent.unsubscribe(_onSessionEvent);
     super.dispose();
   }
 

@@ -118,7 +118,7 @@ wcClient.onSessionProposal.subscribe((SessionProposal? args) async {
 });
 
 // Also setup the methods and chains that your wallet supports
-final kadenaSignV1RequestHandler = (String topic, dynamic parameters) async {
+final signRequestHandler = (String topic, dynamic parameters) async {
   // Handling Steps
   // 1. Parse the request, if there are any errors thrown while trying to parse
   // the client will automatically respond to the requester with a 
@@ -166,10 +166,27 @@ final kadenaSignV1RequestHandler = (String topic, dynamic parameters) async {
   }
 }
 wcClient.registerRequestHandler(
-  chainId: 'kadena:mainnet01',
-  method: 'kadena_sign_v1',
-  handler: kadenaSignV1RequestHandler,
+  chainId: 'eip155:1',
+  method: 'eth_sendTransaction',
+  handler: signRequestHandler,
 );
+
+// If you want to the library to handle Namespace validation automatically, 
+// you can register your events and accounts like so:
+wcClient.registerEventEmitter(
+  chainId: 'eip155:1',
+  event: 'chainChanged',
+);
+wcClient.registerAccount(
+  chainId: 'eip155:1',
+  account: '0xabc',
+);
+
+// If your wallet receives a session proposal that it can't make the proper Namespaces for,
+// it will broadcast an onSessionProposalError
+wcClient.onSessionProposalError.subscribe((SessionProposalError? args) {
+  // Handle the error
+});
 
 // Setup the auth handling
 clientB.onAuthRequest.subscribe((AuthRequest? args) async {
