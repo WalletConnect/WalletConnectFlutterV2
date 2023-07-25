@@ -298,7 +298,11 @@ class RelayClient implements IRelayClient {
 
     // If the code requires reconnect, do so
     if (code != null) {
-      if (code == 1001 || code == 4008 || code == 4010) {
+      if (code == 1001 ||
+          code == 4008 ||
+          code == 4010 ||
+          code == 1002 ||
+          code == 1005) {
         await connect();
       } else {
         await disconnect();
