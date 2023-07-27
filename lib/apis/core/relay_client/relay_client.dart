@@ -302,7 +302,9 @@ class RelayClient implements IRelayClient {
           code == 4008 ||
           code == 4010 ||
           code == 1002 ||
-          code == 1005) {
+          code == 1005 ||
+          code == 1006) {
+        core.logger.i('Reconnecting...');
         await connect();
       } else {
         await disconnect();
