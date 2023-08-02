@@ -1,3 +1,7 @@
+## 2.0.16
+
+- Updated error logs to be more descriptive
+
 ## 2.0.15
 
 - Added 1002 and 1005 to relay auto-reconnect

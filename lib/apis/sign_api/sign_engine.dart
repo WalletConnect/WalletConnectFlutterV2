@@ -277,10 +277,6 @@ class SignEngine implements ISignEngine {
       relayProtocol ?? 'irn',
     );
 
-    final int expiry = WalletConnectUtils.calculateExpiry(
-      WalletConnectConstants.SEVEN_DAYS,
-    );
-
     // Respond to the proposal
     await core.pairing.sendResult(
       id,
@@ -302,6 +298,10 @@ class SignEngine implements ISignEngine {
     );
 
     await core.relayClient.subscribe(topic: sessionTopic);
+
+    final int expiry = WalletConnectUtils.calculateExpiry(
+      WalletConnectConstants.SEVEN_DAYS,
+    );
 
     SessionData session = SessionData(
       topic: sessionTopic,

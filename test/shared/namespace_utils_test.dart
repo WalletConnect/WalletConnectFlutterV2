@@ -439,27 +439,27 @@ void main() {
           Errors.getSdkError(
             Errors.UNSUPPORTED_CHAINS,
             context:
-                " namespaces chains don't satisfy requiredNamespaces chains for namespace3",
+                " namespaces chains don't satisfy requiredNamespaces chains for namespace3. Requested: [namespace3:chain1], Supported: []",
           ).message,
           Errors.getSdkError(
             Errors.UNSUPPORTED_METHODS,
             context:
-                " namespaces methods don't satisfy requiredNamespaces methods for namespace1:chain1",
+                " namespaces methods don't satisfy requiredNamespaces methods for namespace1:chain1. Requested: [method1, method2, method3], Supported: [method1, method2]",
           ).message,
           Errors.getSdkError(
             Errors.UNSUPPORTED_METHODS,
             context:
-                " namespaces methods don't satisfy requiredNamespaces methods for namespace2",
+                " namespaces methods don't satisfy requiredNamespaces methods for namespace2. Requested: [method3, method4], Supported: [method3]",
           ).message,
           Errors.getSdkError(
             Errors.UNSUPPORTED_EVENTS,
             context:
-                " namespaces events don't satisfy requiredNamespaces events for namespace1:chain1",
+                " namespaces events don't satisfy requiredNamespaces events for namespace1:chain1. Requested: [event1, event2, event3], Supported: [event1, event2]",
           ).message,
           Errors.getSdkError(
             Errors.UNSUPPORTED_EVENTS,
             context:
-                " namespaces events don't satisfy requiredNamespaces events for namespace2",
+                " namespaces events don't satisfy requiredNamespaces events for namespace2. Requested: [event3, event4], Supported: [event3]",
           ).message,
         ];
 
