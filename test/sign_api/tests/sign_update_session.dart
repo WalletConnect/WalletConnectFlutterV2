@@ -172,7 +172,7 @@ void signUpdateSession({
           isA<WalletConnectError>().having(
             (e) => e.message,
             'message',
-            'Unsupported chains. update() namespaces chains don\'t satisfy requiredNamespaces chains for eip155',
+            'Unsupported chains. update() namespaces chains don\'t satisfy requiredNamespaces chains for eip155. Requested: [eip155:1, eip155:42161], Supported: [eip155:1]',
           ),
         ),
       );
