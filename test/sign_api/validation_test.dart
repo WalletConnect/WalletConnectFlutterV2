@@ -365,9 +365,9 @@ void main() {
     final List errors = [
       "Unsupported namespace key. test namespaces keys don't satisfy requiredNamespaces",
       "Unsupported namespace key. test namespaces keys don't satisfy requiredNamespaces",
-      "Unsupported chains. test namespaces chains don't satisfy requiredNamespaces chains for $EVM_NAMESPACE",
-      "Unsupported methods. test namespaces methods don't satisfy requiredNamespaces methods for $EVM_NAMESPACE",
-      "Unsupported events. test namespaces events don't satisfy requiredNamespaces events for $EVM_NAMESPACE",
+      "Unsupported chains. test namespaces chains don't satisfy requiredNamespaces chains for $EVM_NAMESPACE. Requested: [eip155:1, eip155:42161], Supported: [eip155:1]",
+      "Unsupported methods. test namespaces methods don't satisfy requiredNamespaces methods for $EVM_NAMESPACE. Requested: [eth_sendTransaction, eth_signTransaction], Supported: [eth_invalid]",
+      "Unsupported events. test namespaces events don't satisfy requiredNamespaces events for $EVM_NAMESPACE. Requested: [chainChanged], Supported: [eth_event_invalid]",
     ];
     for (int i = 0; i < nonconformingNamespaces.length; i++) {
       expect(
