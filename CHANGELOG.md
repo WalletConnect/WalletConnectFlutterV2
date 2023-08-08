@@ -1,3 +1,9 @@
+## 2.1.0
+
+- Added IWebSocketHandler input to core for testing purposes
+- No internet connection/invalid URL errors now throw a WalletConnectError
+- .org fallback is used if the relay URL fails
+
 ## 2.0.16
 
 - Updated error logs to be more descriptive
