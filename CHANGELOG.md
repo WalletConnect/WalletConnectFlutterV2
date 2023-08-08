@@ -1,3 +1,8 @@
+## 2.1.1
+
+- Fixed issue with relayUrl not being used correctly
+- Updated false positive tests for relayUrl and added additional ones to ensure relayUrl is used correctly
+
 ## 2.1.0
 
 - Added IWebSocketHandler input to core for testing purposes

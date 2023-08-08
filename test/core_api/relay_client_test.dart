@@ -30,17 +30,19 @@ void main() {
   group('Relay throws errors', () {
     test('on init if there is no internet connection', () async {
       final MockWebSocketHandler mockWebSocketHandler = MockWebSocketHandler();
-      when(mockWebSocketHandler.setup(url: anyNamed('url'))).thenAnswer(
-        (_) async => Future.value(),
-      );
+      // when(mockWebSocketHandler.setup(url: anyNamed('url'))).thenAnswer(
+      //   (_) async => Future.value(),
+      // );
       when(mockWebSocketHandler.connect()).thenThrow(const WalletConnectError(
         code: -1,
         message: 'No internet connection: test',
       ));
 
+      const testRelayUrl = 'wss://relay.test.com';
       ICore core = Core(
         projectId: 'abc',
         memoryStore: true,
+        relayUrl: testRelayUrl,
       );
       core.relayClient = RelayClient(
         core: core,
@@ -48,45 +50,45 @@ void main() {
         topicMap: getTopicMap(core: core),
         socketHandler: mockWebSocketHandler,
       );
+      await core.storage.init();
+      await core.crypto.init();
+      try {
+        await core.relayClient.init();
+        expect(true, false);
+      } on WalletConnectError catch (e) {
+        expect(e.message, 'No internet connection: test');
+      }
 
-      expect(
-        () async => await core.start(),
-        throwsA(
-          isA<WalletConnectError>().having(
-            (e) => e.message,
-            'No internet connection',
-            'No internet connection: test',
-          ),
+      verify(mockWebSocketHandler.setup(
+        url: argThat(
+          contains(testRelayUrl),
+          named: 'url',
         ),
-      );
+      )).called(1);
+      verify(mockWebSocketHandler.connect()).called(1);
 
-      // Check that setup was called twice (It attempts the fallback .org URL if the default URL is provided)
-      // TODO: Figure out why the mocked class isn't counting the number of times it's called
-      // verify(mockWebSocketHandler.setup(url: anyNamed('url'))).called(2);
-      // verify(mockWebSocketHandler.connect()).called(2);
+      // core = Core(
+      //   projectId: 'abc',
+      //   memoryStore: true,
+      //   relayUrl: 'wss://relay.test.com',
+      // );
+      // core.relayClient = RelayClient(
+      //   core: core,
+      //   messageTracker: getMessageTracker(core: core),
+      //   topicMap: getTopicMap(core: core),
+      //   socketHandler: mockWebSocketHandler,
+      // );
 
-      core = Core(
-        projectId: 'abc',
-        memoryStore: true,
-        relayUrl: 'wss://relay.test.com',
-      );
-      core.relayClient = RelayClient(
-        core: core,
-        messageTracker: getMessageTracker(core: core),
-        topicMap: getTopicMap(core: core),
-        socketHandler: mockWebSocketHandler,
-      );
-
-      expect(
-        () async => await core.start(),
-        throwsA(
-          isA<WalletConnectError>().having(
-            (e) => e.message,
-            'No internet connection',
-            'No internet connection: test',
-          ),
-        ),
-      );
+      // expect(
+      //   () async => await core.start(),
+      //   throwsA(
+      //     isA<WalletConnectError>().having(
+      //       (e) => e.message,
+      //       'No internet connection',
+      //       'No internet connection: test',
+      //     ),
+      //   ),
+      // );
 
       // // Check that setup was called once for custom URL
       // TODO: Figure out why the mocked class isn't counting the number of times it's called

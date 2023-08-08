@@ -90,7 +90,7 @@ class Core implements ICore {
         fromJson: (dynamic value) => value as String,
       ),
     );
-
+    _relayUrl = relayUrl;
     relayClient = RelayClient(
       core: this,
       messageTracker: MessageTracker(
@@ -153,20 +153,20 @@ class Core implements ICore {
     await storage.init();
     await crypto.init();
 
-    // If the relay URL is the default, try both it and the backup (.org)
-    if (relayUrl == WalletConnectConstants.DEFAULT_RELAY_URL) {
-      _relayUrl = relayUrl;
-      try {
-        await relayClient.init();
-      } catch (e) {
-        await relayClient.init();
-      }
-    } else {
+    try {
       await relayClient.init();
+    } catch (e) {
+      // If the relay URL is the default, try both it and the backup (.org)
+      if (_relayUrl == WalletConnectConstants.DEFAULT_RELAY_URL) {
+        _relayUrl = WalletConnectConstants.FALLBACK_RELAY_URL;
+        await relayClient.init();
+      } else {
+        // Otherwise, just rethrow the error
+        rethrow;
+      }
     }
 
     await expirer.init();
-    // await history.init();
     await pairing.init();
   }
 }
