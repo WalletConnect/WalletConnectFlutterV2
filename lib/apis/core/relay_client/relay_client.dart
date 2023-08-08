@@ -8,7 +8,6 @@ import 'package:walletconnect_flutter_v2/apis/core/relay_client/i_message_tracke
 import 'package:walletconnect_flutter_v2/apis/core/relay_client/i_relay_client.dart';
 import 'package:walletconnect_flutter_v2/apis/core/relay_client/json_rpc_2/src/parameters.dart';
 import 'package:walletconnect_flutter_v2/apis/core/relay_client/json_rpc_2/src/peer.dart';
-import 'package:walletconnect_flutter_v2/apis/core/relay_client/websocket/i_http_client.dart';
 import 'package:walletconnect_flutter_v2/apis/core/relay_client/websocket/i_websocket_handler.dart';
 import 'package:walletconnect_flutter_v2/apis/core/relay_client/relay_client_models.dart';
 import 'package:walletconnect_flutter_v2/apis/core/relay_client/websocket/websocket_handler.dart';
@@ -62,7 +61,7 @@ class RelayClient implements IRelayClient {
   bool _handledClose = false;
 
   // late WebSocketChannel socket;
-  IWebSocketHandler? socket;
+  // IWebSocketHandler? socket;
   Peer? jsonRPC;
 
   /// Stores all the subs that haven't been completed
@@ -70,7 +69,7 @@ class RelayClient implements IRelayClient {
 
   IMessageTracker messageTracker;
   IGenericStore<String> topicMap;
-  IHttpClient httpClient;
+  final IWebSocketHandler socketHandler;
 
   ICore core;
 
@@ -81,10 +80,9 @@ class RelayClient implements IRelayClient {
     required this.core,
     required this.messageTracker,
     required this.topicMap,
-    required this.httpClient,
+    IWebSocketHandler? socketHandler,
     this.heartbeatPeriod = 5,
-    relayUrl = WalletConnectConstants.RELAYER_DEFAULT_PROTOCOL,
-  });
+  }) : socketHandler = socketHandler ?? WebSocketHandler();
 
   @override
   Future<void> init() async {
@@ -196,8 +194,7 @@ class RelayClient implements IRelayClient {
 
     await jsonRPC?.close();
     jsonRPC = null;
-    await socket?.close();
-    socket = null;
+    await socketHandler.close();
     _heartbeatTimer?.cancel();
     _heartbeatTimer = null;
 
@@ -225,21 +222,24 @@ class RelayClient implements IRelayClient {
         jsonRPC = null;
       }
 
-      if (socket != null) {
-        await socket!.close();
-        socket = null;
-      }
+      // if (socket != null) {
+      //   await socket!.close();
+      //   socket = null;
+      // }
 
-      socket = WebSocketHandler(
-        url: url,
-        httpClient: httpClient,
-      );
+      // socket = WebSocketHandler(
+      //   url: url,
+      //   httpClient: httpClient,
+      // );
 
       core.logger.v('Initializing WebSocket with $url');
-      await socket!.init();
+      await socketHandler.setup(
+        url: url,
+      );
+      await socketHandler.connect();
 
       jsonRPC = Peer(
-        socket!.channel!,
+        socketHandler.channel!,
       );
 
       jsonRPC!.registerMethod(
@@ -268,7 +268,10 @@ class RelayClient implements IRelayClient {
       _handledClose = false;
       jsonRPC!.done.then(
         (value) {
-          _handleRelayClose(socket?.closeCode, socket?.closeReason);
+          _handleRelayClose(
+            socketHandler.closeCode,
+            socketHandler.closeReason,
+          );
         },
       );
 

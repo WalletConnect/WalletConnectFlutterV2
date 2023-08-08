@@ -20,7 +20,7 @@ JsonRpcError _$JsonRpcErrorFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$JsonRpcError {
-  int get code => throw _privateConstructorUsedError;
+  int? get code => throw _privateConstructorUsedError;
   String? get message => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -35,7 +35,7 @@ abstract class $JsonRpcErrorCopyWith<$Res> {
           JsonRpcError value, $Res Function(JsonRpcError) then) =
       _$JsonRpcErrorCopyWithImpl<$Res, JsonRpcError>;
   @useResult
-  $Res call({int code, String? message});
+  $Res call({int? code, String? message});
 }
 
 /// @nodoc
@@ -51,14 +51,14 @@ class _$JsonRpcErrorCopyWithImpl<$Res, $Val extends JsonRpcError>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? code = null,
+    Object? code = freezed,
     Object? message = freezed,
   }) {
     return _then(_value.copyWith(
-      code: null == code
+      code: freezed == code
           ? _value.code
           : code // ignore: cast_nullable_to_non_nullable
-              as int,
+              as int?,
       message: freezed == message
           ? _value.message
           : message // ignore: cast_nullable_to_non_nullable
@@ -75,7 +75,7 @@ abstract class _$$_JsonRpcErrorCopyWith<$Res>
       __$$_JsonRpcErrorCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({int code, String? message});
+  $Res call({int? code, String? message});
 }
 
 /// @nodoc
@@ -89,14 +89,14 @@ class __$$_JsonRpcErrorCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? code = null,
+    Object? code = freezed,
     Object? message = freezed,
   }) {
     return _then(_$_JsonRpcError(
-      code: null == code
+      code: freezed == code
           ? _value.code
           : code // ignore: cast_nullable_to_non_nullable
-              as int,
+              as int?,
       message: freezed == message
           ? _value.message
           : message // ignore: cast_nullable_to_non_nullable
@@ -109,13 +109,13 @@ class __$$_JsonRpcErrorCopyWithImpl<$Res>
 
 @JsonSerializable(includeIfNull: false)
 class _$_JsonRpcError implements _JsonRpcError {
-  const _$_JsonRpcError({required this.code, this.message});
+  const _$_JsonRpcError({this.code, this.message});
 
   factory _$_JsonRpcError.fromJson(Map<String, dynamic> json) =>
       _$$_JsonRpcErrorFromJson(json);
 
   @override
-  final int code;
+  final int? code;
   @override
   final String? message;
 
@@ -152,14 +152,14 @@ class _$_JsonRpcError implements _JsonRpcError {
 }
 
 abstract class _JsonRpcError implements JsonRpcError {
-  const factory _JsonRpcError(
-      {required final int code, final String? message}) = _$_JsonRpcError;
+  const factory _JsonRpcError({final int? code, final String? message}) =
+      _$_JsonRpcError;
 
   factory _JsonRpcError.fromJson(Map<String, dynamic> json) =
       _$_JsonRpcError.fromJson;
 
   @override
-  int get code;
+  int? get code;
   @override
   String? get message;
   @override

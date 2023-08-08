@@ -1,14 +1,14 @@
 import 'dart:async';
 
 import 'package:stream_channel/stream_channel.dart';
-import 'package:walletconnect_flutter_v2/apis/core/relay_client/websocket/i_http_client.dart';
 import 'package:walletconnect_flutter_v2/apis/core/relay_client/websocket/i_websocket_handler.dart';
+import 'package:walletconnect_flutter_v2/apis/models/basic_models.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
 
 class WebSocketHandler implements IWebSocketHandler {
+  String? _url;
   @override
-  final String url;
-  final IHttpClient httpClient;
+  String? get url => _url;
 
   WebSocketChannel? _socket;
 
@@ -24,31 +24,32 @@ class WebSocketHandler implements IWebSocketHandler {
   @override
   Future<void> get ready => _socket!.ready;
 
-  WebSocketHandler({
-    required this.url,
-    required this.httpClient,
-  });
+  // const WebSocketHandler();
 
   @override
-  Future<void> init() async {
-    await _connect();
+  Future<void> setup({
+    required String url,
+  }) async {
+    _url = url;
+
+    await close();
   }
 
   @override
-  Future<void> close() async {
-    try {
-      await _socket?.sink.close();
-    } catch (_) {}
-    _socket = null;
-  }
-
-  Future<void> _connect() async {
+  Future<void> connect() async {
     // print('connecting');
-    _socket = WebSocketChannel.connect(
-      Uri.parse(
-        '$url&useOnCloseEvent=true',
-      ),
-    );
+    try {
+      _socket = WebSocketChannel.connect(
+        Uri.parse(
+          '$url&useOnCloseEvent=true',
+        ),
+      );
+    } catch (e) {
+      throw WalletConnectError(
+        code: -1,
+        message: 'No internet connection: ${e.toString()}',
+      );
+    }
 
     _channel = _socket!.cast<String>();
 
@@ -70,6 +71,16 @@ class WebSocketHandler implements IWebSocketHandler {
     //     message: 'WebSocket connection failed, missing or invalid project id.',
     //   );
     // }
+  }
+
+  @override
+  Future<void> close() async {
+    try {
+      if (_socket != null) {
+        await _socket?.sink.close();
+      }
+    } catch (_) {}
+    _socket = null;
   }
 
   @override

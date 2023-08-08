@@ -34,6 +34,8 @@ import 'package:walletconnect_flutter_v2/apis/core/relay_client/message_tracker.
     as _i20;
 import 'package:walletconnect_flutter_v2/apis/core/relay_client/websocket/http_client.dart'
     as _i22;
+import 'package:walletconnect_flutter_v2/apis/core/relay_client/websocket/websocket_handler.dart'
+    as _i24;
 import 'package:walletconnect_flutter_v2/apis/core/store/i_generic_store.dart'
     as _i4;
 import 'package:walletconnect_flutter_v2/apis/core/store/i_store.dart' as _i7;
@@ -923,11 +925,6 @@ class MockCore extends _i1.Mock implements _i23.Core {
   }
 
   @override
-  String get relayUrl => (super.noSuchMethod(
-        Invocation.getter(#relayUrl),
-        returnValue: '',
-      ) as String);
-  @override
   String get projectId => (super.noSuchMethod(
         Invocation.getter(#projectId),
         returnValue: '',
@@ -1052,9 +1049,57 @@ class MockCore extends _i1.Mock implements _i23.Core {
         returnValue: '',
       ) as String);
   @override
+  String get relayUrl => (super.noSuchMethod(
+        Invocation.getter(#relayUrl),
+        returnValue: '',
+      ) as String);
+  @override
   _i18.Future<void> start() => (super.noSuchMethod(
         Invocation.method(
           #start,
+          [],
+        ),
+        returnValue: _i18.Future<void>.value(),
+        returnValueForMissingStub: _i18.Future<void>.value(),
+      ) as _i18.Future<void>);
+}
+
+/// A class which mocks [WebSocketHandler].
+///
+/// See the documentation for Mockito's code generation for more information.
+class MockWebSocketHandler extends _i1.Mock implements _i24.WebSocketHandler {
+  MockWebSocketHandler() {
+    _i1.throwOnMissingStub(this);
+  }
+
+  @override
+  _i18.Future<void> get ready => (super.noSuchMethod(
+        Invocation.getter(#ready),
+        returnValue: _i18.Future<void>.value(),
+      ) as _i18.Future<void>);
+  @override
+  _i18.Future<void> setup({required String? url}) => (super.noSuchMethod(
+        Invocation.method(
+          #setup,
+          [],
+          {#url: url},
+        ),
+        returnValue: _i18.Future<void>.value(),
+        returnValueForMissingStub: _i18.Future<void>.value(),
+      ) as _i18.Future<void>);
+  @override
+  _i18.Future<void> connect() => (super.noSuchMethod(
+        Invocation.method(
+          #connect,
+          [],
+        ),
+        returnValue: _i18.Future<void>.value(),
+        returnValueForMissingStub: _i18.Future<void>.value(),
+      ) as _i18.Future<void>);
+  @override
+  _i18.Future<void> close() => (super.noSuchMethod(
+        Invocation.method(
+          #close,
           [],
         ),
         returnValue: _i18.Future<void>.value(),

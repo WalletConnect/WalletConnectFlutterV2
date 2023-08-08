@@ -15,6 +15,7 @@ import 'package:walletconnect_flutter_v2/apis/core/relay_client/message_tracker.
 import 'package:walletconnect_flutter_v2/apis/core/relay_client/relay_client.dart';
 import 'package:walletconnect_flutter_v2/apis/core/relay_client/websocket/http_client.dart';
 import 'package:walletconnect_flutter_v2/apis/core/relay_client/websocket/i_http_client.dart';
+import 'package:walletconnect_flutter_v2/apis/core/relay_client/websocket/i_websocket_handler.dart';
 import 'package:walletconnect_flutter_v2/apis/core/store/generic_store.dart';
 import 'package:walletconnect_flutter_v2/apis/core/store/i_store.dart';
 import 'package:walletconnect_flutter_v2/apis/core/relay_client/i_relay_client.dart';
@@ -29,8 +30,9 @@ class Core implements ICore {
   @override
   String get version => '2';
 
+  String _relayUrl = WalletConnectConstants.DEFAULT_RELAY_URL;
   @override
-  final String relayUrl;
+  String get relayUrl => _relayUrl;
 
   @override
   final String projectId;
@@ -67,12 +69,13 @@ class Core implements ICore {
   late IStore<Map<String, dynamic>> storage;
 
   Core({
-    this.relayUrl = WalletConnectConstants.DEFAULT_RELAY_URL,
+    relayUrl = WalletConnectConstants.DEFAULT_RELAY_URL,
     required this.projectId,
     this.pushUrl = WalletConnectConstants.DEFAULT_PUSH_URL,
     bool memoryStore = false,
     Level logLevel = Level.info,
     IHttpClient httpClient = const HttpWrapper(),
+    IWebSocketHandler? webSocketHandler,
   }) {
     Logger.level = logLevel;
     storage = SharedPrefsStores(
@@ -87,6 +90,7 @@ class Core implements ICore {
         fromJson: (dynamic value) => value as String,
       ),
     );
+
     relayClient = RelayClient(
       core: this,
       messageTracker: MessageTracker(
@@ -103,8 +107,9 @@ class Core implements ICore {
         version: StoreVersions.VERSION_TOPIC_MAP,
         fromJson: (dynamic value) => value as String,
       ),
-      httpClient: httpClient,
+      socketHandler: webSocketHandler,
     );
+
     expirer = Expirer(
       storage: storage,
       context: StoreVersions.CONTEXT_EXPIRER,
@@ -147,7 +152,19 @@ class Core implements ICore {
   Future<void> start() async {
     await storage.init();
     await crypto.init();
-    await relayClient.init();
+
+    // If the relay URL is the default, try both it and the backup (.org)
+    if (relayUrl == WalletConnectConstants.DEFAULT_RELAY_URL) {
+      _relayUrl = relayUrl;
+      try {
+        await relayClient.init();
+      } catch (e) {
+        await relayClient.init();
+      }
+    } else {
+      await relayClient.init();
+    }
+
     await expirer.init();
     // await history.init();
     await pairing.init();

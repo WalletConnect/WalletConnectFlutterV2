@@ -11,6 +11,7 @@ import 'package:walletconnect_flutter_v2/apis/core/i_core.dart';
 import 'package:walletconnect_flutter_v2/apis/core/relay_client/i_message_tracker.dart';
 import 'package:walletconnect_flutter_v2/apis/core/relay_client/message_tracker.dart';
 import 'package:walletconnect_flutter_v2/apis/core/relay_client/websocket/http_client.dart';
+import 'package:walletconnect_flutter_v2/apis/core/relay_client/websocket/websocket_handler.dart';
 import 'package:walletconnect_flutter_v2/apis/core/store/generic_store.dart';
 import 'package:walletconnect_flutter_v2/apis/core/store/i_generic_store.dart';
 import 'package:walletconnect_flutter_v2/apis/utils/constants.dart';
@@ -24,6 +25,7 @@ import 'shared_test_utils.mocks.dart';
   MessageTracker,
   HttpWrapper,
   Core,
+  WebSocketHandler,
 ])
 class SharedTestUtils {}
 

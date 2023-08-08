@@ -7,7 +7,7 @@ part 'json_rpc_error.freezed.dart';
 class JsonRpcError with _$JsonRpcError {
   @JsonSerializable(includeIfNull: false)
   const factory JsonRpcError({
-    required int code,
+    int? code,
     String? message,
   }) = _JsonRpcError;
 
