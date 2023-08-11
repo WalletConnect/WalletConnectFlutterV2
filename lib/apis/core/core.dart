@@ -152,17 +152,13 @@ class Core implements ICore {
   Future<void> start() async {
     await storage.init();
     await crypto.init();
+    await relayClient.init();
 
-    try {
-      await relayClient.init();
-    } catch (e) {
-      // If the relay URL is the default, try both it and the backup (.org)
-      if (_relayUrl == WalletConnectConstants.DEFAULT_RELAY_URL) {
-        _relayUrl = WalletConnectConstants.FALLBACK_RELAY_URL;
-        try {
-          await relayClient.init();
-        } catch (_) {}
-      }
+    // If it didn't connect, and the relayUrl is the default, try the fallback
+    if (!relayClient.isConnected &&
+        _relayUrl == WalletConnectConstants.DEFAULT_RELAY_URL) {
+      _relayUrl = WalletConnectConstants.FALLBACK_RELAY_URL;
+      relayClient.connect();
     }
 
     await expirer.init();

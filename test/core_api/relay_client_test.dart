@@ -57,11 +57,10 @@ void main() {
       });
       await core.storage.init();
       await core.crypto.init();
-      try {
-        await core.relayClient.init();
-      } on WalletConnectError catch (e) {
-        expect(e.message, 'No internet connection: test');
-      }
+      await core.relayClient.init();
+      // try {} on WalletConnectError catch (e) {
+      //   expect(e.message, 'No internet connection: test');
+      // }
 
       verify(mockWebSocketHandler.setup(
         url: argThat(

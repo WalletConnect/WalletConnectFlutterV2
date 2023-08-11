@@ -277,7 +277,6 @@ class RelayClient implements IRelayClient {
           e,
         ),
       );
-      rethrow;
     }
     _connecting = false;
   }
