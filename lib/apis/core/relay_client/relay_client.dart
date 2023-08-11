@@ -385,47 +385,27 @@ class RelayClient implements IRelayClient {
     dynamic parameters,
     int? id,
   ]) async {
-    dynamic response;
-
     // If we are connected and we know it send the message!
     if (isConnected) {
-      response = await jsonRPC!.sendRequest(
-        method,
-        parameters,
-        id,
-      );
+      // Here so we dont return null
     }
     // If we are connecting, then wait for the connection to establish and then send the message
     else if (_connecting) {
       await _connectingFuture;
-      response = await jsonRPC!.sendRequest(
-        method,
-        parameters,
-        id,
-      );
     }
     // If we aren't connected but should be (active), try to (re)connect and then send the message
     else if (!isConnected && _active) {
       await connect();
-      response = await jsonRPC!.sendRequest(
-        method,
-        parameters,
-        id,
-      );
     }
-
-    // try {} on StateError catch (_) {
-    //   // Reconnect to the websocket
-    //   core.logger.v('StateError, reconnecting: $_');
-    //   await connect();
-    //   response = await jsonRPC!.sendRequest(
-    //     method,
-    //     parameters,
-    //     id,
-    //   );
-    // }
-
-    return response;
+    // In all other cases return null
+    else {
+      return null;
+    }
+    return await jsonRPC!.sendRequest(
+      method,
+      parameters,
+      id,
+    );
   }
 
   Future<String> _onSubscribe(String topic) async {
