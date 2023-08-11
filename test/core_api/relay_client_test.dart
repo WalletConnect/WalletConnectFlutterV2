@@ -50,11 +50,15 @@ void main() {
         topicMap: getTopicMap(core: core),
         socketHandler: mockWebSocketHandler,
       );
+      int errorCounter = 0;
+      core.relayClient.onRelayClientError.subscribe((args) {
+        errorCounter++;
+        expect(args!.error.message, 'No internet connection: test');
+      });
       await core.storage.init();
       await core.crypto.init();
       try {
         await core.relayClient.init();
-        expect(true, false);
       } on WalletConnectError catch (e) {
         expect(e.message, 'No internet connection: test');
       }
@@ -66,63 +70,7 @@ void main() {
         ),
       )).called(1);
       verify(mockWebSocketHandler.connect()).called(1);
-
-      // core = Core(
-      //   projectId: 'abc',
-      //   memoryStore: true,
-      //   relayUrl: 'wss://relay.test.com',
-      // );
-      // core.relayClient = RelayClient(
-      //   core: core,
-      //   messageTracker: getMessageTracker(core: core),
-      //   topicMap: getTopicMap(core: core),
-      //   socketHandler: mockWebSocketHandler,
-      // );
-
-      // expect(
-      //   () async => await core.start(),
-      //   throwsA(
-      //     isA<WalletConnectError>().having(
-      //       (e) => e.message,
-      //       'No internet connection',
-      //       'No internet connection: test',
-      //     ),
-      //   ),
-      // );
-
-      // // Check that setup was called once for custom URL
-      // TODO: Figure out why the mocked class isn't counting the number of times it's called
-      // verify(mockWebSocketHandler.setup(url: anyNamed('url'))).called(1);
-    });
-
-    test('on init if the url fails', () async {
-      final MockWebSocketHandler mockWebSocketHandler = MockWebSocketHandler();
-      when(mockWebSocketHandler.connect()).thenThrow(const WalletConnectError(
-        code: -1,
-        message: 'No internet connection: test',
-      ));
-
-      final ICore core = Core(
-        projectId: 'abc',
-        memoryStore: true,
-      );
-      core.relayClient = RelayClient(
-        core: core,
-        messageTracker: getMessageTracker(core: core),
-        topicMap: getTopicMap(core: core),
-        socketHandler: mockWebSocketHandler,
-      );
-
-      expect(
-        () async => await core.start(),
-        throwsA(
-          isA<WalletConnectError>().having(
-            (e) => e.message,
-            'No internet connection',
-            'No internet connection: test',
-          ),
-        ),
-      );
+      expect(errorCounter, 1);
     });
 
     test('when connection parameters are invalid', () async {

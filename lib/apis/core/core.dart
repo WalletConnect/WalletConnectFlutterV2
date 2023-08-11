@@ -159,10 +159,9 @@ class Core implements ICore {
       // If the relay URL is the default, try both it and the backup (.org)
       if (_relayUrl == WalletConnectConstants.DEFAULT_RELAY_URL) {
         _relayUrl = WalletConnectConstants.FALLBACK_RELAY_URL;
-        await relayClient.init();
-      } else {
-        // Otherwise, just rethrow the error
-        rethrow;
+        try {
+          await relayClient.init();
+        } catch (_) {}
       }
     }
 

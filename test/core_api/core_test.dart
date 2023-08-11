@@ -27,13 +27,14 @@ void main() {
         topicMap: getTopicMap(core: core),
         socketHandler: mockWebSocketHandler,
       );
+      int errorCount = 0;
+      core.relayClient.onRelayClientError.subscribe((args) {
+        errorCount++;
+        expect(args!.error.message, 'No internet connection: test');
+      });
 
-      try {
-        await core.start();
-        expect(true, false);
-      } on WalletConnectError catch (e) {
-        expect(e.message, 'No internet connection: test');
-      }
+      await core.start();
+      expect(errorCount, 2);
 
       verifyInOrder([
         mockWebSocketHandler.setup(
@@ -56,6 +57,8 @@ void main() {
         mockWebSocketHandler.connect(),
       ]);
 
+      core.relayClient.onRelayClientError.unsubscribeAll();
+
       const testRelayUrl = 'wss://relay.test.com';
       core = Core(
         projectId: 'abc',
@@ -68,13 +71,13 @@ void main() {
         topicMap: getTopicMap(core: core),
         socketHandler: mockWebSocketHandler,
       );
+      errorCount = 0;
+      core.relayClient.onRelayClientError.subscribe((args) {
+        errorCount++;
+        expect(args!.error.message, 'No internet connection: test');
+      });
 
-      try {
-        await core.start();
-        expect(true, false);
-      } on WalletConnectError catch (e) {
-        expect(e.message, 'No internet connection: test');
-      }
+      await core.start();
 
       // Check that setup was called once for custom URL
       verify(
@@ -86,6 +89,7 @@ void main() {
         ),
       ).called(1);
       verify(mockWebSocketHandler.connect()).called(1);
+      expect(errorCount, 1);
     });
   });
 }

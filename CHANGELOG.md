@@ -1,3 +1,8 @@
+## 2.1.2
+
+- No internet connection/invalid URL errors will no longer throw, but the relay's `onRelayClientError` will emit them.
+- Oher relay client bug fixes
+
 ## 2.1.1
 
 - Fixed issue with relayUrl not being used correctly
