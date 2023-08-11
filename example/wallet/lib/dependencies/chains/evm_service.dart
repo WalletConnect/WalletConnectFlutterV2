@@ -249,19 +249,19 @@ class EVMService extends IChain {
       ),
       gasPrice: ethTransaction.gasPrice != null
           ? EtherAmount.fromUnitAndValue(
-              EtherUnit.gwei,
+              EtherUnit.wei,
               BigInt.tryParse(ethTransaction.gasPrice!) ?? BigInt.zero,
             )
           : null,
       maxFeePerGas: ethTransaction.maxFeePerGas != null
           ? EtherAmount.fromUnitAndValue(
-              EtherUnit.gwei,
+              EtherUnit.wei,
               BigInt.tryParse(ethTransaction.maxFeePerGas!) ?? BigInt.zero,
             )
           : null,
       maxPriorityFeePerGas: ethTransaction.maxPriorityFeePerGas != null
           ? EtherAmount.fromUnitAndValue(
-              EtherUnit.gwei,
+              EtherUnit.wei,
               BigInt.tryParse(ethTransaction.maxPriorityFeePerGas!) ??
                   BigInt.zero,
             )
