@@ -96,9 +96,10 @@ class RelayClient implements IRelayClient {
     await topicMap.init();
 
     // Setup the json RPC server
-    _connectingFuture = _createJsonRPCProvider();
-    await _connectingFuture;
-    _startHeartbeat();
+    await _connect();
+    // _connectingFuture = _createJsonRPCProvider();
+    // await _connectingFuture;
+    // _startHeartbeat();
 
     _initialized = true;
   }
@@ -146,7 +147,6 @@ class RelayClient implements IRelayClient {
     _checkInitialized();
 
     String id = topicMap.get(topic) ?? '';
-    // print('Unsub from id: $id');
 
     try {
       await _sendJsonRpcRequest(
@@ -173,28 +173,60 @@ class RelayClient implements IRelayClient {
   Future<void> connect({String? relayUrl}) async {
     _checkInitialized();
 
-    if (isConnected) {
-      return;
-    }
-    // print('connecting to relay server');
+    core.logger.i('RelayClient: Connecting to relay');
 
-    if (_active) {
-      await disconnect();
-    }
-    _connectingFuture = _createJsonRPCProvider();
-    await _connectingFuture;
-    if (_heartbeatTimer == null) {
-      _startHeartbeat();
-    }
+    await _connect(relayUrl: relayUrl);
   }
 
   @override
   Future<void> disconnect() async {
     _checkInitialized();
 
-    core.logger.v('RelayClient: Disconnecting from relay');
+    core.logger.i('RelayClient: Disconnecting from relay');
 
+    await _disconnect();
+  }
+
+  /// PRIVATE FUNCTIONS ///
+
+  Future<void> _connect({String? relayUrl}) async {
+    core.logger.v('RelayClient Internal: Connecting to relay');
+    if (isConnected) {
+      return;
+    }
+
+    // If we have tried connecting to the relay before, disconnect
+    if (_active) {
+      await _disconnect();
+    }
+
+    // Connect and track the connection progress, then start the heartbeat
+    _connectingFuture = _createJsonRPCProvider();
+    await _connectingFuture;
+    if (_heartbeatTimer == null) {
+      _startHeartbeat();
+    }
+
+    // If it didn't connect, and the relayUrl is the default,
+    // recursively try the fallback
+    core.relayUrl = relayUrl ?? core.relayUrl;
+    if (!isConnected &&
+        core.relayUrl == WalletConnectConstants.DEFAULT_RELAY_URL) {
+      core.relayUrl = WalletConnectConstants.FALLBACK_RELAY_URL;
+      await _connect();
+
+      // If we still didn't connect, reset the relayUrl to the default
+      if (!isConnected) {
+        core.relayUrl = WalletConnectConstants.DEFAULT_RELAY_URL;
+      }
+    }
+  }
+
+  Future<void> _disconnect() async {
+    core.logger.v('RelayClient Internal: Disconnecting from relay');
     _active = false;
+
+    final bool shouldBroadcastDisonnect = isConnected;
 
     await jsonRPC?.close();
     jsonRPC = null;
@@ -202,10 +234,10 @@ class RelayClient implements IRelayClient {
     _heartbeatTimer?.cancel();
     _heartbeatTimer = null;
 
-    onRelayClientDisconnect.broadcast();
+    if (shouldBroadcastDisonnect) {
+      onRelayClientDisconnect.broadcast();
+    }
   }
-
-  /// PRIVATE FUNCTIONS ///
 
   Future<void> _createJsonRPCProvider() async {
     _connecting = true;

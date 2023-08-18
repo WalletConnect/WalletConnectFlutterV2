@@ -10,7 +10,7 @@ abstract class ICore {
   final String protocol = 'wc';
   final String version = '2';
 
-  abstract final String relayUrl;
+  abstract String relayUrl;
   abstract final String projectId;
   abstract final String pushUrl;
 

@@ -1,3 +1,9 @@
+## 2.1.4 - UNRELEASED
+
+- Core defaults to `Logger.level = Level.nothing` to prevent logs from being printed by default
+- Resolved errors with pairings and sessions trying to subscribe even when the relay wasn't connected
+- Additional bugs resolved
+
 ## 2.1.3
 
 - Relay Client no longer throws errors on init

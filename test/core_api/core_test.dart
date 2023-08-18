@@ -35,6 +35,7 @@ void main() {
 
       await core.start();
       expect(errorCount, 2);
+      expect(core.relayUrl, WalletConnectConstants.DEFAULT_RELAY_URL);
 
       verifyInOrder([
         mockWebSocketHandler.setup(
@@ -90,6 +91,7 @@ void main() {
       ).called(1);
       verify(mockWebSocketHandler.connect()).called(1);
       expect(errorCount, 1);
+      expect(core.relayUrl, testRelayUrl);
     });
   });
 }

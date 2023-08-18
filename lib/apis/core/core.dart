@@ -30,9 +30,8 @@ class Core implements ICore {
   @override
   String get version => '2';
 
-  String _relayUrl = WalletConnectConstants.DEFAULT_RELAY_URL;
   @override
-  String get relayUrl => _relayUrl;
+  String relayUrl = WalletConnectConstants.DEFAULT_RELAY_URL;
 
   @override
   final String projectId;
@@ -58,26 +57,29 @@ class Core implements ICore {
   @override
   late IEcho echo;
 
-  @override
-  final Logger logger = Logger(
-    printer: PrettyPrinter(
-        // methodCount: 3,
-        ),
+  Logger _logger = Logger(
+    level: Level.nothing,
+    printer: PrettyPrinter(),
   );
+  @override
+  Logger get logger => _logger;
 
   @override
   late IStore<Map<String, dynamic>> storage;
 
   Core({
-    relayUrl = WalletConnectConstants.DEFAULT_RELAY_URL,
+    this.relayUrl = WalletConnectConstants.DEFAULT_RELAY_URL,
     required this.projectId,
     this.pushUrl = WalletConnectConstants.DEFAULT_PUSH_URL,
     bool memoryStore = false,
-    Level logLevel = Level.info,
+    Level logLevel = Level.nothing,
     IHttpClient httpClient = const HttpWrapper(),
     IWebSocketHandler? webSocketHandler,
   }) {
-    Logger.level = logLevel;
+    _logger = Logger(
+      level: logLevel,
+      printer: PrettyPrinter(),
+    );
     storage = SharedPrefsStores(
       memoryStore: memoryStore,
     );
@@ -90,7 +92,6 @@ class Core implements ICore {
         fromJson: (dynamic value) => value as String,
       ),
     );
-    _relayUrl = relayUrl;
     relayClient = RelayClient(
       core: this,
       messageTracker: MessageTracker(
@@ -153,14 +154,6 @@ class Core implements ICore {
     await storage.init();
     await crypto.init();
     await relayClient.init();
-
-    // If it didn't connect, and the relayUrl is the default, try the fallback
-    if (!relayClient.isConnected &&
-        _relayUrl == WalletConnectConstants.DEFAULT_RELAY_URL) {
-      _relayUrl = WalletConnectConstants.FALLBACK_RELAY_URL;
-      relayClient.connect();
-    }
-
     await expirer.init();
     await pairing.init();
   }

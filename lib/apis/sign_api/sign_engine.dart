@@ -707,6 +707,11 @@ class SignEngine implements ISignEngine {
   /// ---- PRIVATE HELPERS ---- ////
 
   Future<void> _resubscribeAll() async {
+    // If the relay is not connected, stop here
+    if (!core.relayClient.isConnected) {
+      return;
+    }
+
     // Subscribe to all the sessions
     for (final SessionData session in sessions.getAll()) {
       // print('Session: subscribing to ${session.topic}');

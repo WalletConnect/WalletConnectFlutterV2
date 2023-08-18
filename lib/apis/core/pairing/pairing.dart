@@ -524,6 +524,11 @@ class Pairing implements IPairing {
   /// ---- Private Helpers ---- ///
 
   Future<void> _resubscribeAll() async {
+    // If the relay is not active, stop here
+    if (!core.relayClient.isConnected) {
+      return;
+    }
+
     // Resubscribe to all active pairings
     final List<PairingInfo> activePairings = pairings.getAll();
     for (final PairingInfo pairing in activePairings) {
