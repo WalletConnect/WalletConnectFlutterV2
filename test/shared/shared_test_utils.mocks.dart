@@ -925,6 +925,19 @@ class MockCore extends _i1.Mock implements _i23.Core {
   }
 
   @override
+  String get relayUrl => (super.noSuchMethod(
+        Invocation.getter(#relayUrl),
+        returnValue: '',
+      ) as String);
+  @override
+  set relayUrl(String? _relayUrl) => super.noSuchMethod(
+        Invocation.setter(
+          #relayUrl,
+          _relayUrl,
+        ),
+        returnValueForMissingStub: null,
+      );
+  @override
   String get projectId => (super.noSuchMethod(
         Invocation.getter(#projectId),
         returnValue: '',
@@ -1015,14 +1028,6 @@ class MockCore extends _i1.Mock implements _i23.Core {
         returnValueForMissingStub: null,
       );
   @override
-  _i15.Logger get logger => (super.noSuchMethod(
-        Invocation.getter(#logger),
-        returnValue: _FakeLogger_15(
-          this,
-          Invocation.getter(#logger),
-        ),
-      ) as _i15.Logger);
-  @override
   _i7.IStore<Map<String, dynamic>> get storage => (super.noSuchMethod(
         Invocation.getter(#storage),
         returnValue: _FakeIStore_7<Map<String, dynamic>>(
@@ -1049,10 +1054,13 @@ class MockCore extends _i1.Mock implements _i23.Core {
         returnValue: '',
       ) as String);
   @override
-  String get relayUrl => (super.noSuchMethod(
-        Invocation.getter(#relayUrl),
-        returnValue: '',
-      ) as String);
+  _i15.Logger get logger => (super.noSuchMethod(
+        Invocation.getter(#logger),
+        returnValue: _FakeLogger_15(
+          this,
+          Invocation.getter(#logger),
+        ),
+      ) as _i15.Logger);
   @override
   _i18.Future<void> start() => (super.noSuchMethod(
         Invocation.method(

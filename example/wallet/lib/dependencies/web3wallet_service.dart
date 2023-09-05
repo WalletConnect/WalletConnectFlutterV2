@@ -39,6 +39,7 @@ class Web3WalletService extends IWeb3WalletService {
     _web3Wallet = Web3Wallet(
       core: Core(
         projectId: DartDefines.projectId,
+        logLevel: LogLevel.info,
       ),
       metadata: const PairingMetadata(
         name: 'Example Wallet',

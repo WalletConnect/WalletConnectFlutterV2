@@ -1,5 +1,4 @@
 import 'package:event/event.dart';
-import 'package:logger/logger.dart';
 import 'package:walletconnect_flutter_v2/apis/auth_api/auth_engine.dart';
 import 'package:walletconnect_flutter_v2/apis/core/relay_client/websocket/http_client.dart';
 import 'package:walletconnect_flutter_v2/apis/core/store/generic_store.dart';
@@ -26,7 +25,7 @@ class Web3App implements IWeb3App {
     String relayUrl = WalletConnectConstants.DEFAULT_RELAY_URL,
     required PairingMetadata metadata,
     bool memoryStore = false,
-    Level logLevel = Level.nothing,
+    LogLevel logLevel = LogLevel.nothing,
     HttpWrapper httpClient = const HttpWrapper(),
   }) async {
     final client = Web3App(

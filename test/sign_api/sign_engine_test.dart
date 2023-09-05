@@ -1,5 +1,4 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:logger/logger.dart';
 import 'package:walletconnect_flutter_v2/apis/core/store/generic_store.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/sign_engine.dart';
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
@@ -18,7 +17,7 @@ void main() {
         projectId: TEST_PROJECT_ID,
         relayUrl: TEST_RELAY_URL,
         memoryStore: true,
-        logLevel: Level.info,
+        logLevel: LogLevel.info,
         httpClient: getHttpWrapper(),
       );
       ISignEngine e = SignEngine(
@@ -59,7 +58,7 @@ void main() {
         projectId: TEST_PROJECT_ID,
         relayUrl: TEST_RELAY_URL,
         memoryStore: true,
-        logLevel: Level.info,
+        logLevel: LogLevel.info,
         httpClient: getHttpWrapper(),
       );
       ISignEngine e = SignEngine(

@@ -3,7 +3,6 @@ import 'dart:typed_data';
 
 import 'package:eth_sig_util/eth_sig_util.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:logger/logger.dart';
 import 'package:walletconnect_flutter_v2/apis/auth_api/auth_engine.dart';
 import 'package:walletconnect_flutter_v2/apis/auth_api/i_auth_engine_app.dart';
 import 'package:walletconnect_flutter_v2/apis/auth_api/i_auth_engine_wallet.dart';
@@ -27,7 +26,7 @@ void main() {
           relayUrl: TEST_RELAY_URL,
           metadata: metadata,
           memoryStore: true,
-          logLevel: Level.info,
+          logLevel: LogLevel.info,
           httpClient: getHttpWrapper(),
         ),
     (PairingMetadata? self) async {
@@ -35,7 +34,7 @@ void main() {
         projectId: TEST_PROJECT_ID,
         relayUrl: TEST_RELAY_URL,
         memoryStore: true,
-        logLevel: Level.info,
+        logLevel: LogLevel.info,
         httpClient: getHttpWrapper(),
       );
       IAuthEngine e = AuthEngine(
@@ -85,7 +84,7 @@ void main() {
           relayUrl: TEST_RELAY_URL,
           metadata: metadata,
           memoryStore: true,
-          logLevel: Level.info,
+          logLevel: LogLevel.info,
           httpClient: getHttpWrapper(),
         ),
   ];
@@ -97,7 +96,7 @@ void main() {
           relayUrl: TEST_RELAY_URL,
           metadata: metadata,
           memoryStore: true,
-          logLevel: Level.info,
+          logLevel: LogLevel.info,
           httpClient: getHttpWrapper(),
         ),
     (PairingMetadata metadata) async {
@@ -105,7 +104,7 @@ void main() {
         projectId: TEST_PROJECT_ID,
         relayUrl: TEST_RELAY_URL,
         memoryStore: true,
-        logLevel: Level.info,
+        logLevel: LogLevel.info,
         httpClient: getHttpWrapper(),
       );
       IAuthEngine e = AuthEngine(
@@ -154,7 +153,7 @@ void main() {
           relayUrl: TEST_RELAY_URL,
           metadata: metadata,
           memoryStore: true,
-          logLevel: Level.info,
+          logLevel: LogLevel.info,
           httpClient: getHttpWrapper(),
         ),
   ];

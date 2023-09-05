@@ -1,5 +1,4 @@
 import 'package:event/event.dart';
-import 'package:logger/logger.dart';
 import 'package:walletconnect_flutter_v2/apis/auth_api/auth_client.dart';
 import 'package:walletconnect_flutter_v2/apis/auth_api/auth_engine.dart';
 import 'package:walletconnect_flutter_v2/apis/auth_api/i_auth_client.dart';
@@ -14,6 +13,7 @@ import 'package:walletconnect_flutter_v2/apis/core/i_core.dart';
 import 'package:walletconnect_flutter_v2/apis/models/basic_models.dart';
 import 'package:walletconnect_flutter_v2/apis/core/pairing/utils/pairing_models.dart';
 import 'package:walletconnect_flutter_v2/apis/utils/constants.dart';
+import 'package:walletconnect_flutter_v2/apis/utils/log_level.dart';
 
 class AuthClientTestWrapper implements IAuthEngine {
   bool _initialized = false;
@@ -43,7 +43,7 @@ class AuthClientTestWrapper implements IAuthEngine {
     String relayUrl = WalletConnectConstants.DEFAULT_RELAY_URL,
     required PairingMetadata metadata,
     bool memoryStore = false,
-    Level logLevel = Level.nothing,
+    LogLevel logLevel = LogLevel.nothing,
     IHttpClient httpClient = const HttpWrapper(),
   }) async {
     final client = AuthClientTestWrapper(

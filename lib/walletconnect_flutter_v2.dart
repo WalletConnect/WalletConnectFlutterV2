@@ -16,6 +16,7 @@ export 'apis/utils/constants.dart';
 export 'apis/models/uri_parse_result.dart';
 export 'apis/utils/method_constants.dart';
 export 'apis/utils/namespace_utils.dart';
+export 'apis/utils/log_level.dart';
 
 // Sign API
 export 'apis/sign_api/i_sign_client.dart';
