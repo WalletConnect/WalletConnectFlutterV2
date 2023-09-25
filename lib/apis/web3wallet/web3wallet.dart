@@ -18,7 +18,7 @@ class Web3Wallet implements IWeb3Wallet {
     String pushUrl = WalletConnectConstants.DEFAULT_PUSH_URL,
     required PairingMetadata metadata,
     bool memoryStore = false,
-    Level logLevel = Level.nothing,
+    Level logLevel = Level.off,
     IHttpClient httpClient = const HttpWrapper(),
   }) async {
     final client = Web3Wallet(

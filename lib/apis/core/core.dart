@@ -58,7 +58,7 @@ class Core implements ICore {
   late IEcho echo;
 
   Logger _logger = Logger(
-    level: Level.nothing,
+    level: Level.off,
     printer: PrettyPrinter(),
   );
   @override
@@ -72,7 +72,7 @@ class Core implements ICore {
     required this.projectId,
     this.pushUrl = WalletConnectConstants.DEFAULT_PUSH_URL,
     bool memoryStore = false,
-    Level logLevel = Level.nothing,
+    Level logLevel = Level.off,
     IHttpClient httpClient = const HttpWrapper(),
     IWebSocketHandler? webSocketHandler,
   }) {

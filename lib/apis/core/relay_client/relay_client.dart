@@ -190,7 +190,7 @@ class RelayClient implements IRelayClient {
   /// PRIVATE FUNCTIONS ///
 
   Future<void> _connect({String? relayUrl}) async {
-    core.logger.v('RelayClient Internal: Connecting to relay');
+    core.logger.t('RelayClient Internal: Connecting to relay');
     if (isConnected) {
       return;
     }
@@ -223,7 +223,7 @@ class RelayClient implements IRelayClient {
   }
 
   Future<void> _disconnect() async {
-    core.logger.v('RelayClient Internal: Disconnecting from relay');
+    core.logger.t('RelayClient Internal: Disconnecting from relay');
     _active = false;
 
     final bool shouldBroadcastDisonnect = isConnected;
@@ -243,7 +243,7 @@ class RelayClient implements IRelayClient {
     _connecting = true;
     _active = true;
     var auth = await core.crypto.signJWT(core.relayUrl);
-    core.logger.v('Signed JWT: $auth');
+    core.logger.t('Signed JWT: $auth');
     try {
       final String url = WalletConnectUtils.formatRelayRpcUrl(
         protocol: WalletConnectConstants.CORE_PROTOCOL,
@@ -259,7 +259,7 @@ class RelayClient implements IRelayClient {
         jsonRPC = null;
       }
 
-      core.logger.v('Initializing WebSocket with $url');
+      core.logger.t('Initializing WebSocket with $url');
       await socketHandler.setup(
         url: url,
       );
@@ -356,7 +356,7 @@ class RelayClient implements IRelayClient {
       Duration(seconds: heartbeatPeriod),
       (timer) async {
         if (jsonRPC != null && jsonRPC!.isClosed) {
-          core.logger.v('Heartbeat, WebSocket closed, reconnecting');
+          core.logger.t('Heartbeat, WebSocket closed, reconnecting');
           await connect();
         }
       },
@@ -370,7 +370,7 @@ class RelayClient implements IRelayClient {
   /// JSON RPC MESSAGE HANDLERS
 
   Future<bool> handlePublish(String topic, String message) async {
-    core.logger.v('Handling Publish Message: $topic, $message');
+    core.logger.t('Handling Publish Message: $topic, $message');
     // If we want to ignore the message, stop
     if (await _shouldIgnoreMessageEvent(topic, message)) {
       core.logger.w('Ignoring Message: $topic, $message');

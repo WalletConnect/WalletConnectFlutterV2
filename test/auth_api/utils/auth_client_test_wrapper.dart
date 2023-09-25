@@ -43,7 +43,7 @@ class AuthClientTestWrapper implements IAuthEngine {
     String relayUrl = WalletConnectConstants.DEFAULT_RELAY_URL,
     required PairingMetadata metadata,
     bool memoryStore = false,
-    Level logLevel = Level.nothing,
+    Level logLevel = Level.off,
     IHttpClient httpClient = const HttpWrapper(),
   }) async {
     final client = AuthClientTestWrapper(
