@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 
 import 'package:event/event.dart';
 import 'package:walletconnect_flutter_v2/apis/core/pairing/i_json_rpc_history.dart';
@@ -630,7 +629,7 @@ class Pairing implements IPairing {
     }
 
     // Decode the message
-    String? payloadString = await core.crypto.decode(
+    Map<String, dynamic>? payload = await core.crypto.decode(
       event.topic,
       event.message,
       options: DecodeOptions(
@@ -638,18 +637,16 @@ class Pairing implements IPairing {
       ),
     );
 
-    if (payloadString == null) {
+    if (payload == null) {
       return;
     }
-    // print(payloadString);
 
-    Map<String, dynamic> data = jsonDecode(payloadString);
-    core.logger.i('Pairing _onMessageEvent, Received data: $data');
+    core.logger.i('Pairing _onMessageEvent, Received data: $payload');
 
     // If it's an rpc request, handle it
     // print('Pairing: Received data: $data');
-    if (data.containsKey('method')) {
-      final request = JsonRpcRequest.fromJson(data);
+    if (payload.containsKey('method')) {
+      final request = JsonRpcRequest.fromJson(payload);
       if (routerMapRequest.containsKey(request.method)) {
         routerMapRequest[request.method]!.function(event.topic, request);
       } else {
@@ -658,7 +655,7 @@ class Pairing implements IPairing {
     }
     // Otherwise handle it as a response
     else {
-      final response = JsonRpcResponse.fromJson(data);
+      final response = JsonRpcResponse.fromJson(payload);
 
       // Only handle the response if we have a record of the request
       // final JsonRpcRecord? record = history.get(response.id.toString());

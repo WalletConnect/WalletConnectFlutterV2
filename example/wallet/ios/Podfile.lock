@@ -104,8 +104,8 @@ SPEC CHECKSUMS:
   mobile_scanner: 47056db0c04027ea5f41a716385542da28574662
   nanopb: b552cce312b6c8484180ef47159bc0f65a1f0431
   PromisesObjC: 09985d6d70fbe7878040aa746d78236e6946d2ef
-  shared_preferences_foundation: e2dae3258e06f44cc55f49d42024fd8dd03c590c
+  shared_preferences_foundation: 5b919d13b803cadd15ed2dc053125c68730e5126
 
 PODFILE CHECKSUM: ef19549a9bc3046e7bb7d2fab4d021637c0c58a3
 
-COCOAPODS: 1.11.3
+COCOAPODS: 1.13.0

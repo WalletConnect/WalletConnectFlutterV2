@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:convert/convert.dart';
+import 'package:flutter/foundation.dart';
 import 'package:walletconnect_flutter_v2/apis/core/crypto/crypto_models.dart';
 import 'package:walletconnect_flutter_v2/apis/core/crypto/crypto_utils.dart';
 import 'package:walletconnect_flutter_v2/apis/core/i_core.dart';
@@ -132,20 +133,23 @@ class Crypto implements ICrypto {
       );
     }
 
-    final String message = jsonEncode(payload);
-
     if (utils.isTypeOneEnvelope(params)) {
-      final String selfPublicKey = params.senderPublicKey!;
-      final String peerPublicKey = params.receiverPublicKey!;
+      final selfPublicKey = params.senderPublicKey!;
+      final peerPublicKey = params.receiverPublicKey!;
       topic = await generateSharedKey(selfPublicKey, peerPublicKey);
     }
 
-    final String? symKey = _getSymKey(topic);
+    final protectedPayload = Map.fromEntries(
+      [MapEntry('topic', topic), ...payload.entries],
+    );
+    final message = jsonEncode(protectedPayload);
+
+    final symKey = _getSymKey(topic);
     if (symKey == null) {
       return null;
     }
 
-    final String result = await utils.encrypt(
+    final result = await utils.encrypt(
       message,
       symKey,
       type: params.type,
@@ -156,31 +160,53 @@ class Crypto implements ICrypto {
   }
 
   @override
-  Future<String?> decode(
+  Future<Map<String, dynamic>?> decode(
     String topic,
     String encoded, {
     DecodeOptions? options,
   }) async {
     _checkInitialized();
 
-    final EncodingValidation params = utils.validateDecoding(
+    final params = utils.validateDecoding(
       encoded,
       receiverPublicKey: options?.receiverPublicKey,
     );
 
     if (utils.isTypeOneEnvelope(params)) {
-      final String selfPublicKey = params.receiverPublicKey!;
-      final String peerPublicKey = params.senderPublicKey!;
+      final selfPublicKey = params.receiverPublicKey!;
+      final peerPublicKey = params.senderPublicKey!;
       topic = await generateSharedKey(selfPublicKey, peerPublicKey);
     }
-    final String? symKey = _getSymKey(topic);
-    if (symKey == null) {
-      return null;
+
+    try {
+      final symKey = _getSymKey(topic);
+      if (symKey == null) {
+        return null;
+      }
+
+      final message = await utils.decrypt(symKey, encoded);
+
+      final payload = jsonDecode(message) as Map<String, dynamic>;
+      if (payload.containsKey('topic')) {
+        final payloadTopic = payload['topic'] as String;
+        if (payloadTopic != topic) {
+          throw Errors.getInternalError(
+            Errors.MISMATCHED_TOPIC,
+            context: 'decode() Mismatched topic decoded from message.',
+          );
+        }
+        payload.remove('topic');
+      }
+
+      return payload;
+    } catch (e) {
+      throw Errors.getInternalError(
+        Errors.PARSING_FAILED,
+        context: 'Failed to decode message from topic: $topic, '
+            'clientId: ${await getClientId()} '
+            'Exception: $e',
+      );
     }
-
-    final String message = await utils.decrypt(symKey, encoded);
-
-    return message;
   }
 
   @override
