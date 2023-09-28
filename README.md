@@ -1,6 +1,6 @@
 # Overview
 
-WalletConnect Dart v2 library for Flutter, heavily inspired by the WalletConnect V2 Javascript Monorepo.  
+WalletConnect Dart v2 library for Flutter, heavily inspired by the WalletConnect V2 Javascript Monorepo.
 
 Original work for this library is attributed to [Eucalyptus Labs](https://eucalyptuslabs.com/) and Sterling Long for [Koala Wallet](https://koalawallet.io/), a wallet built for the Kadena blockchain.
 
@@ -313,13 +313,13 @@ To output logs while testing, you can set the `core.logger.level = Level.info` t
 
 # Useful Commands
 
-* `flutter pub run build_runner build --delete-conflicting-outputs` - Regenerates JSON Generators
+* `dart run build_runner build -d` - Regenerates JSON Generators
 * `flutter doctor -v` - get paths of everything installed.
-* `flutter pub get`
+* `dart pub get`
 * `flutter upgrade`
 * `flutter clean`
-* `flutter pub cache clean`
-* `flutter pub deps`
-* `flutter pub run dependency_validator` - show unused dependencies and more
+* `dart pub cache clean`
+* `dart pub deps`
+* `dart run dependency_validator` - show unused dependencies and more
 * `dart format lib/* -l 120`
 * `flutter analyze`
