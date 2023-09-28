@@ -28,7 +28,7 @@ abstract class ICrypto {
     Map<String, dynamic> payload, {
     EncodeOptions? options,
   });
-  Future<String?> decode(
+  Future<Map<String, dynamic>?> decode(
     String topic,
     String encoded, {
     DecodeOptions? options,

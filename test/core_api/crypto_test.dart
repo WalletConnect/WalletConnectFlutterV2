@@ -234,11 +234,11 @@ void main() {
           final topic = await cryptoAPI.setSymKey(SYM_KEY);
           final String? encoded = await cryptoAPI.encode(topic, PAYLOAD);
 
-          final String? decoded = await cryptoAPI.decode(topic, encoded!);
-          expect(decoded, jsonEncode(PAYLOAD));
+          final decoded = await cryptoAPI.decode(topic, encoded!);
+          expect(jsonEncode(decoded), jsonEncode(PAYLOAD));
 
-          final String? decoded2 = await cryptoAPI.decode(topic, ENCODED);
-          expect(decoded2, jsonEncode(PAYLOAD));
+          final decoded2 = await cryptoAPI.decode(topic, ENCODED);
+          expect(jsonEncode(decoded2), jsonEncode(PAYLOAD));
         },
       );
 
@@ -246,10 +246,10 @@ void main() {
         'returns null if the passed topic is known',
         () async {
           final topic = CryptoUtils().hashKey(SYM_KEY);
-          final String? encoded = await cryptoAPI.encode(topic, PAYLOAD);
+          final encoded = await cryptoAPI.encode(topic, PAYLOAD);
           expect(encoded, isNull);
 
-          final String? decoded = await cryptoAPI.decode(topic, ENCODED);
+          final decoded = await cryptoAPI.decode(topic, ENCODED);
           expect(decoded, isNull);
         },
       );

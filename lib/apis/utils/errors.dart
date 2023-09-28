@@ -187,6 +187,7 @@ class Errors {
   static const UNKNOWN_TYPE = 'UNKNOWN_TYPE';
   static const MISMATCHED_TOPIC = 'MISMATCHED_TOPIC';
   static const NON_CONFORMING_NAMESPACES = 'NON_CONFORMING_NAMESPACES';
+  static const PARSING_FAILED = 'PARSING_FAILED';
 
   static const INTERNAL_ERRORS = {
     NOT_INITIALIZED: {
@@ -224,6 +225,10 @@ class Errors {
     NON_CONFORMING_NAMESPACES: {
       'message': 'Non conforming namespaces.',
       'code': 9,
+    },
+    PARSING_FAILED: {
+      'message': 'Failed to decode/encode.',
+      'code': 10,
     },
   };
 
