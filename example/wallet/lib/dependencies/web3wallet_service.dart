@@ -39,13 +39,15 @@ class Web3WalletService extends IWeb3WalletService {
     _web3Wallet = Web3Wallet(
       core: Core(
         projectId: DartDefines.projectId,
-        logLevel: LogLevel.info,
+        logLevel: LogLevel.error,
       ),
       metadata: const PairingMetadata(
         name: 'Example Wallet',
         description: 'Example Wallet',
         url: 'https://walletconnect.com/',
-        icons: ['https://walletconnect.com/walletconnect-logo.png'],
+        icons: [
+          'https://github.com/WalletConnect/Web3ModalFlutter/blob/master/assets/png/logo_wc.png'
+        ],
       ),
     );
 

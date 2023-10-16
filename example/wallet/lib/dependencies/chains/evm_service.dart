@@ -24,6 +24,7 @@ enum EVMChainId {
   ethereum,
   polygon,
   goerli,
+  bsc,
   mumbai,
 }
 
@@ -40,6 +41,9 @@ extension KadenaChainIdX on EVMChainId {
         break;
       case EVMChainId.goerli:
         name = '5';
+        break;
+      case EVMChainId.bsc:
+        name = '56';
         break;
       case EVMChainId.mumbai:
         name = '80001';

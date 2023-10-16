@@ -58,7 +58,7 @@ class AppsPageState extends State<AppsPage> with GetItStateMixin {
             children: [
               // Disconnect buttons for testing
               _buildIconButton(
-                Icons.discord,
+                Icons.wifi_off,
                 () {
                   web3Wallet.core.relayClient.disconnect();
                 },
@@ -67,7 +67,7 @@ class AppsPageState extends State<AppsPage> with GetItStateMixin {
                 width: StyleConstants.magic20,
               ),
               _buildIconButton(
-                Icons.connect_without_contact,
+                Icons.wifi,
                 () {
                   web3Wallet.core.relayClient.connect();
                 },
