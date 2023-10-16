@@ -22,6 +22,7 @@ import 'package:walletconnect_flutter_v2/apis/core/relay_client/i_relay_client.d
 import 'package:walletconnect_flutter_v2/apis/core/pairing/i_pairing.dart';
 import 'package:walletconnect_flutter_v2/apis/core/store/shared_prefs_store.dart';
 import 'package:walletconnect_flutter_v2/apis/utils/constants.dart';
+import 'package:walletconnect_flutter_v2/apis/utils/log_level.dart';
 import 'package:walletconnect_flutter_v2/apis/utils/walletconnect_utils.dart';
 
 class Core implements ICore {
@@ -72,12 +73,12 @@ class Core implements ICore {
     required this.projectId,
     this.pushUrl = WalletConnectConstants.DEFAULT_PUSH_URL,
     bool memoryStore = false,
-    Level logLevel = Level.nothing,
+    LogLevel logLevel = LogLevel.nothing,
     IHttpClient httpClient = const HttpWrapper(),
     IWebSocketHandler? webSocketHandler,
   }) {
     _logger = Logger(
-      level: logLevel,
+      level: logLevel.toLevel(),
       printer: PrettyPrinter(),
     );
     storage = SharedPrefsStores(

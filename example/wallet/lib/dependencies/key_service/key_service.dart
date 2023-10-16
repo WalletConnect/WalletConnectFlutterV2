@@ -17,6 +17,7 @@ class KeyService extends IKeyService {
       chains: [
         'eip155:1',
         'eip155:5',
+        'eip155:56',
         'eip155:137',
         'eip155:80001',
       ],

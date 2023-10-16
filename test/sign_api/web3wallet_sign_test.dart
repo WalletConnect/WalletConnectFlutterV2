@@ -1,5 +1,4 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:logger/logger.dart';
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 
 import '../shared/shared_test_utils.dart';
@@ -17,7 +16,7 @@ void main() {
       relayUrl: TEST_RELAY_URL,
       metadata: metadata,
       memoryStore: true,
-      logLevel: Level.info,
+      logLevel: LogLevel.info,
       httpClient: getHttpWrapper(),
     ),
     clientBCreator: (PairingMetadata metadata) async =>
@@ -26,7 +25,7 @@ void main() {
       relayUrl: TEST_RELAY_URL,
       metadata: metadata,
       memoryStore: true,
-      logLevel: Level.info,
+      logLevel: LogLevel.info,
       httpClient: getHttpWrapper(),
     ),
   );
