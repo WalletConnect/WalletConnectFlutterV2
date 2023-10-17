@@ -61,7 +61,7 @@ class Core implements ICore {
   late IHeartBeat heartbeat;
 
   Logger _logger = Logger(
-    level: Level.nothing,
+    level: Level.off,
     printer: PrettyPrinter(),
   );
   @override

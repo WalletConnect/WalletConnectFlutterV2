@@ -396,7 +396,7 @@ class Pairing implements IPairing {
     int? ttl,
     EncodeOptions? encodeOptions,
   }) async {
-    core.logger.v(
+    core.logger.t(
       'pairing sendResult, id: $id topic: $topic, method: $method, params: $params, ttl: $ttl',
     );
 
@@ -467,7 +467,7 @@ class Pairing implements IPairing {
     dynamic result, {
     EncodeOptions? encodeOptions,
   }) async {
-    core.logger.v(
+    core.logger.t(
       'pairing sendResult, id: $id topic: $topic, method: $method, result: $result',
     );
     final Map<String, dynamic> payload =
@@ -502,7 +502,7 @@ class Pairing implements IPairing {
     JsonRpcError error, {
     EncodeOptions? encodeOptions,
   }) async {
-    core.logger.v(
+    core.logger.t(
       'pairing sendError, id: $id topic: $topic, method: $method, error: $error',
     );
 

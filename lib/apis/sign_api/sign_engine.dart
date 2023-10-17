@@ -595,7 +595,11 @@ class SignEngine implements ISignEngine {
         await core.pairing.disconnect(topic: topic);
       }
     } on WalletConnectError catch (error, s) {
-      core.logger.e('[$runtimeType] disconnectSession()', error, s);
+      core.logger.e(
+        '[$runtimeType] disconnectSession()',
+        error: error,
+        stackTrace: s,
+      );
     }
   }
 
@@ -885,7 +889,7 @@ class SignEngine implements ISignEngine {
     JsonRpcRequest payload,
   ) async {
     try {
-      core.logger.v(
+      core.logger.t(
         '_onSessionProposeRequest, topic: $topic, payload: $payload',
       );
       final proposeRequest = WcSessionProposeRequest.fromJson(payload.params);
@@ -917,7 +921,7 @@ class SignEngine implements ISignEngine {
           );
         } on WalletConnectError catch (err) {
           // If they aren't, send an error
-          core.logger.v(
+          core.logger.t(
             '_onSessionProposeRequest WalletConnectError: $err',
           );
           await core.pairing.sendError(

@@ -12,7 +12,7 @@ enum LogLevel {
   Level toLevel() {
     switch (this) {
       case LogLevel.verbose:
-        return Level.verbose;
+        return Level.trace;
       case LogLevel.debug:
         return Level.debug;
       case LogLevel.info:
@@ -22,9 +22,9 @@ enum LogLevel {
       case LogLevel.error:
         return Level.error;
       case LogLevel.wtf:
-        return Level.wtf;
+        return Level.fatal;
       default:
-        return Level.nothing;
+        return Level.off;
     }
   }
 }
