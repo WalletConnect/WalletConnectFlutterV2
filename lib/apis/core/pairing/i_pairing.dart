@@ -41,7 +41,9 @@ abstract class IPairing {
     required String topic,
     required PairingMetadata metadata,
   });
+  Future<void> checkAndExpire();
   List<PairingInfo> getPairings();
+  PairingInfo? getPairing({required String topic});
   Future<void> ping({required String topic});
   Future<void> disconnect({required String topic});
   IPairingStore getStore();

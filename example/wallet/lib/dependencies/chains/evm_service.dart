@@ -247,24 +247,24 @@ class EVMService extends IChain {
     final transaction = Transaction(
       from: EthereumAddress.fromHex(ethTransaction.from),
       to: EthereumAddress.fromHex(ethTransaction.to),
-      value: EtherAmount.fromUnitAndValue(
+      value: EtherAmount.fromBigInt(
         EtherUnit.wei,
         BigInt.tryParse(ethTransaction.value) ?? BigInt.zero,
       ),
       gasPrice: ethTransaction.gasPrice != null
-          ? EtherAmount.fromUnitAndValue(
+          ? EtherAmount.fromBigInt(
               EtherUnit.wei,
               BigInt.tryParse(ethTransaction.gasPrice!) ?? BigInt.zero,
             )
           : null,
       maxFeePerGas: ethTransaction.maxFeePerGas != null
-          ? EtherAmount.fromUnitAndValue(
+          ? EtherAmount.fromBigInt(
               EtherUnit.wei,
               BigInt.tryParse(ethTransaction.maxFeePerGas!) ?? BigInt.zero,
             )
           : null,
       maxPriorityFeePerGas: ethTransaction.maxPriorityFeePerGas != null
-          ? EtherAmount.fromUnitAndValue(
+          ? EtherAmount.fromBigInt(
               EtherUnit.wei,
               BigInt.tryParse(ethTransaction.maxPriorityFeePerGas!) ??
                   BigInt.zero,

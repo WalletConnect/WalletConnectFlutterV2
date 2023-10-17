@@ -73,7 +73,12 @@ class ConnectPageState extends State<ConnectPage> {
           vertical: StyleConstants.linear8,
         ),
         child: ElevatedButton(
-          onPressed: () => _onConnect(_selectedChains),
+          onPressed: () => _onConnect(
+            _selectedChains,
+            showToast: (m) async {
+              await showPlatformToast(child: Text(m), context: context);
+            },
+          ),
           style: ButtonStyle(
             backgroundColor: MaterialStateProperty.all<Color>(
               StyleConstants.primaryColor,
@@ -155,9 +160,8 @@ class ConnectPageState extends State<ConnectPage> {
     );
   }
 
-  Future<void> _onConnect(
-    List<ChainMetadata> chains,
-  ) async {
+  Future<void> _onConnect(List<ChainMetadata> chains,
+      {Function(String message)? showToast}) async {
     // Use the chain metadata to build the required namespaces:
     // Get the methods, get the events
     final Map<String, RequiredNamespace> requiredNamespaces = {};
@@ -192,12 +196,7 @@ class ConnectPageState extends State<ConnectPage> {
       final _ = await res.session.future;
       // print(sessionData);
 
-      showPlatformToast(
-        child: const Text(
-          StringConstants.connectionEstablished,
-        ),
-        context: context,
-      );
+      showToast?.call(StringConstants.connectionEstablished);
 
       // Send off an auth request now that the pairing/session is established
       debugPrint('Requesting authentication');
@@ -216,19 +215,9 @@ class ConnectPageState extends State<ConnectPage> {
 
       if (authResponse.error != null) {
         debugPrint('Authentication failed: ${authResponse.error}');
-        await showPlatformToast(
-          child: const Text(
-            StringConstants.authFailed,
-          ),
-          context: context,
-        );
+        showToast?.call(StringConstants.authFailed);
       } else {
-        showPlatformToast(
-          child: const Text(
-            StringConstants.authSucceeded,
-          ),
-          context: context,
-        );
+        showToast?.call(StringConstants.authSucceeded);
       }
 
       if (_shouldDismissQrCode) {
@@ -241,12 +230,7 @@ class ConnectPageState extends State<ConnectPage> {
         // ignore: use_build_context_synchronously
         Navigator.pop(context);
       }
-      await showPlatformToast(
-        child: const Text(
-          StringConstants.connectionFailed,
-        ),
-        context: context,
-      );
+      showToast?.call(StringConstants.connectionFailed);
     }
   }
 
@@ -279,17 +263,18 @@ class ConnectPageState extends State<ConnectPage> {
                     height: StyleConstants.linear16,
                   ),
                   ElevatedButton(
-                    onPressed: () async {
-                      await Clipboard.setData(
+                    onPressed: () {
+                      Clipboard.setData(
                         ClipboardData(
                           text: response.uri!.toString(),
                         ),
-                      );
-                      await showPlatformToast(
-                        child: const Text(
-                          StringConstants.copiedToClipboard,
+                      ).then(
+                        (_) => showPlatformToast(
+                          child: const Text(
+                            StringConstants.copiedToClipboard,
+                          ),
+                          context: context,
                         ),
-                        context: context,
                       );
                     },
                     child: const Text(

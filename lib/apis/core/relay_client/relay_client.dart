@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:event/event.dart';
-// import 'package:json_rpc_2/json_rpc_2.dart';
 import 'package:walletconnect_flutter_v2/apis/core/i_core.dart';
 import 'package:walletconnect_flutter_v2/apis/core/pairing/utils/json_rpc_utils.dart';
 import 'package:walletconnect_flutter_v2/apis/core/relay_client/i_message_tracker.dart';
@@ -75,15 +74,13 @@ class RelayClient implements IRelayClient {
 
   ICore core;
 
-  Timer? _heartbeatTimer;
-  final int heartbeatPeriod;
+  bool _subscribedToHeartbeat = false;
 
   RelayClient({
     required this.core,
     required this.messageTracker,
     required this.topicMap,
     IWebSocketHandler? socketHandler,
-    this.heartbeatPeriod = 5,
   }) : socketHandler = socketHandler ?? WebSocketHandler();
 
   @override
@@ -97,9 +94,7 @@ class RelayClient implements IRelayClient {
 
     // Setup the json RPC server
     await _connect();
-    // _connectingFuture = _createJsonRPCProvider();
-    // await _connectingFuture;
-    // _startHeartbeat();
+    _subscribeToHeartbeat();
 
     _initialized = true;
   }
@@ -190,7 +185,7 @@ class RelayClient implements IRelayClient {
   /// PRIVATE FUNCTIONS ///
 
   Future<void> _connect({String? relayUrl}) async {
-    core.logger.v('RelayClient Internal: Connecting to relay');
+    core.logger.t('RelayClient Internal: Connecting to relay');
     if (isConnected) {
       return;
     }
@@ -203,9 +198,7 @@ class RelayClient implements IRelayClient {
     // Connect and track the connection progress, then start the heartbeat
     _connectingFuture = _createJsonRPCProvider();
     await _connectingFuture;
-    if (_heartbeatTimer == null) {
-      _startHeartbeat();
-    }
+    _subscribeToHeartbeat();
 
     // If it didn't connect, and the relayUrl is the default,
     // recursively try the fallback
@@ -223,7 +216,7 @@ class RelayClient implements IRelayClient {
   }
 
   Future<void> _disconnect() async {
-    core.logger.v('RelayClient Internal: Disconnecting from relay');
+    core.logger.t('RelayClient Internal: Disconnecting from relay');
     _active = false;
 
     final bool shouldBroadcastDisonnect = isConnected;
@@ -231,8 +224,7 @@ class RelayClient implements IRelayClient {
     await jsonRPC?.close();
     jsonRPC = null;
     await socketHandler.close();
-    _heartbeatTimer?.cancel();
-    _heartbeatTimer = null;
+    _unsubscribeToHeartbeat();
 
     if (shouldBroadcastDisonnect) {
       onRelayClientDisconnect.broadcast();
@@ -243,7 +235,7 @@ class RelayClient implements IRelayClient {
     _connecting = true;
     _active = true;
     var auth = await core.crypto.signJWT(core.relayUrl);
-    core.logger.v('Signed JWT: $auth');
+    core.logger.t('Signed JWT: $auth');
     try {
       final String url = WalletConnectUtils.formatRelayRpcUrl(
         protocol: WalletConnectConstants.CORE_PROTOCOL,
@@ -259,7 +251,7 @@ class RelayClient implements IRelayClient {
         jsonRPC = null;
       }
 
-      core.logger.v('Initializing WebSocket with $url');
+      core.logger.t('Initializing WebSocket with $url');
       await socketHandler.setup(
         url: url,
       );
@@ -351,16 +343,24 @@ class RelayClient implements IRelayClient {
     }
   }
 
-  void _startHeartbeat() {
-    _heartbeatTimer = Timer.periodic(
-      Duration(seconds: heartbeatPeriod),
-      (timer) async {
-        if (jsonRPC != null && jsonRPC!.isClosed) {
-          core.logger.v('Heartbeat, WebSocket closed, reconnecting');
-          await connect();
-        }
-      },
-    );
+  void _subscribeToHeartbeat() {
+    if (!_subscribedToHeartbeat) {
+      core.heartbeat.onPulse.subscribe(_heartbeatSubscription);
+      _subscribedToHeartbeat = true;
+    }
+  }
+
+  void _unsubscribeToHeartbeat() {
+    core.heartbeat.onPulse.unsubscribe(_heartbeatSubscription);
+    _subscribedToHeartbeat = false;
+  }
+
+  void _heartbeatSubscription(EventArgs? args) async {
+    core.logger.i('RelayClient heartbeat received');
+    if (jsonRPC != null && jsonRPC!.isClosed) {
+      core.logger.t('RelayClient, WebSocket closed, reconnecting');
+      await connect();
+    }
   }
 
   String _buildMethod(String method) {
@@ -370,7 +370,7 @@ class RelayClient implements IRelayClient {
   /// JSON RPC MESSAGE HANDLERS
 
   Future<bool> handlePublish(String topic, String message) async {
-    core.logger.v('Handling Publish Message: $topic, $message');
+    core.logger.t('Handling Publish Message: $topic, $message');
     // If we want to ignore the message, stop
     if (await _shouldIgnoreMessageEvent(topic, message)) {
       core.logger.w('Ignoring Message: $topic, $message');

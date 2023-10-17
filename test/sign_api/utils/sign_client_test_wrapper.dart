@@ -52,7 +52,7 @@ class SignClientTestWrapper implements ISignEngine {
     String relayUrl = WalletConnectConstants.DEFAULT_RELAY_URL,
     required PairingMetadata metadata,
     bool memoryStore = false,
-    Level logLevel = Level.nothing,
+    Level logLevel = Level.off,
     IHttpClient httpClient = const HttpWrapper(),
   }) async {
     final client = SignClientTestWrapper(
@@ -377,4 +377,11 @@ class SignClientTestWrapper implements ISignEngine {
 
   @override
   IPairingStore get pairings => core.pairing.getStore();
+
+  @override
+  Future<void> checkAndExpire() async {
+    for (var session in sessions.getAll()) {
+      await core.expirer.checkAndExpire(session.topic);
+    }
+  }
 }

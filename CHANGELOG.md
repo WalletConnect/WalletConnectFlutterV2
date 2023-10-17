@@ -1,4 +1,8 @@
-## 2.1.4 - UNRELEASED
+## 2.1.5
+
+- Added a core heartbeat to check and expire on pairing and sessions.
+
+## 2.1.4
 
 - Core defaults to `Logger.level = Level.nothing` to prevent logs from being printed by default
 - Resolved errors with pairings and sessions trying to subscribe even when the relay wasn't connected

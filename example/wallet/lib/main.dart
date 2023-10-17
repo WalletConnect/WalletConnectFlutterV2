@@ -39,7 +39,7 @@ class MyApp extends StatelessWidget {
     const nearWhite = Color(0xFFE0E0E0);
 
     return baseTheme.copyWith(
-      backgroundColor: Colors.black,
+      colorScheme: ColorScheme.fromSeed(seedColor: Colors.black),
       scaffoldBackgroundColor: Colors.black,
       textTheme: baseTheme.textTheme.apply(
         bodyColor: nearWhite,

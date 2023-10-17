@@ -16,6 +16,11 @@ class WalletConnectUtils {
         0;
   }
 
+  static DateTime expiryToDateTime(int expiry) {
+    final milliseconds = expiry * 1000;
+    return DateTime.fromMillisecondsSinceEpoch(milliseconds);
+  }
+
   static int toMilliseconds(int seconds) {
     return seconds * 1000;
   }

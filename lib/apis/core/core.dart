@@ -4,6 +4,8 @@ import 'package:walletconnect_flutter_v2/apis/core/crypto/i_crypto.dart';
 import 'package:walletconnect_flutter_v2/apis/core/echo/echo.dart';
 import 'package:walletconnect_flutter_v2/apis/core/echo/echo_client.dart';
 import 'package:walletconnect_flutter_v2/apis/core/echo/i_echo.dart';
+import 'package:walletconnect_flutter_v2/apis/core/heartbit/heartbeat.dart';
+import 'package:walletconnect_flutter_v2/apis/core/heartbit/i_heartbeat.dart';
 import 'package:walletconnect_flutter_v2/apis/core/i_core.dart';
 import 'package:walletconnect_flutter_v2/apis/core/pairing/expirer.dart';
 import 'package:walletconnect_flutter_v2/apis/core/pairing/i_expirer.dart';
@@ -49,17 +51,17 @@ class Core implements ICore {
   @override
   late IExpirer expirer;
 
-  // @override
-  // late IJsonRpcHistory history;
-
   @override
   late IPairing pairing;
 
   @override
   late IEcho echo;
 
+  @override
+  late IHeartBeat heartbeat;
+
   Logger _logger = Logger(
-    level: Level.nothing,
+    level: Level.off,
     printer: PrettyPrinter(),
   );
   @override
@@ -81,6 +83,7 @@ class Core implements ICore {
       level: logLevel.toLevel(),
       printer: PrettyPrinter(),
     );
+    heartbeat = HeartBeat();
     storage = SharedPrefsStores(
       memoryStore: memoryStore,
     );
@@ -111,7 +114,6 @@ class Core implements ICore {
       ),
       socketHandler: webSocketHandler,
     );
-
     expirer = Expirer(
       storage: storage,
       context: StoreVersions.CONTEXT_EXPIRER,
@@ -157,5 +159,6 @@ class Core implements ICore {
     await relayClient.init();
     await expirer.init();
     await pairing.init();
+    heartbeat.init();
   }
 }
