@@ -377,4 +377,11 @@ class SignClientTestWrapper implements ISignEngine {
 
   @override
   IPairingStore get pairings => core.pairing.getStore();
+
+  @override
+  Future<void> checkAndExpire() async {
+    for (var session in sessions.getAll()) {
+      await core.expirer.checkAndExpire(session.topic);
+    }
+  }
 }

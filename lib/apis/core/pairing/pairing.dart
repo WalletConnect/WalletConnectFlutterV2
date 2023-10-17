@@ -78,6 +78,7 @@ class Pairing implements IPairing {
 
     _registerRelayEvents();
     _registerExpirerEvents();
+    _registerheartbeatSubscription();
 
     await core.expirer.init();
     await pairings.init();
@@ -92,9 +93,14 @@ class Pairing implements IPairing {
   }
 
   @override
-  Future<CreateResponse> create({
-    List<List<String>>? methods,
-  }) async {
+  Future<void> checkAndExpire() async {
+    for (var pairing in getPairings()) {
+      await core.expirer.checkAndExpire(pairing.topic);
+    }
+  }
+
+  @override
+  Future<CreateResponse> create({List<List<String>>? methods}) async {
     _checkInitialized();
     final String symKey = core.crypto.getUtils().generateRandomBytes32();
     final String topic = await core.crypto.setSymKey(symKey);
@@ -308,6 +314,11 @@ class Pairing implements IPairing {
   @override
   List<PairingInfo> getPairings() {
     return pairings.getAll();
+  }
+
+  @override
+  PairingInfo? getPairing({required String topic}) {
+    return pairings.get(topic);
   }
 
   @override
@@ -780,6 +791,10 @@ class Pairing implements IPairing {
     core.expirer.onExpire.subscribe(_onExpired);
   }
 
+  void _registerheartbeatSubscription() {
+    core.heartbeat.onPulse.subscribe(_heartbeatSubscription);
+  }
+
   Future<void> _onExpired(ExpirationEvent? event) async {
     if (event == null) {
       return;
@@ -794,6 +809,11 @@ class Pairing implements IPairing {
         ),
       );
     }
+  }
+
+  void _heartbeatSubscription(EventArgs? args) async {
+    core.logger.i('Pairing heartbeat received');
+    await checkAndExpire();
   }
 
   /// ---- Validators ---- ///
