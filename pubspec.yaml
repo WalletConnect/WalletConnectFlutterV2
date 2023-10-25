@@ -27,6 +27,7 @@ dependencies:
   web3dart: ^2.5.1
   logger: ^2.0.2+1
   freezed_annotation: ^2.2.0
+  package_info_plus: ^4.2.0
 
 dev_dependencies:
   flutter_test:
