@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart';
 import 'package:mockito/mockito.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:walletconnect_flutter_v2/apis/core/relay_client/relay_client.dart';
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 
@@ -12,6 +13,13 @@ import '../shared/shared_test_utils.mocks.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  PackageInfo.setMockInitialValues(
+    appName: 'walletconnect_flutter_v2',
+    packageName: 'sdk.test',
+    version: '1.0',
+    buildNumber: '2',
+    buildSignature: 'buildSignature',
+  );
 
   const TEST_TOPIC = 'abc123';
   const TEST_MESSAGE = 'swagmasterss';
@@ -55,6 +63,10 @@ void main() {
         errorCounter++;
         expect(args!.error.message, 'No internet connection: test');
       });
+      // when(WalletConnectUtils.getPackageName()).thenAnswer(
+      //   (_) async => 'test',
+      // );
+      // when(core.relayClient.subscribeToHeartbeat()).thenThrow(Exception());
       await core.storage.init();
       await core.crypto.init();
       await core.relayClient.init();
@@ -95,6 +107,11 @@ void main() {
         );
         completer.complete();
       });
+
+      // when(WalletConnectUtils.getPackageName()).thenAnswer(
+      //   (_) async => 'test',
+      // );
+      // when(core.relayClient.subscribeToHeartbeat()).thenThrow(Exception());
 
       await core.start();
 

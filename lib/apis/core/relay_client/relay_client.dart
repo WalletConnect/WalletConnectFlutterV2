@@ -360,7 +360,6 @@ class RelayClient implements IRelayClient {
   }
 
   void _heartbeatSubscription(EventArgs? args) async {
-    core.logger.i('RelayClient heartbeat received');
     if (_relayIsClosed) {
       await _handleRelayClose(10002, null);
     }
