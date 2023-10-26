@@ -55,6 +55,8 @@ class RelayClient implements IRelayClient {
   @override
   bool get isConnected => jsonRPC != null && !jsonRPC!.isClosed;
 
+  bool get _relayIsClosed => jsonRPC != null && jsonRPC!.isClosed;
+
   bool _initialized = false;
   bool _active = true;
   bool _connecting = false;
@@ -237,13 +239,14 @@ class RelayClient implements IRelayClient {
     var auth = await core.crypto.signJWT(core.relayUrl);
     core.logger.t('Signed JWT: $auth');
     try {
-      final String url = WalletConnectUtils.formatRelayRpcUrl(
+      final url = WalletConnectUtils.formatRelayRpcUrl(
         protocol: WalletConnectConstants.CORE_PROTOCOL,
         version: WalletConnectConstants.CORE_VERSION,
         relayUrl: core.relayUrl,
         sdkVersion: WalletConnectConstants.SDK_VERSION,
         auth: auth,
         projectId: core.projectId,
+        packageName: (await WalletConnectUtils.getPackageName()),
       );
 
       if (jsonRPC != null) {
@@ -324,6 +327,7 @@ class RelayClient implements IRelayClient {
           code == 4008 ||
           code == 4010 ||
           code == 1002 ||
+          code == 10002 ||
           code == 1005) {
         await connect();
       } else {
@@ -357,9 +361,8 @@ class RelayClient implements IRelayClient {
 
   void _heartbeatSubscription(EventArgs? args) async {
     core.logger.i('RelayClient heartbeat received');
-    if (jsonRPC != null && jsonRPC!.isClosed) {
-      core.logger.t('RelayClient, WebSocket closed, reconnecting');
-      await connect();
+    if (_relayIsClosed) {
+      await _handleRelayClose(10002, null);
     }
   }
 
@@ -400,7 +403,9 @@ class RelayClient implements IRelayClient {
     return params.hashCode;
   }
 
-  void _handleUnsubscribe(Parameters params) {}
+  void _handleUnsubscribe(Parameters params) {
+    core.logger.i('[$runtimeType] _handleUnsubscribe $params');
+  }
 
   /// MESSAGE HANDLING
 
@@ -448,7 +453,6 @@ class RelayClient implements IRelayClient {
         JsonRpcUtils.payloadId(entropy: 6),
       );
     } catch (e) {
-      // print('onSubscribe error: $e, stack: $stacktrace');
       core.logger.w('RelayClient, onSubscribe error. Topic: $topic, Error: $e');
       onRelayClientError.broadcast(ErrorEvent(e));
     }
