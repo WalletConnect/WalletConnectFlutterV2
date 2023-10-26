@@ -6,6 +6,7 @@ import 'package:walletconnect_flutter_v2/apis/core/pairing/i_expirer.dart';
 import 'package:walletconnect_flutter_v2/apis/core/pairing/i_pairing.dart';
 import 'package:walletconnect_flutter_v2/apis/core/relay_client/i_relay_client.dart';
 import 'package:walletconnect_flutter_v2/apis/core/store/i_store.dart';
+import 'package:walletconnect_flutter_v2/apis/core/verify/i_verify.dart';
 
 abstract class ICore {
   final String protocol = 'wc';
@@ -24,6 +25,7 @@ abstract class ICore {
   abstract IPairing pairing;
   abstract IEcho echo;
   abstract final Logger logger;
+  abstract IVerify verify;
 
   Future<void> start();
 }

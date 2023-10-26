@@ -23,6 +23,8 @@ import 'package:walletconnect_flutter_v2/apis/core/store/i_store.dart';
 import 'package:walletconnect_flutter_v2/apis/core/relay_client/i_relay_client.dart';
 import 'package:walletconnect_flutter_v2/apis/core/pairing/i_pairing.dart';
 import 'package:walletconnect_flutter_v2/apis/core/store/shared_prefs_store.dart';
+import 'package:walletconnect_flutter_v2/apis/core/verify/i_verify.dart';
+import 'package:walletconnect_flutter_v2/apis/core/verify/verify.dart';
 import 'package:walletconnect_flutter_v2/apis/utils/constants.dart';
 import 'package:walletconnect_flutter_v2/apis/utils/log_level.dart';
 import 'package:walletconnect_flutter_v2/apis/utils/walletconnect_utils.dart';
@@ -59,6 +61,9 @@ class Core implements ICore {
 
   @override
   late IHeartBeat heartbeat;
+
+  @override
+  late IVerify verify;
 
   Logger _logger = Logger(
     level: Level.off,
@@ -150,6 +155,11 @@ class Core implements ICore {
         httpClient: httpClient,
       ),
     );
+    verify = Verify(
+      core: this,
+      projectId: projectId,
+      httpClient: httpClient,
+    );
   }
 
   @override
@@ -159,6 +169,7 @@ class Core implements ICore {
     await relayClient.init();
     await expirer.init();
     await pairing.init();
+    await verify.init();
     heartbeat.init();
   }
 }
