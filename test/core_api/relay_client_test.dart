@@ -38,9 +38,6 @@ void main() {
   group('Relay throws errors', () {
     test('on init if there is no internet connection', () async {
       final MockWebSocketHandler mockWebSocketHandler = MockWebSocketHandler();
-      // when(mockWebSocketHandler.setup(url: anyNamed('url'))).thenAnswer(
-      //   (_) async => Future.value(),
-      // );
       when(mockWebSocketHandler.connect()).thenThrow(const WalletConnectError(
         code: -1,
         message: 'No internet connection: test',
@@ -63,16 +60,9 @@ void main() {
         errorCounter++;
         expect(args!.error.message, 'No internet connection: test');
       });
-      // when(WalletConnectUtils.getPackageName()).thenAnswer(
-      //   (_) async => 'test',
-      // );
-      // when(core.relayClient.subscribeToHeartbeat()).thenThrow(Exception());
       await core.storage.init();
       await core.crypto.init();
       await core.relayClient.init();
-      // try {} on WalletConnectError catch (e) {
-      //   expect(e.message, 'No internet connection: test');
-      // }
 
       verify(mockWebSocketHandler.setup(
         url: argThat(
@@ -108,37 +98,11 @@ void main() {
         completer.complete();
       });
 
-      // when(WalletConnectUtils.getPackageName()).thenAnswer(
-      //   (_) async => 'test',
-      // );
-      // when(core.relayClient.subscribeToHeartbeat()).thenThrow(Exception());
-
       await core.start();
 
       await completer.future;
 
       core.relayClient.onRelayClientError.unsubscribeAll();
-
-      // expect(
-      //   () async => await core.start(),
-      //   throwsA(
-      //     isA<WalletConnectError>().having(
-      //       (e) => e.message,
-      //       'Invalid project id',
-      //       'WebSocket connection failed, this could be: 1. Missing project id, 2. Invalid project id, 3. Too many requests',
-      //     ),
-      //   ),
-      // );
-      // expect(
-      //   () async => await core.start(),
-      //   throwsA(
-      //     isA<HttpException>().having(
-      //       (e) => e.message,
-      //       'Invalid project id',
-      //       WebSocketErrors.PROJECT_ID_NOT_FOUND_MESSAGE,
-      //     ),
-      //   ),
-      // );
     });
   });
 

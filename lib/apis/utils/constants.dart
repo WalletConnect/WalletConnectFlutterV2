@@ -1,5 +1,5 @@
 class WalletConnectConstants {
-  static const SDK_VERSION = '2.1.7';
+  static const SDK_VERSION = '2.1.8';
 
   static const CORE_PROTOCOL = 'wc';
   static const CORE_VERSION = 2;
