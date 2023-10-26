@@ -28,6 +28,9 @@ linter:
     non_constant_identifier_names: false
 
 analyzer:
+  exclude:
+    - "**/*.g.dart"
+    - "**/*.freezed.dart"
   errors:
     invalid_annotation_target: ignore
 
