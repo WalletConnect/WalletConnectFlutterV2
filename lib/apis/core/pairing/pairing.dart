@@ -397,17 +397,17 @@ class Pairing implements IPairing {
     EncodeOptions? encodeOptions,
   }) async {
     core.logger.t(
-      'pairing sendResult, id: $id topic: $topic, method: $method, params: $params, ttl: $ttl',
+      'pairing sendRequest, id: $id topic: $topic, method: $method, params: $params, ttl: $ttl',
     );
 
-    final Map<String, dynamic> payload = JsonRpcUtils.formatJsonRpcRequest(
+    final payload = JsonRpcUtils.formatJsonRpcRequest(
       method,
       params,
       id: id,
     );
     // print('sending request: $payload');
 
-    final String? message = await core.crypto.encode(
+    final message = await core.crypto.encode(
       topic,
       payload,
       options: encodeOptions,
@@ -423,12 +423,9 @@ class Pairing implements IPairing {
     }
 
     // print('adding payload to pending requests: ${payload['id']}');
-    final PendingRequestResponse resp = PendingRequestResponse(
-      completer: Completer(),
-    );
-    resp.completer.future.catchError((_) {
+    final resp = PendingRequestResponse(completer: Completer());
+    resp.completer.future.catchError((err) {
       // Catch the error so that it won't throw an uncaught error
-      // print('inner caught error: $err');
     });
     pendingRequests[payload['id']] = resp;
     // print('sent request');
@@ -441,7 +438,6 @@ class Pairing implements IPairing {
 
     // Get the result from the completer, if it's an error, throw it
     try {
-      // print('checking error');
       if (resp.error != null) {
         throw resp.error!;
       }
@@ -451,10 +447,8 @@ class Pairing implements IPairing {
         return resp.response;
       }
 
-      // print('waiting for response');
       return await resp.completer.future;
     } catch (e) {
-      // print('caught error: $e');
       rethrow;
     }
   }
@@ -812,7 +806,6 @@ class Pairing implements IPairing {
   }
 
   void _heartbeatSubscription(EventArgs? args) async {
-    core.logger.i('Pairing heartbeat received');
     await checkAndExpire();
   }
 

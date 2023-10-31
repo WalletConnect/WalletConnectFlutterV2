@@ -332,15 +332,12 @@ class RelayClient implements IRelayClient {
         await connect();
       } else {
         await disconnect();
-        final String errorReason = code == 3000
-            ? WebSocketErrors.INVALID_PROJECT_ID_OR_JWT
-            : reason ?? '';
+        final errorReason = code == 3000
+            ? reason ?? WebSocketErrors.INVALID_PROJECT_ID_OR_JWT
+            : '';
         onRelayClientError.broadcast(
           ErrorEvent(
-            WalletConnectError(
-              code: code,
-              message: errorReason,
-            ),
+            WalletConnectError(code: code, message: errorReason),
           ),
         );
       }
