@@ -10,6 +10,7 @@ import 'package:walletconnect_flutter_v2_wallet/dependencies/i_web3wallet_servic
 import 'package:walletconnect_flutter_v2_wallet/dependencies/key_service/chain_key.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/key_service/i_key_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/utils/dart_defines.dart';
+import 'package:walletconnect_flutter_v2_wallet/utils/eth_utils.dart';
 import 'package:walletconnect_flutter_v2_wallet/widgets/wc_connection_request/wc_auth_request_model.dart';
 import 'package:walletconnect_flutter_v2_wallet/widgets/wc_connection_request/wc_connection_request_widget.dart';
 import 'package:walletconnect_flutter_v2_wallet/widgets/wc_connection_request/wc_session_request_model.dart';
@@ -79,7 +80,7 @@ class Web3WalletService extends IWeb3WalletService {
     _web3Wallet!.onSessionProposal.subscribe(_onSessionProposal);
     _web3Wallet!.onSessionProposalError.subscribe(_onSessionProposalError);
     _web3Wallet!.onSessionConnect.subscribe(_onSessionConnect);
-    // _web3Wallet!.onSessionRequest.subscribe(_onSessionRequest);
+    _web3Wallet!.onSessionRequest.subscribe(_onSessionRequest);
     _web3Wallet!.onAuthRequest.subscribe(_onAuthRequest);
     _web3Wallet!.core.relayClient.onRelayClientError
         .subscribe(_onRelayClientError);
@@ -104,7 +105,7 @@ class Web3WalletService extends IWeb3WalletService {
     _web3Wallet!.onSessionProposal.unsubscribe(_onSessionProposal);
     _web3Wallet!.onSessionProposalError.unsubscribe(_onSessionProposalError);
     _web3Wallet!.onSessionConnect.unsubscribe(_onSessionConnect);
-    // _web3Wallet!.onSessionRequest.unsubscribe(_onSessionRequest);
+    _web3Wallet!.onSessionRequest.unsubscribe(_onSessionRequest);
     _web3Wallet!.onAuthRequest.unsubscribe(_onAuthRequest);
     _web3Wallet!.core.relayClient.onRelayClientError
         .unsubscribe(_onRelayClientError);
@@ -168,33 +169,32 @@ class Web3WalletService extends IWeb3WalletService {
     debugPrint('[$runtimeType] _onPairingCreate $args');
   }
 
-  // void _onSessionRequest(SessionRequestEvent? args) {
-  //   debugPrint('[$runtimeType] _onSessionRequest $args');
-  //   if (args == null) return;
+  void _onSessionRequest(SessionRequestEvent? args) {
+    if (args == null) return;
 
-  //   final id = args.id;
-  //   final topic = args.topic;
-  //   final parameters = args.params;
+    final id = args.id;
+    final topic = args.topic;
+    final parameters = args.params;
 
-  //   final message = EthUtils.getUtf8Message(parameters[0]);
+    final message = EthUtils.getUtf8Message(parameters[0]);
 
-  //   debugPrint('On session request event: $id, $topic, $message');
+    debugPrint('On session request event: $id, $topic, $message');
 
-  //   // // Load the private key
-  //   // final keys = GetIt.I<IKeyService>().getKeysForChain(getChainId());
-  //   // final credentials = EthPrivateKey.fromHex(keys[0].privateKey);
+    // // Load the private key
+    // final keys = GetIt.I<IKeyService>().getKeysForChain(getChainId());
+    // final credentials = EthPrivateKey.fromHex(keys[0].privateKey);
 
-  //   // final signedMessage = hex.encode(
-  //   //   credentials.signPersonalMessageToUint8List(
-  //   //     Uint8List.fromList(utf8.encode(message)),
-  //   //   ),
-  //   // );
+    // final signedMessage = hex.encode(
+    //   credentials.signPersonalMessageToUint8List(
+    //     Uint8List.fromList(utf8.encode(message)),
+    //   ),
+    // );
 
-  //   // final r = {'id': id, 'result': signedMessage, 'jsonrpc': '2.0'};
-  //   // final response = JsonRpcResponse.fromJson(r);
-  //   // print(r);
-  //   // _web3Wallet?.respondSessionRequest(topic: topic, response: response);
-  // }
+    // final r = {'id': id, 'result': signedMessage, 'jsonrpc': '2.0'};
+    // final response = JsonRpcResponse.fromJson(r);
+    // print(r);
+    // _web3Wallet?.respondSessionRequest(topic: topic, response: response);
+  }
 
   void _onSessionConnect(SessionConnect? args) {
     if (args != null) {
