@@ -77,10 +77,7 @@ void main() {
     test('when connection parameters are invalid', () async {
       final http = MockHttpWrapper();
       when(http.get(any)).thenAnswer(
-        (_) async => Response(
-          '',
-          WebSocketErrors.PROJECT_ID_NOT_FOUND,
-        ),
+        (_) async => Response('', 3000),
       );
       final ICore core = Core(
         projectId: 'abc',
@@ -91,10 +88,7 @@ void main() {
       Completer completer = Completer();
       core.relayClient.onRelayClientError.subscribe((args) {
         expect(args!.error, isA<WalletConnectError>());
-        expect(
-          args.error.message,
-          WebSocketErrors.INVALID_PROJECT_ID_OR_JWT,
-        );
+        expect(args.error.code, 3000);
         completer.complete();
       });
 

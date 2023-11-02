@@ -12,9 +12,7 @@ abstract class IWebSocketHandler {
 
   Future<void> get ready;
 
-  Future<void> setup({
-    required String url,
-  });
+  Future<void> setup({required String url});
 
   Future<void> connect();
 
