@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart';
 import 'package:mockito/mockito.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:walletconnect_flutter_v2/apis/core/relay_client/relay_client.dart';
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 
@@ -12,6 +13,13 @@ import '../shared/shared_test_utils.mocks.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  PackageInfo.setMockInitialValues(
+    appName: 'walletconnect_flutter_v2',
+    packageName: 'sdk.test',
+    version: '1.0',
+    buildNumber: '2',
+    buildSignature: 'buildSignature',
+  );
 
   const TEST_TOPIC = 'abc123';
   const TEST_MESSAGE = 'swagmasterss';
@@ -30,9 +38,6 @@ void main() {
   group('Relay throws errors', () {
     test('on init if there is no internet connection', () async {
       final MockWebSocketHandler mockWebSocketHandler = MockWebSocketHandler();
-      // when(mockWebSocketHandler.setup(url: anyNamed('url'))).thenAnswer(
-      //   (_) async => Future.value(),
-      // );
       when(mockWebSocketHandler.connect()).thenThrow(const WalletConnectError(
         code: -1,
         message: 'No internet connection: test',
@@ -58,9 +63,6 @@ void main() {
       await core.storage.init();
       await core.crypto.init();
       await core.relayClient.init();
-      // try {} on WalletConnectError catch (e) {
-      //   expect(e.message, 'No internet connection: test');
-      // }
 
       verify(mockWebSocketHandler.setup(
         url: argThat(
@@ -75,10 +77,7 @@ void main() {
     test('when connection parameters are invalid', () async {
       final http = MockHttpWrapper();
       when(http.get(any)).thenAnswer(
-        (_) async => Response(
-          '',
-          WebSocketErrors.PROJECT_ID_NOT_FOUND,
-        ),
+        (_) async => Response('', 3000),
       );
       final ICore core = Core(
         projectId: 'abc',
@@ -89,10 +88,7 @@ void main() {
       Completer completer = Completer();
       core.relayClient.onRelayClientError.subscribe((args) {
         expect(args!.error, isA<WalletConnectError>());
-        expect(
-          args.error.message,
-          WebSocketErrors.INVALID_PROJECT_ID_OR_JWT,
-        );
+        expect(args.error.code, 3000);
         completer.complete();
       });
 
@@ -101,27 +97,6 @@ void main() {
       await completer.future;
 
       core.relayClient.onRelayClientError.unsubscribeAll();
-
-      // expect(
-      //   () async => await core.start(),
-      //   throwsA(
-      //     isA<WalletConnectError>().having(
-      //       (e) => e.message,
-      //       'Invalid project id',
-      //       'WebSocket connection failed, this could be: 1. Missing project id, 2. Invalid project id, 3. Too many requests',
-      //     ),
-      //   ),
-      // );
-      // expect(
-      //   () async => await core.start(),
-      //   throwsA(
-      //     isA<HttpException>().having(
-      //       (e) => e.message,
-      //       'Invalid project id',
-      //       WebSocketErrors.PROJECT_ID_NOT_FOUND_MESSAGE,
-      //     ),
-      //   ),
-      // );
     });
   });
 

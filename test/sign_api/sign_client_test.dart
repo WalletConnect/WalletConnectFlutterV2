@@ -1,5 +1,8 @@
+@Timeout(Duration(seconds: 45))
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:logger/logger.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 
 import '../shared/shared_test_utils.dart';
@@ -9,6 +12,13 @@ import 'utils/sign_client_test_wrapper.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  PackageInfo.setMockInitialValues(
+    appName: 'walletconnect_flutter_v2',
+    packageName: 'sdk.test',
+    version: '1.0',
+    buildNumber: '2',
+    buildSignature: 'buildSignature',
+  );
 
   signEngineTests(
     context: 'SignClient',

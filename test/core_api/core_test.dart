@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mockito/mockito.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:walletconnect_flutter_v2/apis/core/relay_client/relay_client.dart';
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 
@@ -8,6 +9,13 @@ import '../shared/shared_test_utils.mocks.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  PackageInfo.setMockInitialValues(
+    appName: 'walletconnect_flutter_v2',
+    packageName: 'sdk.test',
+    version: '1.0',
+    buildNumber: '2',
+    buildSignature: 'buildSignature',
+  );
 
   group('Core throws errors', () {
     test('on start if there is no internet connection', () async {

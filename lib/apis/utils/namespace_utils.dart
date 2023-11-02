@@ -140,6 +140,25 @@ class NamespaceUtils {
     return methods;
   }
 
+  /// Gets the optional methods from a namespace map for the given chain
+  static List<String> getOptionalMethodsForChainId({
+    required String chainId,
+    required Map<String, RequiredNamespace> optionalNamespaces,
+  }) {
+    List<String> methods = [];
+    optionalNamespaces.forEach((String nsOrChain, RequiredNamespace rns) {
+      if (nsOrChain == chainId) {
+        methods.addAll(rns.methods);
+      } else {
+        if ((rns.chains ?? []).contains('$nsOrChain:$chainId')) {
+          methods.addAll(rns.methods);
+        }
+      }
+    });
+
+    return methods;
+  }
+
   /// Gets the methods from a namespace map for the given chain id
   static List<String> getNamespacesEventsForChain({
     required String chainId,

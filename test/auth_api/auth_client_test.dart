@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:eth_sig_util/eth_sig_util.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:walletconnect_flutter_v2/apis/auth_api/auth_engine.dart';
 import 'package:walletconnect_flutter_v2/apis/auth_api/i_auth_engine_app.dart';
 import 'package:walletconnect_flutter_v2/apis/auth_api/i_auth_engine_wallet.dart';
@@ -17,6 +18,13 @@ import 'utils/signature_constants.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
+  PackageInfo.setMockInitialValues(
+    appName: 'walletconnect_flutter_v2',
+    packageName: 'sdk.test',
+    version: '1.0',
+    buildNumber: '2',
+    buildSignature: 'buildSignature',
+  );
 
   final List<Future<IAuthEngineApp> Function(PairingMetadata)> authAppCreators =
       [

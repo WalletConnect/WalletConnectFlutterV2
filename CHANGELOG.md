@@ -1,3 +1,7 @@
+## 2.1.8
+
+- Minor changes.
+
 ## 2.1.5
 
 - Added a core heartbeat to check and expire on pairing and sessions.

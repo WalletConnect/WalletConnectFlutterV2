@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:universal_io/io.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:walletconnect_flutter_v2/apis/core/relay_client/relay_client_models.dart';
@@ -32,6 +33,11 @@ class WalletConnectUtils {
   static String getOS() {
     return <String>[Platform.operatingSystem, Platform.operatingSystemVersion]
         .join('-');
+  }
+
+  static Future<String> getPackageName() async {
+    final packageInfo = await PackageInfo.fromPlatform();
+    return packageInfo.packageName;
   }
 
   static String getId() {
@@ -74,19 +80,17 @@ class WalletConnectUtils {
     required String sdkVersion,
     required String auth,
     String? projectId,
+    String? packageName,
   }) {
     final Uri uri = Uri.parse(relayUrl);
     final Map<String, String> queryParams = Uri.splitQueryString(uri.query);
-    String ua = formatUA(
-      protocol,
-      version,
-      sdkVersion,
-    );
+    String ua = formatUA(protocol, version, sdkVersion);
 
     final Map<String, String> relayParams = {
       'auth': auth,
-      if (projectId != null && projectId.isNotEmpty) 'projectId': projectId,
+      if ((projectId ?? '').isNotEmpty) 'projectId': projectId!,
       'ua': ua,
+      if ((packageName ?? '').isNotEmpty) 'origin': packageName!,
     };
     queryParams.addAll(relayParams);
     return uri.replace(queryParameters: queryParams).toString();
@@ -106,13 +110,8 @@ class WalletConnectUtils {
     }
     List<String> methods = (uri.queryParameters['methods'] ?? '')
         // Replace all the square brackets with empty string, split by comma
-        .replaceAll(
-          RegExp(r'[\[\]"]+'),
-          '',
-        )
-        .split(
-          ',',
-        );
+        .replaceAll(RegExp(r'[\[\]"]+'), '')
+        .split(',');
     if (methods.length == 1 && methods[0].isEmpty) {
       methods = [];
     }

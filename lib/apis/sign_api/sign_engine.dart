@@ -1441,7 +1441,6 @@ class SignEngine implements ISignEngine {
   }
 
   void _heartbeatSubscription(EventArgs? args) async {
-    core.logger.i('SignEngine heartbeat received');
     await checkAndExpire();
   }
 
