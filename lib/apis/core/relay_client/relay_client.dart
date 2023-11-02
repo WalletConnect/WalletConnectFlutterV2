@@ -255,14 +255,10 @@ class RelayClient implements IRelayClient {
       }
 
       core.logger.t('Initializing WebSocket with $url');
-      await socketHandler.setup(
-        url: url,
-      );
+      await socketHandler.setup(url: url);
       await socketHandler.connect();
 
-      jsonRPC = Peer(
-        socketHandler.channel!,
-      );
+      jsonRPC = Peer(socketHandler.channel!);
 
       jsonRPC!.registerMethod(
         _buildMethod(JSON_RPC_SUBSCRIPTION),
@@ -299,11 +295,7 @@ class RelayClient implements IRelayClient {
 
       onRelayClientConnect.broadcast();
     } catch (e) {
-      onRelayClientError.broadcast(
-        ErrorEvent(
-          e,
-        ),
-      );
+      onRelayClientError.broadcast(ErrorEvent(e));
     }
     _connecting = false;
   }
@@ -332,15 +324,12 @@ class RelayClient implements IRelayClient {
         await connect();
       } else {
         await disconnect();
-        final String errorReason = code == 3000
-            ? WebSocketErrors.INVALID_PROJECT_ID_OR_JWT
-            : reason ?? '';
+        final errorReason = code == 3000
+            ? reason ?? WebSocketErrors.INVALID_PROJECT_ID_OR_JWT
+            : '';
         onRelayClientError.broadcast(
           ErrorEvent(
-            WalletConnectError(
-              code: code,
-              message: errorReason,
-            ),
+            WalletConnectError(code: code, message: errorReason),
           ),
         );
       }

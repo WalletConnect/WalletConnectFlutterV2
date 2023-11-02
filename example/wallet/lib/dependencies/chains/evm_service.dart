@@ -144,7 +144,7 @@ class EVMService extends IChain {
     return null;
   }
 
-  Future personalSign(String topic, dynamic parameters) async {
+  Future<String?> personalSign(String topic, dynamic parameters) async {
     print('received personal sign request: $parameters');
 
     final String message = EthUtils.getUtf8Message(parameters[0]);
