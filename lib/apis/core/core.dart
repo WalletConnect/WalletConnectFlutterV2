@@ -36,13 +36,13 @@ class Core implements ICore {
   String get version => '2';
 
   @override
-  String relayUrl = WalletConnectConstants.DEFAULT_RELAY_URL;
-
-  @override
   final String projectId;
 
   @override
-  final String pushUrl;
+  String relayUrl = WalletConnectConstants.DEFAULT_RELAY_URL;
+
+  @override
+  String pushUrl = WalletConnectConstants.DEFAULT_PUSH_URL;
 
   @override
   late ICrypto crypto;
@@ -76,8 +76,8 @@ class Core implements ICore {
   late IStore<Map<String, dynamic>> storage;
 
   Core({
-    this.relayUrl = WalletConnectConstants.DEFAULT_RELAY_URL,
     required this.projectId,
+    this.relayUrl = WalletConnectConstants.DEFAULT_RELAY_URL,
     this.pushUrl = WalletConnectConstants.DEFAULT_PUSH_URL,
     bool memoryStore = false,
     LogLevel logLevel = LogLevel.nothing,
@@ -169,7 +169,6 @@ class Core implements ICore {
     await relayClient.init();
     await expirer.init();
     await pairing.init();
-    await verify.init();
     heartbeat.init();
   }
 }

@@ -85,6 +85,8 @@ _$_SessionRequest _$$_SessionRequestFromJson(Map<String, dynamic> json) =>
       method: json['method'] as String,
       chainId: json['chainId'] as String,
       params: json['params'],
+      verifyContext:
+          VerifyContext.fromJson(json['verifyContext'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$$_SessionRequestToJson(_$_SessionRequest instance) =>
@@ -94,4 +96,5 @@ Map<String, dynamic> _$$_SessionRequestToJson(_$_SessionRequest instance) =>
       'method': instance.method,
       'chainId': instance.chainId,
       'params': instance.params,
+      'verifyContext': instance.verifyContext.toJson(),
     };

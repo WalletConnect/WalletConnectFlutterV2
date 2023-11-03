@@ -33,6 +33,7 @@ _$_PairingMetadata _$$_PairingMetadataFromJson(Map<String, dynamic> json) =>
       description: json['description'] as String,
       url: json['url'] as String,
       icons: (json['icons'] as List<dynamic>).map((e) => e as String).toList(),
+      verifyUrl: json['verifyUrl'] as String?,
       redirect: json['redirect'] == null
           ? null
           : Redirect.fromJson(json['redirect'] as Map<String, dynamic>),
@@ -52,6 +53,7 @@ Map<String, dynamic> _$$_PairingMetadataToJson(_$_PairingMetadata instance) {
     }
   }
 
+  writeNotNull('verifyUrl', instance.verifyUrl);
   writeNotNull('redirect', instance.redirect?.toJson());
   return val;
 }

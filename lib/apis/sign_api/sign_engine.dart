@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:event/event.dart';
 import 'package:walletconnect_flutter_v2/apis/core/i_core.dart';
@@ -7,6 +8,7 @@ import 'package:walletconnect_flutter_v2/apis/core/pairing/utils/json_rpc_utils.
 import 'package:walletconnect_flutter_v2/apis/core/pairing/utils/pairing_models.dart';
 import 'package:walletconnect_flutter_v2/apis/core/relay_client/relay_client_models.dart';
 import 'package:walletconnect_flutter_v2/apis/core/store/i_generic_store.dart';
+import 'package:walletconnect_flutter_v2/apis/core/verify/models/verify_context.dart';
 import 'package:walletconnect_flutter_v2/apis/models/basic_models.dart';
 import 'package:walletconnect_flutter_v2/apis/models/json_rpc_error.dart';
 import 'package:walletconnect_flutter_v2/apis/models/json_rpc_request.dart';
@@ -90,6 +92,7 @@ class SignEngine implements ISignEngine {
     }
 
     await core.pairing.init();
+    await core.verify.init(verifyUrl: metadata.verifyUrl);
     await proposals.init();
     await sessions.init();
     await pendingRequests.init();
@@ -962,10 +965,19 @@ class SignEngine implements ISignEngine {
       );
 
       await _setProposal(payload.id, proposal);
-      onSessionProposal.broadcast(SessionProposalEvent(
-        payload.id,
-        proposal,
-      ));
+
+      final verifyContext = await _getVerifyContext(
+        payload,
+        proposal.proposer.metadata,
+      );
+
+      onSessionProposal.broadcast(
+        SessionProposalEvent(
+          payload.id,
+          proposal,
+          verifyContext,
+        ),
+      );
     } on WalletConnectError catch (err) {
       core.logger.e('_onSessionProposeRequest Error: $err');
       await core.pairing.sendError(
@@ -1185,10 +1197,7 @@ class SignEngine implements ISignEngine {
   /// Called when a session request is received
   /// Will attempt to find a handler for the request, if it doesn't,
   /// it will throw an error.
-  Future<void> _onSessionRequest(
-    String topic,
-    JsonRpcRequest payload,
-  ) async {
+  Future<void> _onSessionRequest(String topic, JsonRpcRequest payload) async {
     try {
       final request = WcSessionRequestRequest.fromJson(payload.params);
       await _isValidRequest(
@@ -1197,12 +1206,19 @@ class SignEngine implements ISignEngine {
         request.request,
       );
 
-      SessionRequest sessionRequest = SessionRequest(
+      final session = sessions.get(topic)!;
+      final verifyContext = await _getVerifyContext(
+        payload,
+        session.peer.metadata,
+      );
+
+      final sessionRequest = SessionRequest(
         id: payload.id,
         topic: topic,
         method: request.request.method,
         chainId: request.chainId,
         params: request.request.params,
+        verifyContext: verifyContext,
       );
 
       // print('payload id: ${payload.id}');
@@ -1700,5 +1716,38 @@ class SignEngine implements ISignEngine {
     await _isValidSessionOrPairingTopic(topic);
 
     return true;
+  }
+
+  Future<VerifyContext> _getVerifyContext(
+    JsonRpcRequest payload,
+    PairingMetadata proposerMetada,
+  ) async {
+    try {
+      final jsonStringify = jsonEncode(payload.toJson());
+      final hash = core.crypto.getUtils().hashMessage(jsonStringify);
+
+      final result = await core.verify.resolve(attestationId: hash);
+      final validation = result?.origin == Uri.parse(proposerMetada.url).origin
+          ? Validation.VALID
+          : Validation.INVALID;
+
+      return VerifyContext(
+        origin: result?.origin ?? proposerMetada.url,
+        verifyUrl: proposerMetada.verifyUrl ?? '',
+        validation: result?.isScam == true ? Validation.SCAM : validation,
+        isScam: result?.isScam,
+      );
+    } catch (e, s) {
+      core.logger.e(
+        '[$runtimeType] _getVerifyContext',
+        error: e,
+        stackTrace: s,
+      );
+      return VerifyContext(
+        origin: proposerMetada.url,
+        verifyUrl: proposerMetada.verifyUrl ?? '',
+        validation: Validation.UNKNOWN,
+      );
+    }
   }
 }

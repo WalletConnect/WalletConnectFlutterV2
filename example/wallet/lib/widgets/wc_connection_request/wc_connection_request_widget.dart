@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:walletconnect_flutter_v2/apis/core/verify/models/verify_context.dart';
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 import 'package:walletconnect_flutter_v2_wallet/utils/constants.dart';
 import 'package:walletconnect_flutter_v2_wallet/utils/namespace_model_builder.dart';
@@ -49,10 +50,8 @@ class WCConnectionRequestWidget extends StatelessWidget {
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: StyleConstants.linear8),
-          Text(
-            metadata.metadata.url,
-            style: StyleConstants.bodyText,
-            textAlign: TextAlign.center,
+          VerifyContextWidget(
+            verifyContext: sessionProposal?.verifyContext,
           ),
           const SizedBox(height: StyleConstants.linear8),
           authRequest != null
@@ -107,5 +106,132 @@ class WCConnectionRequestWidget extends StatelessWidget {
     //     itemCount: views.length,
     //   ),
     // );
+  }
+}
+
+class VerifyContextWidget extends StatelessWidget {
+  const VerifyContextWidget({
+    super.key,
+    required this.verifyContext,
+  });
+  final VerifyContext? verifyContext;
+
+  @override
+  Widget build(BuildContext context) {
+    if (verifyContext == null) {
+      return const SizedBox.shrink();
+    }
+
+    if (verifyContext!.validation.scam) {
+      return VerifyBanner(
+        color: StyleConstants.errorColor,
+        origin: verifyContext!.origin,
+        title: 'Security risk',
+        text: 'This domain is flagged as unsafe by multiple security providers.'
+            ' Leave immediately to protect your assets.',
+      );
+    }
+    if (verifyContext!.validation.invalid) {
+      return VerifyBanner(
+        color: StyleConstants.errorColor,
+        origin: verifyContext!.origin,
+        title: 'Domain mismatch',
+        text:
+            'This website has a domain that does not match the sender of this request.'
+            ' Approving may lead to loss of funds.',
+      );
+    }
+    if (verifyContext!.validation.valid) {
+      return VerifyHeader(
+        iconColor: StyleConstants.successColor,
+        title: verifyContext!.origin,
+      );
+    }
+    return VerifyBanner(
+      color: Colors.orange,
+      origin: verifyContext!.origin,
+      title: 'Cannot verify',
+      text: 'This domain cannot be verified. '
+          'Check the request carefully before approving.',
+    );
+  }
+}
+
+class VerifyHeader extends StatelessWidget {
+  const VerifyHeader({
+    super.key,
+    required this.iconColor,
+    required this.title,
+  });
+  final Color iconColor;
+  final String title;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        Icon(
+          Icons.shield_outlined,
+          color: iconColor,
+        ),
+        const SizedBox(width: StyleConstants.linear8),
+        Text(
+          title,
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class VerifyBanner extends StatelessWidget {
+  const VerifyBanner({
+    super.key,
+    required this.origin,
+    required this.title,
+    required this.text,
+    required this.color,
+  });
+  final String origin, title, text;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      children: [
+        Text(
+          origin,
+          style: const TextStyle(
+            color: Colors.white,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        const SizedBox.square(dimension: 8.0),
+        Container(
+          padding: const EdgeInsets.all(8.0),
+          decoration: BoxDecoration(
+            color: color,
+            borderRadius: const BorderRadius.all(Radius.circular(12.0)),
+          ),
+          child: Column(
+            children: [
+              VerifyHeader(
+                iconColor: Colors.white,
+                title: title,
+              ),
+              const SizedBox(height: 4.0),
+              Text(
+                text,
+                style: const TextStyle(color: Colors.white),
+              ),
+            ],
+          ),
+        ),
+      ],
+    );
   }
 }

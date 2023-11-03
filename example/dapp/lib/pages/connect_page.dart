@@ -184,7 +184,7 @@ class ConnectPageState extends State<ConnectPage> {
     // Send off a connect
     debugPrint('Creating connection and session');
     final ConnectResponse res = await widget.web3App.connect(
-      requiredNamespaces: requiredNamespaces,
+      optionalNamespaces: requiredNamespaces,
     );
     // debugPrint('Connection created, connection response: ${res.uri}');
 

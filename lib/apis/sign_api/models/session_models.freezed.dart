@@ -667,6 +667,7 @@ mixin _$SessionRequest {
   String get method => throw _privateConstructorUsedError;
   String get chainId => throw _privateConstructorUsedError;
   dynamic get params => throw _privateConstructorUsedError;
+  VerifyContext get verifyContext => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -681,7 +682,14 @@ abstract class $SessionRequestCopyWith<$Res> {
       _$SessionRequestCopyWithImpl<$Res, SessionRequest>;
   @useResult
   $Res call(
-      {int id, String topic, String method, String chainId, dynamic params});
+      {int id,
+      String topic,
+      String method,
+      String chainId,
+      dynamic params,
+      VerifyContext verifyContext});
+
+  $VerifyContextCopyWith<$Res> get verifyContext;
 }
 
 /// @nodoc
@@ -702,6 +710,7 @@ class _$SessionRequestCopyWithImpl<$Res, $Val extends SessionRequest>
     Object? method = null,
     Object? chainId = null,
     Object? params = freezed,
+    Object? verifyContext = null,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -724,7 +733,19 @@ class _$SessionRequestCopyWithImpl<$Res, $Val extends SessionRequest>
           ? _value.params
           : params // ignore: cast_nullable_to_non_nullable
               as dynamic,
+      verifyContext: null == verifyContext
+          ? _value.verifyContext
+          : verifyContext // ignore: cast_nullable_to_non_nullable
+              as VerifyContext,
     ) as $Val);
+  }
+
+  @override
+  @pragma('vm:prefer-inline')
+  $VerifyContextCopyWith<$Res> get verifyContext {
+    return $VerifyContextCopyWith<$Res>(_value.verifyContext, (value) {
+      return _then(_value.copyWith(verifyContext: value) as $Val);
+    });
   }
 }
 
@@ -737,7 +758,15 @@ abstract class _$$_SessionRequestCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {int id, String topic, String method, String chainId, dynamic params});
+      {int id,
+      String topic,
+      String method,
+      String chainId,
+      dynamic params,
+      VerifyContext verifyContext});
+
+  @override
+  $VerifyContextCopyWith<$Res> get verifyContext;
 }
 
 /// @nodoc
@@ -756,6 +785,7 @@ class __$$_SessionRequestCopyWithImpl<$Res>
     Object? method = null,
     Object? chainId = null,
     Object? params = freezed,
+    Object? verifyContext = null,
   }) {
     return _then(_$_SessionRequest(
       id: null == id
@@ -778,6 +808,10 @@ class __$$_SessionRequestCopyWithImpl<$Res>
           ? _value.params
           : params // ignore: cast_nullable_to_non_nullable
               as dynamic,
+      verifyContext: null == verifyContext
+          ? _value.verifyContext
+          : verifyContext // ignore: cast_nullable_to_non_nullable
+              as VerifyContext,
     ));
   }
 }
@@ -791,7 +825,8 @@ class _$_SessionRequest implements _SessionRequest {
       required this.topic,
       required this.method,
       required this.chainId,
-      required this.params});
+      required this.params,
+      required this.verifyContext});
 
   factory _$_SessionRequest.fromJson(Map<String, dynamic> json) =>
       _$$_SessionRequestFromJson(json);
@@ -806,10 +841,12 @@ class _$_SessionRequest implements _SessionRequest {
   final String chainId;
   @override
   final dynamic params;
+  @override
+  final VerifyContext verifyContext;
 
   @override
   String toString() {
-    return 'SessionRequest(id: $id, topic: $topic, method: $method, chainId: $chainId, params: $params)';
+    return 'SessionRequest(id: $id, topic: $topic, method: $method, chainId: $chainId, params: $params, verifyContext: $verifyContext)';
   }
 
   @override
@@ -821,13 +858,15 @@ class _$_SessionRequest implements _SessionRequest {
             (identical(other.topic, topic) || other.topic == topic) &&
             (identical(other.method, method) || other.method == method) &&
             (identical(other.chainId, chainId) || other.chainId == chainId) &&
-            const DeepCollectionEquality().equals(other.params, params));
+            const DeepCollectionEquality().equals(other.params, params) &&
+            (identical(other.verifyContext, verifyContext) ||
+                other.verifyContext == verifyContext));
   }
 
   @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(runtimeType, id, topic, method, chainId,
-      const DeepCollectionEquality().hash(params));
+      const DeepCollectionEquality().hash(params), verifyContext);
 
   @JsonKey(ignore: true)
   @override
@@ -849,7 +888,8 @@ abstract class _SessionRequest implements SessionRequest {
       required final String topic,
       required final String method,
       required final String chainId,
-      required final dynamic params}) = _$_SessionRequest;
+      required final dynamic params,
+      required final VerifyContext verifyContext}) = _$_SessionRequest;
 
   factory _SessionRequest.fromJson(Map<String, dynamic> json) =
       _$_SessionRequest.fromJson;
@@ -864,6 +904,8 @@ abstract class _SessionRequest implements SessionRequest {
   String get chainId;
   @override
   dynamic get params;
+  @override
+  VerifyContext get verifyContext;
   @override
   @JsonKey(ignore: true)
   _$$_SessionRequestCopyWith<_$_SessionRequest> get copyWith =>
