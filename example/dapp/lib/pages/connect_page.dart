@@ -160,8 +160,10 @@ class ConnectPageState extends State<ConnectPage> {
     );
   }
 
-  Future<void> _onConnect(List<ChainMetadata> chains,
-      {Function(String message)? showToast}) async {
+  Future<void> _onConnect(
+    List<ChainMetadata> chains, {
+    Function(String message)? showToast,
+  }) async {
     // Use the chain metadata to build the required namespaces:
     // Get the methods, get the events
     final Map<String, RequiredNamespace> requiredNamespaces = {};

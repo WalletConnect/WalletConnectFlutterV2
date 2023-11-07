@@ -49,7 +49,6 @@ class Web3WalletService extends IWeb3WalletService {
         icons: [
           'https://github.com/WalletConnect/Web3ModalFlutter/blob/master/assets/png/logo_wc.png'
         ],
-        // verifyUrl: 'https://your_verify_url.here',
       ),
     );
 
