@@ -20,6 +20,8 @@ class Verify implements IVerify {
 
   @override
   Future<void> init({String? verifyUrl}) async {
+    // TODO custom verifyUrl is not yet allowed.
+    // Always using walletconnect urls for now
     _verifyUrl = _setVerifyUrl(verifyUrl: verifyUrl);
   }
 

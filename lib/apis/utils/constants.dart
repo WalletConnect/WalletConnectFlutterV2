@@ -23,7 +23,6 @@ class WalletConnectConstants {
 
   static const DEFAULT_PUSH_URL = 'https://echo.walletconnect.com';
 
-  static const VERIFY_CONTEXT = 'verify-api';
   static const VERIFY_SERVER = 'https://verify.walletconnect.com';
   static const VERIFY_FALLBACK_SERVER = 'https://verify.walletconnect.org';
   static const TRUSTED_VERIFY_URLS = [VERIFY_SERVER, VERIFY_FALLBACK_SERVER];
