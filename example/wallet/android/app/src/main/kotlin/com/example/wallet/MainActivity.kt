@@ -1,4 +1,4 @@
-package com.walletconnect.flutter_wallet
+package com.walletconnect.flutterwallet
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -1,3 +1,7 @@
+## 2.1.9
+
+- Added support for Verify API
+
 ## 2.1.8
 
 - Minor changes.

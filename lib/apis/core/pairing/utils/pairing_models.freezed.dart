@@ -264,6 +264,7 @@ mixin _$PairingMetadata {
   String get description => throw _privateConstructorUsedError;
   String get url => throw _privateConstructorUsedError;
   List<String> get icons => throw _privateConstructorUsedError;
+  String? get verifyUrl => throw _privateConstructorUsedError;
   Redirect? get redirect => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -283,6 +284,7 @@ abstract class $PairingMetadataCopyWith<$Res> {
       String description,
       String url,
       List<String> icons,
+      String? verifyUrl,
       Redirect? redirect});
 
   $RedirectCopyWith<$Res>? get redirect;
@@ -305,6 +307,7 @@ class _$PairingMetadataCopyWithImpl<$Res, $Val extends PairingMetadata>
     Object? description = null,
     Object? url = null,
     Object? icons = null,
+    Object? verifyUrl = freezed,
     Object? redirect = freezed,
   }) {
     return _then(_value.copyWith(
@@ -324,6 +327,10 @@ class _$PairingMetadataCopyWithImpl<$Res, $Val extends PairingMetadata>
           ? _value.icons
           : icons // ignore: cast_nullable_to_non_nullable
               as List<String>,
+      verifyUrl: freezed == verifyUrl
+          ? _value.verifyUrl
+          : verifyUrl // ignore: cast_nullable_to_non_nullable
+              as String?,
       redirect: freezed == redirect
           ? _value.redirect
           : redirect // ignore: cast_nullable_to_non_nullable
@@ -357,6 +364,7 @@ abstract class _$$_PairingMetadataCopyWith<$Res>
       String description,
       String url,
       List<String> icons,
+      String? verifyUrl,
       Redirect? redirect});
 
   @override
@@ -378,6 +386,7 @@ class __$$_PairingMetadataCopyWithImpl<$Res>
     Object? description = null,
     Object? url = null,
     Object? icons = null,
+    Object? verifyUrl = freezed,
     Object? redirect = freezed,
   }) {
     return _then(_$_PairingMetadata(
@@ -397,6 +406,10 @@ class __$$_PairingMetadataCopyWithImpl<$Res>
           ? _value._icons
           : icons // ignore: cast_nullable_to_non_nullable
               as List<String>,
+      verifyUrl: freezed == verifyUrl
+          ? _value.verifyUrl
+          : verifyUrl // ignore: cast_nullable_to_non_nullable
+              as String?,
       redirect: freezed == redirect
           ? _value.redirect
           : redirect // ignore: cast_nullable_to_non_nullable
@@ -414,6 +427,7 @@ class _$_PairingMetadata implements _PairingMetadata {
       required this.description,
       required this.url,
       required final List<String> icons,
+      this.verifyUrl,
       this.redirect})
       : _icons = icons;
 
@@ -435,11 +449,13 @@ class _$_PairingMetadata implements _PairingMetadata {
   }
 
   @override
+  final String? verifyUrl;
+  @override
   final Redirect? redirect;
 
   @override
   String toString() {
-    return 'PairingMetadata(name: $name, description: $description, url: $url, icons: $icons, redirect: $redirect)';
+    return 'PairingMetadata(name: $name, description: $description, url: $url, icons: $icons, verifyUrl: $verifyUrl, redirect: $redirect)';
   }
 
   @override
@@ -452,6 +468,8 @@ class _$_PairingMetadata implements _PairingMetadata {
                 other.description == description) &&
             (identical(other.url, url) || other.url == url) &&
             const DeepCollectionEquality().equals(other._icons, _icons) &&
+            (identical(other.verifyUrl, verifyUrl) ||
+                other.verifyUrl == verifyUrl) &&
             (identical(other.redirect, redirect) ||
                 other.redirect == redirect));
   }
@@ -459,7 +477,7 @@ class _$_PairingMetadata implements _PairingMetadata {
   @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(runtimeType, name, description, url,
-      const DeepCollectionEquality().hash(_icons), redirect);
+      const DeepCollectionEquality().hash(_icons), verifyUrl, redirect);
 
   @JsonKey(ignore: true)
   @override
@@ -481,6 +499,7 @@ abstract class _PairingMetadata implements PairingMetadata {
       required final String description,
       required final String url,
       required final List<String> icons,
+      final String? verifyUrl,
       final Redirect? redirect}) = _$_PairingMetadata;
 
   factory _PairingMetadata.fromJson(Map<String, dynamic> json) =
@@ -494,6 +513,8 @@ abstract class _PairingMetadata implements PairingMetadata {
   String get url;
   @override
   List<String> get icons;
+  @override
+  String? get verifyUrl;
   @override
   Redirect? get redirect;
   @override

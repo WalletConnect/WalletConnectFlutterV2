@@ -36,7 +36,7 @@ class Web3WalletService extends IWeb3WalletService {
 
   @override
   void create() {
-// Create the web3wallet
+    // Create the web3wallet
     _web3Wallet = Web3Wallet(
       core: Core(
         projectId: DartDefines.projectId,
@@ -137,6 +137,7 @@ class Web3WalletService extends IWeb3WalletService {
           wallet: _web3Wallet!,
           sessionProposal: WCSessionRequestModel(
             request: args.params,
+            verifyContext: args.verifyContext,
           ),
         ),
       );

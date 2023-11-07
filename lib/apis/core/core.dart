@@ -23,6 +23,8 @@ import 'package:walletconnect_flutter_v2/apis/core/store/i_store.dart';
 import 'package:walletconnect_flutter_v2/apis/core/relay_client/i_relay_client.dart';
 import 'package:walletconnect_flutter_v2/apis/core/pairing/i_pairing.dart';
 import 'package:walletconnect_flutter_v2/apis/core/store/shared_prefs_store.dart';
+import 'package:walletconnect_flutter_v2/apis/core/verify/i_verify.dart';
+import 'package:walletconnect_flutter_v2/apis/core/verify/verify.dart';
 import 'package:walletconnect_flutter_v2/apis/utils/constants.dart';
 import 'package:walletconnect_flutter_v2/apis/utils/log_level.dart';
 import 'package:walletconnect_flutter_v2/apis/utils/walletconnect_utils.dart';
@@ -34,13 +36,13 @@ class Core implements ICore {
   String get version => '2';
 
   @override
-  String relayUrl = WalletConnectConstants.DEFAULT_RELAY_URL;
-
-  @override
   final String projectId;
 
   @override
-  final String pushUrl;
+  String relayUrl = WalletConnectConstants.DEFAULT_RELAY_URL;
+
+  @override
+  String pushUrl = WalletConnectConstants.DEFAULT_PUSH_URL;
 
   @override
   late ICrypto crypto;
@@ -60,6 +62,9 @@ class Core implements ICore {
   @override
   late IHeartBeat heartbeat;
 
+  @override
+  late IVerify verify;
+
   Logger _logger = Logger(
     level: Level.off,
     printer: PrettyPrinter(),
@@ -71,8 +76,8 @@ class Core implements ICore {
   late IStore<Map<String, dynamic>> storage;
 
   Core({
-    this.relayUrl = WalletConnectConstants.DEFAULT_RELAY_URL,
     required this.projectId,
+    this.relayUrl = WalletConnectConstants.DEFAULT_RELAY_URL,
     this.pushUrl = WalletConnectConstants.DEFAULT_PUSH_URL,
     bool memoryStore = false,
     LogLevel logLevel = LogLevel.nothing,
@@ -149,6 +154,11 @@ class Core implements ICore {
         baseUrl: pushUrl,
         httpClient: httpClient,
       ),
+    );
+    verify = Verify(
+      core: this,
+      projectId: projectId,
+      httpClient: httpClient,
     );
   }
 

@@ -1,6 +1,6 @@
 name: walletconnect_flutter_v2
 description: This repository contains oficial implementation of WalletConnect v2 protocols for Flutter applications. The communications protocol for web3.
-version: 2.1.8
+version: 2.1.9
 repository: https://github.com/WalletConnect/WalletConnectFlutterV2
 
 environment:
@@ -18,7 +18,6 @@ dependencies:
   x25519: ^0.1.1
   bs58: ^1.0.2
   ed25519_edwards: ^0.3.1
-  # json_rpc_2: ^3.0.2
   event: ^2.1.2
   stream_channel: ^2.1.0
   shared_preferences: ^2.0.17

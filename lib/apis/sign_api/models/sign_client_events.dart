@@ -1,4 +1,5 @@
 import 'package:event/event.dart';
+import 'package:walletconnect_flutter_v2/apis/core/verify/models/verify_context.dart';
 import 'package:walletconnect_flutter_v2/apis/models/basic_models.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/models/proposal_models.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/models/session_models.dart';
@@ -6,16 +7,13 @@ import 'package:walletconnect_flutter_v2/apis/sign_api/models/session_models.dar
 class SessionProposalEvent extends EventArgs {
   int id;
   ProposalData params;
+  VerifyContext? verifyContext;
 
   SessionProposalEvent(
     this.id,
-    this.params,
-  );
-
-  SessionProposalEvent.fromSessionProposal(
-    SessionProposal proposal,
-  )   : id = proposal.id,
-        params = proposal.params;
+    this.params, [
+    this.verifyContext,
+  ]);
 
   @override
   String toString() {

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:walletconnect_flutter_v2/apis/core/relay_client/relay_client_models.dart';
+import 'package:walletconnect_flutter_v2/apis/core/verify/models/verify_context.dart';
 import 'package:walletconnect_flutter_v2/apis/models/basic_models.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/models/proposal_models.dart';
 
@@ -77,6 +78,7 @@ class SessionRequest with _$SessionRequest {
     required String method,
     required String chainId,
     required dynamic params,
+    required VerifyContext verifyContext,
   }) = _SessionRequest;
 
   factory SessionRequest.fromJson(Map<String, dynamic> json) =>

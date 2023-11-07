@@ -160,8 +160,10 @@ class ConnectPageState extends State<ConnectPage> {
     );
   }
 
-  Future<void> _onConnect(List<ChainMetadata> chains,
-      {Function(String message)? showToast}) async {
+  Future<void> _onConnect(
+    List<ChainMetadata> chains, {
+    Function(String message)? showToast,
+  }) async {
     // Use the chain metadata to build the required namespaces:
     // Get the methods, get the events
     final Map<String, RequiredNamespace> requiredNamespaces = {};
@@ -184,7 +186,7 @@ class ConnectPageState extends State<ConnectPage> {
     // Send off a connect
     debugPrint('Creating connection and session');
     final ConnectResponse res = await widget.web3App.connect(
-      requiredNamespaces: requiredNamespaces,
+      optionalNamespaces: requiredNamespaces,
     );
     // debugPrint('Connection created, connection response: ${res.uri}');
 
