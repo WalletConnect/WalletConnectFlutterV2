@@ -40,7 +40,7 @@ dependencies:
   json_annotation: ^4.8.0
   walletconnect_flutter_v2:
     path: ../..
-  fl_toast: ^3.1.0
+  fl_toast: ^3.2.0
   # kadena_dart_sdk: ^2.0.4
   mobile_scanner: ^3.0.0
   get_it: ^7.2.0
