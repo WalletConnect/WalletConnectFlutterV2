@@ -30,8 +30,7 @@ class Verify implements IVerify {
     AttestationResponse? response;
     try {
       response = await _fetchAttestation(attestationId, _verifyUrl);
-    } catch (error) {
-      _core.logger.e(error);
+    } catch (_) {
       response = await _fetchAttestation(
         attestationId,
         WalletConnectConstants.VERIFY_FALLBACK_SERVER,

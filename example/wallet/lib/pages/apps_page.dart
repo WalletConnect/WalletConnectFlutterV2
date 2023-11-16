@@ -23,20 +23,32 @@ class AppsPage extends StatefulWidget with GetItStatefulWidgetMixin {
 class AppsPageState extends State<AppsPage> with GetItStateMixin {
   List<PairingInfo> _pairings = [];
 
-  final Web3Wallet web3Wallet = GetIt.I<IWeb3WalletService>().getWeb3Wallet();
+  final web3Wallet = GetIt.I<IWeb3WalletService>().getWeb3Wallet();
 
   @override
   void initState() {
     _pairings = web3Wallet.pairings.getAll();
     // web3wallet.onSessionDelete.subscribe(_onSessionDelete);
+    web3Wallet.core.relayClient.onRelayClientConnect
+        .subscribe(_onRelayClientStatus);
+    web3Wallet.core.relayClient.onRelayClientDisconnect
+        .subscribe(_onRelayClientStatus);
     web3Wallet.core.pairing.onPairingDelete.subscribe(_onPairingDelete);
     web3Wallet.core.pairing.onPairingExpire.subscribe(_onPairingDelete);
     super.initState();
   }
 
+  void _onRelayClientStatus(dynamic args) {
+    setState(() {});
+  }
+
   @override
   void dispose() {
     // web3wallet.onSessionDelete.unsubscribe(_onSessionDelete);
+    web3Wallet.core.relayClient.onRelayClientConnect
+        .subscribe(_onRelayClientStatus);
+    web3Wallet.core.relayClient.onRelayClientDisconnect
+        .subscribe(_onRelayClientStatus);
     web3Wallet.core.pairing.onPairingDelete.unsubscribe(_onPairingDelete);
     web3Wallet.core.pairing.onPairingExpire.unsubscribe(_onPairingDelete);
     super.dispose();
@@ -44,9 +56,7 @@ class AppsPageState extends State<AppsPage> with GetItStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    _pairings = watch(
-      target: GetIt.I<IWeb3WalletService>().pairings,
-    );
+    _pairings = watch(target: GetIt.I<IWeb3WalletService>().pairings);
 
     return Stack(
       children: [
@@ -54,27 +64,23 @@ class AppsPageState extends State<AppsPage> with GetItStateMixin {
         Positioned(
           bottom: StyleConstants.magic20,
           right: StyleConstants.magic20,
+          left: StyleConstants.magic20,
           child: Row(
             children: [
-              // Disconnect buttons for testing
-              _buildIconButton(
-                Icons.wifi_off,
-                () {
-                  web3Wallet.core.relayClient.disconnect();
+              Switch.adaptive(
+                value: web3Wallet.core.relayClient.isConnected,
+                onChanged: (value) {
+                  if (web3Wallet.core.relayClient.isConnected) {
+                    web3Wallet.core.relayClient.disconnect();
+                  } else {
+                    web3Wallet.core.relayClient.connect();
+                  }
                 },
               ),
-              const SizedBox(
-                width: StyleConstants.magic20,
-              ),
-              _buildIconButton(
-                Icons.wifi,
-                () {
-                  web3Wallet.core.relayClient.connect();
-                },
-              ),
-              const SizedBox(
-                width: StyleConstants.magic20,
-              ),
+              web3Wallet.core.relayClient.isConnected
+                  ? const Text(' Connected')
+                  : const Text(' Disconnected'),
+              const Expanded(child: SizedBox.shrink()),
               _buildIconButton(
                 Icons.copy,
                 _onCopyQrCode,
@@ -155,7 +161,7 @@ class AppsPageState extends State<AppsPage> with GetItStateMixin {
   }
 
   Future _onScanQrCode() async {
-    final String? s = await showModalBottomSheet<String>(
+    final scannedString = await showModalBottomSheet<String>(
       context: context,
       builder: (BuildContext modalContext) {
         return QRScanSheet(
@@ -164,16 +170,14 @@ class AppsPageState extends State<AppsPage> with GetItStateMixin {
       },
     );
 
-    _onFoundUri(s);
+    _onFoundUri(scannedString);
   }
 
   Future _onFoundUri(String? uri) async {
     if (uri != null) {
       try {
         final Uri uriData = Uri.parse(uri);
-        await web3Wallet.pair(
-          uri: uriData,
-        );
+        await web3Wallet.pair(uri: uriData);
       } catch (e) {
         _invalidUriToast();
       }

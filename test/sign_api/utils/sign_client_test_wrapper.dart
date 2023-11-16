@@ -1,4 +1,3 @@
-import 'package:event/event.dart';
 import 'package:logger/logger.dart';
 import 'package:walletconnect_flutter_v2/apis/core/relay_client/websocket/http_client.dart';
 import 'package:walletconnect_flutter_v2/apis/core/relay_client/websocket/i_http_client.dart';

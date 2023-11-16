@@ -243,14 +243,10 @@ class SignEngine implements ISignEngine {
   }
 
   @override
-  Future<PairingInfo> pair({
-    required Uri uri,
-  }) async {
+  Future<PairingInfo> pair({required Uri uri}) async {
     _checkInitialized();
 
-    return await core.pairing.pair(
-      uri: uri,
-    );
+    return await core.pairing.pair(uri: uri);
   }
 
   /// Approves a proposal with the id provided in the parameters.
@@ -1737,12 +1733,8 @@ class SignEngine implements ISignEngine {
         validation: result?.isScam == true ? Validation.SCAM : validation,
         isScam: result?.isScam,
       );
-    } catch (e, s) {
-      core.logger.e(
-        '[$runtimeType] _getVerifyContext',
-        error: e,
-        stackTrace: s,
-      );
+    } catch (error) {
+      core.logger.e('[$runtimeType] _getVerifyContext', error: error);
       return VerifyContext(
         origin: proposerMetada.url,
         verifyUrl: proposerMetada.verifyUrl ?? '',

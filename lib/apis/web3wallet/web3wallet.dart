@@ -1,4 +1,3 @@
-import 'package:event/event.dart';
 import 'package:walletconnect_flutter_v2/apis/auth_api/auth_engine.dart';
 import 'package:walletconnect_flutter_v2/apis/core/relay_client/websocket/http_client.dart';
 import 'package:walletconnect_flutter_v2/apis/core/relay_client/websocket/i_http_client.dart';
@@ -133,9 +132,7 @@ class Web3Wallet implements IWeb3Wallet {
   }
 
   @override
-  Future<PairingInfo> pair({
-    required Uri uri,
-  }) async {
+  Future<PairingInfo> pair({required Uri uri}) async {
     try {
       return await signEngine.pair(uri: uri);
     } catch (e) {
