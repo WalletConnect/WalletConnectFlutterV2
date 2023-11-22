@@ -74,22 +74,22 @@ class _$WalletConnectErrorCopyWithImpl<$Res, $Val extends WalletConnectError>
 }
 
 /// @nodoc
-abstract class _$$_WalletConnectErrorCopyWith<$Res>
+abstract class _$$WalletConnectErrorImplCopyWith<$Res>
     implements $WalletConnectErrorCopyWith<$Res> {
-  factory _$$_WalletConnectErrorCopyWith(_$_WalletConnectError value,
-          $Res Function(_$_WalletConnectError) then) =
-      __$$_WalletConnectErrorCopyWithImpl<$Res>;
+  factory _$$WalletConnectErrorImplCopyWith(_$WalletConnectErrorImpl value,
+          $Res Function(_$WalletConnectErrorImpl) then) =
+      __$$WalletConnectErrorImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({int code, String message, String? data});
 }
 
 /// @nodoc
-class __$$_WalletConnectErrorCopyWithImpl<$Res>
-    extends _$WalletConnectErrorCopyWithImpl<$Res, _$_WalletConnectError>
-    implements _$$_WalletConnectErrorCopyWith<$Res> {
-  __$$_WalletConnectErrorCopyWithImpl(
-      _$_WalletConnectError _value, $Res Function(_$_WalletConnectError) _then)
+class __$$WalletConnectErrorImplCopyWithImpl<$Res>
+    extends _$WalletConnectErrorCopyWithImpl<$Res, _$WalletConnectErrorImpl>
+    implements _$$WalletConnectErrorImplCopyWith<$Res> {
+  __$$WalletConnectErrorImplCopyWithImpl(_$WalletConnectErrorImpl _value,
+      $Res Function(_$WalletConnectErrorImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -99,7 +99,7 @@ class __$$_WalletConnectErrorCopyWithImpl<$Res>
     Object? message = null,
     Object? data = freezed,
   }) {
-    return _then(_$_WalletConnectError(
+    return _then(_$WalletConnectErrorImpl(
       code: null == code
           ? _value.code
           : code // ignore: cast_nullable_to_non_nullable
@@ -118,12 +118,12 @@ class __$$_WalletConnectErrorCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$_WalletConnectError implements _WalletConnectError {
-  const _$_WalletConnectError(
+class _$WalletConnectErrorImpl implements _WalletConnectError {
+  const _$WalletConnectErrorImpl(
       {required this.code, required this.message, this.data});
 
-  factory _$_WalletConnectError.fromJson(Map<String, dynamic> json) =>
-      _$$_WalletConnectErrorFromJson(json);
+  factory _$WalletConnectErrorImpl.fromJson(Map<String, dynamic> json) =>
+      _$$WalletConnectErrorImplFromJson(json);
 
   @override
   final int code;
@@ -141,7 +141,7 @@ class _$_WalletConnectError implements _WalletConnectError {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_WalletConnectError &&
+            other is _$WalletConnectErrorImpl &&
             (identical(other.code, code) || other.code == code) &&
             (identical(other.message, message) || other.message == message) &&
             (identical(other.data, data) || other.data == data));
@@ -154,13 +154,13 @@ class _$_WalletConnectError implements _WalletConnectError {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_WalletConnectErrorCopyWith<_$_WalletConnectError> get copyWith =>
-      __$$_WalletConnectErrorCopyWithImpl<_$_WalletConnectError>(
+  _$$WalletConnectErrorImplCopyWith<_$WalletConnectErrorImpl> get copyWith =>
+      __$$WalletConnectErrorImplCopyWithImpl<_$WalletConnectErrorImpl>(
           this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_WalletConnectErrorToJson(
+    return _$$WalletConnectErrorImplToJson(
       this,
     );
   }
@@ -170,10 +170,10 @@ abstract class _WalletConnectError implements WalletConnectError {
   const factory _WalletConnectError(
       {required final int code,
       required final String message,
-      final String? data}) = _$_WalletConnectError;
+      final String? data}) = _$WalletConnectErrorImpl;
 
   factory _WalletConnectError.fromJson(Map<String, dynamic> json) =
-      _$_WalletConnectError.fromJson;
+      _$WalletConnectErrorImpl.fromJson;
 
   @override
   int get code;
@@ -183,7 +183,7 @@ abstract class _WalletConnectError implements WalletConnectError {
   String? get data;
   @override
   @JsonKey(ignore: true)
-  _$$_WalletConnectErrorCopyWith<_$_WalletConnectError> get copyWith =>
+  _$$WalletConnectErrorImplCopyWith<_$WalletConnectErrorImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
@@ -242,22 +242,22 @@ class _$RpcOptionsCopyWithImpl<$Res, $Val extends RpcOptions>
 }
 
 /// @nodoc
-abstract class _$$_RpcOptionsCopyWith<$Res>
+abstract class _$$RpcOptionsImplCopyWith<$Res>
     implements $RpcOptionsCopyWith<$Res> {
-  factory _$$_RpcOptionsCopyWith(
-          _$_RpcOptions value, $Res Function(_$_RpcOptions) then) =
-      __$$_RpcOptionsCopyWithImpl<$Res>;
+  factory _$$RpcOptionsImplCopyWith(
+          _$RpcOptionsImpl value, $Res Function(_$RpcOptionsImpl) then) =
+      __$$RpcOptionsImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({int ttl, bool prompt, int tag});
 }
 
 /// @nodoc
-class __$$_RpcOptionsCopyWithImpl<$Res>
-    extends _$RpcOptionsCopyWithImpl<$Res, _$_RpcOptions>
-    implements _$$_RpcOptionsCopyWith<$Res> {
-  __$$_RpcOptionsCopyWithImpl(
-      _$_RpcOptions _value, $Res Function(_$_RpcOptions) _then)
+class __$$RpcOptionsImplCopyWithImpl<$Res>
+    extends _$RpcOptionsCopyWithImpl<$Res, _$RpcOptionsImpl>
+    implements _$$RpcOptionsImplCopyWith<$Res> {
+  __$$RpcOptionsImplCopyWithImpl(
+      _$RpcOptionsImpl _value, $Res Function(_$RpcOptionsImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -267,7 +267,7 @@ class __$$_RpcOptionsCopyWithImpl<$Res>
     Object? prompt = null,
     Object? tag = null,
   }) {
-    return _then(_$_RpcOptions(
+    return _then(_$RpcOptionsImpl(
       ttl: null == ttl
           ? _value.ttl
           : ttl // ignore: cast_nullable_to_non_nullable
@@ -286,8 +286,8 @@ class __$$_RpcOptionsCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$_RpcOptions implements _RpcOptions {
-  const _$_RpcOptions(
+class _$RpcOptionsImpl implements _RpcOptions {
+  const _$RpcOptionsImpl(
       {required this.ttl, required this.prompt, required this.tag});
 
   @override
@@ -306,7 +306,7 @@ class _$_RpcOptions implements _RpcOptions {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_RpcOptions &&
+            other is _$RpcOptionsImpl &&
             (identical(other.ttl, ttl) || other.ttl == ttl) &&
             (identical(other.prompt, prompt) || other.prompt == prompt) &&
             (identical(other.tag, tag) || other.tag == tag));
@@ -318,15 +318,15 @@ class _$_RpcOptions implements _RpcOptions {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_RpcOptionsCopyWith<_$_RpcOptions> get copyWith =>
-      __$$_RpcOptionsCopyWithImpl<_$_RpcOptions>(this, _$identity);
+  _$$RpcOptionsImplCopyWith<_$RpcOptionsImpl> get copyWith =>
+      __$$RpcOptionsImplCopyWithImpl<_$RpcOptionsImpl>(this, _$identity);
 }
 
 abstract class _RpcOptions implements RpcOptions {
   const factory _RpcOptions(
       {required final int ttl,
       required final bool prompt,
-      required final int tag}) = _$_RpcOptions;
+      required final int tag}) = _$RpcOptionsImpl;
 
   @override
   int get ttl;
@@ -336,7 +336,7 @@ abstract class _RpcOptions implements RpcOptions {
   int get tag;
   @override
   @JsonKey(ignore: true)
-  _$$_RpcOptionsCopyWith<_$_RpcOptions> get copyWith =>
+  _$$RpcOptionsImplCopyWith<_$RpcOptionsImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
@@ -404,11 +404,11 @@ class _$ConnectionMetadataCopyWithImpl<$Res, $Val extends ConnectionMetadata>
 }
 
 /// @nodoc
-abstract class _$$_ConnectionMetadataCopyWith<$Res>
+abstract class _$$ConnectionMetadataImplCopyWith<$Res>
     implements $ConnectionMetadataCopyWith<$Res> {
-  factory _$$_ConnectionMetadataCopyWith(_$_ConnectionMetadata value,
-          $Res Function(_$_ConnectionMetadata) then) =
-      __$$_ConnectionMetadataCopyWithImpl<$Res>;
+  factory _$$ConnectionMetadataImplCopyWith(_$ConnectionMetadataImpl value,
+          $Res Function(_$ConnectionMetadataImpl) then) =
+      __$$ConnectionMetadataImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({String publicKey, PairingMetadata metadata});
@@ -418,11 +418,11 @@ abstract class _$$_ConnectionMetadataCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$_ConnectionMetadataCopyWithImpl<$Res>
-    extends _$ConnectionMetadataCopyWithImpl<$Res, _$_ConnectionMetadata>
-    implements _$$_ConnectionMetadataCopyWith<$Res> {
-  __$$_ConnectionMetadataCopyWithImpl(
-      _$_ConnectionMetadata _value, $Res Function(_$_ConnectionMetadata) _then)
+class __$$ConnectionMetadataImplCopyWithImpl<$Res>
+    extends _$ConnectionMetadataCopyWithImpl<$Res, _$ConnectionMetadataImpl>
+    implements _$$ConnectionMetadataImplCopyWith<$Res> {
+  __$$ConnectionMetadataImplCopyWithImpl(_$ConnectionMetadataImpl _value,
+      $Res Function(_$ConnectionMetadataImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -431,7 +431,7 @@ class __$$_ConnectionMetadataCopyWithImpl<$Res>
     Object? publicKey = null,
     Object? metadata = null,
   }) {
-    return _then(_$_ConnectionMetadata(
+    return _then(_$ConnectionMetadataImpl(
       publicKey: null == publicKey
           ? _value.publicKey
           : publicKey // ignore: cast_nullable_to_non_nullable
@@ -446,12 +446,12 @@ class __$$_ConnectionMetadataCopyWithImpl<$Res>
 
 /// @nodoc
 @JsonSerializable()
-class _$_ConnectionMetadata implements _ConnectionMetadata {
-  const _$_ConnectionMetadata(
+class _$ConnectionMetadataImpl implements _ConnectionMetadata {
+  const _$ConnectionMetadataImpl(
       {required this.publicKey, required this.metadata});
 
-  factory _$_ConnectionMetadata.fromJson(Map<String, dynamic> json) =>
-      _$$_ConnectionMetadataFromJson(json);
+  factory _$ConnectionMetadataImpl.fromJson(Map<String, dynamic> json) =>
+      _$$ConnectionMetadataImplFromJson(json);
 
   @override
   final String publicKey;
@@ -467,7 +467,7 @@ class _$_ConnectionMetadata implements _ConnectionMetadata {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_ConnectionMetadata &&
+            other is _$ConnectionMetadataImpl &&
             (identical(other.publicKey, publicKey) ||
                 other.publicKey == publicKey) &&
             (identical(other.metadata, metadata) ||
@@ -481,13 +481,13 @@ class _$_ConnectionMetadata implements _ConnectionMetadata {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_ConnectionMetadataCopyWith<_$_ConnectionMetadata> get copyWith =>
-      __$$_ConnectionMetadataCopyWithImpl<_$_ConnectionMetadata>(
+  _$$ConnectionMetadataImplCopyWith<_$ConnectionMetadataImpl> get copyWith =>
+      __$$ConnectionMetadataImplCopyWithImpl<_$ConnectionMetadataImpl>(
           this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_ConnectionMetadataToJson(
+    return _$$ConnectionMetadataImplToJson(
       this,
     );
   }
@@ -496,10 +496,10 @@ class _$_ConnectionMetadata implements _ConnectionMetadata {
 abstract class _ConnectionMetadata implements ConnectionMetadata {
   const factory _ConnectionMetadata(
       {required final String publicKey,
-      required final PairingMetadata metadata}) = _$_ConnectionMetadata;
+      required final PairingMetadata metadata}) = _$ConnectionMetadataImpl;
 
   factory _ConnectionMetadata.fromJson(Map<String, dynamic> json) =
-      _$_ConnectionMetadata.fromJson;
+      _$ConnectionMetadataImpl.fromJson;
 
   @override
   String get publicKey;
@@ -507,6 +507,6 @@ abstract class _ConnectionMetadata implements ConnectionMetadata {
   PairingMetadata get metadata;
   @override
   @JsonKey(ignore: true)
-  _$$_ConnectionMetadataCopyWith<_$_ConnectionMetadata> get copyWith =>
+  _$$ConnectionMetadataImplCopyWith<_$ConnectionMetadataImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

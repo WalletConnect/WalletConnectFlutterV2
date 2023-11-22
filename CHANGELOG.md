@@ -1,3 +1,7 @@
+## 2.1.10
+
+- License change
+
 ## 2.1.9
 
 - Added support for Verify API

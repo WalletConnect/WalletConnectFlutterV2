@@ -6,32 +6,32 @@ part of 'basic_models.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$_WalletConnectError _$$_WalletConnectErrorFromJson(
+_$WalletConnectErrorImpl _$$WalletConnectErrorImplFromJson(
         Map<String, dynamic> json) =>
-    _$_WalletConnectError(
+    _$WalletConnectErrorImpl(
       code: json['code'] as int,
       message: json['message'] as String,
       data: json['data'] as String?,
     );
 
-Map<String, dynamic> _$$_WalletConnectErrorToJson(
-        _$_WalletConnectError instance) =>
+Map<String, dynamic> _$$WalletConnectErrorImplToJson(
+        _$WalletConnectErrorImpl instance) =>
     <String, dynamic>{
       'code': instance.code,
       'message': instance.message,
       'data': instance.data,
     };
 
-_$_ConnectionMetadata _$$_ConnectionMetadataFromJson(
+_$ConnectionMetadataImpl _$$ConnectionMetadataImplFromJson(
         Map<String, dynamic> json) =>
-    _$_ConnectionMetadata(
+    _$ConnectionMetadataImpl(
       publicKey: json['publicKey'] as String,
       metadata:
           PairingMetadata.fromJson(json['metadata'] as Map<String, dynamic>),
     );
 
-Map<String, dynamic> _$$_ConnectionMetadataToJson(
-        _$_ConnectionMetadata instance) =>
+Map<String, dynamic> _$$ConnectionMetadataImplToJson(
+        _$ConnectionMetadataImpl instance) =>
     <String, dynamic>{
       'publicKey': instance.publicKey,
       'metadata': instance.metadata.toJson(),
