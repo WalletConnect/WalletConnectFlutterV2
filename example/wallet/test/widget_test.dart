@@ -16,19 +16,6 @@ void main() async {
     print(credentials.address);
   });
   // test('Kadena Handler Works', () async {
-  //   // 2. Initiate wcClient
-  //   // const wcKoalaProjectId = TEST_PR 'c993e66665ac416812435c9f1f07a96c';
-  //   final wcClient = await SignClient.createInstance(
-  //     projectId: 'c993e66665ac416812435c9f1f07a96c',
-  //     memoryStore: true,
-  //     metadata: const PairingMetadata(
-  //       name: 'Koala Wallet',
-  //       description: 'Your Passport to the Kadena Ecosystem',
-  //       url: 'https://koalawallet.io',
-  //       icons: ['https://koalawallet.io/media/png/koala_color.png'],
-  //     ),
-  //   );
-
   //   // For a wallet, setup the proposal handler that will display the proposal to the user after the URI has been scanned.
   //   late int id;
   //   wcClient.onSessionProposal.subscribe((args) async {
