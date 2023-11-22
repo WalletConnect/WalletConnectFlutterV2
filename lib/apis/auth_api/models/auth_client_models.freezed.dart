@@ -62,22 +62,22 @@ class _$AuthPublicKeyCopyWithImpl<$Res, $Val extends AuthPublicKey>
 }
 
 /// @nodoc
-abstract class _$$_AuthPublicKeyCopyWith<$Res>
+abstract class _$$AuthPublicKeyImplCopyWith<$Res>
     implements $AuthPublicKeyCopyWith<$Res> {
-  factory _$$_AuthPublicKeyCopyWith(
-          _$_AuthPublicKey value, $Res Function(_$_AuthPublicKey) then) =
-      __$$_AuthPublicKeyCopyWithImpl<$Res>;
+  factory _$$AuthPublicKeyImplCopyWith(
+          _$AuthPublicKeyImpl value, $Res Function(_$AuthPublicKeyImpl) then) =
+      __$$AuthPublicKeyImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({String publicKey});
 }
 
 /// @nodoc
-class __$$_AuthPublicKeyCopyWithImpl<$Res>
-    extends _$AuthPublicKeyCopyWithImpl<$Res, _$_AuthPublicKey>
-    implements _$$_AuthPublicKeyCopyWith<$Res> {
-  __$$_AuthPublicKeyCopyWithImpl(
-      _$_AuthPublicKey _value, $Res Function(_$_AuthPublicKey) _then)
+class __$$AuthPublicKeyImplCopyWithImpl<$Res>
+    extends _$AuthPublicKeyCopyWithImpl<$Res, _$AuthPublicKeyImpl>
+    implements _$$AuthPublicKeyImplCopyWith<$Res> {
+  __$$AuthPublicKeyImplCopyWithImpl(
+      _$AuthPublicKeyImpl _value, $Res Function(_$AuthPublicKeyImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -85,7 +85,7 @@ class __$$_AuthPublicKeyCopyWithImpl<$Res>
   $Res call({
     Object? publicKey = null,
   }) {
-    return _then(_$_AuthPublicKey(
+    return _then(_$AuthPublicKeyImpl(
       publicKey: null == publicKey
           ? _value.publicKey
           : publicKey // ignore: cast_nullable_to_non_nullable
@@ -97,11 +97,11 @@ class __$$_AuthPublicKeyCopyWithImpl<$Res>
 /// @nodoc
 
 @JsonSerializable(includeIfNull: false)
-class _$_AuthPublicKey implements _AuthPublicKey {
-  const _$_AuthPublicKey({required this.publicKey});
+class _$AuthPublicKeyImpl implements _AuthPublicKey {
+  const _$AuthPublicKeyImpl({required this.publicKey});
 
-  factory _$_AuthPublicKey.fromJson(Map<String, dynamic> json) =>
-      _$$_AuthPublicKeyFromJson(json);
+  factory _$AuthPublicKeyImpl.fromJson(Map<String, dynamic> json) =>
+      _$$AuthPublicKeyImplFromJson(json);
 
   @override
   final String publicKey;
@@ -115,7 +115,7 @@ class _$_AuthPublicKey implements _AuthPublicKey {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_AuthPublicKey &&
+            other is _$AuthPublicKeyImpl &&
             (identical(other.publicKey, publicKey) ||
                 other.publicKey == publicKey));
   }
@@ -127,12 +127,12 @@ class _$_AuthPublicKey implements _AuthPublicKey {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_AuthPublicKeyCopyWith<_$_AuthPublicKey> get copyWith =>
-      __$$_AuthPublicKeyCopyWithImpl<_$_AuthPublicKey>(this, _$identity);
+  _$$AuthPublicKeyImplCopyWith<_$AuthPublicKeyImpl> get copyWith =>
+      __$$AuthPublicKeyImplCopyWithImpl<_$AuthPublicKeyImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_AuthPublicKeyToJson(
+    return _$$AuthPublicKeyImplToJson(
       this,
     );
   }
@@ -140,16 +140,16 @@ class _$_AuthPublicKey implements _AuthPublicKey {
 
 abstract class _AuthPublicKey implements AuthPublicKey {
   const factory _AuthPublicKey({required final String publicKey}) =
-      _$_AuthPublicKey;
+      _$AuthPublicKeyImpl;
 
   factory _AuthPublicKey.fromJson(Map<String, dynamic> json) =
-      _$_AuthPublicKey.fromJson;
+      _$AuthPublicKeyImpl.fromJson;
 
   @override
   String get publicKey;
   @override
   @JsonKey(ignore: true)
-  _$$_AuthPublicKeyCopyWith<_$_AuthPublicKey> get copyWith =>
+  _$$AuthPublicKeyImplCopyWith<_$AuthPublicKeyImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
@@ -279,11 +279,11 @@ class _$AuthPayloadParamsCopyWithImpl<$Res, $Val extends AuthPayloadParams>
 }
 
 /// @nodoc
-abstract class _$$_AuthPayloadParamsCopyWith<$Res>
+abstract class _$$AuthPayloadParamsImplCopyWith<$Res>
     implements $AuthPayloadParamsCopyWith<$Res> {
-  factory _$$_AuthPayloadParamsCopyWith(_$_AuthPayloadParams value,
-          $Res Function(_$_AuthPayloadParams) then) =
-      __$$_AuthPayloadParamsCopyWithImpl<$Res>;
+  factory _$$AuthPayloadParamsImplCopyWith(_$AuthPayloadParamsImpl value,
+          $Res Function(_$AuthPayloadParamsImpl) then) =
+      __$$AuthPayloadParamsImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -302,11 +302,11 @@ abstract class _$$_AuthPayloadParamsCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$_AuthPayloadParamsCopyWithImpl<$Res>
-    extends _$AuthPayloadParamsCopyWithImpl<$Res, _$_AuthPayloadParams>
-    implements _$$_AuthPayloadParamsCopyWith<$Res> {
-  __$$_AuthPayloadParamsCopyWithImpl(
-      _$_AuthPayloadParams _value, $Res Function(_$_AuthPayloadParams) _then)
+class __$$AuthPayloadParamsImplCopyWithImpl<$Res>
+    extends _$AuthPayloadParamsCopyWithImpl<$Res, _$AuthPayloadParamsImpl>
+    implements _$$AuthPayloadParamsImplCopyWith<$Res> {
+  __$$AuthPayloadParamsImplCopyWithImpl(_$AuthPayloadParamsImpl _value,
+      $Res Function(_$AuthPayloadParamsImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -325,7 +325,7 @@ class __$$_AuthPayloadParamsCopyWithImpl<$Res>
     Object? requestId = freezed,
     Object? resources = freezed,
   }) {
-    return _then(_$_AuthPayloadParams(
+    return _then(_$AuthPayloadParamsImpl(
       type: null == type
           ? _value.type
           : type // ignore: cast_nullable_to_non_nullable
@@ -381,8 +381,8 @@ class __$$_AuthPayloadParamsCopyWithImpl<$Res>
 /// @nodoc
 
 @JsonSerializable(includeIfNull: false)
-class _$_AuthPayloadParams implements _AuthPayloadParams {
-  const _$_AuthPayloadParams(
+class _$AuthPayloadParamsImpl implements _AuthPayloadParams {
+  const _$AuthPayloadParamsImpl(
       {required this.type,
       required this.chainId,
       required this.domain,
@@ -397,8 +397,8 @@ class _$_AuthPayloadParams implements _AuthPayloadParams {
       final List<String>? resources})
       : _resources = resources;
 
-  factory _$_AuthPayloadParams.fromJson(Map<String, dynamic> json) =>
-      _$$_AuthPayloadParamsFromJson(json);
+  factory _$AuthPayloadParamsImpl.fromJson(Map<String, dynamic> json) =>
+      _$$AuthPayloadParamsImplFromJson(json);
 
   @override
   final String type;
@@ -441,7 +441,7 @@ class _$_AuthPayloadParams implements _AuthPayloadParams {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_AuthPayloadParams &&
+            other is _$AuthPayloadParamsImpl &&
             (identical(other.type, type) || other.type == type) &&
             (identical(other.chainId, chainId) || other.chainId == chainId) &&
             (identical(other.domain, domain) || other.domain == domain) &&
@@ -479,13 +479,13 @@ class _$_AuthPayloadParams implements _AuthPayloadParams {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_AuthPayloadParamsCopyWith<_$_AuthPayloadParams> get copyWith =>
-      __$$_AuthPayloadParamsCopyWithImpl<_$_AuthPayloadParams>(
+  _$$AuthPayloadParamsImplCopyWith<_$AuthPayloadParamsImpl> get copyWith =>
+      __$$AuthPayloadParamsImplCopyWithImpl<_$AuthPayloadParamsImpl>(
           this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_AuthPayloadParamsToJson(
+    return _$$AuthPayloadParamsImplToJson(
       this,
     );
   }
@@ -504,10 +504,10 @@ abstract class _AuthPayloadParams implements AuthPayloadParams {
       final String? exp,
       final String? statement,
       final String? requestId,
-      final List<String>? resources}) = _$_AuthPayloadParams;
+      final List<String>? resources}) = _$AuthPayloadParamsImpl;
 
   factory _AuthPayloadParams.fromJson(Map<String, dynamic> json) =
-      _$_AuthPayloadParams.fromJson;
+      _$AuthPayloadParamsImpl.fromJson;
 
   @override
   String get type;
@@ -535,7 +535,7 @@ abstract class _AuthPayloadParams implements AuthPayloadParams {
   List<String>? get resources;
   @override
   @JsonKey(ignore: true)
-  _$$_AuthPayloadParamsCopyWith<_$_AuthPayloadParams> get copyWith =>
+  _$$AuthPayloadParamsImplCopyWith<_$AuthPayloadParamsImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
@@ -651,11 +651,11 @@ class _$CacaoRequestPayloadCopyWithImpl<$Res, $Val extends CacaoRequestPayload>
 }
 
 /// @nodoc
-abstract class _$$_CacaoRequestPayloadCopyWith<$Res>
+abstract class _$$CacaoRequestPayloadImplCopyWith<$Res>
     implements $CacaoRequestPayloadCopyWith<$Res> {
-  factory _$$_CacaoRequestPayloadCopyWith(_$_CacaoRequestPayload value,
-          $Res Function(_$_CacaoRequestPayload) then) =
-      __$$_CacaoRequestPayloadCopyWithImpl<$Res>;
+  factory _$$CacaoRequestPayloadImplCopyWith(_$CacaoRequestPayloadImpl value,
+          $Res Function(_$CacaoRequestPayloadImpl) then) =
+      __$$CacaoRequestPayloadImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -672,11 +672,11 @@ abstract class _$$_CacaoRequestPayloadCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$_CacaoRequestPayloadCopyWithImpl<$Res>
-    extends _$CacaoRequestPayloadCopyWithImpl<$Res, _$_CacaoRequestPayload>
-    implements _$$_CacaoRequestPayloadCopyWith<$Res> {
-  __$$_CacaoRequestPayloadCopyWithImpl(_$_CacaoRequestPayload _value,
-      $Res Function(_$_CacaoRequestPayload) _then)
+class __$$CacaoRequestPayloadImplCopyWithImpl<$Res>
+    extends _$CacaoRequestPayloadCopyWithImpl<$Res, _$CacaoRequestPayloadImpl>
+    implements _$$CacaoRequestPayloadImplCopyWith<$Res> {
+  __$$CacaoRequestPayloadImplCopyWithImpl(_$CacaoRequestPayloadImpl _value,
+      $Res Function(_$CacaoRequestPayloadImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -693,7 +693,7 @@ class __$$_CacaoRequestPayloadCopyWithImpl<$Res>
     Object? requestId = freezed,
     Object? resources = freezed,
   }) {
-    return _then(_$_CacaoRequestPayload(
+    return _then(_$CacaoRequestPayloadImpl(
       domain: null == domain
           ? _value.domain
           : domain // ignore: cast_nullable_to_non_nullable
@@ -741,8 +741,8 @@ class __$$_CacaoRequestPayloadCopyWithImpl<$Res>
 /// @nodoc
 
 @JsonSerializable(includeIfNull: false)
-class _$_CacaoRequestPayload implements _CacaoRequestPayload {
-  const _$_CacaoRequestPayload(
+class _$CacaoRequestPayloadImpl implements _CacaoRequestPayload {
+  const _$CacaoRequestPayloadImpl(
       {required this.domain,
       required this.aud,
       required this.version,
@@ -755,8 +755,8 @@ class _$_CacaoRequestPayload implements _CacaoRequestPayload {
       final List<String>? resources})
       : _resources = resources;
 
-  factory _$_CacaoRequestPayload.fromJson(Map<String, dynamic> json) =>
-      _$$_CacaoRequestPayloadFromJson(json);
+  factory _$CacaoRequestPayloadImpl.fromJson(Map<String, dynamic> json) =>
+      _$$CacaoRequestPayloadImplFromJson(json);
 
   @override
   final String domain;
@@ -795,7 +795,7 @@ class _$_CacaoRequestPayload implements _CacaoRequestPayload {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_CacaoRequestPayload &&
+            other is _$CacaoRequestPayloadImpl &&
             (identical(other.domain, domain) || other.domain == domain) &&
             (identical(other.aud, aud) || other.aud == aud) &&
             (identical(other.version, version) || other.version == version) &&
@@ -829,13 +829,13 @@ class _$_CacaoRequestPayload implements _CacaoRequestPayload {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_CacaoRequestPayloadCopyWith<_$_CacaoRequestPayload> get copyWith =>
-      __$$_CacaoRequestPayloadCopyWithImpl<_$_CacaoRequestPayload>(
+  _$$CacaoRequestPayloadImplCopyWith<_$CacaoRequestPayloadImpl> get copyWith =>
+      __$$CacaoRequestPayloadImplCopyWithImpl<_$CacaoRequestPayloadImpl>(
           this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_CacaoRequestPayloadToJson(
+    return _$$CacaoRequestPayloadImplToJson(
       this,
     );
   }
@@ -852,10 +852,10 @@ abstract class _CacaoRequestPayload implements CacaoRequestPayload {
       final String? exp,
       final String? statement,
       final String? requestId,
-      final List<String>? resources}) = _$_CacaoRequestPayload;
+      final List<String>? resources}) = _$CacaoRequestPayloadImpl;
 
   factory _CacaoRequestPayload.fromJson(Map<String, dynamic> json) =
-      _$_CacaoRequestPayload.fromJson;
+      _$CacaoRequestPayloadImpl.fromJson;
 
   @override
   String get domain;
@@ -879,7 +879,7 @@ abstract class _CacaoRequestPayload implements CacaoRequestPayload {
   List<String>? get resources;
   @override
   @JsonKey(ignore: true)
-  _$$_CacaoRequestPayloadCopyWith<_$_CacaoRequestPayload> get copyWith =>
+  _$$CacaoRequestPayloadImplCopyWith<_$CacaoRequestPayloadImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
@@ -1002,11 +1002,11 @@ class _$CacaoPayloadCopyWithImpl<$Res, $Val extends CacaoPayload>
 }
 
 /// @nodoc
-abstract class _$$_CacaoPayloadCopyWith<$Res>
+abstract class _$$CacaoPayloadImplCopyWith<$Res>
     implements $CacaoPayloadCopyWith<$Res> {
-  factory _$$_CacaoPayloadCopyWith(
-          _$_CacaoPayload value, $Res Function(_$_CacaoPayload) then) =
-      __$$_CacaoPayloadCopyWithImpl<$Res>;
+  factory _$$CacaoPayloadImplCopyWith(
+          _$CacaoPayloadImpl value, $Res Function(_$CacaoPayloadImpl) then) =
+      __$$CacaoPayloadImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -1024,11 +1024,11 @@ abstract class _$$_CacaoPayloadCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$_CacaoPayloadCopyWithImpl<$Res>
-    extends _$CacaoPayloadCopyWithImpl<$Res, _$_CacaoPayload>
-    implements _$$_CacaoPayloadCopyWith<$Res> {
-  __$$_CacaoPayloadCopyWithImpl(
-      _$_CacaoPayload _value, $Res Function(_$_CacaoPayload) _then)
+class __$$CacaoPayloadImplCopyWithImpl<$Res>
+    extends _$CacaoPayloadCopyWithImpl<$Res, _$CacaoPayloadImpl>
+    implements _$$CacaoPayloadImplCopyWith<$Res> {
+  __$$CacaoPayloadImplCopyWithImpl(
+      _$CacaoPayloadImpl _value, $Res Function(_$CacaoPayloadImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -1046,7 +1046,7 @@ class __$$_CacaoPayloadCopyWithImpl<$Res>
     Object? requestId = freezed,
     Object? resources = freezed,
   }) {
-    return _then(_$_CacaoPayload(
+    return _then(_$CacaoPayloadImpl(
       iss: null == iss
           ? _value.iss
           : iss // ignore: cast_nullable_to_non_nullable
@@ -1098,8 +1098,8 @@ class __$$_CacaoPayloadCopyWithImpl<$Res>
 /// @nodoc
 
 @JsonSerializable(includeIfNull: false)
-class _$_CacaoPayload implements _CacaoPayload {
-  const _$_CacaoPayload(
+class _$CacaoPayloadImpl implements _CacaoPayload {
+  const _$CacaoPayloadImpl(
       {required this.iss,
       required this.domain,
       required this.aud,
@@ -1113,8 +1113,8 @@ class _$_CacaoPayload implements _CacaoPayload {
       final List<String>? resources})
       : _resources = resources;
 
-  factory _$_CacaoPayload.fromJson(Map<String, dynamic> json) =>
-      _$$_CacaoPayloadFromJson(json);
+  factory _$CacaoPayloadImpl.fromJson(Map<String, dynamic> json) =>
+      _$$CacaoPayloadImplFromJson(json);
 
   @override
   final String iss;
@@ -1155,7 +1155,7 @@ class _$_CacaoPayload implements _CacaoPayload {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_CacaoPayload &&
+            other is _$CacaoPayloadImpl &&
             (identical(other.iss, iss) || other.iss == iss) &&
             (identical(other.domain, domain) || other.domain == domain) &&
             (identical(other.aud, aud) || other.aud == aud) &&
@@ -1191,12 +1191,12 @@ class _$_CacaoPayload implements _CacaoPayload {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_CacaoPayloadCopyWith<_$_CacaoPayload> get copyWith =>
-      __$$_CacaoPayloadCopyWithImpl<_$_CacaoPayload>(this, _$identity);
+  _$$CacaoPayloadImplCopyWith<_$CacaoPayloadImpl> get copyWith =>
+      __$$CacaoPayloadImplCopyWithImpl<_$CacaoPayloadImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_CacaoPayloadToJson(
+    return _$$CacaoPayloadImplToJson(
       this,
     );
   }
@@ -1214,10 +1214,10 @@ abstract class _CacaoPayload implements CacaoPayload {
       final String? exp,
       final String? statement,
       final String? requestId,
-      final List<String>? resources}) = _$_CacaoPayload;
+      final List<String>? resources}) = _$CacaoPayloadImpl;
 
   factory _CacaoPayload.fromJson(Map<String, dynamic> json) =
-      _$_CacaoPayload.fromJson;
+      _$CacaoPayloadImpl.fromJson;
 
   @override
   String get iss;
@@ -1243,7 +1243,7 @@ abstract class _CacaoPayload implements CacaoPayload {
   List<String>? get resources;
   @override
   @JsonKey(ignore: true)
-  _$$_CacaoPayloadCopyWith<_$_CacaoPayload> get copyWith =>
+  _$$CacaoPayloadImplCopyWith<_$CacaoPayloadImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
@@ -1295,22 +1295,22 @@ class _$CacaoHeaderCopyWithImpl<$Res, $Val extends CacaoHeader>
 }
 
 /// @nodoc
-abstract class _$$_CacaoHeaderCopyWith<$Res>
+abstract class _$$CacaoHeaderImplCopyWith<$Res>
     implements $CacaoHeaderCopyWith<$Res> {
-  factory _$$_CacaoHeaderCopyWith(
-          _$_CacaoHeader value, $Res Function(_$_CacaoHeader) then) =
-      __$$_CacaoHeaderCopyWithImpl<$Res>;
+  factory _$$CacaoHeaderImplCopyWith(
+          _$CacaoHeaderImpl value, $Res Function(_$CacaoHeaderImpl) then) =
+      __$$CacaoHeaderImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({String t});
 }
 
 /// @nodoc
-class __$$_CacaoHeaderCopyWithImpl<$Res>
-    extends _$CacaoHeaderCopyWithImpl<$Res, _$_CacaoHeader>
-    implements _$$_CacaoHeaderCopyWith<$Res> {
-  __$$_CacaoHeaderCopyWithImpl(
-      _$_CacaoHeader _value, $Res Function(_$_CacaoHeader) _then)
+class __$$CacaoHeaderImplCopyWithImpl<$Res>
+    extends _$CacaoHeaderCopyWithImpl<$Res, _$CacaoHeaderImpl>
+    implements _$$CacaoHeaderImplCopyWith<$Res> {
+  __$$CacaoHeaderImplCopyWithImpl(
+      _$CacaoHeaderImpl _value, $Res Function(_$CacaoHeaderImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -1318,7 +1318,7 @@ class __$$_CacaoHeaderCopyWithImpl<$Res>
   $Res call({
     Object? t = null,
   }) {
-    return _then(_$_CacaoHeader(
+    return _then(_$CacaoHeaderImpl(
       t: null == t
           ? _value.t
           : t // ignore: cast_nullable_to_non_nullable
@@ -1330,11 +1330,11 @@ class __$$_CacaoHeaderCopyWithImpl<$Res>
 /// @nodoc
 
 @JsonSerializable(includeIfNull: false)
-class _$_CacaoHeader implements _CacaoHeader {
-  const _$_CacaoHeader({this.t = 'eip4361'});
+class _$CacaoHeaderImpl implements _CacaoHeader {
+  const _$CacaoHeaderImpl({this.t = 'eip4361'});
 
-  factory _$_CacaoHeader.fromJson(Map<String, dynamic> json) =>
-      _$$_CacaoHeaderFromJson(json);
+  factory _$CacaoHeaderImpl.fromJson(Map<String, dynamic> json) =>
+      _$$CacaoHeaderImplFromJson(json);
 
   @override
   @JsonKey()
@@ -1349,7 +1349,7 @@ class _$_CacaoHeader implements _CacaoHeader {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_CacaoHeader &&
+            other is _$CacaoHeaderImpl &&
             (identical(other.t, t) || other.t == t));
   }
 
@@ -1360,28 +1360,28 @@ class _$_CacaoHeader implements _CacaoHeader {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_CacaoHeaderCopyWith<_$_CacaoHeader> get copyWith =>
-      __$$_CacaoHeaderCopyWithImpl<_$_CacaoHeader>(this, _$identity);
+  _$$CacaoHeaderImplCopyWith<_$CacaoHeaderImpl> get copyWith =>
+      __$$CacaoHeaderImplCopyWithImpl<_$CacaoHeaderImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_CacaoHeaderToJson(
+    return _$$CacaoHeaderImplToJson(
       this,
     );
   }
 }
 
 abstract class _CacaoHeader implements CacaoHeader {
-  const factory _CacaoHeader({final String t}) = _$_CacaoHeader;
+  const factory _CacaoHeader({final String t}) = _$CacaoHeaderImpl;
 
   factory _CacaoHeader.fromJson(Map<String, dynamic> json) =
-      _$_CacaoHeader.fromJson;
+      _$CacaoHeaderImpl.fromJson;
 
   @override
   String get t;
   @override
   @JsonKey(ignore: true)
-  _$$_CacaoHeaderCopyWith<_$_CacaoHeader> get copyWith =>
+  _$$CacaoHeaderImplCopyWith<_$CacaoHeaderImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
@@ -1445,22 +1445,22 @@ class _$CacaoSignatureCopyWithImpl<$Res, $Val extends CacaoSignature>
 }
 
 /// @nodoc
-abstract class _$$_CacaoSignatureCopyWith<$Res>
+abstract class _$$CacaoSignatureImplCopyWith<$Res>
     implements $CacaoSignatureCopyWith<$Res> {
-  factory _$$_CacaoSignatureCopyWith(
-          _$_CacaoSignature value, $Res Function(_$_CacaoSignature) then) =
-      __$$_CacaoSignatureCopyWithImpl<$Res>;
+  factory _$$CacaoSignatureImplCopyWith(_$CacaoSignatureImpl value,
+          $Res Function(_$CacaoSignatureImpl) then) =
+      __$$CacaoSignatureImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({String t, String s, String? m});
 }
 
 /// @nodoc
-class __$$_CacaoSignatureCopyWithImpl<$Res>
-    extends _$CacaoSignatureCopyWithImpl<$Res, _$_CacaoSignature>
-    implements _$$_CacaoSignatureCopyWith<$Res> {
-  __$$_CacaoSignatureCopyWithImpl(
-      _$_CacaoSignature _value, $Res Function(_$_CacaoSignature) _then)
+class __$$CacaoSignatureImplCopyWithImpl<$Res>
+    extends _$CacaoSignatureCopyWithImpl<$Res, _$CacaoSignatureImpl>
+    implements _$$CacaoSignatureImplCopyWith<$Res> {
+  __$$CacaoSignatureImplCopyWithImpl(
+      _$CacaoSignatureImpl _value, $Res Function(_$CacaoSignatureImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -1470,7 +1470,7 @@ class __$$_CacaoSignatureCopyWithImpl<$Res>
     Object? s = null,
     Object? m = freezed,
   }) {
-    return _then(_$_CacaoSignature(
+    return _then(_$CacaoSignatureImpl(
       t: null == t
           ? _value.t
           : t // ignore: cast_nullable_to_non_nullable
@@ -1490,11 +1490,11 @@ class __$$_CacaoSignatureCopyWithImpl<$Res>
 /// @nodoc
 
 @JsonSerializable(includeIfNull: false)
-class _$_CacaoSignature implements _CacaoSignature {
-  const _$_CacaoSignature({required this.t, required this.s, this.m});
+class _$CacaoSignatureImpl implements _CacaoSignature {
+  const _$CacaoSignatureImpl({required this.t, required this.s, this.m});
 
-  factory _$_CacaoSignature.fromJson(Map<String, dynamic> json) =>
-      _$$_CacaoSignatureFromJson(json);
+  factory _$CacaoSignatureImpl.fromJson(Map<String, dynamic> json) =>
+      _$$CacaoSignatureImplFromJson(json);
 
   @override
   final String t;
@@ -1512,7 +1512,7 @@ class _$_CacaoSignature implements _CacaoSignature {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_CacaoSignature &&
+            other is _$CacaoSignatureImpl &&
             (identical(other.t, t) || other.t == t) &&
             (identical(other.s, s) || other.s == s) &&
             (identical(other.m, m) || other.m == m));
@@ -1525,12 +1525,13 @@ class _$_CacaoSignature implements _CacaoSignature {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_CacaoSignatureCopyWith<_$_CacaoSignature> get copyWith =>
-      __$$_CacaoSignatureCopyWithImpl<_$_CacaoSignature>(this, _$identity);
+  _$$CacaoSignatureImplCopyWith<_$CacaoSignatureImpl> get copyWith =>
+      __$$CacaoSignatureImplCopyWithImpl<_$CacaoSignatureImpl>(
+          this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_CacaoSignatureToJson(
+    return _$$CacaoSignatureImplToJson(
       this,
     );
   }
@@ -1540,10 +1541,10 @@ abstract class _CacaoSignature implements CacaoSignature {
   const factory _CacaoSignature(
       {required final String t,
       required final String s,
-      final String? m}) = _$_CacaoSignature;
+      final String? m}) = _$CacaoSignatureImpl;
 
   factory _CacaoSignature.fromJson(Map<String, dynamic> json) =
-      _$_CacaoSignature.fromJson;
+      _$CacaoSignatureImpl.fromJson;
 
   @override
   String get t;
@@ -1553,7 +1554,7 @@ abstract class _CacaoSignature implements CacaoSignature {
   String? get m;
   @override
   @JsonKey(ignore: true)
-  _$$_CacaoSignatureCopyWith<_$_CacaoSignature> get copyWith =>
+  _$$CacaoSignatureImplCopyWith<_$CacaoSignatureImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
@@ -1643,9 +1644,10 @@ class _$CacaoCopyWithImpl<$Res, $Val extends Cacao>
 }
 
 /// @nodoc
-abstract class _$$_CacaoCopyWith<$Res> implements $CacaoCopyWith<$Res> {
-  factory _$$_CacaoCopyWith(_$_Cacao value, $Res Function(_$_Cacao) then) =
-      __$$_CacaoCopyWithImpl<$Res>;
+abstract class _$$CacaoImplCopyWith<$Res> implements $CacaoCopyWith<$Res> {
+  factory _$$CacaoImplCopyWith(
+          _$CacaoImpl value, $Res Function(_$CacaoImpl) then) =
+      __$$CacaoImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({CacaoHeader h, CacaoPayload p, CacaoSignature s});
@@ -1659,9 +1661,11 @@ abstract class _$$_CacaoCopyWith<$Res> implements $CacaoCopyWith<$Res> {
 }
 
 /// @nodoc
-class __$$_CacaoCopyWithImpl<$Res> extends _$CacaoCopyWithImpl<$Res, _$_Cacao>
-    implements _$$_CacaoCopyWith<$Res> {
-  __$$_CacaoCopyWithImpl(_$_Cacao _value, $Res Function(_$_Cacao) _then)
+class __$$CacaoImplCopyWithImpl<$Res>
+    extends _$CacaoCopyWithImpl<$Res, _$CacaoImpl>
+    implements _$$CacaoImplCopyWith<$Res> {
+  __$$CacaoImplCopyWithImpl(
+      _$CacaoImpl _value, $Res Function(_$CacaoImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -1671,7 +1675,7 @@ class __$$_CacaoCopyWithImpl<$Res> extends _$CacaoCopyWithImpl<$Res, _$_Cacao>
     Object? p = null,
     Object? s = null,
   }) {
-    return _then(_$_Cacao(
+    return _then(_$CacaoImpl(
       h: null == h
           ? _value.h
           : h // ignore: cast_nullable_to_non_nullable
@@ -1691,11 +1695,11 @@ class __$$_CacaoCopyWithImpl<$Res> extends _$CacaoCopyWithImpl<$Res, _$_Cacao>
 /// @nodoc
 
 @JsonSerializable(includeIfNull: false)
-class _$_Cacao implements _Cacao {
-  const _$_Cacao({required this.h, required this.p, required this.s});
+class _$CacaoImpl implements _Cacao {
+  const _$CacaoImpl({required this.h, required this.p, required this.s});
 
-  factory _$_Cacao.fromJson(Map<String, dynamic> json) =>
-      _$$_CacaoFromJson(json);
+  factory _$CacaoImpl.fromJson(Map<String, dynamic> json) =>
+      _$$CacaoImplFromJson(json);
 
   @override
   final CacaoHeader h;
@@ -1713,7 +1717,7 @@ class _$_Cacao implements _Cacao {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_Cacao &&
+            other is _$CacaoImpl &&
             (identical(other.h, h) || other.h == h) &&
             (identical(other.p, p) || other.p == p) &&
             (identical(other.s, s) || other.s == s));
@@ -1726,12 +1730,12 @@ class _$_Cacao implements _Cacao {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_CacaoCopyWith<_$_Cacao> get copyWith =>
-      __$$_CacaoCopyWithImpl<_$_Cacao>(this, _$identity);
+  _$$CacaoImplCopyWith<_$CacaoImpl> get copyWith =>
+      __$$CacaoImplCopyWithImpl<_$CacaoImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_CacaoToJson(
+    return _$$CacaoImplToJson(
       this,
     );
   }
@@ -1741,9 +1745,9 @@ abstract class _Cacao implements Cacao {
   const factory _Cacao(
       {required final CacaoHeader h,
       required final CacaoPayload p,
-      required final CacaoSignature s}) = _$_Cacao;
+      required final CacaoSignature s}) = _$CacaoImpl;
 
-  factory _Cacao.fromJson(Map<String, dynamic> json) = _$_Cacao.fromJson;
+  factory _Cacao.fromJson(Map<String, dynamic> json) = _$CacaoImpl.fromJson;
 
   @override
   CacaoHeader get h;
@@ -1753,7 +1757,7 @@ abstract class _Cacao implements Cacao {
   CacaoSignature get s;
   @override
   @JsonKey(ignore: true)
-  _$$_CacaoCopyWith<_$_Cacao> get copyWith =>
+  _$$CacaoImplCopyWith<_$CacaoImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
@@ -1862,11 +1866,11 @@ class _$StoredCacaoCopyWithImpl<$Res, $Val extends StoredCacao>
 }
 
 /// @nodoc
-abstract class _$$_StoredCacaoCopyWith<$Res>
+abstract class _$$StoredCacaoImplCopyWith<$Res>
     implements $StoredCacaoCopyWith<$Res> {
-  factory _$$_StoredCacaoCopyWith(
-          _$_StoredCacao value, $Res Function(_$_StoredCacao) then) =
-      __$$_StoredCacaoCopyWithImpl<$Res>;
+  factory _$$StoredCacaoImplCopyWith(
+          _$StoredCacaoImpl value, $Res Function(_$StoredCacaoImpl) then) =
+      __$$StoredCacaoImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -1885,11 +1889,11 @@ abstract class _$$_StoredCacaoCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$_StoredCacaoCopyWithImpl<$Res>
-    extends _$StoredCacaoCopyWithImpl<$Res, _$_StoredCacao>
-    implements _$$_StoredCacaoCopyWith<$Res> {
-  __$$_StoredCacaoCopyWithImpl(
-      _$_StoredCacao _value, $Res Function(_$_StoredCacao) _then)
+class __$$StoredCacaoImplCopyWithImpl<$Res>
+    extends _$StoredCacaoCopyWithImpl<$Res, _$StoredCacaoImpl>
+    implements _$$StoredCacaoImplCopyWith<$Res> {
+  __$$StoredCacaoImplCopyWithImpl(
+      _$StoredCacaoImpl _value, $Res Function(_$StoredCacaoImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -1901,7 +1905,7 @@ class __$$_StoredCacaoCopyWithImpl<$Res>
     Object? p = null,
     Object? s = null,
   }) {
-    return _then(_$_StoredCacao(
+    return _then(_$StoredCacaoImpl(
       id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
@@ -1929,16 +1933,16 @@ class __$$_StoredCacaoCopyWithImpl<$Res>
 /// @nodoc
 
 @JsonSerializable(includeIfNull: false)
-class _$_StoredCacao implements _StoredCacao {
-  const _$_StoredCacao(
+class _$StoredCacaoImpl implements _StoredCacao {
+  const _$StoredCacaoImpl(
       {required this.id,
       required this.pairingTopic,
       required this.h,
       required this.p,
       required this.s});
 
-  factory _$_StoredCacao.fromJson(Map<String, dynamic> json) =>
-      _$$_StoredCacaoFromJson(json);
+  factory _$StoredCacaoImpl.fromJson(Map<String, dynamic> json) =>
+      _$$StoredCacaoImplFromJson(json);
 
   @override
   final int id;
@@ -1960,7 +1964,7 @@ class _$_StoredCacao implements _StoredCacao {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_StoredCacao &&
+            other is _$StoredCacaoImpl &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.pairingTopic, pairingTopic) ||
                 other.pairingTopic == pairingTopic) &&
@@ -1976,12 +1980,12 @@ class _$_StoredCacao implements _StoredCacao {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_StoredCacaoCopyWith<_$_StoredCacao> get copyWith =>
-      __$$_StoredCacaoCopyWithImpl<_$_StoredCacao>(this, _$identity);
+  _$$StoredCacaoImplCopyWith<_$StoredCacaoImpl> get copyWith =>
+      __$$StoredCacaoImplCopyWithImpl<_$StoredCacaoImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_StoredCacaoToJson(
+    return _$$StoredCacaoImplToJson(
       this,
     );
   }
@@ -1993,10 +1997,10 @@ abstract class _StoredCacao implements StoredCacao {
       required final String pairingTopic,
       required final CacaoHeader h,
       required final CacaoPayload p,
-      required final CacaoSignature s}) = _$_StoredCacao;
+      required final CacaoSignature s}) = _$StoredCacaoImpl;
 
   factory _StoredCacao.fromJson(Map<String, dynamic> json) =
-      _$_StoredCacao.fromJson;
+      _$StoredCacaoImpl.fromJson;
 
   @override
   int get id;
@@ -2010,7 +2014,7 @@ abstract class _StoredCacao implements StoredCacao {
   CacaoSignature get s;
   @override
   @JsonKey(ignore: true)
-  _$$_StoredCacaoCopyWith<_$_StoredCacao> get copyWith =>
+  _$$StoredCacaoImplCopyWith<_$StoredCacaoImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
@@ -2103,11 +2107,11 @@ class _$PendingAuthRequestCopyWithImpl<$Res, $Val extends PendingAuthRequest>
 }
 
 /// @nodoc
-abstract class _$$_PendingAuthRequestCopyWith<$Res>
+abstract class _$$PendingAuthRequestImplCopyWith<$Res>
     implements $PendingAuthRequestCopyWith<$Res> {
-  factory _$$_PendingAuthRequestCopyWith(_$_PendingAuthRequest value,
-          $Res Function(_$_PendingAuthRequest) then) =
-      __$$_PendingAuthRequestCopyWithImpl<$Res>;
+  factory _$$PendingAuthRequestImplCopyWith(_$PendingAuthRequestImpl value,
+          $Res Function(_$PendingAuthRequestImpl) then) =
+      __$$PendingAuthRequestImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -2123,11 +2127,11 @@ abstract class _$$_PendingAuthRequestCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$_PendingAuthRequestCopyWithImpl<$Res>
-    extends _$PendingAuthRequestCopyWithImpl<$Res, _$_PendingAuthRequest>
-    implements _$$_PendingAuthRequestCopyWith<$Res> {
-  __$$_PendingAuthRequestCopyWithImpl(
-      _$_PendingAuthRequest _value, $Res Function(_$_PendingAuthRequest) _then)
+class __$$PendingAuthRequestImplCopyWithImpl<$Res>
+    extends _$PendingAuthRequestCopyWithImpl<$Res, _$PendingAuthRequestImpl>
+    implements _$$PendingAuthRequestImplCopyWith<$Res> {
+  __$$PendingAuthRequestImplCopyWithImpl(_$PendingAuthRequestImpl _value,
+      $Res Function(_$PendingAuthRequestImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -2138,7 +2142,7 @@ class __$$_PendingAuthRequestCopyWithImpl<$Res>
     Object? metadata = null,
     Object? cacaoPayload = null,
   }) {
-    return _then(_$_PendingAuthRequest(
+    return _then(_$PendingAuthRequestImpl(
       id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
@@ -2162,15 +2166,15 @@ class __$$_PendingAuthRequestCopyWithImpl<$Res>
 /// @nodoc
 
 @JsonSerializable(includeIfNull: false)
-class _$_PendingAuthRequest implements _PendingAuthRequest {
-  const _$_PendingAuthRequest(
+class _$PendingAuthRequestImpl implements _PendingAuthRequest {
+  const _$PendingAuthRequestImpl(
       {required this.id,
       required this.pairingTopic,
       required this.metadata,
       required this.cacaoPayload});
 
-  factory _$_PendingAuthRequest.fromJson(Map<String, dynamic> json) =>
-      _$$_PendingAuthRequestFromJson(json);
+  factory _$PendingAuthRequestImpl.fromJson(Map<String, dynamic> json) =>
+      _$$PendingAuthRequestImplFromJson(json);
 
   @override
   final int id;
@@ -2190,7 +2194,7 @@ class _$_PendingAuthRequest implements _PendingAuthRequest {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_PendingAuthRequest &&
+            other is _$PendingAuthRequestImpl &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.pairingTopic, pairingTopic) ||
                 other.pairingTopic == pairingTopic) &&
@@ -2208,13 +2212,13 @@ class _$_PendingAuthRequest implements _PendingAuthRequest {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_PendingAuthRequestCopyWith<_$_PendingAuthRequest> get copyWith =>
-      __$$_PendingAuthRequestCopyWithImpl<_$_PendingAuthRequest>(
+  _$$PendingAuthRequestImplCopyWith<_$PendingAuthRequestImpl> get copyWith =>
+      __$$PendingAuthRequestImplCopyWithImpl<_$PendingAuthRequestImpl>(
           this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_PendingAuthRequestToJson(
+    return _$$PendingAuthRequestImplToJson(
       this,
     );
   }
@@ -2222,13 +2226,14 @@ class _$_PendingAuthRequest implements _PendingAuthRequest {
 
 abstract class _PendingAuthRequest implements PendingAuthRequest {
   const factory _PendingAuthRequest(
-      {required final int id,
-      required final String pairingTopic,
-      required final ConnectionMetadata metadata,
-      required final CacaoRequestPayload cacaoPayload}) = _$_PendingAuthRequest;
+          {required final int id,
+          required final String pairingTopic,
+          required final ConnectionMetadata metadata,
+          required final CacaoRequestPayload cacaoPayload}) =
+      _$PendingAuthRequestImpl;
 
   factory _PendingAuthRequest.fromJson(Map<String, dynamic> json) =
-      _$_PendingAuthRequest.fromJson;
+      _$PendingAuthRequestImpl.fromJson;
 
   @override
   int get id;
@@ -2240,6 +2245,6 @@ abstract class _PendingAuthRequest implements PendingAuthRequest {
   CacaoRequestPayload get cacaoPayload;
   @override
   @JsonKey(ignore: true)
-  _$$_PendingAuthRequestCopyWith<_$_PendingAuthRequest> get copyWith =>
+  _$$PendingAuthRequestImplCopyWith<_$PendingAuthRequestImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

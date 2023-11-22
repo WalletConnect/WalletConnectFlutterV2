@@ -70,23 +70,25 @@ class _$WcPairingDeleteRequestCopyWithImpl<$Res,
 }
 
 /// @nodoc
-abstract class _$$_WcPairingDeleteRequestCopyWith<$Res>
+abstract class _$$WcPairingDeleteRequestImplCopyWith<$Res>
     implements $WcPairingDeleteRequestCopyWith<$Res> {
-  factory _$$_WcPairingDeleteRequestCopyWith(_$_WcPairingDeleteRequest value,
-          $Res Function(_$_WcPairingDeleteRequest) then) =
-      __$$_WcPairingDeleteRequestCopyWithImpl<$Res>;
+  factory _$$WcPairingDeleteRequestImplCopyWith(
+          _$WcPairingDeleteRequestImpl value,
+          $Res Function(_$WcPairingDeleteRequestImpl) then) =
+      __$$WcPairingDeleteRequestImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({int code, String message});
 }
 
 /// @nodoc
-class __$$_WcPairingDeleteRequestCopyWithImpl<$Res>
+class __$$WcPairingDeleteRequestImplCopyWithImpl<$Res>
     extends _$WcPairingDeleteRequestCopyWithImpl<$Res,
-        _$_WcPairingDeleteRequest>
-    implements _$$_WcPairingDeleteRequestCopyWith<$Res> {
-  __$$_WcPairingDeleteRequestCopyWithImpl(_$_WcPairingDeleteRequest _value,
-      $Res Function(_$_WcPairingDeleteRequest) _then)
+        _$WcPairingDeleteRequestImpl>
+    implements _$$WcPairingDeleteRequestImplCopyWith<$Res> {
+  __$$WcPairingDeleteRequestImplCopyWithImpl(
+      _$WcPairingDeleteRequestImpl _value,
+      $Res Function(_$WcPairingDeleteRequestImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -95,7 +97,7 @@ class __$$_WcPairingDeleteRequestCopyWithImpl<$Res>
     Object? code = null,
     Object? message = null,
   }) {
-    return _then(_$_WcPairingDeleteRequest(
+    return _then(_$WcPairingDeleteRequestImpl(
       code: null == code
           ? _value.code
           : code // ignore: cast_nullable_to_non_nullable
@@ -111,11 +113,12 @@ class __$$_WcPairingDeleteRequestCopyWithImpl<$Res>
 /// @nodoc
 
 @JsonSerializable()
-class _$_WcPairingDeleteRequest implements _WcPairingDeleteRequest {
-  const _$_WcPairingDeleteRequest({required this.code, required this.message});
+class _$WcPairingDeleteRequestImpl implements _WcPairingDeleteRequest {
+  const _$WcPairingDeleteRequestImpl(
+      {required this.code, required this.message});
 
-  factory _$_WcPairingDeleteRequest.fromJson(Map<String, dynamic> json) =>
-      _$$_WcPairingDeleteRequestFromJson(json);
+  factory _$WcPairingDeleteRequestImpl.fromJson(Map<String, dynamic> json) =>
+      _$$WcPairingDeleteRequestImplFromJson(json);
 
   @override
   final int code;
@@ -131,7 +134,7 @@ class _$_WcPairingDeleteRequest implements _WcPairingDeleteRequest {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_WcPairingDeleteRequest &&
+            other is _$WcPairingDeleteRequestImpl &&
             (identical(other.code, code) || other.code == code) &&
             (identical(other.message, message) || other.message == message));
   }
@@ -143,13 +146,13 @@ class _$_WcPairingDeleteRequest implements _WcPairingDeleteRequest {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_WcPairingDeleteRequestCopyWith<_$_WcPairingDeleteRequest> get copyWith =>
-      __$$_WcPairingDeleteRequestCopyWithImpl<_$_WcPairingDeleteRequest>(
-          this, _$identity);
+  _$$WcPairingDeleteRequestImplCopyWith<_$WcPairingDeleteRequestImpl>
+      get copyWith => __$$WcPairingDeleteRequestImplCopyWithImpl<
+          _$WcPairingDeleteRequestImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_WcPairingDeleteRequestToJson(
+    return _$$WcPairingDeleteRequestImplToJson(
       this,
     );
   }
@@ -158,10 +161,10 @@ class _$_WcPairingDeleteRequest implements _WcPairingDeleteRequest {
 abstract class _WcPairingDeleteRequest implements WcPairingDeleteRequest {
   const factory _WcPairingDeleteRequest(
       {required final int code,
-      required final String message}) = _$_WcPairingDeleteRequest;
+      required final String message}) = _$WcPairingDeleteRequestImpl;
 
   factory _WcPairingDeleteRequest.fromJson(Map<String, dynamic> json) =
-      _$_WcPairingDeleteRequest.fromJson;
+      _$WcPairingDeleteRequestImpl.fromJson;
 
   @override
   int get code;
@@ -169,8 +172,8 @@ abstract class _WcPairingDeleteRequest implements WcPairingDeleteRequest {
   String get message;
   @override
   @JsonKey(ignore: true)
-  _$$_WcPairingDeleteRequestCopyWith<_$_WcPairingDeleteRequest> get copyWith =>
-      throw _privateConstructorUsedError;
+  _$$WcPairingDeleteRequestImplCopyWith<_$WcPairingDeleteRequestImpl>
+      get copyWith => throw _privateConstructorUsedError;
 }
 
 WcPairingPingRequest _$WcPairingPingRequestFromJson(Map<String, dynamic> json) {
@@ -222,22 +225,22 @@ class _$WcPairingPingRequestCopyWithImpl<$Res,
 }
 
 /// @nodoc
-abstract class _$$_WcPairingPingRequestCopyWith<$Res>
+abstract class _$$WcPairingPingRequestImplCopyWith<$Res>
     implements $WcPairingPingRequestCopyWith<$Res> {
-  factory _$$_WcPairingPingRequestCopyWith(_$_WcPairingPingRequest value,
-          $Res Function(_$_WcPairingPingRequest) then) =
-      __$$_WcPairingPingRequestCopyWithImpl<$Res>;
+  factory _$$WcPairingPingRequestImplCopyWith(_$WcPairingPingRequestImpl value,
+          $Res Function(_$WcPairingPingRequestImpl) then) =
+      __$$WcPairingPingRequestImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({Map<String, dynamic> data});
 }
 
 /// @nodoc
-class __$$_WcPairingPingRequestCopyWithImpl<$Res>
-    extends _$WcPairingPingRequestCopyWithImpl<$Res, _$_WcPairingPingRequest>
-    implements _$$_WcPairingPingRequestCopyWith<$Res> {
-  __$$_WcPairingPingRequestCopyWithImpl(_$_WcPairingPingRequest _value,
-      $Res Function(_$_WcPairingPingRequest) _then)
+class __$$WcPairingPingRequestImplCopyWithImpl<$Res>
+    extends _$WcPairingPingRequestCopyWithImpl<$Res, _$WcPairingPingRequestImpl>
+    implements _$$WcPairingPingRequestImplCopyWith<$Res> {
+  __$$WcPairingPingRequestImplCopyWithImpl(_$WcPairingPingRequestImpl _value,
+      $Res Function(_$WcPairingPingRequestImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -245,7 +248,7 @@ class __$$_WcPairingPingRequestCopyWithImpl<$Res>
   $Res call({
     Object? data = null,
   }) {
-    return _then(_$_WcPairingPingRequest(
+    return _then(_$WcPairingPingRequestImpl(
       data: null == data
           ? _value._data
           : data // ignore: cast_nullable_to_non_nullable
@@ -257,12 +260,12 @@ class __$$_WcPairingPingRequestCopyWithImpl<$Res>
 /// @nodoc
 
 @JsonSerializable()
-class _$_WcPairingPingRequest implements _WcPairingPingRequest {
-  const _$_WcPairingPingRequest({required final Map<String, dynamic> data})
+class _$WcPairingPingRequestImpl implements _WcPairingPingRequest {
+  const _$WcPairingPingRequestImpl({required final Map<String, dynamic> data})
       : _data = data;
 
-  factory _$_WcPairingPingRequest.fromJson(Map<String, dynamic> json) =>
-      _$$_WcPairingPingRequestFromJson(json);
+  factory _$WcPairingPingRequestImpl.fromJson(Map<String, dynamic> json) =>
+      _$$WcPairingPingRequestImplFromJson(json);
 
   final Map<String, dynamic> _data;
   @override
@@ -281,7 +284,7 @@ class _$_WcPairingPingRequest implements _WcPairingPingRequest {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_WcPairingPingRequest &&
+            other is _$WcPairingPingRequestImpl &&
             const DeepCollectionEquality().equals(other._data, _data));
   }
 
@@ -293,13 +296,14 @@ class _$_WcPairingPingRequest implements _WcPairingPingRequest {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_WcPairingPingRequestCopyWith<_$_WcPairingPingRequest> get copyWith =>
-      __$$_WcPairingPingRequestCopyWithImpl<_$_WcPairingPingRequest>(
-          this, _$identity);
+  _$$WcPairingPingRequestImplCopyWith<_$WcPairingPingRequestImpl>
+      get copyWith =>
+          __$$WcPairingPingRequestImplCopyWithImpl<_$WcPairingPingRequestImpl>(
+              this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_WcPairingPingRequestToJson(
+    return _$$WcPairingPingRequestImplToJson(
       this,
     );
   }
@@ -307,17 +311,17 @@ class _$_WcPairingPingRequest implements _WcPairingPingRequest {
 
 abstract class _WcPairingPingRequest implements WcPairingPingRequest {
   const factory _WcPairingPingRequest(
-      {required final Map<String, dynamic> data}) = _$_WcPairingPingRequest;
+      {required final Map<String, dynamic> data}) = _$WcPairingPingRequestImpl;
 
   factory _WcPairingPingRequest.fromJson(Map<String, dynamic> json) =
-      _$_WcPairingPingRequest.fromJson;
+      _$WcPairingPingRequestImpl.fromJson;
 
   @override
   Map<String, dynamic> get data;
   @override
   @JsonKey(ignore: true)
-  _$$_WcPairingPingRequestCopyWith<_$_WcPairingPingRequest> get copyWith =>
-      throw _privateConstructorUsedError;
+  _$$WcPairingPingRequestImplCopyWith<_$WcPairingPingRequestImpl>
+      get copyWith => throw _privateConstructorUsedError;
 }
 
 WcSessionProposeRequest _$WcSessionProposeRequestFromJson(
@@ -412,11 +416,12 @@ class _$WcSessionProposeRequestCopyWithImpl<$Res,
 }
 
 /// @nodoc
-abstract class _$$_WcSessionProposeRequestCopyWith<$Res>
+abstract class _$$WcSessionProposeRequestImplCopyWith<$Res>
     implements $WcSessionProposeRequestCopyWith<$Res> {
-  factory _$$_WcSessionProposeRequestCopyWith(_$_WcSessionProposeRequest value,
-          $Res Function(_$_WcSessionProposeRequest) then) =
-      __$$_WcSessionProposeRequestCopyWithImpl<$Res>;
+  factory _$$WcSessionProposeRequestImplCopyWith(
+          _$WcSessionProposeRequestImpl value,
+          $Res Function(_$WcSessionProposeRequestImpl) then) =
+      __$$WcSessionProposeRequestImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -431,12 +436,13 @@ abstract class _$$_WcSessionProposeRequestCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$_WcSessionProposeRequestCopyWithImpl<$Res>
+class __$$WcSessionProposeRequestImplCopyWithImpl<$Res>
     extends _$WcSessionProposeRequestCopyWithImpl<$Res,
-        _$_WcSessionProposeRequest>
-    implements _$$_WcSessionProposeRequestCopyWith<$Res> {
-  __$$_WcSessionProposeRequestCopyWithImpl(_$_WcSessionProposeRequest _value,
-      $Res Function(_$_WcSessionProposeRequest) _then)
+        _$WcSessionProposeRequestImpl>
+    implements _$$WcSessionProposeRequestImplCopyWith<$Res> {
+  __$$WcSessionProposeRequestImplCopyWithImpl(
+      _$WcSessionProposeRequestImpl _value,
+      $Res Function(_$WcSessionProposeRequestImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -448,7 +454,7 @@ class __$$_WcSessionProposeRequestCopyWithImpl<$Res>
     Object? sessionProperties = freezed,
     Object? proposer = null,
   }) {
-    return _then(_$_WcSessionProposeRequest(
+    return _then(_$WcSessionProposeRequestImpl(
       relays: null == relays
           ? _value._relays
           : relays // ignore: cast_nullable_to_non_nullable
@@ -476,8 +482,8 @@ class __$$_WcSessionProposeRequestCopyWithImpl<$Res>
 /// @nodoc
 
 @JsonSerializable(includeIfNull: false)
-class _$_WcSessionProposeRequest implements _WcSessionProposeRequest {
-  const _$_WcSessionProposeRequest(
+class _$WcSessionProposeRequestImpl implements _WcSessionProposeRequest {
+  const _$WcSessionProposeRequestImpl(
       {required final List<Relay> relays,
       required final Map<String, RequiredNamespace> requiredNamespaces,
       final Map<String, RequiredNamespace>? optionalNamespaces,
@@ -488,8 +494,8 @@ class _$_WcSessionProposeRequest implements _WcSessionProposeRequest {
         _optionalNamespaces = optionalNamespaces,
         _sessionProperties = sessionProperties;
 
-  factory _$_WcSessionProposeRequest.fromJson(Map<String, dynamic> json) =>
-      _$$_WcSessionProposeRequestFromJson(json);
+  factory _$WcSessionProposeRequestImpl.fromJson(Map<String, dynamic> json) =>
+      _$$WcSessionProposeRequestImplFromJson(json);
 
   final List<Relay> _relays;
   @override
@@ -542,7 +548,7 @@ class _$_WcSessionProposeRequest implements _WcSessionProposeRequest {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_WcSessionProposeRequest &&
+            other is _$WcSessionProposeRequestImpl &&
             const DeepCollectionEquality().equals(other._relays, _relays) &&
             const DeepCollectionEquality()
                 .equals(other._requiredNamespaces, _requiredNamespaces) &&
@@ -567,14 +573,13 @@ class _$_WcSessionProposeRequest implements _WcSessionProposeRequest {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_WcSessionProposeRequestCopyWith<_$_WcSessionProposeRequest>
-      get copyWith =>
-          __$$_WcSessionProposeRequestCopyWithImpl<_$_WcSessionProposeRequest>(
-              this, _$identity);
+  _$$WcSessionProposeRequestImplCopyWith<_$WcSessionProposeRequestImpl>
+      get copyWith => __$$WcSessionProposeRequestImplCopyWithImpl<
+          _$WcSessionProposeRequestImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_WcSessionProposeRequestToJson(
+    return _$$WcSessionProposeRequestImplToJson(
       this,
     );
   }
@@ -582,14 +587,15 @@ class _$_WcSessionProposeRequest implements _WcSessionProposeRequest {
 
 abstract class _WcSessionProposeRequest implements WcSessionProposeRequest {
   const factory _WcSessionProposeRequest(
-      {required final List<Relay> relays,
-      required final Map<String, RequiredNamespace> requiredNamespaces,
-      final Map<String, RequiredNamespace>? optionalNamespaces,
-      final Map<String, String>? sessionProperties,
-      required final ConnectionMetadata proposer}) = _$_WcSessionProposeRequest;
+          {required final List<Relay> relays,
+          required final Map<String, RequiredNamespace> requiredNamespaces,
+          final Map<String, RequiredNamespace>? optionalNamespaces,
+          final Map<String, String>? sessionProperties,
+          required final ConnectionMetadata proposer}) =
+      _$WcSessionProposeRequestImpl;
 
   factory _WcSessionProposeRequest.fromJson(Map<String, dynamic> json) =
-      _$_WcSessionProposeRequest.fromJson;
+      _$WcSessionProposeRequestImpl.fromJson;
 
   @override
   List<Relay> get relays;
@@ -603,7 +609,7 @@ abstract class _WcSessionProposeRequest implements WcSessionProposeRequest {
   ConnectionMetadata get proposer;
   @override
   @JsonKey(ignore: true)
-  _$$_WcSessionProposeRequestCopyWith<_$_WcSessionProposeRequest>
+  _$$WcSessionProposeRequestImplCopyWith<_$WcSessionProposeRequestImpl>
       get copyWith => throw _privateConstructorUsedError;
 }
 
@@ -663,24 +669,25 @@ class _$WcSessionProposeResponseCopyWithImpl<$Res,
 }
 
 /// @nodoc
-abstract class _$$_WcSessionProposeResponseCopyWith<$Res>
+abstract class _$$WcSessionProposeResponseImplCopyWith<$Res>
     implements $WcSessionProposeResponseCopyWith<$Res> {
-  factory _$$_WcSessionProposeResponseCopyWith(
-          _$_WcSessionProposeResponse value,
-          $Res Function(_$_WcSessionProposeResponse) then) =
-      __$$_WcSessionProposeResponseCopyWithImpl<$Res>;
+  factory _$$WcSessionProposeResponseImplCopyWith(
+          _$WcSessionProposeResponseImpl value,
+          $Res Function(_$WcSessionProposeResponseImpl) then) =
+      __$$WcSessionProposeResponseImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({Relay relay, String responderPublicKey});
 }
 
 /// @nodoc
-class __$$_WcSessionProposeResponseCopyWithImpl<$Res>
+class __$$WcSessionProposeResponseImplCopyWithImpl<$Res>
     extends _$WcSessionProposeResponseCopyWithImpl<$Res,
-        _$_WcSessionProposeResponse>
-    implements _$$_WcSessionProposeResponseCopyWith<$Res> {
-  __$$_WcSessionProposeResponseCopyWithImpl(_$_WcSessionProposeResponse _value,
-      $Res Function(_$_WcSessionProposeResponse) _then)
+        _$WcSessionProposeResponseImpl>
+    implements _$$WcSessionProposeResponseImplCopyWith<$Res> {
+  __$$WcSessionProposeResponseImplCopyWithImpl(
+      _$WcSessionProposeResponseImpl _value,
+      $Res Function(_$WcSessionProposeResponseImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -689,7 +696,7 @@ class __$$_WcSessionProposeResponseCopyWithImpl<$Res>
     Object? relay = null,
     Object? responderPublicKey = null,
   }) {
-    return _then(_$_WcSessionProposeResponse(
+    return _then(_$WcSessionProposeResponseImpl(
       relay: null == relay
           ? _value.relay
           : relay // ignore: cast_nullable_to_non_nullable
@@ -705,12 +712,12 @@ class __$$_WcSessionProposeResponseCopyWithImpl<$Res>
 /// @nodoc
 
 @JsonSerializable()
-class _$_WcSessionProposeResponse implements _WcSessionProposeResponse {
-  const _$_WcSessionProposeResponse(
+class _$WcSessionProposeResponseImpl implements _WcSessionProposeResponse {
+  const _$WcSessionProposeResponseImpl(
       {required this.relay, required this.responderPublicKey});
 
-  factory _$_WcSessionProposeResponse.fromJson(Map<String, dynamic> json) =>
-      _$$_WcSessionProposeResponseFromJson(json);
+  factory _$WcSessionProposeResponseImpl.fromJson(Map<String, dynamic> json) =>
+      _$$WcSessionProposeResponseImplFromJson(json);
 
   @override
   final Relay relay;
@@ -726,7 +733,7 @@ class _$_WcSessionProposeResponse implements _WcSessionProposeResponse {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_WcSessionProposeResponse &&
+            other is _$WcSessionProposeResponseImpl &&
             (identical(other.relay, relay) || other.relay == relay) &&
             (identical(other.responderPublicKey, responderPublicKey) ||
                 other.responderPublicKey == responderPublicKey));
@@ -739,13 +746,13 @@ class _$_WcSessionProposeResponse implements _WcSessionProposeResponse {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_WcSessionProposeResponseCopyWith<_$_WcSessionProposeResponse>
-      get copyWith => __$$_WcSessionProposeResponseCopyWithImpl<
-          _$_WcSessionProposeResponse>(this, _$identity);
+  _$$WcSessionProposeResponseImplCopyWith<_$WcSessionProposeResponseImpl>
+      get copyWith => __$$WcSessionProposeResponseImplCopyWithImpl<
+          _$WcSessionProposeResponseImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_WcSessionProposeResponseToJson(
+    return _$$WcSessionProposeResponseImplToJson(
       this,
     );
   }
@@ -753,11 +760,12 @@ class _$_WcSessionProposeResponse implements _WcSessionProposeResponse {
 
 abstract class _WcSessionProposeResponse implements WcSessionProposeResponse {
   const factory _WcSessionProposeResponse(
-      {required final Relay relay,
-      required final String responderPublicKey}) = _$_WcSessionProposeResponse;
+          {required final Relay relay,
+          required final String responderPublicKey}) =
+      _$WcSessionProposeResponseImpl;
 
   factory _WcSessionProposeResponse.fromJson(Map<String, dynamic> json) =
-      _$_WcSessionProposeResponse.fromJson;
+      _$WcSessionProposeResponseImpl.fromJson;
 
   @override
   Relay get relay;
@@ -765,7 +773,7 @@ abstract class _WcSessionProposeResponse implements WcSessionProposeResponse {
   String get responderPublicKey;
   @override
   @JsonKey(ignore: true)
-  _$$_WcSessionProposeResponseCopyWith<_$_WcSessionProposeResponse>
+  _$$WcSessionProposeResponseImplCopyWith<_$WcSessionProposeResponseImpl>
       get copyWith => throw _privateConstructorUsedError;
 }
 
@@ -875,11 +883,12 @@ class _$WcSessionSettleRequestCopyWithImpl<$Res,
 }
 
 /// @nodoc
-abstract class _$$_WcSessionSettleRequestCopyWith<$Res>
+abstract class _$$WcSessionSettleRequestImplCopyWith<$Res>
     implements $WcSessionSettleRequestCopyWith<$Res> {
-  factory _$$_WcSessionSettleRequestCopyWith(_$_WcSessionSettleRequest value,
-          $Res Function(_$_WcSessionSettleRequest) then) =
-      __$$_WcSessionSettleRequestCopyWithImpl<$Res>;
+  factory _$$WcSessionSettleRequestImplCopyWith(
+          _$WcSessionSettleRequestImpl value,
+          $Res Function(_$WcSessionSettleRequestImpl) then) =
+      __$$WcSessionSettleRequestImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -896,12 +905,13 @@ abstract class _$$_WcSessionSettleRequestCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$_WcSessionSettleRequestCopyWithImpl<$Res>
+class __$$WcSessionSettleRequestImplCopyWithImpl<$Res>
     extends _$WcSessionSettleRequestCopyWithImpl<$Res,
-        _$_WcSessionSettleRequest>
-    implements _$$_WcSessionSettleRequestCopyWith<$Res> {
-  __$$_WcSessionSettleRequestCopyWithImpl(_$_WcSessionSettleRequest _value,
-      $Res Function(_$_WcSessionSettleRequest) _then)
+        _$WcSessionSettleRequestImpl>
+    implements _$$WcSessionSettleRequestImplCopyWith<$Res> {
+  __$$WcSessionSettleRequestImplCopyWithImpl(
+      _$WcSessionSettleRequestImpl _value,
+      $Res Function(_$WcSessionSettleRequestImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -915,7 +925,7 @@ class __$$_WcSessionSettleRequestCopyWithImpl<$Res>
     Object? expiry = null,
     Object? controller = null,
   }) {
-    return _then(_$_WcSessionSettleRequest(
+    return _then(_$WcSessionSettleRequestImpl(
       relay: null == relay
           ? _value.relay
           : relay // ignore: cast_nullable_to_non_nullable
@@ -951,8 +961,8 @@ class __$$_WcSessionSettleRequestCopyWithImpl<$Res>
 /// @nodoc
 
 @JsonSerializable(includeIfNull: false)
-class _$_WcSessionSettleRequest implements _WcSessionSettleRequest {
-  const _$_WcSessionSettleRequest(
+class _$WcSessionSettleRequestImpl implements _WcSessionSettleRequest {
+  const _$WcSessionSettleRequestImpl(
       {required this.relay,
       required final Map<String, Namespace> namespaces,
       final Map<String, RequiredNamespace>? requiredNamespaces,
@@ -965,8 +975,8 @@ class _$_WcSessionSettleRequest implements _WcSessionSettleRequest {
         _optionalNamespaces = optionalNamespaces,
         _sessionProperties = sessionProperties;
 
-  factory _$_WcSessionSettleRequest.fromJson(Map<String, dynamic> json) =>
-      _$$_WcSessionSettleRequestFromJson(json);
+  factory _$WcSessionSettleRequestImpl.fromJson(Map<String, dynamic> json) =>
+      _$$WcSessionSettleRequestImplFromJson(json);
 
   @override
   final Relay relay;
@@ -1025,7 +1035,7 @@ class _$_WcSessionSettleRequest implements _WcSessionSettleRequest {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_WcSessionSettleRequest &&
+            other is _$WcSessionSettleRequestImpl &&
             (identical(other.relay, relay) || other.relay == relay) &&
             const DeepCollectionEquality()
                 .equals(other._namespaces, _namespaces) &&
@@ -1055,13 +1065,13 @@ class _$_WcSessionSettleRequest implements _WcSessionSettleRequest {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_WcSessionSettleRequestCopyWith<_$_WcSessionSettleRequest> get copyWith =>
-      __$$_WcSessionSettleRequestCopyWithImpl<_$_WcSessionSettleRequest>(
-          this, _$identity);
+  _$$WcSessionSettleRequestImplCopyWith<_$WcSessionSettleRequestImpl>
+      get copyWith => __$$WcSessionSettleRequestImplCopyWithImpl<
+          _$WcSessionSettleRequestImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_WcSessionSettleRequestToJson(
+    return _$$WcSessionSettleRequestImplToJson(
       this,
     );
   }
@@ -1076,10 +1086,10 @@ abstract class _WcSessionSettleRequest implements WcSessionSettleRequest {
           final Map<String, String>? sessionProperties,
           required final int expiry,
           required final ConnectionMetadata controller}) =
-      _$_WcSessionSettleRequest;
+      _$WcSessionSettleRequestImpl;
 
   factory _WcSessionSettleRequest.fromJson(Map<String, dynamic> json) =
-      _$_WcSessionSettleRequest.fromJson;
+      _$WcSessionSettleRequestImpl.fromJson;
 
   @override
   Relay get relay;
@@ -1097,8 +1107,8 @@ abstract class _WcSessionSettleRequest implements WcSessionSettleRequest {
   ConnectionMetadata get controller;
   @override
   @JsonKey(ignore: true)
-  _$$_WcSessionSettleRequestCopyWith<_$_WcSessionSettleRequest> get copyWith =>
-      throw _privateConstructorUsedError;
+  _$$WcSessionSettleRequestImplCopyWith<_$WcSessionSettleRequestImpl>
+      get copyWith => throw _privateConstructorUsedError;
 }
 
 WcSessionUpdateRequest _$WcSessionUpdateRequestFromJson(
@@ -1151,23 +1161,25 @@ class _$WcSessionUpdateRequestCopyWithImpl<$Res,
 }
 
 /// @nodoc
-abstract class _$$_WcSessionUpdateRequestCopyWith<$Res>
+abstract class _$$WcSessionUpdateRequestImplCopyWith<$Res>
     implements $WcSessionUpdateRequestCopyWith<$Res> {
-  factory _$$_WcSessionUpdateRequestCopyWith(_$_WcSessionUpdateRequest value,
-          $Res Function(_$_WcSessionUpdateRequest) then) =
-      __$$_WcSessionUpdateRequestCopyWithImpl<$Res>;
+  factory _$$WcSessionUpdateRequestImplCopyWith(
+          _$WcSessionUpdateRequestImpl value,
+          $Res Function(_$WcSessionUpdateRequestImpl) then) =
+      __$$WcSessionUpdateRequestImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({Map<String, Namespace> namespaces});
 }
 
 /// @nodoc
-class __$$_WcSessionUpdateRequestCopyWithImpl<$Res>
+class __$$WcSessionUpdateRequestImplCopyWithImpl<$Res>
     extends _$WcSessionUpdateRequestCopyWithImpl<$Res,
-        _$_WcSessionUpdateRequest>
-    implements _$$_WcSessionUpdateRequestCopyWith<$Res> {
-  __$$_WcSessionUpdateRequestCopyWithImpl(_$_WcSessionUpdateRequest _value,
-      $Res Function(_$_WcSessionUpdateRequest) _then)
+        _$WcSessionUpdateRequestImpl>
+    implements _$$WcSessionUpdateRequestImplCopyWith<$Res> {
+  __$$WcSessionUpdateRequestImplCopyWithImpl(
+      _$WcSessionUpdateRequestImpl _value,
+      $Res Function(_$WcSessionUpdateRequestImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -1175,7 +1187,7 @@ class __$$_WcSessionUpdateRequestCopyWithImpl<$Res>
   $Res call({
     Object? namespaces = null,
   }) {
-    return _then(_$_WcSessionUpdateRequest(
+    return _then(_$WcSessionUpdateRequestImpl(
       namespaces: null == namespaces
           ? _value._namespaces
           : namespaces // ignore: cast_nullable_to_non_nullable
@@ -1187,13 +1199,13 @@ class __$$_WcSessionUpdateRequestCopyWithImpl<$Res>
 /// @nodoc
 
 @JsonSerializable()
-class _$_WcSessionUpdateRequest implements _WcSessionUpdateRequest {
-  const _$_WcSessionUpdateRequest(
+class _$WcSessionUpdateRequestImpl implements _WcSessionUpdateRequest {
+  const _$WcSessionUpdateRequestImpl(
       {required final Map<String, Namespace> namespaces})
       : _namespaces = namespaces;
 
-  factory _$_WcSessionUpdateRequest.fromJson(Map<String, dynamic> json) =>
-      _$$_WcSessionUpdateRequestFromJson(json);
+  factory _$WcSessionUpdateRequestImpl.fromJson(Map<String, dynamic> json) =>
+      _$$WcSessionUpdateRequestImplFromJson(json);
 
   final Map<String, Namespace> _namespaces;
   @override
@@ -1212,7 +1224,7 @@ class _$_WcSessionUpdateRequest implements _WcSessionUpdateRequest {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_WcSessionUpdateRequest &&
+            other is _$WcSessionUpdateRequestImpl &&
             const DeepCollectionEquality()
                 .equals(other._namespaces, _namespaces));
   }
@@ -1225,13 +1237,13 @@ class _$_WcSessionUpdateRequest implements _WcSessionUpdateRequest {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_WcSessionUpdateRequestCopyWith<_$_WcSessionUpdateRequest> get copyWith =>
-      __$$_WcSessionUpdateRequestCopyWithImpl<_$_WcSessionUpdateRequest>(
-          this, _$identity);
+  _$$WcSessionUpdateRequestImplCopyWith<_$WcSessionUpdateRequestImpl>
+      get copyWith => __$$WcSessionUpdateRequestImplCopyWithImpl<
+          _$WcSessionUpdateRequestImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_WcSessionUpdateRequestToJson(
+    return _$$WcSessionUpdateRequestImplToJson(
       this,
     );
   }
@@ -1240,17 +1252,17 @@ class _$_WcSessionUpdateRequest implements _WcSessionUpdateRequest {
 abstract class _WcSessionUpdateRequest implements WcSessionUpdateRequest {
   const factory _WcSessionUpdateRequest(
           {required final Map<String, Namespace> namespaces}) =
-      _$_WcSessionUpdateRequest;
+      _$WcSessionUpdateRequestImpl;
 
   factory _WcSessionUpdateRequest.fromJson(Map<String, dynamic> json) =
-      _$_WcSessionUpdateRequest.fromJson;
+      _$WcSessionUpdateRequestImpl.fromJson;
 
   @override
   Map<String, Namespace> get namespaces;
   @override
   @JsonKey(ignore: true)
-  _$$_WcSessionUpdateRequestCopyWith<_$_WcSessionUpdateRequest> get copyWith =>
-      throw _privateConstructorUsedError;
+  _$$WcSessionUpdateRequestImplCopyWith<_$WcSessionUpdateRequestImpl>
+      get copyWith => throw _privateConstructorUsedError;
 }
 
 WcSessionExtendRequest _$WcSessionExtendRequestFromJson(
@@ -1303,23 +1315,25 @@ class _$WcSessionExtendRequestCopyWithImpl<$Res,
 }
 
 /// @nodoc
-abstract class _$$_WcSessionExtendRequestCopyWith<$Res>
+abstract class _$$WcSessionExtendRequestImplCopyWith<$Res>
     implements $WcSessionExtendRequestCopyWith<$Res> {
-  factory _$$_WcSessionExtendRequestCopyWith(_$_WcSessionExtendRequest value,
-          $Res Function(_$_WcSessionExtendRequest) then) =
-      __$$_WcSessionExtendRequestCopyWithImpl<$Res>;
+  factory _$$WcSessionExtendRequestImplCopyWith(
+          _$WcSessionExtendRequestImpl value,
+          $Res Function(_$WcSessionExtendRequestImpl) then) =
+      __$$WcSessionExtendRequestImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({Map<String, dynamic>? data});
 }
 
 /// @nodoc
-class __$$_WcSessionExtendRequestCopyWithImpl<$Res>
+class __$$WcSessionExtendRequestImplCopyWithImpl<$Res>
     extends _$WcSessionExtendRequestCopyWithImpl<$Res,
-        _$_WcSessionExtendRequest>
-    implements _$$_WcSessionExtendRequestCopyWith<$Res> {
-  __$$_WcSessionExtendRequestCopyWithImpl(_$_WcSessionExtendRequest _value,
-      $Res Function(_$_WcSessionExtendRequest) _then)
+        _$WcSessionExtendRequestImpl>
+    implements _$$WcSessionExtendRequestImplCopyWith<$Res> {
+  __$$WcSessionExtendRequestImplCopyWithImpl(
+      _$WcSessionExtendRequestImpl _value,
+      $Res Function(_$WcSessionExtendRequestImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -1327,7 +1341,7 @@ class __$$_WcSessionExtendRequestCopyWithImpl<$Res>
   $Res call({
     Object? data = freezed,
   }) {
-    return _then(_$_WcSessionExtendRequest(
+    return _then(_$WcSessionExtendRequestImpl(
       data: freezed == data
           ? _value._data
           : data // ignore: cast_nullable_to_non_nullable
@@ -1339,12 +1353,12 @@ class __$$_WcSessionExtendRequestCopyWithImpl<$Res>
 /// @nodoc
 
 @JsonSerializable(includeIfNull: false)
-class _$_WcSessionExtendRequest implements _WcSessionExtendRequest {
-  const _$_WcSessionExtendRequest({final Map<String, dynamic>? data})
+class _$WcSessionExtendRequestImpl implements _WcSessionExtendRequest {
+  const _$WcSessionExtendRequestImpl({final Map<String, dynamic>? data})
       : _data = data;
 
-  factory _$_WcSessionExtendRequest.fromJson(Map<String, dynamic> json) =>
-      _$$_WcSessionExtendRequestFromJson(json);
+  factory _$WcSessionExtendRequestImpl.fromJson(Map<String, dynamic> json) =>
+      _$$WcSessionExtendRequestImplFromJson(json);
 
   final Map<String, dynamic>? _data;
   @override
@@ -1365,7 +1379,7 @@ class _$_WcSessionExtendRequest implements _WcSessionExtendRequest {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_WcSessionExtendRequest &&
+            other is _$WcSessionExtendRequestImpl &&
             const DeepCollectionEquality().equals(other._data, _data));
   }
 
@@ -1377,13 +1391,13 @@ class _$_WcSessionExtendRequest implements _WcSessionExtendRequest {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_WcSessionExtendRequestCopyWith<_$_WcSessionExtendRequest> get copyWith =>
-      __$$_WcSessionExtendRequestCopyWithImpl<_$_WcSessionExtendRequest>(
-          this, _$identity);
+  _$$WcSessionExtendRequestImplCopyWith<_$WcSessionExtendRequestImpl>
+      get copyWith => __$$WcSessionExtendRequestImplCopyWithImpl<
+          _$WcSessionExtendRequestImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_WcSessionExtendRequestToJson(
+    return _$$WcSessionExtendRequestImplToJson(
       this,
     );
   }
@@ -1391,17 +1405,17 @@ class _$_WcSessionExtendRequest implements _WcSessionExtendRequest {
 
 abstract class _WcSessionExtendRequest implements WcSessionExtendRequest {
   const factory _WcSessionExtendRequest({final Map<String, dynamic>? data}) =
-      _$_WcSessionExtendRequest;
+      _$WcSessionExtendRequestImpl;
 
   factory _WcSessionExtendRequest.fromJson(Map<String, dynamic> json) =
-      _$_WcSessionExtendRequest.fromJson;
+      _$WcSessionExtendRequestImpl.fromJson;
 
   @override
   Map<String, dynamic>? get data;
   @override
   @JsonKey(ignore: true)
-  _$$_WcSessionExtendRequestCopyWith<_$_WcSessionExtendRequest> get copyWith =>
-      throw _privateConstructorUsedError;
+  _$$WcSessionExtendRequestImplCopyWith<_$WcSessionExtendRequestImpl>
+      get copyWith => throw _privateConstructorUsedError;
 }
 
 WcSessionDeleteRequest _$WcSessionDeleteRequestFromJson(
@@ -1466,23 +1480,25 @@ class _$WcSessionDeleteRequestCopyWithImpl<$Res,
 }
 
 /// @nodoc
-abstract class _$$_WcSessionDeleteRequestCopyWith<$Res>
+abstract class _$$WcSessionDeleteRequestImplCopyWith<$Res>
     implements $WcSessionDeleteRequestCopyWith<$Res> {
-  factory _$$_WcSessionDeleteRequestCopyWith(_$_WcSessionDeleteRequest value,
-          $Res Function(_$_WcSessionDeleteRequest) then) =
-      __$$_WcSessionDeleteRequestCopyWithImpl<$Res>;
+  factory _$$WcSessionDeleteRequestImplCopyWith(
+          _$WcSessionDeleteRequestImpl value,
+          $Res Function(_$WcSessionDeleteRequestImpl) then) =
+      __$$WcSessionDeleteRequestImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({int code, String message, String? data});
 }
 
 /// @nodoc
-class __$$_WcSessionDeleteRequestCopyWithImpl<$Res>
+class __$$WcSessionDeleteRequestImplCopyWithImpl<$Res>
     extends _$WcSessionDeleteRequestCopyWithImpl<$Res,
-        _$_WcSessionDeleteRequest>
-    implements _$$_WcSessionDeleteRequestCopyWith<$Res> {
-  __$$_WcSessionDeleteRequestCopyWithImpl(_$_WcSessionDeleteRequest _value,
-      $Res Function(_$_WcSessionDeleteRequest) _then)
+        _$WcSessionDeleteRequestImpl>
+    implements _$$WcSessionDeleteRequestImplCopyWith<$Res> {
+  __$$WcSessionDeleteRequestImplCopyWithImpl(
+      _$WcSessionDeleteRequestImpl _value,
+      $Res Function(_$WcSessionDeleteRequestImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -1492,7 +1508,7 @@ class __$$_WcSessionDeleteRequestCopyWithImpl<$Res>
     Object? message = null,
     Object? data = freezed,
   }) {
-    return _then(_$_WcSessionDeleteRequest(
+    return _then(_$WcSessionDeleteRequestImpl(
       code: null == code
           ? _value.code
           : code // ignore: cast_nullable_to_non_nullable
@@ -1512,12 +1528,12 @@ class __$$_WcSessionDeleteRequestCopyWithImpl<$Res>
 /// @nodoc
 
 @JsonSerializable(includeIfNull: false)
-class _$_WcSessionDeleteRequest implements _WcSessionDeleteRequest {
-  const _$_WcSessionDeleteRequest(
+class _$WcSessionDeleteRequestImpl implements _WcSessionDeleteRequest {
+  const _$WcSessionDeleteRequestImpl(
       {required this.code, required this.message, this.data});
 
-  factory _$_WcSessionDeleteRequest.fromJson(Map<String, dynamic> json) =>
-      _$$_WcSessionDeleteRequestFromJson(json);
+  factory _$WcSessionDeleteRequestImpl.fromJson(Map<String, dynamic> json) =>
+      _$$WcSessionDeleteRequestImplFromJson(json);
 
   @override
   final int code;
@@ -1535,7 +1551,7 @@ class _$_WcSessionDeleteRequest implements _WcSessionDeleteRequest {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_WcSessionDeleteRequest &&
+            other is _$WcSessionDeleteRequestImpl &&
             (identical(other.code, code) || other.code == code) &&
             (identical(other.message, message) || other.message == message) &&
             (identical(other.data, data) || other.data == data));
@@ -1548,13 +1564,13 @@ class _$_WcSessionDeleteRequest implements _WcSessionDeleteRequest {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_WcSessionDeleteRequestCopyWith<_$_WcSessionDeleteRequest> get copyWith =>
-      __$$_WcSessionDeleteRequestCopyWithImpl<_$_WcSessionDeleteRequest>(
-          this, _$identity);
+  _$$WcSessionDeleteRequestImplCopyWith<_$WcSessionDeleteRequestImpl>
+      get copyWith => __$$WcSessionDeleteRequestImplCopyWithImpl<
+          _$WcSessionDeleteRequestImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_WcSessionDeleteRequestToJson(
+    return _$$WcSessionDeleteRequestImplToJson(
       this,
     );
   }
@@ -1564,10 +1580,10 @@ abstract class _WcSessionDeleteRequest implements WcSessionDeleteRequest {
   const factory _WcSessionDeleteRequest(
       {required final int code,
       required final String message,
-      final String? data}) = _$_WcSessionDeleteRequest;
+      final String? data}) = _$WcSessionDeleteRequestImpl;
 
   factory _WcSessionDeleteRequest.fromJson(Map<String, dynamic> json) =
-      _$_WcSessionDeleteRequest.fromJson;
+      _$WcSessionDeleteRequestImpl.fromJson;
 
   @override
   int get code;
@@ -1577,8 +1593,8 @@ abstract class _WcSessionDeleteRequest implements WcSessionDeleteRequest {
   String? get data;
   @override
   @JsonKey(ignore: true)
-  _$$_WcSessionDeleteRequestCopyWith<_$_WcSessionDeleteRequest> get copyWith =>
-      throw _privateConstructorUsedError;
+  _$$WcSessionDeleteRequestImplCopyWith<_$WcSessionDeleteRequestImpl>
+      get copyWith => throw _privateConstructorUsedError;
 }
 
 WcSessionPingRequest _$WcSessionPingRequestFromJson(Map<String, dynamic> json) {
@@ -1630,22 +1646,22 @@ class _$WcSessionPingRequestCopyWithImpl<$Res,
 }
 
 /// @nodoc
-abstract class _$$_WcSessionPingRequestCopyWith<$Res>
+abstract class _$$WcSessionPingRequestImplCopyWith<$Res>
     implements $WcSessionPingRequestCopyWith<$Res> {
-  factory _$$_WcSessionPingRequestCopyWith(_$_WcSessionPingRequest value,
-          $Res Function(_$_WcSessionPingRequest) then) =
-      __$$_WcSessionPingRequestCopyWithImpl<$Res>;
+  factory _$$WcSessionPingRequestImplCopyWith(_$WcSessionPingRequestImpl value,
+          $Res Function(_$WcSessionPingRequestImpl) then) =
+      __$$WcSessionPingRequestImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({Map<String, dynamic>? data});
 }
 
 /// @nodoc
-class __$$_WcSessionPingRequestCopyWithImpl<$Res>
-    extends _$WcSessionPingRequestCopyWithImpl<$Res, _$_WcSessionPingRequest>
-    implements _$$_WcSessionPingRequestCopyWith<$Res> {
-  __$$_WcSessionPingRequestCopyWithImpl(_$_WcSessionPingRequest _value,
-      $Res Function(_$_WcSessionPingRequest) _then)
+class __$$WcSessionPingRequestImplCopyWithImpl<$Res>
+    extends _$WcSessionPingRequestCopyWithImpl<$Res, _$WcSessionPingRequestImpl>
+    implements _$$WcSessionPingRequestImplCopyWith<$Res> {
+  __$$WcSessionPingRequestImplCopyWithImpl(_$WcSessionPingRequestImpl _value,
+      $Res Function(_$WcSessionPingRequestImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -1653,7 +1669,7 @@ class __$$_WcSessionPingRequestCopyWithImpl<$Res>
   $Res call({
     Object? data = freezed,
   }) {
-    return _then(_$_WcSessionPingRequest(
+    return _then(_$WcSessionPingRequestImpl(
       data: freezed == data
           ? _value._data
           : data // ignore: cast_nullable_to_non_nullable
@@ -1665,12 +1681,12 @@ class __$$_WcSessionPingRequestCopyWithImpl<$Res>
 /// @nodoc
 
 @JsonSerializable(includeIfNull: false)
-class _$_WcSessionPingRequest implements _WcSessionPingRequest {
-  const _$_WcSessionPingRequest({final Map<String, dynamic>? data})
+class _$WcSessionPingRequestImpl implements _WcSessionPingRequest {
+  const _$WcSessionPingRequestImpl({final Map<String, dynamic>? data})
       : _data = data;
 
-  factory _$_WcSessionPingRequest.fromJson(Map<String, dynamic> json) =>
-      _$$_WcSessionPingRequestFromJson(json);
+  factory _$WcSessionPingRequestImpl.fromJson(Map<String, dynamic> json) =>
+      _$$WcSessionPingRequestImplFromJson(json);
 
   final Map<String, dynamic>? _data;
   @override
@@ -1691,7 +1707,7 @@ class _$_WcSessionPingRequest implements _WcSessionPingRequest {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_WcSessionPingRequest &&
+            other is _$WcSessionPingRequestImpl &&
             const DeepCollectionEquality().equals(other._data, _data));
   }
 
@@ -1703,13 +1719,14 @@ class _$_WcSessionPingRequest implements _WcSessionPingRequest {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_WcSessionPingRequestCopyWith<_$_WcSessionPingRequest> get copyWith =>
-      __$$_WcSessionPingRequestCopyWithImpl<_$_WcSessionPingRequest>(
-          this, _$identity);
+  _$$WcSessionPingRequestImplCopyWith<_$WcSessionPingRequestImpl>
+      get copyWith =>
+          __$$WcSessionPingRequestImplCopyWithImpl<_$WcSessionPingRequestImpl>(
+              this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_WcSessionPingRequestToJson(
+    return _$$WcSessionPingRequestImplToJson(
       this,
     );
   }
@@ -1717,17 +1734,17 @@ class _$_WcSessionPingRequest implements _WcSessionPingRequest {
 
 abstract class _WcSessionPingRequest implements WcSessionPingRequest {
   const factory _WcSessionPingRequest({final Map<String, dynamic>? data}) =
-      _$_WcSessionPingRequest;
+      _$WcSessionPingRequestImpl;
 
   factory _WcSessionPingRequest.fromJson(Map<String, dynamic> json) =
-      _$_WcSessionPingRequest.fromJson;
+      _$WcSessionPingRequestImpl.fromJson;
 
   @override
   Map<String, dynamic>? get data;
   @override
   @JsonKey(ignore: true)
-  _$$_WcSessionPingRequestCopyWith<_$_WcSessionPingRequest> get copyWith =>
-      throw _privateConstructorUsedError;
+  _$$WcSessionPingRequestImplCopyWith<_$WcSessionPingRequestImpl>
+      get copyWith => throw _privateConstructorUsedError;
 }
 
 WcSessionRequestRequest _$WcSessionRequestRequestFromJson(
@@ -1796,11 +1813,12 @@ class _$WcSessionRequestRequestCopyWithImpl<$Res,
 }
 
 /// @nodoc
-abstract class _$$_WcSessionRequestRequestCopyWith<$Res>
+abstract class _$$WcSessionRequestRequestImplCopyWith<$Res>
     implements $WcSessionRequestRequestCopyWith<$Res> {
-  factory _$$_WcSessionRequestRequestCopyWith(_$_WcSessionRequestRequest value,
-          $Res Function(_$_WcSessionRequestRequest) then) =
-      __$$_WcSessionRequestRequestCopyWithImpl<$Res>;
+  factory _$$WcSessionRequestRequestImplCopyWith(
+          _$WcSessionRequestRequestImpl value,
+          $Res Function(_$WcSessionRequestRequestImpl) then) =
+      __$$WcSessionRequestRequestImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({String chainId, SessionRequestParams request});
@@ -1810,12 +1828,13 @@ abstract class _$$_WcSessionRequestRequestCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$_WcSessionRequestRequestCopyWithImpl<$Res>
+class __$$WcSessionRequestRequestImplCopyWithImpl<$Res>
     extends _$WcSessionRequestRequestCopyWithImpl<$Res,
-        _$_WcSessionRequestRequest>
-    implements _$$_WcSessionRequestRequestCopyWith<$Res> {
-  __$$_WcSessionRequestRequestCopyWithImpl(_$_WcSessionRequestRequest _value,
-      $Res Function(_$_WcSessionRequestRequest) _then)
+        _$WcSessionRequestRequestImpl>
+    implements _$$WcSessionRequestRequestImplCopyWith<$Res> {
+  __$$WcSessionRequestRequestImplCopyWithImpl(
+      _$WcSessionRequestRequestImpl _value,
+      $Res Function(_$WcSessionRequestRequestImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -1824,7 +1843,7 @@ class __$$_WcSessionRequestRequestCopyWithImpl<$Res>
     Object? chainId = null,
     Object? request = null,
   }) {
-    return _then(_$_WcSessionRequestRequest(
+    return _then(_$WcSessionRequestRequestImpl(
       chainId: null == chainId
           ? _value.chainId
           : chainId // ignore: cast_nullable_to_non_nullable
@@ -1840,12 +1859,12 @@ class __$$_WcSessionRequestRequestCopyWithImpl<$Res>
 /// @nodoc
 
 @JsonSerializable()
-class _$_WcSessionRequestRequest implements _WcSessionRequestRequest {
-  const _$_WcSessionRequestRequest(
+class _$WcSessionRequestRequestImpl implements _WcSessionRequestRequest {
+  const _$WcSessionRequestRequestImpl(
       {required this.chainId, required this.request});
 
-  factory _$_WcSessionRequestRequest.fromJson(Map<String, dynamic> json) =>
-      _$$_WcSessionRequestRequestFromJson(json);
+  factory _$WcSessionRequestRequestImpl.fromJson(Map<String, dynamic> json) =>
+      _$$WcSessionRequestRequestImplFromJson(json);
 
   @override
   final String chainId;
@@ -1861,7 +1880,7 @@ class _$_WcSessionRequestRequest implements _WcSessionRequestRequest {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_WcSessionRequestRequest &&
+            other is _$WcSessionRequestRequestImpl &&
             (identical(other.chainId, chainId) || other.chainId == chainId) &&
             (identical(other.request, request) || other.request == request));
   }
@@ -1873,14 +1892,13 @@ class _$_WcSessionRequestRequest implements _WcSessionRequestRequest {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_WcSessionRequestRequestCopyWith<_$_WcSessionRequestRequest>
-      get copyWith =>
-          __$$_WcSessionRequestRequestCopyWithImpl<_$_WcSessionRequestRequest>(
-              this, _$identity);
+  _$$WcSessionRequestRequestImplCopyWith<_$WcSessionRequestRequestImpl>
+      get copyWith => __$$WcSessionRequestRequestImplCopyWithImpl<
+          _$WcSessionRequestRequestImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_WcSessionRequestRequestToJson(
+    return _$$WcSessionRequestRequestImplToJson(
       this,
     );
   }
@@ -1890,10 +1908,10 @@ abstract class _WcSessionRequestRequest implements WcSessionRequestRequest {
   const factory _WcSessionRequestRequest(
           {required final String chainId,
           required final SessionRequestParams request}) =
-      _$_WcSessionRequestRequest;
+      _$WcSessionRequestRequestImpl;
 
   factory _WcSessionRequestRequest.fromJson(Map<String, dynamic> json) =
-      _$_WcSessionRequestRequest.fromJson;
+      _$WcSessionRequestRequestImpl.fromJson;
 
   @override
   String get chainId;
@@ -1901,7 +1919,7 @@ abstract class _WcSessionRequestRequest implements WcSessionRequestRequest {
   SessionRequestParams get request;
   @override
   @JsonKey(ignore: true)
-  _$$_WcSessionRequestRequestCopyWith<_$_WcSessionRequestRequest>
+  _$$WcSessionRequestRequestImplCopyWith<_$WcSessionRequestRequestImpl>
       get copyWith => throw _privateConstructorUsedError;
 }
 
@@ -1960,22 +1978,22 @@ class _$SessionRequestParamsCopyWithImpl<$Res,
 }
 
 /// @nodoc
-abstract class _$$_SessionRequestParamsCopyWith<$Res>
+abstract class _$$SessionRequestParamsImplCopyWith<$Res>
     implements $SessionRequestParamsCopyWith<$Res> {
-  factory _$$_SessionRequestParamsCopyWith(_$_SessionRequestParams value,
-          $Res Function(_$_SessionRequestParams) then) =
-      __$$_SessionRequestParamsCopyWithImpl<$Res>;
+  factory _$$SessionRequestParamsImplCopyWith(_$SessionRequestParamsImpl value,
+          $Res Function(_$SessionRequestParamsImpl) then) =
+      __$$SessionRequestParamsImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({String method, dynamic params});
 }
 
 /// @nodoc
-class __$$_SessionRequestParamsCopyWithImpl<$Res>
-    extends _$SessionRequestParamsCopyWithImpl<$Res, _$_SessionRequestParams>
-    implements _$$_SessionRequestParamsCopyWith<$Res> {
-  __$$_SessionRequestParamsCopyWithImpl(_$_SessionRequestParams _value,
-      $Res Function(_$_SessionRequestParams) _then)
+class __$$SessionRequestParamsImplCopyWithImpl<$Res>
+    extends _$SessionRequestParamsCopyWithImpl<$Res, _$SessionRequestParamsImpl>
+    implements _$$SessionRequestParamsImplCopyWith<$Res> {
+  __$$SessionRequestParamsImplCopyWithImpl(_$SessionRequestParamsImpl _value,
+      $Res Function(_$SessionRequestParamsImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -1984,7 +2002,7 @@ class __$$_SessionRequestParamsCopyWithImpl<$Res>
     Object? method = null,
     Object? params = freezed,
   }) {
-    return _then(_$_SessionRequestParams(
+    return _then(_$SessionRequestParamsImpl(
       method: null == method
           ? _value.method
           : method // ignore: cast_nullable_to_non_nullable
@@ -2000,11 +2018,12 @@ class __$$_SessionRequestParamsCopyWithImpl<$Res>
 /// @nodoc
 
 @JsonSerializable()
-class _$_SessionRequestParams implements _SessionRequestParams {
-  const _$_SessionRequestParams({required this.method, required this.params});
+class _$SessionRequestParamsImpl implements _SessionRequestParams {
+  const _$SessionRequestParamsImpl(
+      {required this.method, required this.params});
 
-  factory _$_SessionRequestParams.fromJson(Map<String, dynamic> json) =>
-      _$$_SessionRequestParamsFromJson(json);
+  factory _$SessionRequestParamsImpl.fromJson(Map<String, dynamic> json) =>
+      _$$SessionRequestParamsImplFromJson(json);
 
   @override
   final String method;
@@ -2020,7 +2039,7 @@ class _$_SessionRequestParams implements _SessionRequestParams {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_SessionRequestParams &&
+            other is _$SessionRequestParamsImpl &&
             (identical(other.method, method) || other.method == method) &&
             const DeepCollectionEquality().equals(other.params, params));
   }
@@ -2033,13 +2052,14 @@ class _$_SessionRequestParams implements _SessionRequestParams {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_SessionRequestParamsCopyWith<_$_SessionRequestParams> get copyWith =>
-      __$$_SessionRequestParamsCopyWithImpl<_$_SessionRequestParams>(
-          this, _$identity);
+  _$$SessionRequestParamsImplCopyWith<_$SessionRequestParamsImpl>
+      get copyWith =>
+          __$$SessionRequestParamsImplCopyWithImpl<_$SessionRequestParamsImpl>(
+              this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_SessionRequestParamsToJson(
+    return _$$SessionRequestParamsImplToJson(
       this,
     );
   }
@@ -2048,10 +2068,10 @@ class _$_SessionRequestParams implements _SessionRequestParams {
 abstract class _SessionRequestParams implements SessionRequestParams {
   const factory _SessionRequestParams(
       {required final String method,
-      required final dynamic params}) = _$_SessionRequestParams;
+      required final dynamic params}) = _$SessionRequestParamsImpl;
 
   factory _SessionRequestParams.fromJson(Map<String, dynamic> json) =
-      _$_SessionRequestParams.fromJson;
+      _$SessionRequestParamsImpl.fromJson;
 
   @override
   String get method;
@@ -2059,8 +2079,8 @@ abstract class _SessionRequestParams implements SessionRequestParams {
   dynamic get params;
   @override
   @JsonKey(ignore: true)
-  _$$_SessionRequestParamsCopyWith<_$_SessionRequestParams> get copyWith =>
-      throw _privateConstructorUsedError;
+  _$$SessionRequestParamsImplCopyWith<_$SessionRequestParamsImpl>
+      get copyWith => throw _privateConstructorUsedError;
 }
 
 WcSessionEventRequest _$WcSessionEventRequestFromJson(
@@ -2129,11 +2149,12 @@ class _$WcSessionEventRequestCopyWithImpl<$Res,
 }
 
 /// @nodoc
-abstract class _$$_WcSessionEventRequestCopyWith<$Res>
+abstract class _$$WcSessionEventRequestImplCopyWith<$Res>
     implements $WcSessionEventRequestCopyWith<$Res> {
-  factory _$$_WcSessionEventRequestCopyWith(_$_WcSessionEventRequest value,
-          $Res Function(_$_WcSessionEventRequest) then) =
-      __$$_WcSessionEventRequestCopyWithImpl<$Res>;
+  factory _$$WcSessionEventRequestImplCopyWith(
+          _$WcSessionEventRequestImpl value,
+          $Res Function(_$WcSessionEventRequestImpl) then) =
+      __$$WcSessionEventRequestImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({String chainId, SessionEventParams event});
@@ -2143,11 +2164,12 @@ abstract class _$$_WcSessionEventRequestCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$_WcSessionEventRequestCopyWithImpl<$Res>
-    extends _$WcSessionEventRequestCopyWithImpl<$Res, _$_WcSessionEventRequest>
-    implements _$$_WcSessionEventRequestCopyWith<$Res> {
-  __$$_WcSessionEventRequestCopyWithImpl(_$_WcSessionEventRequest _value,
-      $Res Function(_$_WcSessionEventRequest) _then)
+class __$$WcSessionEventRequestImplCopyWithImpl<$Res>
+    extends _$WcSessionEventRequestCopyWithImpl<$Res,
+        _$WcSessionEventRequestImpl>
+    implements _$$WcSessionEventRequestImplCopyWith<$Res> {
+  __$$WcSessionEventRequestImplCopyWithImpl(_$WcSessionEventRequestImpl _value,
+      $Res Function(_$WcSessionEventRequestImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -2156,7 +2178,7 @@ class __$$_WcSessionEventRequestCopyWithImpl<$Res>
     Object? chainId = null,
     Object? event = null,
   }) {
-    return _then(_$_WcSessionEventRequest(
+    return _then(_$WcSessionEventRequestImpl(
       chainId: null == chainId
           ? _value.chainId
           : chainId // ignore: cast_nullable_to_non_nullable
@@ -2172,11 +2194,12 @@ class __$$_WcSessionEventRequestCopyWithImpl<$Res>
 /// @nodoc
 
 @JsonSerializable()
-class _$_WcSessionEventRequest implements _WcSessionEventRequest {
-  const _$_WcSessionEventRequest({required this.chainId, required this.event});
+class _$WcSessionEventRequestImpl implements _WcSessionEventRequest {
+  const _$WcSessionEventRequestImpl(
+      {required this.chainId, required this.event});
 
-  factory _$_WcSessionEventRequest.fromJson(Map<String, dynamic> json) =>
-      _$$_WcSessionEventRequestFromJson(json);
+  factory _$WcSessionEventRequestImpl.fromJson(Map<String, dynamic> json) =>
+      _$$WcSessionEventRequestImplFromJson(json);
 
   @override
   final String chainId;
@@ -2192,7 +2215,7 @@ class _$_WcSessionEventRequest implements _WcSessionEventRequest {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_WcSessionEventRequest &&
+            other is _$WcSessionEventRequestImpl &&
             (identical(other.chainId, chainId) || other.chainId == chainId) &&
             (identical(other.event, event) || other.event == event));
   }
@@ -2204,13 +2227,13 @@ class _$_WcSessionEventRequest implements _WcSessionEventRequest {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_WcSessionEventRequestCopyWith<_$_WcSessionEventRequest> get copyWith =>
-      __$$_WcSessionEventRequestCopyWithImpl<_$_WcSessionEventRequest>(
-          this, _$identity);
+  _$$WcSessionEventRequestImplCopyWith<_$WcSessionEventRequestImpl>
+      get copyWith => __$$WcSessionEventRequestImplCopyWithImpl<
+          _$WcSessionEventRequestImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_WcSessionEventRequestToJson(
+    return _$$WcSessionEventRequestImplToJson(
       this,
     );
   }
@@ -2219,10 +2242,10 @@ class _$_WcSessionEventRequest implements _WcSessionEventRequest {
 abstract class _WcSessionEventRequest implements WcSessionEventRequest {
   const factory _WcSessionEventRequest(
       {required final String chainId,
-      required final SessionEventParams event}) = _$_WcSessionEventRequest;
+      required final SessionEventParams event}) = _$WcSessionEventRequestImpl;
 
   factory _WcSessionEventRequest.fromJson(Map<String, dynamic> json) =
-      _$_WcSessionEventRequest.fromJson;
+      _$WcSessionEventRequestImpl.fromJson;
 
   @override
   String get chainId;
@@ -2230,8 +2253,8 @@ abstract class _WcSessionEventRequest implements WcSessionEventRequest {
   SessionEventParams get event;
   @override
   @JsonKey(ignore: true)
-  _$$_WcSessionEventRequestCopyWith<_$_WcSessionEventRequest> get copyWith =>
-      throw _privateConstructorUsedError;
+  _$$WcSessionEventRequestImplCopyWith<_$WcSessionEventRequestImpl>
+      get copyWith => throw _privateConstructorUsedError;
 }
 
 SessionEventParams _$SessionEventParamsFromJson(Map<String, dynamic> json) {
@@ -2288,22 +2311,22 @@ class _$SessionEventParamsCopyWithImpl<$Res, $Val extends SessionEventParams>
 }
 
 /// @nodoc
-abstract class _$$_SessionEventParamsCopyWith<$Res>
+abstract class _$$SessionEventParamsImplCopyWith<$Res>
     implements $SessionEventParamsCopyWith<$Res> {
-  factory _$$_SessionEventParamsCopyWith(_$_SessionEventParams value,
-          $Res Function(_$_SessionEventParams) then) =
-      __$$_SessionEventParamsCopyWithImpl<$Res>;
+  factory _$$SessionEventParamsImplCopyWith(_$SessionEventParamsImpl value,
+          $Res Function(_$SessionEventParamsImpl) then) =
+      __$$SessionEventParamsImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({String name, dynamic data});
 }
 
 /// @nodoc
-class __$$_SessionEventParamsCopyWithImpl<$Res>
-    extends _$SessionEventParamsCopyWithImpl<$Res, _$_SessionEventParams>
-    implements _$$_SessionEventParamsCopyWith<$Res> {
-  __$$_SessionEventParamsCopyWithImpl(
-      _$_SessionEventParams _value, $Res Function(_$_SessionEventParams) _then)
+class __$$SessionEventParamsImplCopyWithImpl<$Res>
+    extends _$SessionEventParamsCopyWithImpl<$Res, _$SessionEventParamsImpl>
+    implements _$$SessionEventParamsImplCopyWith<$Res> {
+  __$$SessionEventParamsImplCopyWithImpl(_$SessionEventParamsImpl _value,
+      $Res Function(_$SessionEventParamsImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -2312,7 +2335,7 @@ class __$$_SessionEventParamsCopyWithImpl<$Res>
     Object? name = null,
     Object? data = freezed,
   }) {
-    return _then(_$_SessionEventParams(
+    return _then(_$SessionEventParamsImpl(
       name: null == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
@@ -2328,11 +2351,11 @@ class __$$_SessionEventParamsCopyWithImpl<$Res>
 /// @nodoc
 
 @JsonSerializable()
-class _$_SessionEventParams implements _SessionEventParams {
-  const _$_SessionEventParams({required this.name, required this.data});
+class _$SessionEventParamsImpl implements _SessionEventParams {
+  const _$SessionEventParamsImpl({required this.name, required this.data});
 
-  factory _$_SessionEventParams.fromJson(Map<String, dynamic> json) =>
-      _$$_SessionEventParamsFromJson(json);
+  factory _$SessionEventParamsImpl.fromJson(Map<String, dynamic> json) =>
+      _$$SessionEventParamsImplFromJson(json);
 
   @override
   final String name;
@@ -2348,7 +2371,7 @@ class _$_SessionEventParams implements _SessionEventParams {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_SessionEventParams &&
+            other is _$SessionEventParamsImpl &&
             (identical(other.name, name) || other.name == name) &&
             const DeepCollectionEquality().equals(other.data, data));
   }
@@ -2361,13 +2384,13 @@ class _$_SessionEventParams implements _SessionEventParams {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_SessionEventParamsCopyWith<_$_SessionEventParams> get copyWith =>
-      __$$_SessionEventParamsCopyWithImpl<_$_SessionEventParams>(
+  _$$SessionEventParamsImplCopyWith<_$SessionEventParamsImpl> get copyWith =>
+      __$$SessionEventParamsImplCopyWithImpl<_$SessionEventParamsImpl>(
           this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_SessionEventParamsToJson(
+    return _$$SessionEventParamsImplToJson(
       this,
     );
   }
@@ -2376,10 +2399,10 @@ class _$_SessionEventParams implements _SessionEventParams {
 abstract class _SessionEventParams implements SessionEventParams {
   const factory _SessionEventParams(
       {required final String name,
-      required final dynamic data}) = _$_SessionEventParams;
+      required final dynamic data}) = _$SessionEventParamsImpl;
 
   factory _SessionEventParams.fromJson(Map<String, dynamic> json) =
-      _$_SessionEventParams.fromJson;
+      _$SessionEventParamsImpl.fromJson;
 
   @override
   String get name;
@@ -2387,6 +2410,6 @@ abstract class _SessionEventParams implements SessionEventParams {
   dynamic get data;
   @override
   @JsonKey(ignore: true)
-  _$$_SessionEventParamsCopyWith<_$_SessionEventParams> get copyWith =>
+  _$$SessionEventParamsImplCopyWith<_$SessionEventParamsImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

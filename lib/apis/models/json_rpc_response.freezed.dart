@@ -96,11 +96,11 @@ class _$JsonRpcResponseCopyWithImpl<T, $Res, $Val extends JsonRpcResponse<T>>
 }
 
 /// @nodoc
-abstract class _$$_JsonRpcResponseCopyWith<T, $Res>
+abstract class _$$JsonRpcResponseImplCopyWith<T, $Res>
     implements $JsonRpcResponseCopyWith<T, $Res> {
-  factory _$$_JsonRpcResponseCopyWith(_$_JsonRpcResponse<T> value,
-          $Res Function(_$_JsonRpcResponse<T>) then) =
-      __$$_JsonRpcResponseCopyWithImpl<T, $Res>;
+  factory _$$JsonRpcResponseImplCopyWith(_$JsonRpcResponseImpl<T> value,
+          $Res Function(_$JsonRpcResponseImpl<T>) then) =
+      __$$JsonRpcResponseImplCopyWithImpl<T, $Res>;
   @override
   @useResult
   $Res call({int id, String jsonrpc, JsonRpcError? error, T? result});
@@ -110,11 +110,11 @@ abstract class _$$_JsonRpcResponseCopyWith<T, $Res>
 }
 
 /// @nodoc
-class __$$_JsonRpcResponseCopyWithImpl<T, $Res>
-    extends _$JsonRpcResponseCopyWithImpl<T, $Res, _$_JsonRpcResponse<T>>
-    implements _$$_JsonRpcResponseCopyWith<T, $Res> {
-  __$$_JsonRpcResponseCopyWithImpl(
-      _$_JsonRpcResponse<T> _value, $Res Function(_$_JsonRpcResponse<T>) _then)
+class __$$JsonRpcResponseImplCopyWithImpl<T, $Res>
+    extends _$JsonRpcResponseCopyWithImpl<T, $Res, _$JsonRpcResponseImpl<T>>
+    implements _$$JsonRpcResponseImplCopyWith<T, $Res> {
+  __$$JsonRpcResponseImplCopyWithImpl(_$JsonRpcResponseImpl<T> _value,
+      $Res Function(_$JsonRpcResponseImpl<T>) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -125,7 +125,7 @@ class __$$_JsonRpcResponseCopyWithImpl<T, $Res>
     Object? error = freezed,
     Object? result = freezed,
   }) {
-    return _then(_$_JsonRpcResponse<T>(
+    return _then(_$JsonRpcResponseImpl<T>(
       id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
@@ -148,13 +148,13 @@ class __$$_JsonRpcResponseCopyWithImpl<T, $Res>
 
 /// @nodoc
 @JsonSerializable(genericArgumentFactories: true)
-class _$_JsonRpcResponse<T> implements _JsonRpcResponse<T> {
-  const _$_JsonRpcResponse(
+class _$JsonRpcResponseImpl<T> implements _JsonRpcResponse<T> {
+  const _$JsonRpcResponseImpl(
       {required this.id, this.jsonrpc = '2.0', this.error, this.result});
 
-  factory _$_JsonRpcResponse.fromJson(
+  factory _$JsonRpcResponseImpl.fromJson(
           Map<String, dynamic> json, T Function(Object?) fromJsonT) =>
-      _$$_JsonRpcResponseFromJson(json, fromJsonT);
+      _$$JsonRpcResponseImplFromJson(json, fromJsonT);
 
   @override
   final int id;
@@ -175,7 +175,7 @@ class _$_JsonRpcResponse<T> implements _JsonRpcResponse<T> {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_JsonRpcResponse<T> &&
+            other is _$JsonRpcResponseImpl<T> &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.jsonrpc, jsonrpc) || other.jsonrpc == jsonrpc) &&
             (identical(other.error, error) || other.error == error) &&
@@ -190,13 +190,13 @@ class _$_JsonRpcResponse<T> implements _JsonRpcResponse<T> {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_JsonRpcResponseCopyWith<T, _$_JsonRpcResponse<T>> get copyWith =>
-      __$$_JsonRpcResponseCopyWithImpl<T, _$_JsonRpcResponse<T>>(
+  _$$JsonRpcResponseImplCopyWith<T, _$JsonRpcResponseImpl<T>> get copyWith =>
+      __$$JsonRpcResponseImplCopyWithImpl<T, _$JsonRpcResponseImpl<T>>(
           this, _$identity);
 
   @override
   Map<String, dynamic> toJson(Object? Function(T) toJsonT) {
-    return _$$_JsonRpcResponseToJson<T>(this, toJsonT);
+    return _$$JsonRpcResponseImplToJson<T>(this, toJsonT);
   }
 }
 
@@ -205,11 +205,11 @@ abstract class _JsonRpcResponse<T> implements JsonRpcResponse<T> {
       {required final int id,
       final String jsonrpc,
       final JsonRpcError? error,
-      final T? result}) = _$_JsonRpcResponse<T>;
+      final T? result}) = _$JsonRpcResponseImpl<T>;
 
   factory _JsonRpcResponse.fromJson(
           Map<String, dynamic> json, T Function(Object?) fromJsonT) =
-      _$_JsonRpcResponse<T>.fromJson;
+      _$JsonRpcResponseImpl<T>.fromJson;
 
   @override
   int get id;
@@ -221,6 +221,6 @@ abstract class _JsonRpcResponse<T> implements JsonRpcResponse<T> {
   T? get result;
   @override
   @JsonKey(ignore: true)
-  _$$_JsonRpcResponseCopyWith<T, _$_JsonRpcResponse<T>> get copyWith =>
+  _$$JsonRpcResponseImplCopyWith<T, _$JsonRpcResponseImpl<T>> get copyWith =>
       throw _privateConstructorUsedError;
 }

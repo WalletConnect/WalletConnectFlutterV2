@@ -6,15 +6,15 @@ part of 'verify_context.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$_VerifyContext _$$_VerifyContextFromJson(Map<String, dynamic> json) =>
-    _$_VerifyContext(
+_$VerifyContextImpl _$$VerifyContextImplFromJson(Map<String, dynamic> json) =>
+    _$VerifyContextImpl(
       origin: json['origin'] as String,
       validation: $enumDecode(_$ValidationEnumMap, json['validation']),
       verifyUrl: json['verifyUrl'] as String,
       isScam: json['isScam'] as bool?,
     );
 
-Map<String, dynamic> _$$_VerifyContextToJson(_$_VerifyContext instance) =>
+Map<String, dynamic> _$$VerifyContextImplToJson(_$VerifyContextImpl instance) =>
     <String, dynamic>{
       'origin': instance.origin,
       'validation': _$ValidationEnumMap[instance.validation]!,
@@ -29,16 +29,16 @@ const _$ValidationEnumMap = {
   Validation.SCAM: 'SCAM',
 };
 
-_$_AttestationResponse _$$_AttestationResponseFromJson(
+_$AttestationResponseImpl _$$AttestationResponseImplFromJson(
         Map<String, dynamic> json) =>
-    _$_AttestationResponse(
+    _$AttestationResponseImpl(
       origin: json['origin'] as String,
       attestationId: json['attestationId'] as String,
       isScam: json['isScam'] as bool?,
     );
 
-Map<String, dynamic> _$$_AttestationResponseToJson(
-        _$_AttestationResponse instance) =>
+Map<String, dynamic> _$$AttestationResponseImplToJson(
+        _$AttestationResponseImpl instance) =>
     <String, dynamic>{
       'origin': instance.origin,
       'attestationId': instance.attestationId,

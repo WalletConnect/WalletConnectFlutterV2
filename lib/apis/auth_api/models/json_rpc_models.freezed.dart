@@ -88,11 +88,11 @@ class _$WcAuthRequestRequestCopyWithImpl<$Res,
 }
 
 /// @nodoc
-abstract class _$$_WcAuthRequestRequestCopyWith<$Res>
+abstract class _$$WcAuthRequestRequestImplCopyWith<$Res>
     implements $WcAuthRequestRequestCopyWith<$Res> {
-  factory _$$_WcAuthRequestRequestCopyWith(_$_WcAuthRequestRequest value,
-          $Res Function(_$_WcAuthRequestRequest) then) =
-      __$$_WcAuthRequestRequestCopyWithImpl<$Res>;
+  factory _$$WcAuthRequestRequestImplCopyWith(_$WcAuthRequestRequestImpl value,
+          $Res Function(_$WcAuthRequestRequestImpl) then) =
+      __$$WcAuthRequestRequestImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({AuthPayloadParams payloadParams, ConnectionMetadata requester});
@@ -104,11 +104,11 @@ abstract class _$$_WcAuthRequestRequestCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$_WcAuthRequestRequestCopyWithImpl<$Res>
-    extends _$WcAuthRequestRequestCopyWithImpl<$Res, _$_WcAuthRequestRequest>
-    implements _$$_WcAuthRequestRequestCopyWith<$Res> {
-  __$$_WcAuthRequestRequestCopyWithImpl(_$_WcAuthRequestRequest _value,
-      $Res Function(_$_WcAuthRequestRequest) _then)
+class __$$WcAuthRequestRequestImplCopyWithImpl<$Res>
+    extends _$WcAuthRequestRequestCopyWithImpl<$Res, _$WcAuthRequestRequestImpl>
+    implements _$$WcAuthRequestRequestImplCopyWith<$Res> {
+  __$$WcAuthRequestRequestImplCopyWithImpl(_$WcAuthRequestRequestImpl _value,
+      $Res Function(_$WcAuthRequestRequestImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -117,7 +117,7 @@ class __$$_WcAuthRequestRequestCopyWithImpl<$Res>
     Object? payloadParams = null,
     Object? requester = null,
   }) {
-    return _then(_$_WcAuthRequestRequest(
+    return _then(_$WcAuthRequestRequestImpl(
       payloadParams: null == payloadParams
           ? _value.payloadParams
           : payloadParams // ignore: cast_nullable_to_non_nullable
@@ -133,12 +133,12 @@ class __$$_WcAuthRequestRequestCopyWithImpl<$Res>
 /// @nodoc
 
 @JsonSerializable()
-class _$_WcAuthRequestRequest implements _WcAuthRequestRequest {
-  const _$_WcAuthRequestRequest(
+class _$WcAuthRequestRequestImpl implements _WcAuthRequestRequest {
+  const _$WcAuthRequestRequestImpl(
       {required this.payloadParams, required this.requester});
 
-  factory _$_WcAuthRequestRequest.fromJson(Map<String, dynamic> json) =>
-      _$$_WcAuthRequestRequestFromJson(json);
+  factory _$WcAuthRequestRequestImpl.fromJson(Map<String, dynamic> json) =>
+      _$$WcAuthRequestRequestImplFromJson(json);
 
   @override
   final AuthPayloadParams payloadParams;
@@ -154,7 +154,7 @@ class _$_WcAuthRequestRequest implements _WcAuthRequestRequest {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_WcAuthRequestRequest &&
+            other is _$WcAuthRequestRequestImpl &&
             (identical(other.payloadParams, payloadParams) ||
                 other.payloadParams == payloadParams) &&
             (identical(other.requester, requester) ||
@@ -168,13 +168,14 @@ class _$_WcAuthRequestRequest implements _WcAuthRequestRequest {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_WcAuthRequestRequestCopyWith<_$_WcAuthRequestRequest> get copyWith =>
-      __$$_WcAuthRequestRequestCopyWithImpl<_$_WcAuthRequestRequest>(
-          this, _$identity);
+  _$$WcAuthRequestRequestImplCopyWith<_$WcAuthRequestRequestImpl>
+      get copyWith =>
+          __$$WcAuthRequestRequestImplCopyWithImpl<_$WcAuthRequestRequestImpl>(
+              this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_WcAuthRequestRequestToJson(
+    return _$$WcAuthRequestRequestImplToJson(
       this,
     );
   }
@@ -182,11 +183,12 @@ class _$_WcAuthRequestRequest implements _WcAuthRequestRequest {
 
 abstract class _WcAuthRequestRequest implements WcAuthRequestRequest {
   const factory _WcAuthRequestRequest(
-      {required final AuthPayloadParams payloadParams,
-      required final ConnectionMetadata requester}) = _$_WcAuthRequestRequest;
+          {required final AuthPayloadParams payloadParams,
+          required final ConnectionMetadata requester}) =
+      _$WcAuthRequestRequestImpl;
 
   factory _WcAuthRequestRequest.fromJson(Map<String, dynamic> json) =
-      _$_WcAuthRequestRequest.fromJson;
+      _$WcAuthRequestRequestImpl.fromJson;
 
   @override
   AuthPayloadParams get payloadParams;
@@ -194,8 +196,8 @@ abstract class _WcAuthRequestRequest implements WcAuthRequestRequest {
   ConnectionMetadata get requester;
   @override
   @JsonKey(ignore: true)
-  _$$_WcAuthRequestRequestCopyWith<_$_WcAuthRequestRequest> get copyWith =>
-      throw _privateConstructorUsedError;
+  _$$WcAuthRequestRequestImplCopyWith<_$WcAuthRequestRequestImpl>
+      get copyWith => throw _privateConstructorUsedError;
 }
 
 WcAuthRequestResult _$WcAuthRequestResultFromJson(Map<String, dynamic> json) {
@@ -256,11 +258,11 @@ class _$WcAuthRequestResultCopyWithImpl<$Res, $Val extends WcAuthRequestResult>
 }
 
 /// @nodoc
-abstract class _$$_WcAuthRequestResultCopyWith<$Res>
+abstract class _$$WcAuthRequestResultImplCopyWith<$Res>
     implements $WcAuthRequestResultCopyWith<$Res> {
-  factory _$$_WcAuthRequestResultCopyWith(_$_WcAuthRequestResult value,
-          $Res Function(_$_WcAuthRequestResult) then) =
-      __$$_WcAuthRequestResultCopyWithImpl<$Res>;
+  factory _$$WcAuthRequestResultImplCopyWith(_$WcAuthRequestResultImpl value,
+          $Res Function(_$WcAuthRequestResultImpl) then) =
+      __$$WcAuthRequestResultImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({Cacao cacao});
@@ -270,11 +272,11 @@ abstract class _$$_WcAuthRequestResultCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$_WcAuthRequestResultCopyWithImpl<$Res>
-    extends _$WcAuthRequestResultCopyWithImpl<$Res, _$_WcAuthRequestResult>
-    implements _$$_WcAuthRequestResultCopyWith<$Res> {
-  __$$_WcAuthRequestResultCopyWithImpl(_$_WcAuthRequestResult _value,
-      $Res Function(_$_WcAuthRequestResult) _then)
+class __$$WcAuthRequestResultImplCopyWithImpl<$Res>
+    extends _$WcAuthRequestResultCopyWithImpl<$Res, _$WcAuthRequestResultImpl>
+    implements _$$WcAuthRequestResultImplCopyWith<$Res> {
+  __$$WcAuthRequestResultImplCopyWithImpl(_$WcAuthRequestResultImpl _value,
+      $Res Function(_$WcAuthRequestResultImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -282,7 +284,7 @@ class __$$_WcAuthRequestResultCopyWithImpl<$Res>
   $Res call({
     Object? cacao = null,
   }) {
-    return _then(_$_WcAuthRequestResult(
+    return _then(_$WcAuthRequestResultImpl(
       cacao: null == cacao
           ? _value.cacao
           : cacao // ignore: cast_nullable_to_non_nullable
@@ -294,11 +296,11 @@ class __$$_WcAuthRequestResultCopyWithImpl<$Res>
 /// @nodoc
 
 @JsonSerializable()
-class _$_WcAuthRequestResult implements _WcAuthRequestResult {
-  const _$_WcAuthRequestResult({required this.cacao});
+class _$WcAuthRequestResultImpl implements _WcAuthRequestResult {
+  const _$WcAuthRequestResultImpl({required this.cacao});
 
-  factory _$_WcAuthRequestResult.fromJson(Map<String, dynamic> json) =>
-      _$$_WcAuthRequestResultFromJson(json);
+  factory _$WcAuthRequestResultImpl.fromJson(Map<String, dynamic> json) =>
+      _$$WcAuthRequestResultImplFromJson(json);
 
   @override
   final Cacao cacao;
@@ -312,7 +314,7 @@ class _$_WcAuthRequestResult implements _WcAuthRequestResult {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_WcAuthRequestResult &&
+            other is _$WcAuthRequestResultImpl &&
             (identical(other.cacao, cacao) || other.cacao == cacao));
   }
 
@@ -323,13 +325,13 @@ class _$_WcAuthRequestResult implements _WcAuthRequestResult {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_WcAuthRequestResultCopyWith<_$_WcAuthRequestResult> get copyWith =>
-      __$$_WcAuthRequestResultCopyWithImpl<_$_WcAuthRequestResult>(
+  _$$WcAuthRequestResultImplCopyWith<_$WcAuthRequestResultImpl> get copyWith =>
+      __$$WcAuthRequestResultImplCopyWithImpl<_$WcAuthRequestResultImpl>(
           this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_WcAuthRequestResultToJson(
+    return _$$WcAuthRequestResultImplToJson(
       this,
     );
   }
@@ -337,15 +339,15 @@ class _$_WcAuthRequestResult implements _WcAuthRequestResult {
 
 abstract class _WcAuthRequestResult implements WcAuthRequestResult {
   const factory _WcAuthRequestResult({required final Cacao cacao}) =
-      _$_WcAuthRequestResult;
+      _$WcAuthRequestResultImpl;
 
   factory _WcAuthRequestResult.fromJson(Map<String, dynamic> json) =
-      _$_WcAuthRequestResult.fromJson;
+      _$WcAuthRequestResultImpl.fromJson;
 
   @override
   Cacao get cacao;
   @override
   @JsonKey(ignore: true)
-  _$$_WcAuthRequestResultCopyWith<_$_WcAuthRequestResult> get copyWith =>
+  _$$WcAuthRequestResultImplCopyWith<_$WcAuthRequestResultImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

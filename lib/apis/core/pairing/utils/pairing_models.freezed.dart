@@ -105,11 +105,11 @@ class _$PairingInfoCopyWithImpl<$Res, $Val extends PairingInfo>
 }
 
 /// @nodoc
-abstract class _$$_PairingInfoCopyWith<$Res>
+abstract class _$$PairingInfoImplCopyWith<$Res>
     implements $PairingInfoCopyWith<$Res> {
-  factory _$$_PairingInfoCopyWith(
-          _$_PairingInfo value, $Res Function(_$_PairingInfo) then) =
-      __$$_PairingInfoCopyWithImpl<$Res>;
+  factory _$$PairingInfoImplCopyWith(
+          _$PairingInfoImpl value, $Res Function(_$PairingInfoImpl) then) =
+      __$$PairingInfoImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -124,11 +124,11 @@ abstract class _$$_PairingInfoCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$_PairingInfoCopyWithImpl<$Res>
-    extends _$PairingInfoCopyWithImpl<$Res, _$_PairingInfo>
-    implements _$$_PairingInfoCopyWith<$Res> {
-  __$$_PairingInfoCopyWithImpl(
-      _$_PairingInfo _value, $Res Function(_$_PairingInfo) _then)
+class __$$PairingInfoImplCopyWithImpl<$Res>
+    extends _$PairingInfoCopyWithImpl<$Res, _$PairingInfoImpl>
+    implements _$$PairingInfoImplCopyWith<$Res> {
+  __$$PairingInfoImplCopyWithImpl(
+      _$PairingInfoImpl _value, $Res Function(_$PairingInfoImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -140,7 +140,7 @@ class __$$_PairingInfoCopyWithImpl<$Res>
     Object? active = null,
     Object? peerMetadata = freezed,
   }) {
-    return _then(_$_PairingInfo(
+    return _then(_$PairingInfoImpl(
       topic: null == topic
           ? _value.topic
           : topic // ignore: cast_nullable_to_non_nullable
@@ -168,16 +168,16 @@ class __$$_PairingInfoCopyWithImpl<$Res>
 /// @nodoc
 
 @JsonSerializable()
-class _$_PairingInfo implements _PairingInfo {
-  const _$_PairingInfo(
+class _$PairingInfoImpl implements _PairingInfo {
+  const _$PairingInfoImpl(
       {required this.topic,
       required this.expiry,
       required this.relay,
       required this.active,
       this.peerMetadata});
 
-  factory _$_PairingInfo.fromJson(Map<String, dynamic> json) =>
-      _$$_PairingInfoFromJson(json);
+  factory _$PairingInfoImpl.fromJson(Map<String, dynamic> json) =>
+      _$$PairingInfoImplFromJson(json);
 
   @override
   final String topic;
@@ -199,7 +199,7 @@ class _$_PairingInfo implements _PairingInfo {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_PairingInfo &&
+            other is _$PairingInfoImpl &&
             (identical(other.topic, topic) || other.topic == topic) &&
             (identical(other.expiry, expiry) || other.expiry == expiry) &&
             (identical(other.relay, relay) || other.relay == relay) &&
@@ -216,12 +216,12 @@ class _$_PairingInfo implements _PairingInfo {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_PairingInfoCopyWith<_$_PairingInfo> get copyWith =>
-      __$$_PairingInfoCopyWithImpl<_$_PairingInfo>(this, _$identity);
+  _$$PairingInfoImplCopyWith<_$PairingInfoImpl> get copyWith =>
+      __$$PairingInfoImplCopyWithImpl<_$PairingInfoImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_PairingInfoToJson(
+    return _$$PairingInfoImplToJson(
       this,
     );
   }
@@ -233,10 +233,10 @@ abstract class _PairingInfo implements PairingInfo {
       required final int expiry,
       required final Relay relay,
       required final bool active,
-      final PairingMetadata? peerMetadata}) = _$_PairingInfo;
+      final PairingMetadata? peerMetadata}) = _$PairingInfoImpl;
 
   factory _PairingInfo.fromJson(Map<String, dynamic> json) =
-      _$_PairingInfo.fromJson;
+      _$PairingInfoImpl.fromJson;
 
   @override
   String get topic;
@@ -250,7 +250,7 @@ abstract class _PairingInfo implements PairingInfo {
   PairingMetadata? get peerMetadata;
   @override
   @JsonKey(ignore: true)
-  _$$_PairingInfoCopyWith<_$_PairingInfo> get copyWith =>
+  _$$PairingInfoImplCopyWith<_$PairingInfoImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
@@ -352,11 +352,11 @@ class _$PairingMetadataCopyWithImpl<$Res, $Val extends PairingMetadata>
 }
 
 /// @nodoc
-abstract class _$$_PairingMetadataCopyWith<$Res>
+abstract class _$$PairingMetadataImplCopyWith<$Res>
     implements $PairingMetadataCopyWith<$Res> {
-  factory _$$_PairingMetadataCopyWith(
-          _$_PairingMetadata value, $Res Function(_$_PairingMetadata) then) =
-      __$$_PairingMetadataCopyWithImpl<$Res>;
+  factory _$$PairingMetadataImplCopyWith(_$PairingMetadataImpl value,
+          $Res Function(_$PairingMetadataImpl) then) =
+      __$$PairingMetadataImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -372,11 +372,11 @@ abstract class _$$_PairingMetadataCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$_PairingMetadataCopyWithImpl<$Res>
-    extends _$PairingMetadataCopyWithImpl<$Res, _$_PairingMetadata>
-    implements _$$_PairingMetadataCopyWith<$Res> {
-  __$$_PairingMetadataCopyWithImpl(
-      _$_PairingMetadata _value, $Res Function(_$_PairingMetadata) _then)
+class __$$PairingMetadataImplCopyWithImpl<$Res>
+    extends _$PairingMetadataCopyWithImpl<$Res, _$PairingMetadataImpl>
+    implements _$$PairingMetadataImplCopyWith<$Res> {
+  __$$PairingMetadataImplCopyWithImpl(
+      _$PairingMetadataImpl _value, $Res Function(_$PairingMetadataImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -389,7 +389,7 @@ class __$$_PairingMetadataCopyWithImpl<$Res>
     Object? verifyUrl = freezed,
     Object? redirect = freezed,
   }) {
-    return _then(_$_PairingMetadata(
+    return _then(_$PairingMetadataImpl(
       name: null == name
           ? _value.name
           : name // ignore: cast_nullable_to_non_nullable
@@ -421,8 +421,8 @@ class __$$_PairingMetadataCopyWithImpl<$Res>
 /// @nodoc
 
 @JsonSerializable(includeIfNull: false)
-class _$_PairingMetadata implements _PairingMetadata {
-  const _$_PairingMetadata(
+class _$PairingMetadataImpl implements _PairingMetadata {
+  const _$PairingMetadataImpl(
       {required this.name,
       required this.description,
       required this.url,
@@ -431,8 +431,8 @@ class _$_PairingMetadata implements _PairingMetadata {
       this.redirect})
       : _icons = icons;
 
-  factory _$_PairingMetadata.fromJson(Map<String, dynamic> json) =>
-      _$$_PairingMetadataFromJson(json);
+  factory _$PairingMetadataImpl.fromJson(Map<String, dynamic> json) =>
+      _$$PairingMetadataImplFromJson(json);
 
   @override
   final String name;
@@ -462,7 +462,7 @@ class _$_PairingMetadata implements _PairingMetadata {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_PairingMetadata &&
+            other is _$PairingMetadataImpl &&
             (identical(other.name, name) || other.name == name) &&
             (identical(other.description, description) ||
                 other.description == description) &&
@@ -482,12 +482,13 @@ class _$_PairingMetadata implements _PairingMetadata {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_PairingMetadataCopyWith<_$_PairingMetadata> get copyWith =>
-      __$$_PairingMetadataCopyWithImpl<_$_PairingMetadata>(this, _$identity);
+  _$$PairingMetadataImplCopyWith<_$PairingMetadataImpl> get copyWith =>
+      __$$PairingMetadataImplCopyWithImpl<_$PairingMetadataImpl>(
+          this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_PairingMetadataToJson(
+    return _$$PairingMetadataImplToJson(
       this,
     );
   }
@@ -500,10 +501,10 @@ abstract class _PairingMetadata implements PairingMetadata {
       required final String url,
       required final List<String> icons,
       final String? verifyUrl,
-      final Redirect? redirect}) = _$_PairingMetadata;
+      final Redirect? redirect}) = _$PairingMetadataImpl;
 
   factory _PairingMetadata.fromJson(Map<String, dynamic> json) =
-      _$_PairingMetadata.fromJson;
+      _$PairingMetadataImpl.fromJson;
 
   @override
   String get name;
@@ -519,7 +520,7 @@ abstract class _PairingMetadata implements PairingMetadata {
   Redirect? get redirect;
   @override
   @JsonKey(ignore: true)
-  _$$_PairingMetadataCopyWith<_$_PairingMetadata> get copyWith =>
+  _$$PairingMetadataImplCopyWith<_$PairingMetadataImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
@@ -576,21 +577,22 @@ class _$RedirectCopyWithImpl<$Res, $Val extends Redirect>
 }
 
 /// @nodoc
-abstract class _$$_RedirectCopyWith<$Res> implements $RedirectCopyWith<$Res> {
-  factory _$$_RedirectCopyWith(
-          _$_Redirect value, $Res Function(_$_Redirect) then) =
-      __$$_RedirectCopyWithImpl<$Res>;
+abstract class _$$RedirectImplCopyWith<$Res>
+    implements $RedirectCopyWith<$Res> {
+  factory _$$RedirectImplCopyWith(
+          _$RedirectImpl value, $Res Function(_$RedirectImpl) then) =
+      __$$RedirectImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({String? native, String? universal});
 }
 
 /// @nodoc
-class __$$_RedirectCopyWithImpl<$Res>
-    extends _$RedirectCopyWithImpl<$Res, _$_Redirect>
-    implements _$$_RedirectCopyWith<$Res> {
-  __$$_RedirectCopyWithImpl(
-      _$_Redirect _value, $Res Function(_$_Redirect) _then)
+class __$$RedirectImplCopyWithImpl<$Res>
+    extends _$RedirectCopyWithImpl<$Res, _$RedirectImpl>
+    implements _$$RedirectImplCopyWith<$Res> {
+  __$$RedirectImplCopyWithImpl(
+      _$RedirectImpl _value, $Res Function(_$RedirectImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -599,7 +601,7 @@ class __$$_RedirectCopyWithImpl<$Res>
     Object? native = freezed,
     Object? universal = freezed,
   }) {
-    return _then(_$_Redirect(
+    return _then(_$RedirectImpl(
       native: freezed == native
           ? _value.native
           : native // ignore: cast_nullable_to_non_nullable
@@ -615,11 +617,11 @@ class __$$_RedirectCopyWithImpl<$Res>
 /// @nodoc
 
 @JsonSerializable()
-class _$_Redirect implements _Redirect {
-  const _$_Redirect({this.native, this.universal});
+class _$RedirectImpl implements _Redirect {
+  const _$RedirectImpl({this.native, this.universal});
 
-  factory _$_Redirect.fromJson(Map<String, dynamic> json) =>
-      _$$_RedirectFromJson(json);
+  factory _$RedirectImpl.fromJson(Map<String, dynamic> json) =>
+      _$$RedirectImplFromJson(json);
 
   @override
   final String? native;
@@ -635,7 +637,7 @@ class _$_Redirect implements _Redirect {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_Redirect &&
+            other is _$RedirectImpl &&
             (identical(other.native, native) || other.native == native) &&
             (identical(other.universal, universal) ||
                 other.universal == universal));
@@ -648,12 +650,12 @@ class _$_Redirect implements _Redirect {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_RedirectCopyWith<_$_Redirect> get copyWith =>
-      __$$_RedirectCopyWithImpl<_$_Redirect>(this, _$identity);
+  _$$RedirectImplCopyWith<_$RedirectImpl> get copyWith =>
+      __$$RedirectImplCopyWithImpl<_$RedirectImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_RedirectToJson(
+    return _$$RedirectImplToJson(
       this,
     );
   }
@@ -661,9 +663,10 @@ class _$_Redirect implements _Redirect {
 
 abstract class _Redirect implements Redirect {
   const factory _Redirect({final String? native, final String? universal}) =
-      _$_Redirect;
+      _$RedirectImpl;
 
-  factory _Redirect.fromJson(Map<String, dynamic> json) = _$_Redirect.fromJson;
+  factory _Redirect.fromJson(Map<String, dynamic> json) =
+      _$RedirectImpl.fromJson;
 
   @override
   String? get native;
@@ -671,7 +674,7 @@ abstract class _Redirect implements Redirect {
   String? get universal;
   @override
   @JsonKey(ignore: true)
-  _$$_RedirectCopyWith<_$_Redirect> get copyWith =>
+  _$$RedirectImplCopyWith<_$RedirectImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
@@ -766,11 +769,11 @@ class _$JsonRpcRecordCopyWithImpl<$Res, $Val extends JsonRpcRecord>
 }
 
 /// @nodoc
-abstract class _$$_JsonRpcRecordCopyWith<$Res>
+abstract class _$$JsonRpcRecordImplCopyWith<$Res>
     implements $JsonRpcRecordCopyWith<$Res> {
-  factory _$$_JsonRpcRecordCopyWith(
-          _$_JsonRpcRecord value, $Res Function(_$_JsonRpcRecord) then) =
-      __$$_JsonRpcRecordCopyWithImpl<$Res>;
+  factory _$$JsonRpcRecordImplCopyWith(
+          _$JsonRpcRecordImpl value, $Res Function(_$JsonRpcRecordImpl) then) =
+      __$$JsonRpcRecordImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -784,11 +787,11 @@ abstract class _$$_JsonRpcRecordCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$_JsonRpcRecordCopyWithImpl<$Res>
-    extends _$JsonRpcRecordCopyWithImpl<$Res, _$_JsonRpcRecord>
-    implements _$$_JsonRpcRecordCopyWith<$Res> {
-  __$$_JsonRpcRecordCopyWithImpl(
-      _$_JsonRpcRecord _value, $Res Function(_$_JsonRpcRecord) _then)
+class __$$JsonRpcRecordImplCopyWithImpl<$Res>
+    extends _$JsonRpcRecordCopyWithImpl<$Res, _$JsonRpcRecordImpl>
+    implements _$$JsonRpcRecordImplCopyWith<$Res> {
+  __$$JsonRpcRecordImplCopyWithImpl(
+      _$JsonRpcRecordImpl _value, $Res Function(_$JsonRpcRecordImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -802,7 +805,7 @@ class __$$_JsonRpcRecordCopyWithImpl<$Res>
     Object? expiry = freezed,
     Object? response = freezed,
   }) {
-    return _then(_$_JsonRpcRecord(
+    return _then(_$JsonRpcRecordImpl(
       id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
@@ -838,8 +841,8 @@ class __$$_JsonRpcRecordCopyWithImpl<$Res>
 /// @nodoc
 
 @JsonSerializable(includeIfNull: false)
-class _$_JsonRpcRecord implements _JsonRpcRecord {
-  const _$_JsonRpcRecord(
+class _$JsonRpcRecordImpl implements _JsonRpcRecord {
+  const _$JsonRpcRecordImpl(
       {required this.id,
       required this.topic,
       required this.method,
@@ -848,8 +851,8 @@ class _$_JsonRpcRecord implements _JsonRpcRecord {
       this.expiry,
       this.response});
 
-  factory _$_JsonRpcRecord.fromJson(Map<String, dynamic> json) =>
-      _$$_JsonRpcRecordFromJson(json);
+  factory _$JsonRpcRecordImpl.fromJson(Map<String, dynamic> json) =>
+      _$$JsonRpcRecordImplFromJson(json);
 
   @override
   final int id;
@@ -875,7 +878,7 @@ class _$_JsonRpcRecord implements _JsonRpcRecord {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_JsonRpcRecord &&
+            other is _$JsonRpcRecordImpl &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.topic, topic) || other.topic == topic) &&
             (identical(other.method, method) || other.method == method) &&
@@ -900,12 +903,12 @@ class _$_JsonRpcRecord implements _JsonRpcRecord {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_JsonRpcRecordCopyWith<_$_JsonRpcRecord> get copyWith =>
-      __$$_JsonRpcRecordCopyWithImpl<_$_JsonRpcRecord>(this, _$identity);
+  _$$JsonRpcRecordImplCopyWith<_$JsonRpcRecordImpl> get copyWith =>
+      __$$JsonRpcRecordImplCopyWithImpl<_$JsonRpcRecordImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_JsonRpcRecordToJson(
+    return _$$JsonRpcRecordImplToJson(
       this,
     );
   }
@@ -919,10 +922,10 @@ abstract class _JsonRpcRecord implements JsonRpcRecord {
       required final dynamic params,
       final String? chainId,
       final int? expiry,
-      final dynamic response}) = _$_JsonRpcRecord;
+      final dynamic response}) = _$JsonRpcRecordImpl;
 
   factory _JsonRpcRecord.fromJson(Map<String, dynamic> json) =
-      _$_JsonRpcRecord.fromJson;
+      _$JsonRpcRecordImpl.fromJson;
 
   @override
   int get id;
@@ -940,7 +943,7 @@ abstract class _JsonRpcRecord implements JsonRpcRecord {
   dynamic get response;
   @override
   @JsonKey(ignore: true)
-  _$$_JsonRpcRecordCopyWith<_$_JsonRpcRecord> get copyWith =>
+  _$$JsonRpcRecordImplCopyWith<_$JsonRpcRecordImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
@@ -1004,22 +1007,22 @@ class _$ReceiverPublicKeyCopyWithImpl<$Res, $Val extends ReceiverPublicKey>
 }
 
 /// @nodoc
-abstract class _$$_ReceiverPublicKeyCopyWith<$Res>
+abstract class _$$ReceiverPublicKeyImplCopyWith<$Res>
     implements $ReceiverPublicKeyCopyWith<$Res> {
-  factory _$$_ReceiverPublicKeyCopyWith(_$_ReceiverPublicKey value,
-          $Res Function(_$_ReceiverPublicKey) then) =
-      __$$_ReceiverPublicKeyCopyWithImpl<$Res>;
+  factory _$$ReceiverPublicKeyImplCopyWith(_$ReceiverPublicKeyImpl value,
+          $Res Function(_$ReceiverPublicKeyImpl) then) =
+      __$$ReceiverPublicKeyImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({String topic, String publicKey, int expiry});
 }
 
 /// @nodoc
-class __$$_ReceiverPublicKeyCopyWithImpl<$Res>
-    extends _$ReceiverPublicKeyCopyWithImpl<$Res, _$_ReceiverPublicKey>
-    implements _$$_ReceiverPublicKeyCopyWith<$Res> {
-  __$$_ReceiverPublicKeyCopyWithImpl(
-      _$_ReceiverPublicKey _value, $Res Function(_$_ReceiverPublicKey) _then)
+class __$$ReceiverPublicKeyImplCopyWithImpl<$Res>
+    extends _$ReceiverPublicKeyCopyWithImpl<$Res, _$ReceiverPublicKeyImpl>
+    implements _$$ReceiverPublicKeyImplCopyWith<$Res> {
+  __$$ReceiverPublicKeyImplCopyWithImpl(_$ReceiverPublicKeyImpl _value,
+      $Res Function(_$ReceiverPublicKeyImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -1029,7 +1032,7 @@ class __$$_ReceiverPublicKeyCopyWithImpl<$Res>
     Object? publicKey = null,
     Object? expiry = null,
   }) {
-    return _then(_$_ReceiverPublicKey(
+    return _then(_$ReceiverPublicKeyImpl(
       topic: null == topic
           ? _value.topic
           : topic // ignore: cast_nullable_to_non_nullable
@@ -1049,12 +1052,12 @@ class __$$_ReceiverPublicKeyCopyWithImpl<$Res>
 /// @nodoc
 
 @JsonSerializable(includeIfNull: false)
-class _$_ReceiverPublicKey implements _ReceiverPublicKey {
-  const _$_ReceiverPublicKey(
+class _$ReceiverPublicKeyImpl implements _ReceiverPublicKey {
+  const _$ReceiverPublicKeyImpl(
       {required this.topic, required this.publicKey, required this.expiry});
 
-  factory _$_ReceiverPublicKey.fromJson(Map<String, dynamic> json) =>
-      _$$_ReceiverPublicKeyFromJson(json);
+  factory _$ReceiverPublicKeyImpl.fromJson(Map<String, dynamic> json) =>
+      _$$ReceiverPublicKeyImplFromJson(json);
 
   @override
   final String topic;
@@ -1072,7 +1075,7 @@ class _$_ReceiverPublicKey implements _ReceiverPublicKey {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_ReceiverPublicKey &&
+            other is _$ReceiverPublicKeyImpl &&
             (identical(other.topic, topic) || other.topic == topic) &&
             (identical(other.publicKey, publicKey) ||
                 other.publicKey == publicKey) &&
@@ -1086,13 +1089,13 @@ class _$_ReceiverPublicKey implements _ReceiverPublicKey {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_ReceiverPublicKeyCopyWith<_$_ReceiverPublicKey> get copyWith =>
-      __$$_ReceiverPublicKeyCopyWithImpl<_$_ReceiverPublicKey>(
+  _$$ReceiverPublicKeyImplCopyWith<_$ReceiverPublicKeyImpl> get copyWith =>
+      __$$ReceiverPublicKeyImplCopyWithImpl<_$ReceiverPublicKeyImpl>(
           this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_ReceiverPublicKeyToJson(
+    return _$$ReceiverPublicKeyImplToJson(
       this,
     );
   }
@@ -1102,10 +1105,10 @@ abstract class _ReceiverPublicKey implements ReceiverPublicKey {
   const factory _ReceiverPublicKey(
       {required final String topic,
       required final String publicKey,
-      required final int expiry}) = _$_ReceiverPublicKey;
+      required final int expiry}) = _$ReceiverPublicKeyImpl;
 
   factory _ReceiverPublicKey.fromJson(Map<String, dynamic> json) =
-      _$_ReceiverPublicKey.fromJson;
+      _$ReceiverPublicKeyImpl.fromJson;
 
   @override
   String get topic;
@@ -1115,6 +1118,6 @@ abstract class _ReceiverPublicKey implements ReceiverPublicKey {
   int get expiry;
   @override
   @JsonKey(ignore: true)
-  _$$_ReceiverPublicKeyCopyWith<_$_ReceiverPublicKey> get copyWith =>
+  _$$ReceiverPublicKeyImplCopyWith<_$ReceiverPublicKeyImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
