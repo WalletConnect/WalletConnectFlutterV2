@@ -110,9 +110,19 @@ Web3Wallet wcClient = await Web3Wallet.createInstance(
 // For a wallet, setup the proposal handler that will display the proposal to the user after the URI has been scanned.
 late int id;
 wcClient.onSessionProposal.subscribe((SessionProposal? args) async {
-  // Handle UI updates using the args.params
-  // Keep track of the args.id for the approval response
-  id = args!.id;
+  if (args != null) {
+    // Handle UI updates using the args.params
+    // Keep track of the args.id for the approval response
+    id = args.id;
+
+    // To check the Verify API validations and whether or not your user is interacting with potentially malicious dapp,
+    // you can do so by accessing the `verifyContext` included in the `SessionProposalEvent`:
+    final scamApp = args.verifyContext?.validation.scam;
+    final invalidApp = args.verifyContext?.validation.invalid;
+    final validApp = args.verifyContext?.validation.valid;
+    final unknown = args.verifyContext?.validation.unknown;
+  }
+
 });
 
 // Also setup the methods and chains that your wallet supports
@@ -266,6 +276,11 @@ await wcClient.disconnectSession(
   reason: Errors.getSdkError(Errors.USER_DISCONNECTED),
 );
 ```
+
+### Setting up Deeplinks
+
+If you want to set up deeplinks on wallet connect, you must configure your device so that the scheme of your deeplink is compatible with "wc://"
+[More details there](https://docs.walletconnect.com/web3wallet/mobileLinking).
 
 ### Reconnecting the WebSocket
 
