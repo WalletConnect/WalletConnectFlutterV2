@@ -346,7 +346,6 @@ class NamespaceUtils {
             _getMatching(
               namespaceOrChainId: chainId,
               available: availableAccounts,
-              takeLast: true,
             ).map((e) => '$chainId:$e'),
           );
           // Add the chain specific events
@@ -370,9 +369,9 @@ class NamespaceUtils {
 
       // Add the namespace to the list
       namespaces[namespaceOrChainId] = Namespace(
-        accounts: accounts,
-        events: events,
-        methods: methods,
+        accounts: accounts.toSet().toList(),
+        events: events.toSet().toList(),
+        methods: methods.toSet().toList(),
       );
     }
 
