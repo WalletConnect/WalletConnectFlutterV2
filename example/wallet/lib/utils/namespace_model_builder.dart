@@ -7,21 +7,21 @@ import 'package:walletconnect_flutter_v2_wallet/widgets/wc_connection_widget/wc_
 
 class ConnectionWidgetBuilder {
   static List<WCConnectionWidget> buildFromRequiredNamespaces(
-    Map<String, RequiredNamespace> requiredNamespaces,
+    Map<String, Namespace> generatedNamespaces,
   ) {
     final List<WCConnectionWidget> views = [];
-    for (final key in requiredNamespaces.keys) {
-      RequiredNamespace ns = requiredNamespaces[key]!;
+    for (final key in generatedNamespaces.keys) {
+      Namespace ns = generatedNamespaces[key]!;
       final List<WCConnectionModel> models = [];
       // If the chains property is present, add the chain data to the models
-      if (ns.chains != null) {
-        models.add(
-          WCConnectionModel(
-            title: StringConstants.chains,
-            elements: ns.chains!,
-          ),
-        );
-      }
+      models.add(
+        WCConnectionModel(
+          title: StringConstants.chains,
+          elements: ns.accounts.map((acc) {
+            return NamespaceUtils.getChainFromAccount(acc);
+          }).toList(),
+        ),
+      );
       models.add(WCConnectionModel(
         title: StringConstants.methods,
         elements: ns.methods,

@@ -1,3 +1,7 @@
+## 2.1.11
+
+- Fixed an issue with `generatedNamespaces` during session proposal
+
 ## 2.1.10
 
 - License change

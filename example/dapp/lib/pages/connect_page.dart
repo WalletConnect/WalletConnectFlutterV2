@@ -8,7 +8,6 @@ import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 import 'package:walletconnect_flutter_v2_dapp/models/chain_metadata.dart';
 import 'package:walletconnect_flutter_v2_dapp/utils/constants.dart';
 import 'package:walletconnect_flutter_v2_dapp/utils/crypto/chain_data.dart';
-import 'package:walletconnect_flutter_v2_dapp/utils/crypto/helpers.dart';
 import 'package:walletconnect_flutter_v2_dapp/utils/string_constants.dart';
 import 'package:walletconnect_flutter_v2_dapp/widgets/chain_button.dart';
 
@@ -27,15 +26,7 @@ class ConnectPage extends StatefulWidget {
 class ConnectPageState extends State<ConnectPage> {
   bool _testnetOnly = false;
   final List<ChainMetadata> _selectedChains = [];
-
   bool _shouldDismissQrCode = true;
-
-  void setTestnet(bool value) {
-    if (value != _testnetOnly) {
-      _selectedChains.clear();
-    }
-    _testnetOnly = value;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -43,11 +34,11 @@ class ConnectPageState extends State<ConnectPage> {
     final List<ChainMetadata> chains =
         _testnetOnly ? ChainData.testChains : ChainData.mainChains;
 
-    List<Widget> chainButtons = [];
+    List<Widget> children = [];
 
     for (final ChainMetadata chain in chains) {
       // Build the button
-      chainButtons.add(
+      children.add(
         ChainButton(
           chain: chain,
           onPressed: () {
@@ -64,44 +55,46 @@ class ConnectPageState extends State<ConnectPage> {
       );
     }
 
+    children.add(const SizedBox.square(dimension: 12.0));
+
     // Add a connect button
-    chainButtons.add(
-      Container(
-        width: double.infinity,
-        height: StyleConstants.linear48,
-        margin: const EdgeInsets.symmetric(
-          vertical: StyleConstants.linear8,
-        ),
-        child: ElevatedButton(
-          onPressed: () => _onConnect(
-            _selectedChains,
-            showToast: (m) async {
-              await showPlatformToast(child: Text(m), context: context);
+    children.add(
+      ElevatedButton(
+        onPressed: _selectedChains.isEmpty
+            ? null
+            : () => _onConnect(showToast: (m) async {
+                  await showPlatformToast(child: Text(m), context: context);
+                }),
+        style: ButtonStyle(
+          backgroundColor: MaterialStateProperty.resolveWith<Color>(
+            (states) {
+              if (states.contains(MaterialState.disabled)) {
+                return StyleConstants.grayColor;
+              }
+              return StyleConstants.primaryColor;
             },
           ),
-          style: ButtonStyle(
-            backgroundColor: MaterialStateProperty.all<Color>(
-              StyleConstants.primaryColor,
-            ),
-            shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-              RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(
-                  StyleConstants.linear8,
-                ),
+          minimumSize: MaterialStateProperty.all<Size>(const Size(
+            1000.0,
+            StyleConstants.linear48,
+          )),
+          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+            RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(
+                StyleConstants.linear8,
               ),
             ),
           ),
-          child: const Text(
-            StringConstants.connect,
-            style: StyleConstants.buttonText,
-          ),
+        ),
+        child: const Text(
+          StringConstants.connect,
+          style: StyleConstants.buttonText,
         ),
       ),
     );
 
     return Center(
       child: Container(
-        // color: StyleConstants.primaryColor,
         padding: const EdgeInsets.all(
           StyleConstants.linear8,
         ),
@@ -110,16 +103,13 @@ class ConnectPageState extends State<ConnectPage> {
         ),
         child: ListView(
           children: <Widget>[
-            const SizedBox(
-              height: StyleConstants.linear48,
-            ),
             const Text(
               StringConstants.appTitle,
               style: StyleConstants.titleText,
               textAlign: TextAlign.center,
             ),
             const SizedBox(
-              height: StyleConstants.linear48,
+              height: StyleConstants.linear16,
             ),
             const Text(
               StringConstants.selectChains,
@@ -127,7 +117,7 @@ class ConnectPageState extends State<ConnectPage> {
               textAlign: TextAlign.center,
             ),
             const SizedBox(
-              height: StyleConstants.linear24,
+              height: StyleConstants.linear16,
             ),
             SizedBox(
               height: StyleConstants.linear48,
@@ -142,6 +132,7 @@ class ConnectPageState extends State<ConnectPage> {
                     value: _testnetOnly,
                     onChanged: (value) {
                       setState(() {
+                        _selectedChains.clear();
                         _testnetOnly = value;
                       });
                     },
@@ -152,7 +143,7 @@ class ConnectPageState extends State<ConnectPage> {
             Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
-              children: chainButtons,
+              children: children,
             ),
           ],
         ),
@@ -160,43 +151,32 @@ class ConnectPageState extends State<ConnectPage> {
     );
   }
 
-  Future<void> _onConnect(
-    List<ChainMetadata> chains, {
-    Function(String message)? showToast,
-  }) async {
-    // Use the chain metadata to build the required namespaces:
-    // Get the methods, get the events
-    final Map<String, RequiredNamespace> requiredNamespaces = {};
-    for (final chain in chains) {
-      // If the chain is already in the required namespaces, add it to the chains list
-      final String chainName = chain.chainId.split(':')[0];
-      if (requiredNamespaces.containsKey(chainName)) {
-        requiredNamespaces[chainName]!.chains!.add(chain.chainId);
-        continue;
-      }
-      final RequiredNamespace rNamespace = RequiredNamespace(
-        chains: [chain.chainId],
-        methods: getChainMethods(chain.type),
-        events: getChainEvents(chain.type),
-      );
-      requiredNamespaces[chainName] = rNamespace;
-    }
-    debugPrint('Required namespaces: $requiredNamespaces');
-
-    // Send off a connect
+  Future<void> _onConnect({Function(String message)? showToast}) async {
     debugPrint('Creating connection and session');
+    // It is currently safer to send chains approvals on optionalNamespaces
+    // but depending on Wallet implementation you may need to send some (for innstance eip155:1) as required
     final ConnectResponse res = await widget.web3App.connect(
-      optionalNamespaces: requiredNamespaces,
+      requiredNamespaces: {
+        'eip155': const RequiredNamespace(
+          chains: [],
+          methods: MethodsConstants.requiredMethods,
+          events: EventsConstants.requiredEvents,
+        ),
+      },
+      optionalNamespaces: {
+        'eip155': RequiredNamespace(
+          chains: _selectedChains.map((c) => c.chainId).toList(),
+          methods: MethodsConstants.optionalMethods,
+          events: EventsConstants.optionalEvents,
+        ),
+      },
     );
-    // debugPrint('Connection created, connection response: ${res.uri}');
 
-    // print(res.uri!.toString());
     _showQrCode(res);
 
     try {
       debugPrint('Awaiting session proposal settlement');
       final _ = await res.session.future;
-      // print(sessionData);
 
       showToast?.call(StringConstants.connectionEstablished);
 
@@ -205,7 +185,7 @@ class ConnectPageState extends State<ConnectPage> {
       final AuthRequestResponse authRes = await widget.web3App.requestAuth(
         pairingTopic: res.pairingTopic,
         params: AuthRequestParams(
-          chainId: chains[0].chainId,
+          chainId: _selectedChains[0].chainId,
           domain: Constants.domain,
           aud: Constants.aud,
           // statement: 'Welcome to example flutter app',

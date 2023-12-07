@@ -1,5 +1,5 @@
 class WalletConnectConstants {
-  static const SDK_VERSION = '2.1.10';
+  static const SDK_VERSION = '2.1.11';
 
   static const CORE_PROTOCOL = 'wc';
   static const CORE_VERSION = 2;
@@ -63,4 +63,48 @@ class StoreVersions {
   static const VERSION_AUTH_REQUESTS = '2.0';
   static const CONTEXT_COMPLETE_REQUESTS = 'completeRequests';
   static const VERSION_COMPLETE_REQUESTS = '2.1';
+}
+
+class MethodsConstants {
+  static const walletSwitchEthChain = 'wallet_switchEthereumChain';
+  static const walletAddEthChain = 'wallet_addEthereumChain';
+  static const requiredMethods = [
+    'eth_sendTransaction',
+    'personal_sign',
+  ];
+  static const optionalMethods = [
+    'eth_accounts',
+    'eth_requestAccounts',
+    'eth_sendRawTransaction',
+    'eth_sign',
+    'eth_signTransaction',
+    'eth_signTypedData',
+    'eth_signTypedData_v3',
+    'eth_signTypedData_v4',
+    'eth_sendTransaction',
+    'personal_sign',
+    walletSwitchEthChain,
+    walletAddEthChain,
+    'wallet_getPermissions',
+    'wallet_requestPermissions',
+    'wallet_registerOnboarding',
+    'wallet_watchAsset',
+    'wallet_scanQRCode',
+  ];
+  static const allMethods = [...requiredMethods, ...optionalMethods];
+}
+
+class EventsConstants {
+  static const chainChanged = 'chainChanged';
+  static const accountsChanged = 'accountsChanged';
+  static const requiredEvents = [
+    chainChanged,
+    accountsChanged,
+  ];
+  static const optionalEvents = [
+    'message',
+    'disconnect',
+    'connect',
+  ];
+  static const allEvents = [...requiredEvents, ...optionalEvents];
 }

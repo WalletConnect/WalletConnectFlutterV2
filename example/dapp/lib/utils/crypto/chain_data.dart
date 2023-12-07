@@ -19,27 +19,22 @@ class ChainData {
       color: Colors.purple.shade300,
       rpc: ['https://polygon-rpc.com/'],
     ),
-    // const ChainMetadata(
-    //   type: ChainType.solana,
-    //   chainId: 'solana:4sGjMW1sUnHzSxGspuhpqLDx6wiyjNtZ',
-    //   name: 'Solana',
-    //   logo: 'TODO',
-    //   color: Colors.black,
-    //   rpc: [
-    //     "https://api.mainnet-beta.solana.com",
-    //     "https://solana-api.projectserum.com",
-    //   ],
-    // ),
-    // ChainMetadata(
-    //   type: ChainType.kadena,
-    //   chainId: 'kadena:mainnet01',
-    //   name: 'Kadena',
-    //   logo: 'TODO',
-    //   color: Colors.purple.shade600,
-    //   rpc: [
-    //     "https://api.testnet.chainweb.com",
-    //   ],
-    // ),
+    const ChainMetadata(
+      type: ChainType.eip155,
+      chainId: 'eip155:42161',
+      name: 'Arbitrum',
+      logo: '/chain-logos/eip155-42161.png',
+      color: Colors.black,
+      rpc: ['https://arbitrum.blockpi.network/v1/rpc/public'],
+    ),
+    const ChainMetadata(
+      type: ChainType.eip155,
+      chainId: 'eip155:43114',
+      name: 'Avalanche',
+      logo: '/chain-logos/eip155-43114.png',
+      color: Colors.red,
+      rpc: ['https://api.avax.network/ext/bc/C/rpc'],
+    ),
   ];
 
   static final List<ChainMetadata> testChains = [
@@ -61,15 +56,6 @@ class ChainData {
       isTestnet: true,
       rpc: ['https://matic-mumbai.chainstacklabs.com'],
     ),
-    // const ChainMetadata(
-    //   type: ChainType.eip155,
-    //   chainId: 'solana:8E9rvCKLFQia2Y35HXjjpWzj8weVo44K',
-    //   name: 'Solana Devnet',
-    //   logo: 'TODO',
-    //   color: Colors.black,
-    //   isTestnet: true,
-    //   rpc: ["https://api.devnet.solana.com"],
-    // ),
     ChainMetadata(
       type: ChainType.kadena,
       chainId: 'kadena:testnet04',

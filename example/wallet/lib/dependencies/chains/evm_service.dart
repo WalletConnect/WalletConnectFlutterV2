@@ -7,8 +7,6 @@ import 'dart:typed_data';
 import 'package:convert/convert.dart';
 import 'package:eth_sig_util/eth_sig_util.dart';
 import 'package:get_it/get_it.dart';
-import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
-import 'package:walletconnect_flutter_v2_wallet/dependencies/chains/i_chain.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/bottom_sheet/i_bottom_sheet_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/i_web3wallet_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/key_service/chain_key.dart';
@@ -20,107 +18,87 @@ import 'package:walletconnect_flutter_v2_wallet/widgets/wc_connection_widget/wc_
 import 'package:walletconnect_flutter_v2_wallet/widgets/wc_request_widget.dart/wc_request_widget.dart';
 import 'package:web3dart/web3dart.dart';
 
-enum EVMChainId {
+enum EVMChainsSupported {
   ethereum,
   polygon,
+  arbitrum,
   goerli,
   bsc,
-  mumbai,
-}
+  mumbai;
 
-extension KadenaChainIdX on EVMChainId {
   String chain() {
-    String name = '';
+    String id = '';
 
     switch (this) {
-      case EVMChainId.ethereum:
-        name = '1';
+      case EVMChainsSupported.ethereum:
+        id = '1';
         break;
-      case EVMChainId.polygon:
-        name = '137';
+      case EVMChainsSupported.polygon:
+        id = '137';
         break;
-      case EVMChainId.goerli:
-        name = '5';
+      case EVMChainsSupported.arbitrum:
+        id = '42161';
         break;
-      case EVMChainId.bsc:
-        name = '56';
+      case EVMChainsSupported.goerli:
+        id = '5';
         break;
-      case EVMChainId.mumbai:
-        name = '80001';
+      case EVMChainsSupported.bsc:
+        id = '56';
+        break;
+      case EVMChainsSupported.mumbai:
+        id = '80001';
         break;
     }
 
-    return '${EVMService.namespace}:$name';
+    return 'eip155:$id';
   }
 }
 
-class EVMService extends IChain {
-  static const namespace = 'eip155';
-  static const pSign = 'personal_sign';
-  static const eSign = 'eth_sign';
-  static const eSignTransaction = 'eth_signTransaction';
-  static const eSignTypedData = 'eth_signTypedData';
-  static const eSendTransaction = 'eth_sendTransaction';
-
+class EVMService {
   final IBottomSheetService _bottomSheetService =
       GetIt.I<IBottomSheetService>();
   final IWeb3WalletService _web3WalletService = GetIt.I<IWeb3WalletService>();
 
-  final EVMChainId reference;
+  final EVMChainsSupported chainSupported;
 
   final Web3Client ethClient;
 
-  EVMService({
-    required this.reference,
-    Web3Client? ethClient,
-  }) : ethClient = ethClient ??
+  EVMService({required this.chainSupported, Web3Client? ethClient})
+      : ethClient = ethClient ??
             Web3Client(
                 'https://mainnet.infura.io/v3/51716d2096df4e73bec298680a51f0c5',
                 http.Client()) {
-    final Web3Wallet wallet = _web3WalletService.getWeb3Wallet();
-    for (final String event in getEvents()) {
-      wallet.registerEventEmitter(chainId: getChainId(), event: event);
+    final wallet = _web3WalletService.getWeb3Wallet();
+    // Supported events
+    final supportedEvents = [
+      'chainChanged',
+      'accountsChanged'
+    ]; // add whatever event you want to support
+    for (final String event in supportedEvents) {
+      print('Supported event ${chainSupported.chain()} $event');
+      wallet.registerEventEmitter(
+        chainId: chainSupported.chain(),
+        event: event,
+      );
     }
-    wallet.registerRequestHandler(
-      chainId: getChainId(),
-      method: pSign,
-      handler: personalSign,
-    );
-    wallet.registerRequestHandler(
-      chainId: getChainId(),
-      method: eSign,
-      handler: ethSign,
-    );
-    wallet.registerRequestHandler(
-      chainId: getChainId(),
-      method: eSignTransaction,
-      handler: ethSignTransaction,
-    );
-    wallet.registerRequestHandler(
-      chainId: getChainId(),
-      method: eSendTransaction,
-      handler: ethSignTransaction,
-    );
-    wallet.registerRequestHandler(
-      chainId: getChainId(),
-      method: eSignTypedData,
-      handler: ethSignTypedData,
-    );
-  }
+    // Supported methods
+    Map<String, dynamic Function(String, dynamic)> methodsHandlers = {
+      'personal_sign': personalSign,
+      'eth_sign': ethSign,
+      'eth_signTransaction': ethSignTransaction,
+      'eth_signTypedData': ethSignTypedData,
+      'eth_sendTransaction': ethSignTransaction,
+      // add whatever method/handler you want to support
+      // 'eth_signTypedData_v4': ethSignTypedDataV4,
+    };
 
-  @override
-  String getNamespace() {
-    return namespace;
-  }
-
-  @override
-  String getChainId() {
-    return reference.chain();
-  }
-
-  @override
-  List<String> getEvents() {
-    return ['chainChanged', 'accountsChanged'];
+    for (var handler in methodsHandlers.entries) {
+      wallet.registerRequestHandler(
+        chainId: chainSupported.chain(),
+        method: handler.key,
+        handler: handler.value,
+      );
+    }
   }
 
   Future<String?> requestAuthorization(String text) async {
@@ -128,11 +106,7 @@ class EVMService extends IChain {
       widget: WCRequestWidget(
         child: WCConnectionWidget(
           title: 'Sign Transaction',
-          info: [
-            WCConnectionModel(
-              text: text,
-            ),
-          ],
+          info: [WCConnectionModel(text: text)],
         ),
       ),
     );
@@ -157,7 +131,7 @@ class EVMService extends IChain {
     try {
       // Load the private key
       final List<ChainKey> keys = GetIt.I<IKeyService>().getKeysForChain(
-        getChainId(),
+        chainSupported.chain(),
       );
       final Credentials credentials = EthPrivateKey.fromHex(keys[0].privateKey);
 
@@ -176,7 +150,7 @@ class EVMService extends IChain {
     }
   }
 
-  Future ethSign(String topic, dynamic parameters) async {
+  Future<String?> ethSign(String topic, dynamic parameters) async {
     print('received eth sign request: $parameters');
 
     final String message = EthUtils.getUtf8Message(parameters[1]);
@@ -189,7 +163,7 @@ class EVMService extends IChain {
     try {
       // Load the private key
       final List<ChainKey> keys = GetIt.I<IKeyService>().getKeysForChain(
-        getChainId(),
+        chainSupported.chain(),
       );
       // print('private key');
       // print(keys[0].privateKey);
@@ -220,7 +194,7 @@ class EVMService extends IChain {
     }
   }
 
-  Future ethSignTransaction(String topic, dynamic parameters) async {
+  Future<String?> ethSignTransaction(String topic, dynamic parameters) async {
     print('received eth sign transaction request: $parameters');
     final String? authAcquired = await requestAuthorization(
       jsonEncode(
@@ -233,7 +207,7 @@ class EVMService extends IChain {
 
     // Load the private key
     final List<ChainKey> keys = GetIt.I<IKeyService>().getKeysForChain(
-      getChainId(),
+      chainSupported.chain(),
     );
     final Credentials credentials = EthPrivateKey.fromHex(
       '0x${keys[0].privateKey}',
@@ -294,7 +268,7 @@ class EVMService extends IChain {
     }
   }
 
-  Future ethSignTypedData(String topic, dynamic parameters) async {
+  Future<String?> ethSignTypedData(String topic, dynamic parameters) async {
     print('received eth sign typed data request: $parameters');
     final String data = parameters[1];
     final String? authAcquired = await requestAuthorization(data);
@@ -303,7 +277,7 @@ class EVMService extends IChain {
     }
 
     final List<ChainKey> keys = GetIt.I<IKeyService>().getKeysForChain(
-      getChainId(),
+      chainSupported.chain(),
     );
 
     // EthPrivateKey credentials = EthPrivateKey.fromHex(keys[0].privateKey);
