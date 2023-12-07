@@ -1,6 +1,8 @@
 ## 2.1.11
 
 - Fixed an issue with `generatedNamespaces` during session proposal
+- Small enhancements in example wallet/dapp.
+- Minor changes and bug fixe
 
 ## 2.1.10
 
