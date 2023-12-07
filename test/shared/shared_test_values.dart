@@ -135,7 +135,7 @@ final Map<String, RequiredNamespace> requiredNamespacesNonconformingMethods1 = {
 
 final Map<String, RequiredNamespace> requiredNamespacesNonconformingMethods2 = {
   'namespace1:chain1': const RequiredNamespace(
-    methods: ['method1', 'method2'],
+    methods: ['method1', 'method2', 'method3'],
     events: ['event1', 'event2'],
   ),
   'namespace2': const RequiredNamespace(
@@ -160,7 +160,7 @@ final Map<String, RequiredNamespace> requiredNamespacesNonconformingEvents1 = {
 final Map<String, RequiredNamespace> requiredNamespacesNonconformingEvents2 = {
   'namespace1:chain1': const RequiredNamespace(
     methods: ['method1', 'method2'],
-    events: ['event1', 'event2'],
+    events: ['event1', 'event2', 'event3'],
   ),
   'namespace2': const RequiredNamespace(
     chains: ['namespace2:chain1', 'namespace2:chain2'],
@@ -174,4 +174,62 @@ Map<String, RequiredNamespace> optionalNamespaces = {
     methods: ['method5'],
     events: ['event5', 'event2'],
   ),
+};
+
+const sepolia = 'eip155:11155111';
+
+final Set<String> availableAccounts3 = {
+  '$sepolia:0x99999999999999999999999999',
+};
+
+final Set<String> availableMethods3 = {
+  '$sepolia:eth_sendTransaction',
+  '$sepolia:personal_sign',
+  '$sepolia:eth_signTypedData',
+  '$sepolia:eth_signTypedData_v4',
+  '$sepolia:eth_sign',
+};
+
+final Set<String> availableEvents3 = {
+  '$sepolia:chainChanged',
+  '$sepolia:accountsChanged',
+};
+
+final Map<String, RequiredNamespace> requiredNamespacesInAvailable3 = {
+  'eip155': const RequiredNamespace(
+    chains: [sepolia],
+    methods: ['eth_sendTransaction', 'personal_sign'],
+    events: ['chainChanged', 'accountsChanged'],
+  ),
+};
+
+final Map<String, RequiredNamespace> optionalNamespacesInAvailable3 = {
+  'eip155': const RequiredNamespace(chains: [
+    'eip155:1',
+    'eip155:5',
+    sepolia,
+    'eip155:137',
+    'eip155:80001',
+    'eip155:42220',
+    'eip155:44787',
+    'eip155:56',
+    'eip155:43114',
+    'eip155:42161',
+    'eip155:421613',
+    'eip155:10',
+    'eip155:420',
+    'eip155:8453'
+  ], methods: [
+    'eth_sendTransaction',
+    'personal_sign',
+    'eth_signTypedData',
+    'eth_signTypedData_v4',
+    'eth_sign'
+  ], events: [
+    'chainChanged',
+    'accountsChanged',
+    'message',
+    'disconnect',
+    'connect'
+  ]),
 };
