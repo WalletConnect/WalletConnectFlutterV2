@@ -2,9 +2,8 @@ import 'package:get_it/get_it.dart';
 import 'package:get_it_mixin/get_it_mixin.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/bottom_sheet/bottom_sheet_listener.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/bottom_sheet/bottom_sheet_service.dart';
-import 'package:walletconnect_flutter_v2_wallet/dependencies/chains/evm_service.dart';
-import 'package:walletconnect_flutter_v2_wallet/dependencies/chains/i_chain.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/bottom_sheet/i_bottom_sheet_service.dart';
+import 'package:walletconnect_flutter_v2_wallet/dependencies/chains/evm_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/i_web3wallet_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/key_service/i_key_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/key_service/key_service.dart';
@@ -137,10 +136,10 @@ class _MyHomePageState extends State<MyHomePage> with GetItStateMixin {
     //   );
     // }
 
-    for (final cId in EVMChainId.values) {
-      GetIt.I.registerSingleton<IChain>(
-        EVMService(reference: cId),
-        instanceName: cId.chain(),
+    for (final supportedChain in EVMChainsSupported.values) {
+      GetIt.I.registerSingleton<EVMService>(
+        EVMService(chainSupported: supportedChain),
+        instanceName: supportedChain.chain(),
       );
     }
 

@@ -69,6 +69,10 @@ class _MyHomePageState extends State<MyHomePage> {
         description: 'Flutter WalletConnect Dapp Example',
         url: 'https://walletconnect.com/',
         icons: ['https://walletconnect.com/walletconnect-logo.png'],
+        redirect: Redirect(
+          native: 'myflutterdapp://',
+          universal: 'https://walletconnect.com',
+        ),
       ),
     );
 
@@ -83,6 +87,8 @@ class _MyHomePageState extends State<MyHomePage> {
     // Register event handlers
     _web3App!.onSessionPing.subscribe(_onSessionPing);
     _web3App!.onSessionEvent.subscribe(_onSessionEvent);
+    _web3App!.core.relayClient.onRelayClientConnect.subscribe(_setState);
+    _web3App!.core.relayClient.onRelayClientDisconnect.subscribe(_setState);
 
     setState(() {
       _pageDatas = [
@@ -115,8 +121,12 @@ class _MyHomePageState extends State<MyHomePage> {
     // }
   }
 
+  void _setState(dynamic args) => setState(() {});
+
   @override
   void dispose() {
+    _web3App!.core.relayClient.onRelayClientConnect.unsubscribe(_setState);
+    _web3App!.core.relayClient.onRelayClientDisconnect.unsubscribe(_setState);
     _web3App!.onSessionPing.unsubscribe(_onSessionPing);
     _web3App!.onSessionEvent.unsubscribe(_onSessionEvent);
     super.dispose();
@@ -146,20 +156,18 @@ class _MyHomePageState extends State<MyHomePage> {
               right: StyleConstants.magic20,
               child: Row(
                 children: [
-                  // Disconnect buttons for testing
-                  _buildIconButton(
-                    Icons.discord,
-                    () {
-                      _web3App!.core.relayClient.disconnect();
-                    },
-                  ),
-                  const SizedBox(
-                    width: StyleConstants.magic20,
-                  ),
-                  _buildIconButton(
-                    Icons.connect_without_contact,
-                    () {
-                      _web3App!.core.relayClient.connect();
+                  Text(_web3App!.core.relayClient.isConnected
+                      ? 'Relay Connected'
+                      : 'Relay Disconnected'),
+                  Switch(
+                    value: _web3App!.core.relayClient.isConnected,
+                    onChanged: (value) {
+                      if (!value) {
+                        _web3App!.core.relayClient.disconnect();
+                      } else {
+                        _web3App!.core.relayClient.connect();
+                      }
+                      setState(() {});
                     },
                   ),
                 ],
@@ -250,25 +258,6 @@ class _MyHomePageState extends State<MyHomePage> {
               'Topic: ${args!.topic}\nEvent Name: ${args.name}\nEvent Data: ${args.data}',
         );
       },
-    );
-  }
-
-  Widget _buildIconButton(IconData icon, void Function()? onPressed) {
-    return Container(
-      decoration: BoxDecoration(
-        color: StyleConstants.primaryColor,
-        borderRadius: BorderRadius.circular(
-          StyleConstants.linear48,
-        ),
-      ),
-      child: IconButton(
-        icon: Icon(
-          icon,
-          color: StyleConstants.titleTextColor,
-        ),
-        iconSize: StyleConstants.linear24,
-        onPressed: onPressed,
-      ),
     );
   }
 }

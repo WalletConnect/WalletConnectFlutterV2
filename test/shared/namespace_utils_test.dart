@@ -312,6 +312,39 @@ void main() {
         );
       });
 
+      test('constructs namespaces with required and optional namespaces', () {
+        Map<String, Namespace> namespaces = NamespaceUtils.constructNamespaces(
+          availableAccounts: availableAccounts3,
+          availableMethods: availableMethods3,
+          availableEvents: availableEvents3,
+          requiredNamespaces: requiredNamespacesInAvailable3,
+          optionalNamespaces: optionalNamespacesInAvailable3,
+        );
+
+        expect(namespaces.length, 1);
+        expect(
+          namespaces['eip155']!.accounts,
+          availableAccounts3.toList(),
+        );
+        expect(
+          namespaces['eip155']!.methods,
+          availableMethods3.map((m) => m.split(':').last).toList(),
+        );
+        expect(
+          namespaces['eip155']!.events,
+          availableEvents3.map((m) => m.split(':').last).toList(),
+        );
+
+        expect(
+          SignApiValidatorUtils.isConformingNamespaces(
+            requiredNamespaces: requiredNamespacesInAvailable3,
+            namespaces: namespaces,
+            context: '',
+          ),
+          true,
+        );
+      });
+
       test('constructNamespaces trims off unrequested', () {
         final reqNamespace = {
           'eip155': const RequiredNamespace(
@@ -449,7 +482,7 @@ void main() {
           Errors.getSdkError(
             Errors.UNSUPPORTED_METHODS,
             context:
-                " namespaces methods don't satisfy requiredNamespaces methods for namespace2. Requested: [method3, method4], Supported: [method3]",
+                " namespaces methods don't satisfy requiredNamespaces methods for namespace1:chain1. Requested: [method1, method2, method3], Supported: [method1, method2]",
           ).message,
           Errors.getSdkError(
             Errors.UNSUPPORTED_EVENTS,
@@ -459,13 +492,12 @@ void main() {
           Errors.getSdkError(
             Errors.UNSUPPORTED_EVENTS,
             context:
-                " namespaces events don't satisfy requiredNamespaces events for namespace2. Requested: [event3, event4], Supported: [event3]",
+                " namespaces events don't satisfy requiredNamespaces events for namespace1:chain1. Requested: [event1, event2, event3], Supported: [event1, event2]",
           ).message,
         ];
 
         for (int i = 0; i < nonconforming.length; i++) {
-          Map<String, Namespace> namespaces =
-              NamespaceUtils.constructNamespaces(
+          final namespaces = NamespaceUtils.constructNamespaces(
             availableAccounts: availableAccounts,
             availableMethods: availableMethods,
             availableEvents: availableEvents,

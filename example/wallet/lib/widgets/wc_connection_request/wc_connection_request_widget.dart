@@ -55,8 +55,8 @@ class WCConnectionRequestWidget extends StatelessWidget {
           ),
           const SizedBox(height: StyleConstants.linear8),
           authRequest != null
-              ? _buildAuthRequest()
-              : _buildSessionProposal(context),
+              ? _buildAuthRequestView()
+              : _buildSessionProposalView(context),
         ],
       ),
     );
@@ -70,7 +70,7 @@ class WCConnectionRequestWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildAuthRequest() {
+  Widget _buildAuthRequestView() {
     final model = WCConnectionModel(
       text: wallet.formatAuthMessage(
         iss: 'did:pkh:eip155:1:${authRequest!.iss}',
@@ -86,26 +86,16 @@ class WCConnectionRequestWidget extends StatelessWidget {
     );
   }
 
-  Widget _buildSessionProposal(BuildContext context) {
+  Widget _buildSessionProposalView(BuildContext context) {
     // Create the connection models using the required and optional namespaces provided by the proposal data
     // The key is the title and the list of values is the data
-    final List<WCConnectionWidget> views =
-        ConnectionWidgetBuilder.buildFromRequiredNamespaces(
-      sessionProposal!.request.requiredNamespaces,
+    final views = ConnectionWidgetBuilder.buildFromRequiredNamespaces(
+      sessionProposal!.request.generatedNamespaces!,
     );
 
     return Column(
       children: views,
     );
-    // return Expanded(
-    //   child: ListView.separated(
-    //     itemBuilder: (context, index) => views[index],
-    //     separatorBuilder: (context, index) => const SizedBox(
-    //       height: StyleConstants.linear8,
-    //     ),
-    //     itemCount: views.length,
-    //   ),
-    // );
   }
 }
 
