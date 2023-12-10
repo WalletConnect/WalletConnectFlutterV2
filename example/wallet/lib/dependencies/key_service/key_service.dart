@@ -1,3 +1,4 @@
+import 'package:walletconnect_flutter_v2_wallet/dependencies/chains/evm_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/key_service/chain_key.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/key_service/i_key_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/utils/dart_defines.dart';
@@ -14,13 +15,7 @@ class KeyService extends IKeyService {
       publicKey: DartDefines.kadenaPublicKey,
     ),
     ChainKey(
-      chains: [
-        'eip155:1',
-        'eip155:5',
-        'eip155:56',
-        'eip155:137',
-        'eip155:80001',
-      ],
+      chains: EVMChainsSupported.values.map((e) => e.chain()).toList(),
       privateKey:
           '300851edb635b2dbb2d4e70615444925afeb60bf95c19365aff88740e09d7345',
       publicKey:

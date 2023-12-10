@@ -49,6 +49,10 @@ class Web3WalletService extends IWeb3WalletService {
         icons: [
           'https://github.com/WalletConnect/Web3ModalFlutter/blob/master/assets/png/logo_wc.png'
         ],
+        redirect: Redirect(
+          native: 'myflutterwallet://',
+          universal: 'https://walletconnect.com',
+        ),
       ),
     );
 

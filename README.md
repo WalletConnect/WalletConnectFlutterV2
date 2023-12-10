@@ -2,8 +2,6 @@
 
 WalletConnect Dart v2 library for Flutter, heavily inspired by the WalletConnect V2 Javascript Monorepo.  
 
-Original work for this library is attributed to [Eucalyptus Labs](https://eucalyptuslabs.com/) and Sterling Long for [Koala Wallet](https://koalawallet.io/), a wallet built for the Kadena blockchain.
-
 # To Use
 
 ## Pair, Approve, and Sign/Auth
@@ -31,15 +29,17 @@ ConnectResponse resp = await wcClient.connect(
   requiredNamespaces: {
     'eip155': RequiredNamespace(
       chains: ['eip155:1'], // Ethereum chain
-      methods: ['eth_signTransaction'], // Requestable Methods
-      events: ['eth_sendTransaction'], // Requestable Events
+      methods: ['personal_sign'], // Requestable Methods, see MethodsConstants for reference
+      events: ['chainChanged'], // Requestable Events, see EventsConstants for reference
     ),
-    'kadena': RequiredNamespace(
-      chains: ['kadena:mainnet01'], // Kadena chain
-      methods: ['kadena_quicksign_v1'], // Requestable Methods
-      events: ['kadena_transaction_updated'], // Requestable Events
+  },
+  optionalNamespaces: {
+    'eip155': RequiredNamespace(
+      chains: ['eip155:1', 'eip155:5'], // Any other optional Ethereum chain
+      methods: ['eth_signTransaction'], // Optional requestable Methods, see MethodsConstants for reference
+      events: ['accountsChanged'], // Optional requestable events, see EventsConstants for reference
     ),
-  }
+  },
 );
 Uri? uri = resp.uri;
 
@@ -52,7 +52,7 @@ final dynamic signResponse = await wcClient.request(
   chainId: 'eip155:1',
   request: SessionRequestParams(
     method: 'eth_signTransaction',
-    params: 'json serializable parameters',
+    params: '{json serializable parameters}',
   ),
 );
 // Unpack, or use the signResponse.
@@ -87,13 +87,13 @@ else {
 
 
 // You can also respond to events from the wallet, like session events
+wcClient.registerEventHandler(
+  chainId: 'eip155:1',
+  event: 'accountsChanged',
+);
 wcClient.onSessionEvent.subscribe((SessionEvent? session) {
   // Do something with the event
 });
-wcClient.registerEventHandler(
-  chainId: 'kadena',
-  event: 'kadena_transaction_updated',
-);
 ```
 
 ### Wallet Flow
@@ -114,7 +114,15 @@ late int id;
 wcClient.onSessionProposal.subscribe((SessionProposal? args) async {
   // Handle UI updates using the args.params
   // Keep track of the args.id for the approval response
-  id = args!.id;
+  if (args != null) {
+    id = args!.id;
+    // To check VerifyAPI validation in regards of the dApp is trying to connnect you can check verifyContext
+    // More info about VerifyAPI https://docs.walletconnect.com/web3wallet/verify
+    final isScamApp = args.verifyContext?.validation.scam;
+    final isInvalidApp = args.verifyContext?.validation.invalid;
+    final isValidApp = args.verifyContext?.validation.valid;
+    final unknown = args.verifyContext?.validation.unknown;
+  }
 });
 
 // Also setup the methods and chains that your wallet supports
@@ -214,16 +222,13 @@ final walletNamespaces = {
   'eip155': Namespace(
     accounts: ['eip155:1:abc'],
     methods: ['eth_signTransaction'],
-  ),
-  'kadena': Namespace(
-    accounts: ['kadena:mainnet01:abc'],
-    methods: ['kadena_sign_v1', 'kadena_quicksign_v1'],
-    events: ['kadena_transaction_updated'],
+    events: ['accountsChanged'],
   ),
 }
 await wcClient.approveSession(
   id: id,
   namespaces: walletNamespaces // This will have the accounts requested in params
+                               // If you registered correctly events emitters, methods handlers and accounts for your supported chains you can just us `args.params.generatedNamespaces!` value from SessionProposalEvent
 );
 // Or to reject...
 // Error codes and reasons can be found here: https://docs.walletconnect.com/2.0/specs/clients/sign/error-codes
@@ -248,7 +253,7 @@ await wcClient.respondAuthRequest(
 // Error codes and reasons can be found here: https://docs.walletconnect.com/2.0/specs/clients/sign/error-codes
 await wcClient.respondAuthRequest(
   id: args.id,
-  iss: 'did:pkh:eip155:1:0x06C6A22feB5f8CcEDA0db0D593e6F26A3611d5fa',
+  iss: 'did:pkh:eip155:1:ETH_ADDRESS',
   error: Errors.getSdkError(Errors.USER_REJECTED_AUTH),
 );
 

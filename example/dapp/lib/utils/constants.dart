@@ -27,7 +27,7 @@ class StyleConstants {
   static const double magic10 = 10;
   static const double magic14 = 14;
   static const double magic20 = 20;
-  static const double magic40 = 40;
+  static const double magic40 = 28;
   static const double magic64 = 64;
 
   // Width

@@ -6,7 +6,7 @@ class StringConstants {
   static const String delete = 'Delete';
 
   // Main Page
-  static const String appTitle = 'Wallet Connect v2 Flutter dApp Demo';
+  static const String appTitle = 'WalletConnect v2\nFlutter dApp Demo';
   static const String connectPageTitle = 'Connect';
   static const String pairingsPageTitle = 'Pairings';
   static const String sessionsPageTitle = 'Sessions';

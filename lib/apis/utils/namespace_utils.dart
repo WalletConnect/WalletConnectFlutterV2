@@ -312,9 +312,8 @@ class NamespaceUtils {
       final List<String> events = [];
       final List<String> methods = [];
       final namespace = requiredNamespaces[namespaceOrChainId]!;
-      if (NamespaceUtils.isValidChainId(namespaceOrChainId) ||
-          namespace.chains == null ||
-          namespace.chains!.isEmpty) {
+      final chains = namespace.chains ?? [];
+      if (NamespaceUtils.isValidChainId(namespaceOrChainId) || chains.isEmpty) {
         // Add the chain specific availableAccounts
         accounts.addAll(
           _getMatching(
@@ -340,10 +339,6 @@ class NamespaceUtils {
           ),
         );
       } else {
-        final List<String> chains = namespace.chains!;
-        // Add the namespace specific functions
-        final List<Set<String>> chainMethodSets = [];
-        final List<Set<String>> chainEventSets = [];
         // Loop through all of the chains
         for (final String chainId in chains) {
           // Add the chain specific availableAccounts
@@ -354,7 +349,7 @@ class NamespaceUtils {
             ).map((e) => '$chainId:$e'),
           );
           // Add the chain specific events
-          chainEventSets.add(
+          events.addAll(
             _getMatching(
               namespaceOrChainId: chainId,
               available: availableEvents,
@@ -362,7 +357,7 @@ class NamespaceUtils {
             ),
           );
           // Add the chain specific methods
-          chainMethodSets.add(
+          methods.addAll(
             _getMatching(
               namespaceOrChainId: chainId,
               available: availableMethods,
@@ -370,18 +365,13 @@ class NamespaceUtils {
             ),
           );
         }
-
-        methods.addAll(chainMethodSets.reduce((v, e) => v.intersection(e)));
-        events.addAll(chainEventSets.reduce((v, e) => v.intersection(e)));
       }
-      // print(availableAccounts);
-      // print(accounts);
 
       // Add the namespace to the list
       namespaces[namespaceOrChainId] = Namespace(
-        accounts: accounts,
-        events: events,
-        methods: methods,
+        accounts: accounts.toSet().toList(),
+        events: events.toSet().toList(),
+        methods: methods.toSet().toList(),
       );
     }
 

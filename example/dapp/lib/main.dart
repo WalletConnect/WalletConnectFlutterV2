@@ -65,6 +65,10 @@ class _MyHomePageState extends State<MyHomePage> {
         description: 'Flutter WalletConnect Dapp Example',
         url: 'https://walletconnect.com/',
         icons: ['https://walletconnect.com/walletconnect-logo.png'],
+        redirect: Redirect(
+          native: 'myflutterdapp://',
+          universal: 'https://walletconnect.com',
+        ),
       ),
     );
 
@@ -83,6 +87,8 @@ class _MyHomePageState extends State<MyHomePage> {
         .subscribe(_onRelayClientStatus);
     _web3App!.core.relayClient.onRelayClientDisconnect
         .subscribe(_onRelayClientStatus);
+    _web3App!.core.relayClient.onRelayClientConnect.subscribe(_setState);
+    _web3App!.core.relayClient.onRelayClientDisconnect.subscribe(_setState);
 
     setState(() {
       _pageDatas = [
@@ -119,8 +125,12 @@ class _MyHomePageState extends State<MyHomePage> {
     setState(() {});
   }
 
+  void _setState(dynamic args) => setState(() {});
+
   @override
   void dispose() {
+    _web3App!.core.relayClient.onRelayClientConnect.unsubscribe(_setState);
+    _web3App!.core.relayClient.onRelayClientDisconnect.unsubscribe(_setState);
     _web3App!.onSessionPing.unsubscribe(_onSessionPing);
     _web3App!.onSessionEvent.unsubscribe(_onSessionEvent);
     _web3App!.core.relayClient.onRelayClientConnect
@@ -154,17 +164,18 @@ class _MyHomePageState extends State<MyHomePage> {
               right: StyleConstants.magic20,
               child: Row(
                 children: [
-                  _web3App!.core.relayClient.isConnected
-                      ? const Text('Connected ')
-                      : const Text('Disconnected '),
-                  Switch.adaptive(
+                  Text(_web3App!.core.relayClient.isConnected
+                      ? 'Relay Connected'
+                      : 'Relay Disconnected'),
+                  Switch(
                     value: _web3App!.core.relayClient.isConnected,
                     onChanged: (value) {
-                      if (_web3App!.core.relayClient.isConnected) {
+                      if (!value) {
                         _web3App!.core.relayClient.disconnect();
                       } else {
                         _web3App!.core.relayClient.connect();
                       }
+                      setState(() {});
                     },
                   ),
                 ],
