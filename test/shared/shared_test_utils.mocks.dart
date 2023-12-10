@@ -263,6 +263,7 @@ class MockCryptoUtils extends _i1.Mock implements _i18.CryptoUtils {
           ),
         ),
       ) as _i2.CryptoKeyPair);
+
   @override
   _i19.Uint8List randomBytes(int? length) => (super.noSuchMethod(
         Invocation.method(
@@ -271,6 +272,7 @@ class MockCryptoUtils extends _i1.Mock implements _i18.CryptoUtils {
         ),
         returnValue: _i19.Uint8List(0),
       ) as _i19.Uint8List);
+
   @override
   String generateRandomBytes32() => (super.noSuchMethod(
         Invocation.method(
@@ -279,6 +281,7 @@ class MockCryptoUtils extends _i1.Mock implements _i18.CryptoUtils {
         ),
         returnValue: '',
       ) as String);
+
   @override
   _i20.Future<String> deriveSymKey(
     String? privKeyA,
@@ -294,6 +297,7 @@ class MockCryptoUtils extends _i1.Mock implements _i18.CryptoUtils {
         ),
         returnValue: _i20.Future<String>.value(''),
       ) as _i20.Future<String>);
+
   @override
   String hashKey(String? key) => (super.noSuchMethod(
         Invocation.method(
@@ -302,6 +306,7 @@ class MockCryptoUtils extends _i1.Mock implements _i18.CryptoUtils {
         ),
         returnValue: '',
       ) as String);
+
   @override
   String hashMessage(String? message) => (super.noSuchMethod(
         Invocation.method(
@@ -310,6 +315,7 @@ class MockCryptoUtils extends _i1.Mock implements _i18.CryptoUtils {
         ),
         returnValue: '',
       ) as String);
+
   @override
   _i20.Future<String> encrypt(
     String? message,
@@ -333,6 +339,7 @@ class MockCryptoUtils extends _i1.Mock implements _i18.CryptoUtils {
         ),
         returnValue: _i20.Future<String>.value(''),
       ) as _i20.Future<String>);
+
   @override
   _i20.Future<String> decrypt(
     String? symKey,
@@ -348,6 +355,7 @@ class MockCryptoUtils extends _i1.Mock implements _i18.CryptoUtils {
         ),
         returnValue: _i20.Future<String>.value(''),
       ) as _i20.Future<String>);
+
   @override
   String serialize(
     int? type,
@@ -367,6 +375,7 @@ class MockCryptoUtils extends _i1.Mock implements _i18.CryptoUtils {
         ),
         returnValue: '',
       ) as String);
+
   @override
   _i2.EncodingParams deserialize(String? encoded) => (super.noSuchMethod(
         Invocation.method(
@@ -381,6 +390,7 @@ class MockCryptoUtils extends _i1.Mock implements _i18.CryptoUtils {
           ),
         ),
       ) as _i2.EncodingParams);
+
   @override
   _i2.EncodingValidation validateDecoding(
     String? encoded, {
@@ -401,6 +411,7 @@ class MockCryptoUtils extends _i1.Mock implements _i18.CryptoUtils {
           ),
         ),
       ) as _i2.EncodingValidation);
+
   @override
   _i2.EncodingValidation validateEncoding({
     int? type,
@@ -430,6 +441,7 @@ class MockCryptoUtils extends _i1.Mock implements _i18.CryptoUtils {
           ),
         ),
       ) as _i2.EncodingValidation);
+
   @override
   bool isTypeOneEnvelope(_i2.EncodingValidation? result) => (super.noSuchMethod(
         Invocation.method(
@@ -456,6 +468,7 @@ class MockCrypto extends _i1.Mock implements _i21.Crypto {
           Invocation.getter(#core),
         ),
       ) as _i3.ICore);
+
   @override
   _i4.IGenericStore<String> get keyChain => (super.noSuchMethod(
         Invocation.getter(#keyChain),
@@ -464,6 +477,7 @@ class MockCrypto extends _i1.Mock implements _i21.Crypto {
           Invocation.getter(#keyChain),
         ),
       ) as _i4.IGenericStore<String>);
+
   @override
   set keyChain(_i4.IGenericStore<String>? _keyChain) => super.noSuchMethod(
         Invocation.setter(
@@ -472,6 +486,7 @@ class MockCrypto extends _i1.Mock implements _i21.Crypto {
         ),
         returnValueForMissingStub: null,
       );
+
   @override
   _i5.ICryptoUtils get utils => (super.noSuchMethod(
         Invocation.getter(#utils),
@@ -480,6 +495,7 @@ class MockCrypto extends _i1.Mock implements _i21.Crypto {
           Invocation.getter(#utils),
         ),
       ) as _i5.ICryptoUtils);
+
   @override
   set utils(_i5.ICryptoUtils? _utils) => super.noSuchMethod(
         Invocation.setter(
@@ -488,6 +504,7 @@ class MockCrypto extends _i1.Mock implements _i21.Crypto {
         ),
         returnValueForMissingStub: null,
       );
+
   @override
   _i6.IRelayAuth get relayAuth => (super.noSuchMethod(
         Invocation.getter(#relayAuth),
@@ -496,6 +513,7 @@ class MockCrypto extends _i1.Mock implements _i21.Crypto {
           Invocation.getter(#relayAuth),
         ),
       ) as _i6.IRelayAuth);
+
   @override
   set relayAuth(_i6.IRelayAuth? _relayAuth) => super.noSuchMethod(
         Invocation.setter(
@@ -504,11 +522,13 @@ class MockCrypto extends _i1.Mock implements _i21.Crypto {
         ),
         returnValueForMissingStub: null,
       );
+
   @override
   String get name => (super.noSuchMethod(
         Invocation.getter(#name),
         returnValue: '',
       ) as String);
+
   @override
   _i20.Future<void> init() => (super.noSuchMethod(
         Invocation.method(
@@ -518,6 +538,7 @@ class MockCrypto extends _i1.Mock implements _i21.Crypto {
         returnValue: _i20.Future<void>.value(),
         returnValueForMissingStub: _i20.Future<void>.value(),
       ) as _i20.Future<void>);
+
   @override
   bool hasKeys(String? tag) => (super.noSuchMethod(
         Invocation.method(
@@ -526,6 +547,7 @@ class MockCrypto extends _i1.Mock implements _i21.Crypto {
         ),
         returnValue: false,
       ) as bool);
+
   @override
   _i20.Future<String> getClientId() => (super.noSuchMethod(
         Invocation.method(
@@ -534,6 +556,7 @@ class MockCrypto extends _i1.Mock implements _i21.Crypto {
         ),
         returnValue: _i20.Future<String>.value(''),
       ) as _i20.Future<String>);
+
   @override
   _i20.Future<String> generateKeyPair() => (super.noSuchMethod(
         Invocation.method(
@@ -542,6 +565,7 @@ class MockCrypto extends _i1.Mock implements _i21.Crypto {
         ),
         returnValue: _i20.Future<String>.value(''),
       ) as _i20.Future<String>);
+
   @override
   _i20.Future<String> generateSharedKey(
     String? selfPublicKey,
@@ -559,6 +583,7 @@ class MockCrypto extends _i1.Mock implements _i21.Crypto {
         ),
         returnValue: _i20.Future<String>.value(''),
       ) as _i20.Future<String>);
+
   @override
   _i20.Future<String> setSymKey(
     String? symKey, {
@@ -572,6 +597,7 @@ class MockCrypto extends _i1.Mock implements _i21.Crypto {
         ),
         returnValue: _i20.Future<String>.value(''),
       ) as _i20.Future<String>);
+
   @override
   _i20.Future<void> deleteKeyPair(String? publicKey) => (super.noSuchMethod(
         Invocation.method(
@@ -581,6 +607,7 @@ class MockCrypto extends _i1.Mock implements _i21.Crypto {
         returnValue: _i20.Future<void>.value(),
         returnValueForMissingStub: _i20.Future<void>.value(),
       ) as _i20.Future<void>);
+
   @override
   _i20.Future<void> deleteSymKey(String? topic) => (super.noSuchMethod(
         Invocation.method(
@@ -590,6 +617,7 @@ class MockCrypto extends _i1.Mock implements _i21.Crypto {
         returnValue: _i20.Future<void>.value(),
         returnValueForMissingStub: _i20.Future<void>.value(),
       ) as _i20.Future<void>);
+
   @override
   _i20.Future<String?> encode(
     String? topic,
@@ -607,6 +635,7 @@ class MockCrypto extends _i1.Mock implements _i21.Crypto {
         ),
         returnValue: _i20.Future<String?>.value(),
       ) as _i20.Future<String?>);
+
   @override
   _i20.Future<String?> decode(
     String? topic,
@@ -624,6 +653,7 @@ class MockCrypto extends _i1.Mock implements _i21.Crypto {
         ),
         returnValue: _i20.Future<String?>.value(),
       ) as _i20.Future<String?>);
+
   @override
   _i20.Future<String> signJWT(String? aud) => (super.noSuchMethod(
         Invocation.method(
@@ -632,6 +662,7 @@ class MockCrypto extends _i1.Mock implements _i21.Crypto {
         ),
         returnValue: _i20.Future<String>.value(''),
       ) as _i20.Future<String>);
+
   @override
   int getPayloadType(String? encoded) => (super.noSuchMethod(
         Invocation.method(
@@ -640,6 +671,7 @@ class MockCrypto extends _i1.Mock implements _i21.Crypto {
         ),
         returnValue: 0,
       ) as int);
+
   @override
   _i5.ICryptoUtils getUtils() => (super.noSuchMethod(
         Invocation.method(
@@ -669,11 +701,13 @@ class MockMessageTracker extends _i1.Mock implements _i22.MessageTracker {
         Invocation.getter(#context),
         returnValue: '',
       ) as String);
+
   @override
   String get version => (super.noSuchMethod(
         Invocation.getter(#version),
         returnValue: '',
       ) as String);
+
   @override
   _i7.IStore<dynamic> get storage => (super.noSuchMethod(
         Invocation.getter(#storage),
@@ -682,6 +716,7 @@ class MockMessageTracker extends _i1.Mock implements _i22.MessageTracker {
           Invocation.getter(#storage),
         ),
       ) as _i7.IStore<dynamic>);
+
   @override
   _i8.Event<_i23.StoreCreateEvent<Map<String, String>>> get onCreate =>
       (super.noSuchMethod(
@@ -691,6 +726,7 @@ class MockMessageTracker extends _i1.Mock implements _i22.MessageTracker {
           Invocation.getter(#onCreate),
         ),
       ) as _i8.Event<_i23.StoreCreateEvent<Map<String, String>>>);
+
   @override
   _i8.Event<_i23.StoreUpdateEvent<Map<String, String>>> get onUpdate =>
       (super.noSuchMethod(
@@ -700,6 +736,7 @@ class MockMessageTracker extends _i1.Mock implements _i22.MessageTracker {
           Invocation.getter(#onUpdate),
         ),
       ) as _i8.Event<_i23.StoreUpdateEvent<Map<String, String>>>);
+
   @override
   _i8.Event<_i23.StoreDeleteEvent<Map<String, String>>> get onDelete =>
       (super.noSuchMethod(
@@ -709,6 +746,7 @@ class MockMessageTracker extends _i1.Mock implements _i22.MessageTracker {
           Invocation.getter(#onDelete),
         ),
       ) as _i8.Event<_i23.StoreDeleteEvent<Map<String, String>>>);
+
   @override
   _i8.Event<_i23.StoreSyncEvent> get onSync => (super.noSuchMethod(
         Invocation.getter(#onSync),
@@ -717,11 +755,13 @@ class MockMessageTracker extends _i1.Mock implements _i22.MessageTracker {
           Invocation.getter(#onSync),
         ),
       ) as _i8.Event<_i23.StoreSyncEvent>);
+
   @override
   Map<String, Map<String, String>> get data => (super.noSuchMethod(
         Invocation.getter(#data),
         returnValue: <String, Map<String, String>>{},
       ) as Map<String, Map<String, String>>);
+
   @override
   set data(Map<String, Map<String, String>>? _data) => super.noSuchMethod(
         Invocation.setter(
@@ -730,16 +770,19 @@ class MockMessageTracker extends _i1.Mock implements _i22.MessageTracker {
         ),
         returnValueForMissingStub: null,
       );
+
   @override
   Map<String, String> Function(dynamic) get fromJson => (super.noSuchMethod(
         Invocation.getter(#fromJson),
         returnValue: (dynamic __p0) => <String, String>{},
       ) as Map<String, String> Function(dynamic));
+
   @override
   String get storageKey => (super.noSuchMethod(
         Invocation.getter(#storageKey),
         returnValue: '',
       ) as String);
+
   @override
   String hashMessage(String? message) => (super.noSuchMethod(
         Invocation.method(
@@ -748,6 +791,7 @@ class MockMessageTracker extends _i1.Mock implements _i22.MessageTracker {
         ),
         returnValue: '',
       ) as String);
+
   @override
   _i20.Future<void> recordMessageEvent(
     String? topic,
@@ -764,6 +808,7 @@ class MockMessageTracker extends _i1.Mock implements _i22.MessageTracker {
         returnValue: _i20.Future<void>.value(),
         returnValueForMissingStub: _i20.Future<void>.value(),
       ) as _i20.Future<void>);
+
   @override
   bool messageIsRecorded(
     String? topic,
@@ -779,6 +824,7 @@ class MockMessageTracker extends _i1.Mock implements _i22.MessageTracker {
         ),
         returnValue: false,
       ) as bool);
+
   @override
   _i20.Future<void> init() => (super.noSuchMethod(
         Invocation.method(
@@ -788,6 +834,7 @@ class MockMessageTracker extends _i1.Mock implements _i22.MessageTracker {
         returnValue: _i20.Future<void>.value(),
         returnValueForMissingStub: _i20.Future<void>.value(),
       ) as _i20.Future<void>);
+
   @override
   bool has(String? key) => (super.noSuchMethod(
         Invocation.method(
@@ -796,12 +843,14 @@ class MockMessageTracker extends _i1.Mock implements _i22.MessageTracker {
         ),
         returnValue: false,
       ) as bool);
+
   @override
   Map<String, String>? get(String? key) =>
       (super.noSuchMethod(Invocation.method(
         #get,
         [key],
       )) as Map<String, String>?);
+
   @override
   List<Map<String, String>> getAll() => (super.noSuchMethod(
         Invocation.method(
@@ -810,6 +859,7 @@ class MockMessageTracker extends _i1.Mock implements _i22.MessageTracker {
         ),
         returnValue: <Map<String, String>>[],
       ) as List<Map<String, String>>);
+
   @override
   _i20.Future<void> set(
     String? key,
@@ -826,6 +876,7 @@ class MockMessageTracker extends _i1.Mock implements _i22.MessageTracker {
         returnValue: _i20.Future<void>.value(),
         returnValueForMissingStub: _i20.Future<void>.value(),
       ) as _i20.Future<void>);
+
   @override
   _i20.Future<void> delete(String? key) => (super.noSuchMethod(
         Invocation.method(
@@ -835,6 +886,7 @@ class MockMessageTracker extends _i1.Mock implements _i22.MessageTracker {
         returnValue: _i20.Future<void>.value(),
         returnValueForMissingStub: _i20.Future<void>.value(),
       ) as _i20.Future<void>);
+
   @override
   _i20.Future<void> persist() => (super.noSuchMethod(
         Invocation.method(
@@ -844,6 +896,7 @@ class MockMessageTracker extends _i1.Mock implements _i22.MessageTracker {
         returnValue: _i20.Future<void>.value(),
         returnValueForMissingStub: _i20.Future<void>.value(),
       ) as _i20.Future<void>);
+
   @override
   _i20.Future<void> restore() => (super.noSuchMethod(
         Invocation.method(
@@ -853,6 +906,7 @@ class MockMessageTracker extends _i1.Mock implements _i22.MessageTracker {
         returnValue: _i20.Future<void>.value(),
         returnValueForMissingStub: _i20.Future<void>.value(),
       ) as _i20.Future<void>);
+
   @override
   void checkInitialized() => super.noSuchMethod(
         Invocation.method(
@@ -891,6 +945,7 @@ class MockHttpWrapper extends _i1.Mock implements _i24.HttpWrapper {
           ),
         )),
       ) as _i20.Future<_i9.Response>);
+
   @override
   _i20.Future<_i9.Response> delete(
     Uri? url, {
@@ -911,6 +966,7 @@ class MockHttpWrapper extends _i1.Mock implements _i24.HttpWrapper {
           ),
         )),
       ) as _i20.Future<_i9.Response>);
+
   @override
   _i20.Future<_i9.Response> post(
     Uri? url, {
@@ -953,11 +1009,13 @@ class MockCore extends _i1.Mock implements _i25.Core {
         Invocation.getter(#projectId),
         returnValue: '',
       ) as String);
+
   @override
   String get relayUrl => (super.noSuchMethod(
         Invocation.getter(#relayUrl),
         returnValue: '',
       ) as String);
+
   @override
   set relayUrl(String? _relayUrl) => super.noSuchMethod(
         Invocation.setter(
@@ -966,11 +1024,13 @@ class MockCore extends _i1.Mock implements _i25.Core {
         ),
         returnValueForMissingStub: null,
       );
+
   @override
   String get pushUrl => (super.noSuchMethod(
         Invocation.getter(#pushUrl),
         returnValue: '',
       ) as String);
+
   @override
   set pushUrl(String? _pushUrl) => super.noSuchMethod(
         Invocation.setter(
@@ -979,6 +1039,7 @@ class MockCore extends _i1.Mock implements _i25.Core {
         ),
         returnValueForMissingStub: null,
       );
+
   @override
   _i10.ICrypto get crypto => (super.noSuchMethod(
         Invocation.getter(#crypto),
@@ -987,6 +1048,7 @@ class MockCore extends _i1.Mock implements _i25.Core {
           Invocation.getter(#crypto),
         ),
       ) as _i10.ICrypto);
+
   @override
   set crypto(_i10.ICrypto? _crypto) => super.noSuchMethod(
         Invocation.setter(
@@ -995,6 +1057,7 @@ class MockCore extends _i1.Mock implements _i25.Core {
         ),
         returnValueForMissingStub: null,
       );
+
   @override
   _i11.IRelayClient get relayClient => (super.noSuchMethod(
         Invocation.getter(#relayClient),
@@ -1003,6 +1066,7 @@ class MockCore extends _i1.Mock implements _i25.Core {
           Invocation.getter(#relayClient),
         ),
       ) as _i11.IRelayClient);
+
   @override
   set relayClient(_i11.IRelayClient? _relayClient) => super.noSuchMethod(
         Invocation.setter(
@@ -1011,6 +1075,7 @@ class MockCore extends _i1.Mock implements _i25.Core {
         ),
         returnValueForMissingStub: null,
       );
+
   @override
   _i12.IExpirer get expirer => (super.noSuchMethod(
         Invocation.getter(#expirer),
@@ -1019,6 +1084,7 @@ class MockCore extends _i1.Mock implements _i25.Core {
           Invocation.getter(#expirer),
         ),
       ) as _i12.IExpirer);
+
   @override
   set expirer(_i12.IExpirer? _expirer) => super.noSuchMethod(
         Invocation.setter(
@@ -1027,6 +1093,7 @@ class MockCore extends _i1.Mock implements _i25.Core {
         ),
         returnValueForMissingStub: null,
       );
+
   @override
   _i13.IPairing get pairing => (super.noSuchMethod(
         Invocation.getter(#pairing),
@@ -1035,6 +1102,7 @@ class MockCore extends _i1.Mock implements _i25.Core {
           Invocation.getter(#pairing),
         ),
       ) as _i13.IPairing);
+
   @override
   set pairing(_i13.IPairing? _pairing) => super.noSuchMethod(
         Invocation.setter(
@@ -1043,6 +1111,7 @@ class MockCore extends _i1.Mock implements _i25.Core {
         ),
         returnValueForMissingStub: null,
       );
+
   @override
   _i14.IEcho get echo => (super.noSuchMethod(
         Invocation.getter(#echo),
@@ -1051,6 +1120,7 @@ class MockCore extends _i1.Mock implements _i25.Core {
           Invocation.getter(#echo),
         ),
       ) as _i14.IEcho);
+
   @override
   set echo(_i14.IEcho? _echo) => super.noSuchMethod(
         Invocation.setter(
@@ -1059,6 +1129,7 @@ class MockCore extends _i1.Mock implements _i25.Core {
         ),
         returnValueForMissingStub: null,
       );
+
   @override
   _i15.IHeartBeat get heartbeat => (super.noSuchMethod(
         Invocation.getter(#heartbeat),
@@ -1067,6 +1138,7 @@ class MockCore extends _i1.Mock implements _i25.Core {
           Invocation.getter(#heartbeat),
         ),
       ) as _i15.IHeartBeat);
+
   @override
   set heartbeat(_i15.IHeartBeat? _heartbeat) => super.noSuchMethod(
         Invocation.setter(
@@ -1075,6 +1147,7 @@ class MockCore extends _i1.Mock implements _i25.Core {
         ),
         returnValueForMissingStub: null,
       );
+
   @override
   _i16.IVerify get verify => (super.noSuchMethod(
         Invocation.getter(#verify),
@@ -1083,6 +1156,7 @@ class MockCore extends _i1.Mock implements _i25.Core {
           Invocation.getter(#verify),
         ),
       ) as _i16.IVerify);
+
   @override
   set verify(_i16.IVerify? _verify) => super.noSuchMethod(
         Invocation.setter(
@@ -1091,6 +1165,7 @@ class MockCore extends _i1.Mock implements _i25.Core {
         ),
         returnValueForMissingStub: null,
       );
+
   @override
   _i7.IStore<Map<String, dynamic>> get storage => (super.noSuchMethod(
         Invocation.getter(#storage),
@@ -1099,6 +1174,7 @@ class MockCore extends _i1.Mock implements _i25.Core {
           Invocation.getter(#storage),
         ),
       ) as _i7.IStore<Map<String, dynamic>>);
+
   @override
   set storage(_i7.IStore<Map<String, dynamic>>? _storage) => super.noSuchMethod(
         Invocation.setter(
@@ -1107,16 +1183,19 @@ class MockCore extends _i1.Mock implements _i25.Core {
         ),
         returnValueForMissingStub: null,
       );
+
   @override
   String get protocol => (super.noSuchMethod(
         Invocation.getter(#protocol),
         returnValue: '',
       ) as String);
+
   @override
   String get version => (super.noSuchMethod(
         Invocation.getter(#version),
         returnValue: '',
       ) as String);
+
   @override
   _i17.Logger get logger => (super.noSuchMethod(
         Invocation.getter(#logger),
@@ -1125,6 +1204,7 @@ class MockCore extends _i1.Mock implements _i25.Core {
           Invocation.getter(#logger),
         ),
       ) as _i17.Logger);
+
   @override
   _i20.Future<void> start() => (super.noSuchMethod(
         Invocation.method(
@@ -1149,6 +1229,7 @@ class MockWebSocketHandler extends _i1.Mock implements _i26.WebSocketHandler {
         Invocation.getter(#ready),
         returnValue: _i20.Future<void>.value(),
       ) as _i20.Future<void>);
+
   @override
   _i20.Future<void> setup({required String? url}) => (super.noSuchMethod(
         Invocation.method(
@@ -1159,6 +1240,7 @@ class MockWebSocketHandler extends _i1.Mock implements _i26.WebSocketHandler {
         returnValue: _i20.Future<void>.value(),
         returnValueForMissingStub: _i20.Future<void>.value(),
       ) as _i20.Future<void>);
+
   @override
   _i20.Future<void> connect() => (super.noSuchMethod(
         Invocation.method(
@@ -1168,6 +1250,7 @@ class MockWebSocketHandler extends _i1.Mock implements _i26.WebSocketHandler {
         returnValue: _i20.Future<void>.value(),
         returnValueForMissingStub: _i20.Future<void>.value(),
       ) as _i20.Future<void>);
+
   @override
   _i20.Future<void> close() => (super.noSuchMethod(
         Invocation.method(

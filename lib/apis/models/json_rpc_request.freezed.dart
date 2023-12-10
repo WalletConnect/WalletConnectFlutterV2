@@ -80,22 +80,22 @@ class _$JsonRpcRequestCopyWithImpl<$Res, $Val extends JsonRpcRequest>
 }
 
 /// @nodoc
-abstract class _$$_JsonRpcRequestCopyWith<$Res>
+abstract class _$$JsonRpcRequestImplCopyWith<$Res>
     implements $JsonRpcRequestCopyWith<$Res> {
-  factory _$$_JsonRpcRequestCopyWith(
-          _$_JsonRpcRequest value, $Res Function(_$_JsonRpcRequest) then) =
-      __$$_JsonRpcRequestCopyWithImpl<$Res>;
+  factory _$$JsonRpcRequestImplCopyWith(_$JsonRpcRequestImpl value,
+          $Res Function(_$JsonRpcRequestImpl) then) =
+      __$$JsonRpcRequestImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({int id, String jsonrpc, String method, dynamic params});
 }
 
 /// @nodoc
-class __$$_JsonRpcRequestCopyWithImpl<$Res>
-    extends _$JsonRpcRequestCopyWithImpl<$Res, _$_JsonRpcRequest>
-    implements _$$_JsonRpcRequestCopyWith<$Res> {
-  __$$_JsonRpcRequestCopyWithImpl(
-      _$_JsonRpcRequest _value, $Res Function(_$_JsonRpcRequest) _then)
+class __$$JsonRpcRequestImplCopyWithImpl<$Res>
+    extends _$JsonRpcRequestCopyWithImpl<$Res, _$JsonRpcRequestImpl>
+    implements _$$JsonRpcRequestImplCopyWith<$Res> {
+  __$$JsonRpcRequestImplCopyWithImpl(
+      _$JsonRpcRequestImpl _value, $Res Function(_$JsonRpcRequestImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -106,7 +106,7 @@ class __$$_JsonRpcRequestCopyWithImpl<$Res>
     Object? method = null,
     Object? params = freezed,
   }) {
-    return _then(_$_JsonRpcRequest(
+    return _then(_$JsonRpcRequestImpl(
       id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
@@ -130,15 +130,15 @@ class __$$_JsonRpcRequestCopyWithImpl<$Res>
 /// @nodoc
 
 @JsonSerializable()
-class _$_JsonRpcRequest implements _JsonRpcRequest {
-  const _$_JsonRpcRequest(
+class _$JsonRpcRequestImpl implements _JsonRpcRequest {
+  const _$JsonRpcRequestImpl(
       {required this.id,
       this.jsonrpc = '2.0',
       required this.method,
       this.params});
 
-  factory _$_JsonRpcRequest.fromJson(Map<String, dynamic> json) =>
-      _$$_JsonRpcRequestFromJson(json);
+  factory _$JsonRpcRequestImpl.fromJson(Map<String, dynamic> json) =>
+      _$$JsonRpcRequestImplFromJson(json);
 
   @override
   final int id;
@@ -159,7 +159,7 @@ class _$_JsonRpcRequest implements _JsonRpcRequest {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_JsonRpcRequest &&
+            other is _$JsonRpcRequestImpl &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.jsonrpc, jsonrpc) || other.jsonrpc == jsonrpc) &&
             (identical(other.method, method) || other.method == method) &&
@@ -174,12 +174,13 @@ class _$_JsonRpcRequest implements _JsonRpcRequest {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_JsonRpcRequestCopyWith<_$_JsonRpcRequest> get copyWith =>
-      __$$_JsonRpcRequestCopyWithImpl<_$_JsonRpcRequest>(this, _$identity);
+  _$$JsonRpcRequestImplCopyWith<_$JsonRpcRequestImpl> get copyWith =>
+      __$$JsonRpcRequestImplCopyWithImpl<_$JsonRpcRequestImpl>(
+          this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_JsonRpcRequestToJson(
+    return _$$JsonRpcRequestImplToJson(
       this,
     );
   }
@@ -190,10 +191,10 @@ abstract class _JsonRpcRequest implements JsonRpcRequest {
       {required final int id,
       final String jsonrpc,
       required final String method,
-      final dynamic params}) = _$_JsonRpcRequest;
+      final dynamic params}) = _$JsonRpcRequestImpl;
 
   factory _JsonRpcRequest.fromJson(Map<String, dynamic> json) =
-      _$_JsonRpcRequest.fromJson;
+      _$JsonRpcRequestImpl.fromJson;
 
   @override
   int get id;
@@ -205,6 +206,6 @@ abstract class _JsonRpcRequest implements JsonRpcRequest {
   dynamic get params;
   @override
   @JsonKey(ignore: true)
-  _$$_JsonRpcRequestCopyWith<_$_JsonRpcRequest> get copyWith =>
+  _$$JsonRpcRequestImplCopyWith<_$JsonRpcRequestImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

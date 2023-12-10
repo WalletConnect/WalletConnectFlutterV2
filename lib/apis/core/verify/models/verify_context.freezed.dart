@@ -81,11 +81,11 @@ class _$VerifyContextCopyWithImpl<$Res, $Val extends VerifyContext>
 }
 
 /// @nodoc
-abstract class _$$_VerifyContextCopyWith<$Res>
+abstract class _$$VerifyContextImplCopyWith<$Res>
     implements $VerifyContextCopyWith<$Res> {
-  factory _$$_VerifyContextCopyWith(
-          _$_VerifyContext value, $Res Function(_$_VerifyContext) then) =
-      __$$_VerifyContextCopyWithImpl<$Res>;
+  factory _$$VerifyContextImplCopyWith(
+          _$VerifyContextImpl value, $Res Function(_$VerifyContextImpl) then) =
+      __$$VerifyContextImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -93,11 +93,11 @@ abstract class _$$_VerifyContextCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$_VerifyContextCopyWithImpl<$Res>
-    extends _$VerifyContextCopyWithImpl<$Res, _$_VerifyContext>
-    implements _$$_VerifyContextCopyWith<$Res> {
-  __$$_VerifyContextCopyWithImpl(
-      _$_VerifyContext _value, $Res Function(_$_VerifyContext) _then)
+class __$$VerifyContextImplCopyWithImpl<$Res>
+    extends _$VerifyContextCopyWithImpl<$Res, _$VerifyContextImpl>
+    implements _$$VerifyContextImplCopyWith<$Res> {
+  __$$VerifyContextImplCopyWithImpl(
+      _$VerifyContextImpl _value, $Res Function(_$VerifyContextImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -108,7 +108,7 @@ class __$$_VerifyContextCopyWithImpl<$Res>
     Object? verifyUrl = null,
     Object? isScam = freezed,
   }) {
-    return _then(_$_VerifyContext(
+    return _then(_$VerifyContextImpl(
       origin: null == origin
           ? _value.origin
           : origin // ignore: cast_nullable_to_non_nullable
@@ -132,15 +132,15 @@ class __$$_VerifyContextCopyWithImpl<$Res>
 /// @nodoc
 
 @JsonSerializable()
-class _$_VerifyContext implements _VerifyContext {
-  const _$_VerifyContext(
+class _$VerifyContextImpl implements _VerifyContext {
+  const _$VerifyContextImpl(
       {required this.origin,
       required this.validation,
       required this.verifyUrl,
       this.isScam});
 
-  factory _$_VerifyContext.fromJson(Map<String, dynamic> json) =>
-      _$$_VerifyContextFromJson(json);
+  factory _$VerifyContextImpl.fromJson(Map<String, dynamic> json) =>
+      _$$VerifyContextImplFromJson(json);
 
   @override
   final String origin;
@@ -160,7 +160,7 @@ class _$_VerifyContext implements _VerifyContext {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_VerifyContext &&
+            other is _$VerifyContextImpl &&
             (identical(other.origin, origin) || other.origin == origin) &&
             (identical(other.validation, validation) ||
                 other.validation == validation) &&
@@ -177,12 +177,12 @@ class _$_VerifyContext implements _VerifyContext {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_VerifyContextCopyWith<_$_VerifyContext> get copyWith =>
-      __$$_VerifyContextCopyWithImpl<_$_VerifyContext>(this, _$identity);
+  _$$VerifyContextImplCopyWith<_$VerifyContextImpl> get copyWith =>
+      __$$VerifyContextImplCopyWithImpl<_$VerifyContextImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_VerifyContextToJson(
+    return _$$VerifyContextImplToJson(
       this,
     );
   }
@@ -193,10 +193,10 @@ abstract class _VerifyContext implements VerifyContext {
       {required final String origin,
       required final Validation validation,
       required final String verifyUrl,
-      final bool? isScam}) = _$_VerifyContext;
+      final bool? isScam}) = _$VerifyContextImpl;
 
   factory _VerifyContext.fromJson(Map<String, dynamic> json) =
-      _$_VerifyContext.fromJson;
+      _$VerifyContextImpl.fromJson;
 
   @override
   String get origin;
@@ -208,7 +208,7 @@ abstract class _VerifyContext implements VerifyContext {
   bool? get isScam;
   @override
   @JsonKey(ignore: true)
-  _$$_VerifyContextCopyWith<_$_VerifyContext> get copyWith =>
+  _$$VerifyContextImplCopyWith<_$VerifyContextImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
@@ -272,22 +272,22 @@ class _$AttestationResponseCopyWithImpl<$Res, $Val extends AttestationResponse>
 }
 
 /// @nodoc
-abstract class _$$_AttestationResponseCopyWith<$Res>
+abstract class _$$AttestationResponseImplCopyWith<$Res>
     implements $AttestationResponseCopyWith<$Res> {
-  factory _$$_AttestationResponseCopyWith(_$_AttestationResponse value,
-          $Res Function(_$_AttestationResponse) then) =
-      __$$_AttestationResponseCopyWithImpl<$Res>;
+  factory _$$AttestationResponseImplCopyWith(_$AttestationResponseImpl value,
+          $Res Function(_$AttestationResponseImpl) then) =
+      __$$AttestationResponseImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({String origin, String attestationId, bool? isScam});
 }
 
 /// @nodoc
-class __$$_AttestationResponseCopyWithImpl<$Res>
-    extends _$AttestationResponseCopyWithImpl<$Res, _$_AttestationResponse>
-    implements _$$_AttestationResponseCopyWith<$Res> {
-  __$$_AttestationResponseCopyWithImpl(_$_AttestationResponse _value,
-      $Res Function(_$_AttestationResponse) _then)
+class __$$AttestationResponseImplCopyWithImpl<$Res>
+    extends _$AttestationResponseCopyWithImpl<$Res, _$AttestationResponseImpl>
+    implements _$$AttestationResponseImplCopyWith<$Res> {
+  __$$AttestationResponseImplCopyWithImpl(_$AttestationResponseImpl _value,
+      $Res Function(_$AttestationResponseImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -297,7 +297,7 @@ class __$$_AttestationResponseCopyWithImpl<$Res>
     Object? attestationId = null,
     Object? isScam = freezed,
   }) {
-    return _then(_$_AttestationResponse(
+    return _then(_$AttestationResponseImpl(
       origin: null == origin
           ? _value.origin
           : origin // ignore: cast_nullable_to_non_nullable
@@ -317,12 +317,12 @@ class __$$_AttestationResponseCopyWithImpl<$Res>
 /// @nodoc
 
 @JsonSerializable()
-class _$_AttestationResponse implements _AttestationResponse {
-  const _$_AttestationResponse(
+class _$AttestationResponseImpl implements _AttestationResponse {
+  const _$AttestationResponseImpl(
       {required this.origin, required this.attestationId, this.isScam});
 
-  factory _$_AttestationResponse.fromJson(Map<String, dynamic> json) =>
-      _$$_AttestationResponseFromJson(json);
+  factory _$AttestationResponseImpl.fromJson(Map<String, dynamic> json) =>
+      _$$AttestationResponseImplFromJson(json);
 
   @override
   final String origin;
@@ -340,7 +340,7 @@ class _$_AttestationResponse implements _AttestationResponse {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_AttestationResponse &&
+            other is _$AttestationResponseImpl &&
             (identical(other.origin, origin) || other.origin == origin) &&
             (identical(other.attestationId, attestationId) ||
                 other.attestationId == attestationId) &&
@@ -354,13 +354,13 @@ class _$_AttestationResponse implements _AttestationResponse {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_AttestationResponseCopyWith<_$_AttestationResponse> get copyWith =>
-      __$$_AttestationResponseCopyWithImpl<_$_AttestationResponse>(
+  _$$AttestationResponseImplCopyWith<_$AttestationResponseImpl> get copyWith =>
+      __$$AttestationResponseImplCopyWithImpl<_$AttestationResponseImpl>(
           this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_AttestationResponseToJson(
+    return _$$AttestationResponseImplToJson(
       this,
     );
   }
@@ -370,10 +370,10 @@ abstract class _AttestationResponse implements AttestationResponse {
   const factory _AttestationResponse(
       {required final String origin,
       required final String attestationId,
-      final bool? isScam}) = _$_AttestationResponse;
+      final bool? isScam}) = _$AttestationResponseImpl;
 
   factory _AttestationResponse.fromJson(Map<String, dynamic> json) =
-      _$_AttestationResponse.fromJson;
+      _$AttestationResponseImpl.fromJson;
 
   @override
   String get origin;
@@ -383,6 +383,6 @@ abstract class _AttestationResponse implements AttestationResponse {
   bool? get isScam;
   @override
   @JsonKey(ignore: true)
-  _$$_AttestationResponseCopyWith<_$_AttestationResponse> get copyWith =>
+  _$$AttestationResponseImplCopyWith<_$AttestationResponseImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

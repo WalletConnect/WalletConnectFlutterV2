@@ -27,6 +27,7 @@ dependencies:
   logger: ^2.0.2+1
   freezed_annotation: ^2.2.0
   package_info_plus: ^4.2.0
+  plugin_platform_interface: ^2.1.6
 
 dev_dependencies:
   flutter_test:
@@ -41,3 +42,13 @@ dev_dependencies:
   flutter_lints: ^2.0.0
   freezed: ^2.4.0
 
+flutter:
+  plugin:
+    platforms:
+      # android:
+      #   fileName: walletconnect_flutter_v2.dart
+      # ios:
+      #   fileName: walletconnect_flutter_v2.dart
+      web:
+        pluginClass: WalletconnectFlutterV2Web
+        fileName: walletconnect_flutter_v2_web.dart

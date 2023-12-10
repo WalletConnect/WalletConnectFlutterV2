@@ -68,22 +68,22 @@ class _$JsonRpcErrorCopyWithImpl<$Res, $Val extends JsonRpcError>
 }
 
 /// @nodoc
-abstract class _$$_JsonRpcErrorCopyWith<$Res>
+abstract class _$$JsonRpcErrorImplCopyWith<$Res>
     implements $JsonRpcErrorCopyWith<$Res> {
-  factory _$$_JsonRpcErrorCopyWith(
-          _$_JsonRpcError value, $Res Function(_$_JsonRpcError) then) =
-      __$$_JsonRpcErrorCopyWithImpl<$Res>;
+  factory _$$JsonRpcErrorImplCopyWith(
+          _$JsonRpcErrorImpl value, $Res Function(_$JsonRpcErrorImpl) then) =
+      __$$JsonRpcErrorImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({int? code, String? message});
 }
 
 /// @nodoc
-class __$$_JsonRpcErrorCopyWithImpl<$Res>
-    extends _$JsonRpcErrorCopyWithImpl<$Res, _$_JsonRpcError>
-    implements _$$_JsonRpcErrorCopyWith<$Res> {
-  __$$_JsonRpcErrorCopyWithImpl(
-      _$_JsonRpcError _value, $Res Function(_$_JsonRpcError) _then)
+class __$$JsonRpcErrorImplCopyWithImpl<$Res>
+    extends _$JsonRpcErrorCopyWithImpl<$Res, _$JsonRpcErrorImpl>
+    implements _$$JsonRpcErrorImplCopyWith<$Res> {
+  __$$JsonRpcErrorImplCopyWithImpl(
+      _$JsonRpcErrorImpl _value, $Res Function(_$JsonRpcErrorImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -92,7 +92,7 @@ class __$$_JsonRpcErrorCopyWithImpl<$Res>
     Object? code = freezed,
     Object? message = freezed,
   }) {
-    return _then(_$_JsonRpcError(
+    return _then(_$JsonRpcErrorImpl(
       code: freezed == code
           ? _value.code
           : code // ignore: cast_nullable_to_non_nullable
@@ -108,11 +108,11 @@ class __$$_JsonRpcErrorCopyWithImpl<$Res>
 /// @nodoc
 
 @JsonSerializable(includeIfNull: false)
-class _$_JsonRpcError implements _JsonRpcError {
-  const _$_JsonRpcError({this.code, this.message});
+class _$JsonRpcErrorImpl implements _JsonRpcError {
+  const _$JsonRpcErrorImpl({this.code, this.message});
 
-  factory _$_JsonRpcError.fromJson(Map<String, dynamic> json) =>
-      _$$_JsonRpcErrorFromJson(json);
+  factory _$JsonRpcErrorImpl.fromJson(Map<String, dynamic> json) =>
+      _$$JsonRpcErrorImplFromJson(json);
 
   @override
   final int? code;
@@ -128,7 +128,7 @@ class _$_JsonRpcError implements _JsonRpcError {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_JsonRpcError &&
+            other is _$JsonRpcErrorImpl &&
             (identical(other.code, code) || other.code == code) &&
             (identical(other.message, message) || other.message == message));
   }
@@ -140,12 +140,12 @@ class _$_JsonRpcError implements _JsonRpcError {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_JsonRpcErrorCopyWith<_$_JsonRpcError> get copyWith =>
-      __$$_JsonRpcErrorCopyWithImpl<_$_JsonRpcError>(this, _$identity);
+  _$$JsonRpcErrorImplCopyWith<_$JsonRpcErrorImpl> get copyWith =>
+      __$$JsonRpcErrorImplCopyWithImpl<_$JsonRpcErrorImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_JsonRpcErrorToJson(
+    return _$$JsonRpcErrorImplToJson(
       this,
     );
   }
@@ -153,10 +153,10 @@ class _$_JsonRpcError implements _JsonRpcError {
 
 abstract class _JsonRpcError implements JsonRpcError {
   const factory _JsonRpcError({final int? code, final String? message}) =
-      _$_JsonRpcError;
+      _$JsonRpcErrorImpl;
 
   factory _JsonRpcError.fromJson(Map<String, dynamic> json) =
-      _$_JsonRpcError.fromJson;
+      _$JsonRpcErrorImpl.fromJson;
 
   @override
   int? get code;
@@ -164,6 +164,6 @@ abstract class _JsonRpcError implements JsonRpcError {
   String? get message;
   @override
   @JsonKey(ignore: true)
-  _$$_JsonRpcErrorCopyWith<_$_JsonRpcError> get copyWith =>
+  _$$JsonRpcErrorImplCopyWith<_$JsonRpcErrorImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

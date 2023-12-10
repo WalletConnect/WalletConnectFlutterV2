@@ -48,14 +48,10 @@ class _MyHomePageState extends State<MyHomePage> {
   List<PageData> _pageDatas = [];
   int _selectedIndex = 0;
 
-  // SessionData? _selectedSession;
-  // List<SessionData> _allSessions = [];
-  // List<PairingInfo> _allPairings = [];
-
   @override
   void initState() {
-    initialize();
     super.initState();
+    initialize();
   }
 
   Future<void> initialize() async {
@@ -83,6 +79,10 @@ class _MyHomePageState extends State<MyHomePage> {
     // Register event handlers
     _web3App!.onSessionPing.subscribe(_onSessionPing);
     _web3App!.onSessionEvent.subscribe(_onSessionEvent);
+    _web3App!.core.relayClient.onRelayClientConnect
+        .subscribe(_onRelayClientStatus);
+    _web3App!.core.relayClient.onRelayClientDisconnect
+        .subscribe(_onRelayClientStatus);
 
     setState(() {
       _pageDatas = [
@@ -94,12 +94,12 @@ class _MyHomePageState extends State<MyHomePage> {
         PageData(
           page: PairingsPage(web3App: _web3App!),
           title: StringConstants.pairingsPageTitle,
-          icon: Icons.connect_without_contact_sharp,
+          icon: Icons.vertical_align_center_rounded,
         ),
         PageData(
           page: SessionsPage(web3App: _web3App!),
           title: StringConstants.sessionsPageTitle,
-          icon: Icons.confirmation_number_outlined,
+          icon: Icons.workspaces_filled,
         ),
         PageData(
           page: AuthPage(web3App: _web3App!),
@@ -115,10 +115,18 @@ class _MyHomePageState extends State<MyHomePage> {
     // }
   }
 
+  void _onRelayClientStatus(dynamic args) {
+    setState(() {});
+  }
+
   @override
   void dispose() {
     _web3App!.onSessionPing.unsubscribe(_onSessionPing);
     _web3App!.onSessionEvent.unsubscribe(_onSessionEvent);
+    _web3App!.core.relayClient.onRelayClientConnect
+        .unsubscribe(_onRelayClientStatus);
+    _web3App!.core.relayClient.onRelayClientDisconnect
+        .unsubscribe(_onRelayClientStatus);
     super.dispose();
   }
 
@@ -146,20 +154,17 @@ class _MyHomePageState extends State<MyHomePage> {
               right: StyleConstants.magic20,
               child: Row(
                 children: [
-                  // Disconnect buttons for testing
-                  _buildIconButton(
-                    Icons.discord,
-                    () {
-                      _web3App!.core.relayClient.disconnect();
-                    },
-                  ),
-                  const SizedBox(
-                    width: StyleConstants.magic20,
-                  ),
-                  _buildIconButton(
-                    Icons.connect_without_contact,
-                    () {
-                      _web3App!.core.relayClient.connect();
+                  _web3App!.core.relayClient.isConnected
+                      ? const Text('Connected ')
+                      : const Text('Disconnected '),
+                  Switch.adaptive(
+                    value: _web3App!.core.relayClient.isConnected,
+                    onChanged: (value) {
+                      if (_web3App!.core.relayClient.isConnected) {
+                        _web3App!.core.relayClient.disconnect();
+                      } else {
+                        _web3App!.core.relayClient.connect();
+                      }
                     },
                   ),
                 ],
@@ -190,6 +195,8 @@ class _MyHomePageState extends State<MyHomePage> {
       currentIndex: _selectedIndex,
       unselectedItemColor: Colors.grey,
       selectedItemColor: Colors.indigoAccent,
+      showUnselectedLabels: true,
+      type: BottomNavigationBarType.fixed,
       // called when one tab is selected
       onTap: (int index) {
         setState(() {
@@ -250,25 +257,6 @@ class _MyHomePageState extends State<MyHomePage> {
               'Topic: ${args!.topic}\nEvent Name: ${args.name}\nEvent Data: ${args.data}',
         );
       },
-    );
-  }
-
-  Widget _buildIconButton(IconData icon, void Function()? onPressed) {
-    return Container(
-      decoration: BoxDecoration(
-        color: StyleConstants.primaryColor,
-        borderRadius: BorderRadius.circular(
-          StyleConstants.linear48,
-        ),
-      ),
-      child: IconButton(
-        icon: Icon(
-          icon,
-          color: StyleConstants.titleTextColor,
-        ),
-        iconSize: StyleConstants.linear24,
-        onPressed: onPressed,
-      ),
     );
   }
 }

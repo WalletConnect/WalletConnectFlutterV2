@@ -74,22 +74,22 @@ class _$RequiredNamespaceCopyWithImpl<$Res, $Val extends RequiredNamespace>
 }
 
 /// @nodoc
-abstract class _$$_RequiredNamespaceCopyWith<$Res>
+abstract class _$$RequiredNamespaceImplCopyWith<$Res>
     implements $RequiredNamespaceCopyWith<$Res> {
-  factory _$$_RequiredNamespaceCopyWith(_$_RequiredNamespace value,
-          $Res Function(_$_RequiredNamespace) then) =
-      __$$_RequiredNamespaceCopyWithImpl<$Res>;
+  factory _$$RequiredNamespaceImplCopyWith(_$RequiredNamespaceImpl value,
+          $Res Function(_$RequiredNamespaceImpl) then) =
+      __$$RequiredNamespaceImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({List<String>? chains, List<String> methods, List<String> events});
 }
 
 /// @nodoc
-class __$$_RequiredNamespaceCopyWithImpl<$Res>
-    extends _$RequiredNamespaceCopyWithImpl<$Res, _$_RequiredNamespace>
-    implements _$$_RequiredNamespaceCopyWith<$Res> {
-  __$$_RequiredNamespaceCopyWithImpl(
-      _$_RequiredNamespace _value, $Res Function(_$_RequiredNamespace) _then)
+class __$$RequiredNamespaceImplCopyWithImpl<$Res>
+    extends _$RequiredNamespaceCopyWithImpl<$Res, _$RequiredNamespaceImpl>
+    implements _$$RequiredNamespaceImplCopyWith<$Res> {
+  __$$RequiredNamespaceImplCopyWithImpl(_$RequiredNamespaceImpl _value,
+      $Res Function(_$RequiredNamespaceImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -99,7 +99,7 @@ class __$$_RequiredNamespaceCopyWithImpl<$Res>
     Object? methods = null,
     Object? events = null,
   }) {
-    return _then(_$_RequiredNamespace(
+    return _then(_$RequiredNamespaceImpl(
       chains: freezed == chains
           ? _value._chains
           : chains // ignore: cast_nullable_to_non_nullable
@@ -119,8 +119,8 @@ class __$$_RequiredNamespaceCopyWithImpl<$Res>
 /// @nodoc
 
 @JsonSerializable(includeIfNull: false)
-class _$_RequiredNamespace implements _RequiredNamespace {
-  const _$_RequiredNamespace(
+class _$RequiredNamespaceImpl implements _RequiredNamespace {
+  const _$RequiredNamespaceImpl(
       {final List<String>? chains,
       required final List<String> methods,
       required final List<String> events})
@@ -128,8 +128,8 @@ class _$_RequiredNamespace implements _RequiredNamespace {
         _methods = methods,
         _events = events;
 
-  factory _$_RequiredNamespace.fromJson(Map<String, dynamic> json) =>
-      _$$_RequiredNamespaceFromJson(json);
+  factory _$RequiredNamespaceImpl.fromJson(Map<String, dynamic> json) =>
+      _$$RequiredNamespaceImplFromJson(json);
 
   final List<String>? _chains;
   @override
@@ -166,7 +166,7 @@ class _$_RequiredNamespace implements _RequiredNamespace {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_RequiredNamespace &&
+            other is _$RequiredNamespaceImpl &&
             const DeepCollectionEquality().equals(other._chains, _chains) &&
             const DeepCollectionEquality().equals(other._methods, _methods) &&
             const DeepCollectionEquality().equals(other._events, _events));
@@ -183,13 +183,13 @@ class _$_RequiredNamespace implements _RequiredNamespace {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_RequiredNamespaceCopyWith<_$_RequiredNamespace> get copyWith =>
-      __$$_RequiredNamespaceCopyWithImpl<_$_RequiredNamespace>(
+  _$$RequiredNamespaceImplCopyWith<_$RequiredNamespaceImpl> get copyWith =>
+      __$$RequiredNamespaceImplCopyWithImpl<_$RequiredNamespaceImpl>(
           this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_RequiredNamespaceToJson(
+    return _$$RequiredNamespaceImplToJson(
       this,
     );
   }
@@ -199,10 +199,10 @@ abstract class _RequiredNamespace implements RequiredNamespace {
   const factory _RequiredNamespace(
       {final List<String>? chains,
       required final List<String> methods,
-      required final List<String> events}) = _$_RequiredNamespace;
+      required final List<String> events}) = _$RequiredNamespaceImpl;
 
   factory _RequiredNamespace.fromJson(Map<String, dynamic> json) =
-      _$_RequiredNamespace.fromJson;
+      _$RequiredNamespaceImpl.fromJson;
 
   @override
   List<String>? get chains;
@@ -212,7 +212,7 @@ abstract class _RequiredNamespace implements RequiredNamespace {
   List<String> get events;
   @override
   @JsonKey(ignore: true)
-  _$$_RequiredNamespaceCopyWith<_$_RequiredNamespace> get copyWith =>
+  _$$RequiredNamespaceImplCopyWith<_$RequiredNamespaceImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
@@ -280,11 +280,11 @@ class _$SessionProposalCopyWithImpl<$Res, $Val extends SessionProposal>
 }
 
 /// @nodoc
-abstract class _$$_SessionProposalCopyWith<$Res>
+abstract class _$$SessionProposalImplCopyWith<$Res>
     implements $SessionProposalCopyWith<$Res> {
-  factory _$$_SessionProposalCopyWith(
-          _$_SessionProposal value, $Res Function(_$_SessionProposal) then) =
-      __$$_SessionProposalCopyWithImpl<$Res>;
+  factory _$$SessionProposalImplCopyWith(_$SessionProposalImpl value,
+          $Res Function(_$SessionProposalImpl) then) =
+      __$$SessionProposalImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call({int id, ProposalData params});
@@ -294,11 +294,11 @@ abstract class _$$_SessionProposalCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$_SessionProposalCopyWithImpl<$Res>
-    extends _$SessionProposalCopyWithImpl<$Res, _$_SessionProposal>
-    implements _$$_SessionProposalCopyWith<$Res> {
-  __$$_SessionProposalCopyWithImpl(
-      _$_SessionProposal _value, $Res Function(_$_SessionProposal) _then)
+class __$$SessionProposalImplCopyWithImpl<$Res>
+    extends _$SessionProposalCopyWithImpl<$Res, _$SessionProposalImpl>
+    implements _$$SessionProposalImplCopyWith<$Res> {
+  __$$SessionProposalImplCopyWithImpl(
+      _$SessionProposalImpl _value, $Res Function(_$SessionProposalImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -307,7 +307,7 @@ class __$$_SessionProposalCopyWithImpl<$Res>
     Object? id = null,
     Object? params = null,
   }) {
-    return _then(_$_SessionProposal(
+    return _then(_$SessionProposalImpl(
       id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
@@ -323,11 +323,11 @@ class __$$_SessionProposalCopyWithImpl<$Res>
 /// @nodoc
 
 @JsonSerializable()
-class _$_SessionProposal implements _SessionProposal {
-  const _$_SessionProposal({required this.id, required this.params});
+class _$SessionProposalImpl implements _SessionProposal {
+  const _$SessionProposalImpl({required this.id, required this.params});
 
-  factory _$_SessionProposal.fromJson(Map<String, dynamic> json) =>
-      _$$_SessionProposalFromJson(json);
+  factory _$SessionProposalImpl.fromJson(Map<String, dynamic> json) =>
+      _$$SessionProposalImplFromJson(json);
 
   @override
   final int id;
@@ -343,7 +343,7 @@ class _$_SessionProposal implements _SessionProposal {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_SessionProposal &&
+            other is _$SessionProposalImpl &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.params, params) || other.params == params));
   }
@@ -355,12 +355,13 @@ class _$_SessionProposal implements _SessionProposal {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_SessionProposalCopyWith<_$_SessionProposal> get copyWith =>
-      __$$_SessionProposalCopyWithImpl<_$_SessionProposal>(this, _$identity);
+  _$$SessionProposalImplCopyWith<_$SessionProposalImpl> get copyWith =>
+      __$$SessionProposalImplCopyWithImpl<_$SessionProposalImpl>(
+          this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_SessionProposalToJson(
+    return _$$SessionProposalImplToJson(
       this,
     );
   }
@@ -369,10 +370,10 @@ class _$_SessionProposal implements _SessionProposal {
 abstract class _SessionProposal implements SessionProposal {
   const factory _SessionProposal(
       {required final int id,
-      required final ProposalData params}) = _$_SessionProposal;
+      required final ProposalData params}) = _$SessionProposalImpl;
 
   factory _SessionProposal.fromJson(Map<String, dynamic> json) =
-      _$_SessionProposal.fromJson;
+      _$SessionProposalImpl.fromJson;
 
   @override
   int get id;
@@ -380,7 +381,7 @@ abstract class _SessionProposal implements SessionProposal {
   ProposalData get params;
   @override
   @JsonKey(ignore: true)
-  _$$_SessionProposalCopyWith<_$_SessionProposal> get copyWith =>
+  _$$SessionProposalImplCopyWith<_$SessionProposalImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
@@ -503,11 +504,11 @@ class _$ProposalDataCopyWithImpl<$Res, $Val extends ProposalData>
 }
 
 /// @nodoc
-abstract class _$$_ProposalDataCopyWith<$Res>
+abstract class _$$ProposalDataImplCopyWith<$Res>
     implements $ProposalDataCopyWith<$Res> {
-  factory _$$_ProposalDataCopyWith(
-          _$_ProposalData value, $Res Function(_$_ProposalData) then) =
-      __$$_ProposalDataCopyWithImpl<$Res>;
+  factory _$$ProposalDataImplCopyWith(
+          _$ProposalDataImpl value, $Res Function(_$ProposalDataImpl) then) =
+      __$$ProposalDataImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -526,11 +527,11 @@ abstract class _$$_ProposalDataCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$_ProposalDataCopyWithImpl<$Res>
-    extends _$ProposalDataCopyWithImpl<$Res, _$_ProposalData>
-    implements _$$_ProposalDataCopyWith<$Res> {
-  __$$_ProposalDataCopyWithImpl(
-      _$_ProposalData _value, $Res Function(_$_ProposalData) _then)
+class __$$ProposalDataImplCopyWithImpl<$Res>
+    extends _$ProposalDataCopyWithImpl<$Res, _$ProposalDataImpl>
+    implements _$$ProposalDataImplCopyWith<$Res> {
+  __$$ProposalDataImplCopyWithImpl(
+      _$ProposalDataImpl _value, $Res Function(_$ProposalDataImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -546,7 +547,7 @@ class __$$_ProposalDataCopyWithImpl<$Res>
     Object? sessionProperties = freezed,
     Object? generatedNamespaces = freezed,
   }) {
-    return _then(_$_ProposalData(
+    return _then(_$ProposalDataImpl(
       id: null == id
           ? _value.id
           : id // ignore: cast_nullable_to_non_nullable
@@ -590,8 +591,8 @@ class __$$_ProposalDataCopyWithImpl<$Res>
 /// @nodoc
 
 @JsonSerializable(includeIfNull: false)
-class _$_ProposalData implements _ProposalData {
-  const _$_ProposalData(
+class _$ProposalDataImpl implements _ProposalData {
+  const _$ProposalDataImpl(
       {required this.id,
       required this.expiry,
       required final List<Relay> relays,
@@ -607,8 +608,8 @@ class _$_ProposalData implements _ProposalData {
         _sessionProperties = sessionProperties,
         _generatedNamespaces = generatedNamespaces;
 
-  factory _$_ProposalData.fromJson(Map<String, dynamic> json) =>
-      _$$_ProposalDataFromJson(json);
+  factory _$ProposalDataImpl.fromJson(Map<String, dynamic> json) =>
+      _$$ProposalDataImplFromJson(json);
 
   @override
   final int id;
@@ -675,7 +676,7 @@ class _$_ProposalData implements _ProposalData {
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$_ProposalData &&
+            other is _$ProposalDataImpl &&
             (identical(other.id, id) || other.id == id) &&
             (identical(other.expiry, expiry) || other.expiry == expiry) &&
             const DeepCollectionEquality().equals(other._relays, _relays) &&
@@ -710,12 +711,12 @@ class _$_ProposalData implements _ProposalData {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$_ProposalDataCopyWith<_$_ProposalData> get copyWith =>
-      __$$_ProposalDataCopyWithImpl<_$_ProposalData>(this, _$identity);
+  _$$ProposalDataImplCopyWith<_$ProposalDataImpl> get copyWith =>
+      __$$ProposalDataImplCopyWithImpl<_$ProposalDataImpl>(this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$_ProposalDataToJson(
+    return _$$ProposalDataImplToJson(
       this,
     );
   }
@@ -731,10 +732,10 @@ abstract class _ProposalData implements ProposalData {
       required final Map<String, RequiredNamespace> optionalNamespaces,
       required final String pairingTopic,
       final Map<String, String>? sessionProperties,
-      final Map<String, Namespace>? generatedNamespaces}) = _$_ProposalData;
+      final Map<String, Namespace>? generatedNamespaces}) = _$ProposalDataImpl;
 
   factory _ProposalData.fromJson(Map<String, dynamic> json) =
-      _$_ProposalData.fromJson;
+      _$ProposalDataImpl.fromJson;
 
   @override
   int get id;
@@ -756,6 +757,6 @@ abstract class _ProposalData implements ProposalData {
   Map<String, Namespace>? get generatedNamespaces;
   @override
   @JsonKey(ignore: true)
-  _$$_ProposalDataCopyWith<_$_ProposalData> get copyWith =>
+  _$$ProposalDataImplCopyWith<_$ProposalDataImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

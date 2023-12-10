@@ -6,35 +6,35 @@ part of 'json_rpc_models.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$_WcPairingDeleteRequest _$$_WcPairingDeleteRequestFromJson(
+_$WcPairingDeleteRequestImpl _$$WcPairingDeleteRequestImplFromJson(
         Map<String, dynamic> json) =>
-    _$_WcPairingDeleteRequest(
+    _$WcPairingDeleteRequestImpl(
       code: json['code'] as int,
       message: json['message'] as String,
     );
 
-Map<String, dynamic> _$$_WcPairingDeleteRequestToJson(
-        _$_WcPairingDeleteRequest instance) =>
+Map<String, dynamic> _$$WcPairingDeleteRequestImplToJson(
+        _$WcPairingDeleteRequestImpl instance) =>
     <String, dynamic>{
       'code': instance.code,
       'message': instance.message,
     };
 
-_$_WcPairingPingRequest _$$_WcPairingPingRequestFromJson(
+_$WcPairingPingRequestImpl _$$WcPairingPingRequestImplFromJson(
         Map<String, dynamic> json) =>
-    _$_WcPairingPingRequest(
+    _$WcPairingPingRequestImpl(
       data: json['data'] as Map<String, dynamic>,
     );
 
-Map<String, dynamic> _$$_WcPairingPingRequestToJson(
-        _$_WcPairingPingRequest instance) =>
+Map<String, dynamic> _$$WcPairingPingRequestImplToJson(
+        _$WcPairingPingRequestImpl instance) =>
     <String, dynamic>{
       'data': instance.data,
     };
 
-_$_WcSessionProposeRequest _$$_WcSessionProposeRequestFromJson(
+_$WcSessionProposeRequestImpl _$$WcSessionProposeRequestImplFromJson(
         Map<String, dynamic> json) =>
-    _$_WcSessionProposeRequest(
+    _$WcSessionProposeRequestImpl(
       relays: (json['relays'] as List<dynamic>)
           .map((e) => Relay.fromJson(e as Map<String, dynamic>))
           .toList(),
@@ -56,8 +56,8 @@ _$_WcSessionProposeRequest _$$_WcSessionProposeRequestFromJson(
           ConnectionMetadata.fromJson(json['proposer'] as Map<String, dynamic>),
     );
 
-Map<String, dynamic> _$$_WcSessionProposeRequestToJson(
-    _$_WcSessionProposeRequest instance) {
+Map<String, dynamic> _$$WcSessionProposeRequestImplToJson(
+    _$WcSessionProposeRequestImpl instance) {
   final val = <String, dynamic>{
     'relays': instance.relays.map((e) => e.toJson()).toList(),
     'requiredNamespaces':
@@ -77,23 +77,23 @@ Map<String, dynamic> _$$_WcSessionProposeRequestToJson(
   return val;
 }
 
-_$_WcSessionProposeResponse _$$_WcSessionProposeResponseFromJson(
+_$WcSessionProposeResponseImpl _$$WcSessionProposeResponseImplFromJson(
         Map<String, dynamic> json) =>
-    _$_WcSessionProposeResponse(
+    _$WcSessionProposeResponseImpl(
       relay: Relay.fromJson(json['relay'] as Map<String, dynamic>),
       responderPublicKey: json['responderPublicKey'] as String,
     );
 
-Map<String, dynamic> _$$_WcSessionProposeResponseToJson(
-        _$_WcSessionProposeResponse instance) =>
+Map<String, dynamic> _$$WcSessionProposeResponseImplToJson(
+        _$WcSessionProposeResponseImpl instance) =>
     <String, dynamic>{
       'relay': instance.relay.toJson(),
       'responderPublicKey': instance.responderPublicKey,
     };
 
-_$_WcSessionSettleRequest _$$_WcSessionSettleRequestFromJson(
+_$WcSessionSettleRequestImpl _$$WcSessionSettleRequestImplFromJson(
         Map<String, dynamic> json) =>
-    _$_WcSessionSettleRequest(
+    _$WcSessionSettleRequestImpl(
       relay: Relay.fromJson(json['relay'] as Map<String, dynamic>),
       namespaces: (json['namespaces'] as Map<String, dynamic>).map(
         (k, e) => MapEntry(k, Namespace.fromJson(e as Map<String, dynamic>)),
@@ -117,8 +117,8 @@ _$_WcSessionSettleRequest _$$_WcSessionSettleRequestFromJson(
           json['controller'] as Map<String, dynamic>),
     );
 
-Map<String, dynamic> _$$_WcSessionSettleRequestToJson(
-    _$_WcSessionSettleRequest instance) {
+Map<String, dynamic> _$$WcSessionSettleRequestImplToJson(
+    _$WcSessionSettleRequestImpl instance) {
   final val = <String, dynamic>{
     'relay': instance.relay.toJson(),
     'namespaces': instance.namespaces.map((k, e) => MapEntry(k, e.toJson())),
@@ -140,28 +140,28 @@ Map<String, dynamic> _$$_WcSessionSettleRequestToJson(
   return val;
 }
 
-_$_WcSessionUpdateRequest _$$_WcSessionUpdateRequestFromJson(
+_$WcSessionUpdateRequestImpl _$$WcSessionUpdateRequestImplFromJson(
         Map<String, dynamic> json) =>
-    _$_WcSessionUpdateRequest(
+    _$WcSessionUpdateRequestImpl(
       namespaces: (json['namespaces'] as Map<String, dynamic>).map(
         (k, e) => MapEntry(k, Namespace.fromJson(e as Map<String, dynamic>)),
       ),
     );
 
-Map<String, dynamic> _$$_WcSessionUpdateRequestToJson(
-        _$_WcSessionUpdateRequest instance) =>
+Map<String, dynamic> _$$WcSessionUpdateRequestImplToJson(
+        _$WcSessionUpdateRequestImpl instance) =>
     <String, dynamic>{
       'namespaces': instance.namespaces.map((k, e) => MapEntry(k, e.toJson())),
     };
 
-_$_WcSessionExtendRequest _$$_WcSessionExtendRequestFromJson(
+_$WcSessionExtendRequestImpl _$$WcSessionExtendRequestImplFromJson(
         Map<String, dynamic> json) =>
-    _$_WcSessionExtendRequest(
+    _$WcSessionExtendRequestImpl(
       data: json['data'] as Map<String, dynamic>?,
     );
 
-Map<String, dynamic> _$$_WcSessionExtendRequestToJson(
-    _$_WcSessionExtendRequest instance) {
+Map<String, dynamic> _$$WcSessionExtendRequestImplToJson(
+    _$WcSessionExtendRequestImpl instance) {
   final val = <String, dynamic>{};
 
   void writeNotNull(String key, dynamic value) {
@@ -174,16 +174,16 @@ Map<String, dynamic> _$$_WcSessionExtendRequestToJson(
   return val;
 }
 
-_$_WcSessionDeleteRequest _$$_WcSessionDeleteRequestFromJson(
+_$WcSessionDeleteRequestImpl _$$WcSessionDeleteRequestImplFromJson(
         Map<String, dynamic> json) =>
-    _$_WcSessionDeleteRequest(
+    _$WcSessionDeleteRequestImpl(
       code: json['code'] as int,
       message: json['message'] as String,
       data: json['data'] as String?,
     );
 
-Map<String, dynamic> _$$_WcSessionDeleteRequestToJson(
-    _$_WcSessionDeleteRequest instance) {
+Map<String, dynamic> _$$WcSessionDeleteRequestImplToJson(
+    _$WcSessionDeleteRequestImpl instance) {
   final val = <String, dynamic>{
     'code': instance.code,
     'message': instance.message,
@@ -199,14 +199,14 @@ Map<String, dynamic> _$$_WcSessionDeleteRequestToJson(
   return val;
 }
 
-_$_WcSessionPingRequest _$$_WcSessionPingRequestFromJson(
+_$WcSessionPingRequestImpl _$$WcSessionPingRequestImplFromJson(
         Map<String, dynamic> json) =>
-    _$_WcSessionPingRequest(
+    _$WcSessionPingRequestImpl(
       data: json['data'] as Map<String, dynamic>?,
     );
 
-Map<String, dynamic> _$$_WcSessionPingRequestToJson(
-    _$_WcSessionPingRequest instance) {
+Map<String, dynamic> _$$WcSessionPingRequestImplToJson(
+    _$WcSessionPingRequestImpl instance) {
   final val = <String, dynamic>{};
 
   void writeNotNull(String key, dynamic value) {
@@ -219,58 +219,58 @@ Map<String, dynamic> _$$_WcSessionPingRequestToJson(
   return val;
 }
 
-_$_WcSessionRequestRequest _$$_WcSessionRequestRequestFromJson(
+_$WcSessionRequestRequestImpl _$$WcSessionRequestRequestImplFromJson(
         Map<String, dynamic> json) =>
-    _$_WcSessionRequestRequest(
+    _$WcSessionRequestRequestImpl(
       chainId: json['chainId'] as String,
       request: SessionRequestParams.fromJson(
           json['request'] as Map<String, dynamic>),
     );
 
-Map<String, dynamic> _$$_WcSessionRequestRequestToJson(
-        _$_WcSessionRequestRequest instance) =>
+Map<String, dynamic> _$$WcSessionRequestRequestImplToJson(
+        _$WcSessionRequestRequestImpl instance) =>
     <String, dynamic>{
       'chainId': instance.chainId,
       'request': instance.request.toJson(),
     };
 
-_$_SessionRequestParams _$$_SessionRequestParamsFromJson(
+_$SessionRequestParamsImpl _$$SessionRequestParamsImplFromJson(
         Map<String, dynamic> json) =>
-    _$_SessionRequestParams(
+    _$SessionRequestParamsImpl(
       method: json['method'] as String,
       params: json['params'],
     );
 
-Map<String, dynamic> _$$_SessionRequestParamsToJson(
-        _$_SessionRequestParams instance) =>
+Map<String, dynamic> _$$SessionRequestParamsImplToJson(
+        _$SessionRequestParamsImpl instance) =>
     <String, dynamic>{
       'method': instance.method,
       'params': instance.params,
     };
 
-_$_WcSessionEventRequest _$$_WcSessionEventRequestFromJson(
+_$WcSessionEventRequestImpl _$$WcSessionEventRequestImplFromJson(
         Map<String, dynamic> json) =>
-    _$_WcSessionEventRequest(
+    _$WcSessionEventRequestImpl(
       chainId: json['chainId'] as String,
       event: SessionEventParams.fromJson(json['event'] as Map<String, dynamic>),
     );
 
-Map<String, dynamic> _$$_WcSessionEventRequestToJson(
-        _$_WcSessionEventRequest instance) =>
+Map<String, dynamic> _$$WcSessionEventRequestImplToJson(
+        _$WcSessionEventRequestImpl instance) =>
     <String, dynamic>{
       'chainId': instance.chainId,
       'event': instance.event.toJson(),
     };
 
-_$_SessionEventParams _$$_SessionEventParamsFromJson(
+_$SessionEventParamsImpl _$$SessionEventParamsImplFromJson(
         Map<String, dynamic> json) =>
-    _$_SessionEventParams(
+    _$SessionEventParamsImpl(
       name: json['name'] as String,
       data: json['data'],
     );
 
-Map<String, dynamic> _$$_SessionEventParamsToJson(
-        _$_SessionEventParams instance) =>
+Map<String, dynamic> _$$SessionEventParamsImplToJson(
+        _$SessionEventParamsImpl instance) =>
     <String, dynamic>{
       'name': instance.name,
       'data': instance.data,

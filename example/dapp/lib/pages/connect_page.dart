@@ -242,15 +242,30 @@ class ConnectPageState extends State<ConnectPage> {
     if (kIsWeb) {
       return showDialog(
         context: context,
+        barrierDismissible: false,
         builder: (BuildContext context) {
           return AlertDialog(
+            insetPadding: const EdgeInsets.all(0.0),
+            contentPadding: const EdgeInsets.all(0.0),
+            backgroundColor: Colors.white,
             content: SizedBox(
               width: 400.0,
               child: AspectRatio(
                 aspectRatio: 0.8,
-                child: QRCodeScreen(response: response),
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: _QRCodeView(
+                    uri: response.uri.toString(),
+                  ),
+                ),
               ),
             ),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Cancel'),
+              )
+            ],
           );
         },
       );
@@ -279,31 +294,41 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
     return Material(
       child: Scaffold(
         appBar: AppBar(title: const Text(StringConstants.scanQrCode)),
-        body: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            QrImageView(
-              data: widget.response.uri!.toString(),
-            ),
-            const SizedBox(
-              height: StyleConstants.linear16,
-            ),
-            ElevatedButton(
-              onPressed: () {
-                Clipboard.setData(
-                  ClipboardData(text: widget.response.uri!.toString()),
-                ).then(
-                  (_) => showPlatformToast(
-                    child: const Text(StringConstants.copiedToClipboard),
-                    context: context,
-                  ),
-                );
-              },
-              child: const Text('Copy URL to Clipboard'),
-            ),
-          ],
+        body: _QRCodeView(
+          uri: widget.response.uri!.toString(),
         ),
       ),
+    );
+  }
+}
+
+class _QRCodeView extends StatelessWidget {
+  const _QRCodeView({required this.uri});
+  final String uri;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        QrImageView(data: uri),
+        const SizedBox(
+          height: StyleConstants.linear16,
+        ),
+        ElevatedButton(
+          onPressed: () {
+            Clipboard.setData(
+              ClipboardData(text: uri.toString()),
+            ).then(
+              (_) => showPlatformToast(
+                child: const Text(StringConstants.copiedToClipboard),
+                context: context,
+              ),
+            );
+          },
+          child: const Text('Copy URL to Clipboard'),
+        ),
+      ],
     );
   }
 }
