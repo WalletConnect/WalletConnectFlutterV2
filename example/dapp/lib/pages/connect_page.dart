@@ -71,6 +71,8 @@ class ConnectPageState extends State<ConnectPage> {
             ? null
             : () => _onConnect(showToast: (m) async {
                   await showPlatformToast(child: Text(m), context: context);
+                }, closeModal: () {
+                  Navigator.of(context).pop();
                 }),
         style: ButtonStyle(
           backgroundColor: MaterialStateProperty.resolveWith<Color>(
@@ -158,23 +160,26 @@ class ConnectPageState extends State<ConnectPage> {
     );
   }
 
-  Future<void> _onConnect({Function(String message)? showToast}) async {
+  Future<void> _onConnect({
+    Function(String message)? showToast,
+    VoidCallback? closeModal,
+  }) async {
     debugPrint('Creating connection and session');
     // It is currently safer to send chains approvals on optionalNamespaces
     // but depending on Wallet implementation you may need to send some (for innstance eip155:1) as required
     final ConnectResponse res = await widget.web3App.connect(
-      requiredNamespaces: {
-        'eip155': const RequiredNamespace(
-          chains: [],
-          methods: MethodsConstants.requiredMethods,
-          events: EventsConstants.requiredEvents,
-        ),
-      },
+      // requiredNamespaces: {
+      //   'eip155': const RequiredNamespace(
+      //     chains: [],
+      //     methods: MethodsConstants.requiredMethods,
+      //     events: EventsConstants.requiredEvents,
+      //   ),
+      // },
       optionalNamespaces: {
         'eip155': RequiredNamespace(
           chains: _selectedChains.map((c) => c.chainId).toList(),
-          methods: MethodsConstants.optionalMethods,
-          events: EventsConstants.optionalEvents,
+          methods: MethodsConstants.allMethods,
+          events: EventsConstants.allEvents,
         ),
       },
     );
