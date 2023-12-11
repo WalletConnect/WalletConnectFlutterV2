@@ -289,4 +289,70 @@ class EVMService {
       version: TypedDataVersion.V4,
     );
   }
+
+  // Future<void> interactWithContract(String topic, dynamic parameters) async {
+  //   final contractAddr =
+  //       EthereumAddress.fromHex('0xf451659CF5688e31a31fC3316efbcC2339A490Fb');
+  //   final receiver =
+  //       EthereumAddress.fromHex('0x6c87E1a114C3379BEc929f6356c5263d62542C13');
+
+  //   final File abiFile = File(join(dirname(Platform.script.path), 'abi.json'));
+  //   final List<ChainKey> keys = GetIt.I<IKeyService>().getKeysForChain(
+  //     chainSupported.chain(),
+  //   );
+
+  //   final credentials = EthPrivateKey.fromHex('0x${keys[0].privateKey}');
+  //   final ownAddress = credentials.address;
+
+  //   // read the contract abi and tell web3dart where it's deployed (contractAddr)
+  //   final abiCode = await abiFile.readAsString();
+  //   final contract = DeployedContract(
+  //     ContractAbi.fromJson(abiCode, 'MetaCoin'),
+  //     contractAddr,
+  //   );
+
+  //   // extracting some functions and events that we'll need later
+  //   final transferEvent = contract.event('Transfer');
+  //   final balanceFunction = contract.function('getBalance');
+  //   final sendFunction = contract.function('sendCoin');
+
+  //   // listen for the Transfer event when it's emitted by the contract above
+  //   final subscription = ethClient
+  //       .events(FilterOptions.events(contract: contract, event: transferEvent))
+  //       .take(1)
+  //       .listen((event) {
+  //     final decoded = transferEvent.decodeResults(
+  //       event.topics ?? [],
+  //       event.data ?? '',
+  //     );
+
+  //     final from = decoded[0] as EthereumAddress;
+  //     final to = decoded[1] as EthereumAddress;
+  //     final value = decoded[2] as BigInt;
+
+  //     print('$from sent $value MetaCoins to $to');
+  //   });
+
+  //   // check our balance in MetaCoins by calling the appropriate function
+  //   final balance = await ethClient.call(
+  //     contract: contract,
+  //     function: balanceFunction,
+  //     params: [ownAddress],
+  //   );
+  //   print('We have ${balance.first} MetaCoins');
+
+  //   // send all our MetaCoins to the other address by calling the sendCoin
+  //   // function
+  //   await ethClient.sendTransaction(
+  //     credentials,
+  //     Transaction.callContract(
+  //       contract: contract,
+  //       function: sendFunction,
+  //       parameters: [receiver, balance.first],
+  //     ),
+  //   );
+
+  //   await subscription.asFuture();
+  //   await subscription.cancel();
+  // }
 }

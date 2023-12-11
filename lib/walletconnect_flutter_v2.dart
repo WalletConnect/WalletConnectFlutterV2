@@ -48,3 +48,5 @@ export 'apis/web3wallet/web3wallet.dart';
 // Web3App
 export 'apis/web3app/i_web3app.dart';
 export 'apis/web3app/web3app.dart';
+
+export 'src/version.dart';
