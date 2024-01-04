@@ -24,7 +24,7 @@ class ChainData {
       chainId: 'eip155:42161',
       name: 'Arbitrum',
       logo: '/chain-logos/eip155-42161.png',
-      color: Colors.black,
+      color: Colors.blue,
       rpc: ['https://arbitrum.blockpi.network/v1/rpc/public'],
     ),
     const ChainMetadata(

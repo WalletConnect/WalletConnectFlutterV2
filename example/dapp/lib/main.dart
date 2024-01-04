@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 import 'package:walletconnect_flutter_v2_dapp/models/chain_metadata.dart';
 import 'package:walletconnect_flutter_v2_dapp/models/page_data.dart';
@@ -89,6 +91,7 @@ class _MyHomePageState extends State<MyHomePage> {
     _web3App!.onSessionEvent.subscribe(_onSessionEvent);
     _web3App!.core.relayClient.onRelayClientConnect.subscribe(_setState);
     _web3App!.core.relayClient.onRelayClientDisconnect.subscribe(_setState);
+    _web3App!.onSessionConnect.subscribe(_onSessionConnect);
 
     setState(() {
       _pageDatas = [
@@ -125,6 +128,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   void dispose() {
+    _web3App!.onSessionConnect.unsubscribe(_onSessionConnect);
     _web3App!.core.relayClient.onRelayClientConnect.unsubscribe(_setState);
     _web3App!.core.relayClient.onRelayClientDisconnect.unsubscribe(_setState);
     _web3App!.onSessionPing.unsubscribe(_onSessionPing);
@@ -259,5 +263,9 @@ class _MyHomePageState extends State<MyHomePage> {
         );
       },
     );
+  }
+
+  void _onSessionConnect(SessionConnect? event) {
+    debugPrint(jsonEncode(event?.session.toJson()));
   }
 }

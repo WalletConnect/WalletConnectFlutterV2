@@ -30,7 +30,13 @@ class Verify implements IVerify {
     AttestationResponse? response;
     try {
       response = await _fetchAttestation(attestationId, _verifyUrl);
-    } catch (error) {
+    } on AttestationNotFound catch (e) {
+      _core.logger.i(e.message);
+      response = await _fetchAttestation(
+        attestationId,
+        WalletConnectConstants.VERIFY_FALLBACK_SERVER,
+      );
+    } on Exception catch (error) {
       _core.logger.e(error);
       response = await _fetchAttestation(
         attestationId,
@@ -46,6 +52,12 @@ class Verify implements IVerify {
   ) async {
     final uri = Uri.parse('$url/attestation/$attestationId');
     final response = await _httpClient.get(uri);
+    if (response.statusCode == 404) {
+      throw AttestationNotFound(
+        code: 404,
+        message: 'Attestion for this dapp could not be found',
+      );
+    }
     if (response.statusCode != 200) {
       final error = 'Attestation response error: ${response.statusCode}';
       throw Exception(error);
