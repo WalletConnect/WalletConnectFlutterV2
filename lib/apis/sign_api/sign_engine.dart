@@ -1738,11 +1738,9 @@ class SignEngine implements ISignEngine {
         isScam: result?.isScam,
       );
     } catch (e, s) {
-      core.logger.e(
-        '[$runtimeType] _getVerifyContext',
-        error: e,
-        stackTrace: s,
-      );
+      if (e is! AttestationNotFound) {
+        core.logger.e('[$runtimeType] verify error', error: e, stackTrace: s);
+      }
       return VerifyContext(
         origin: proposerMetada.url,
         verifyUrl: proposerMetada.verifyUrl ?? '',

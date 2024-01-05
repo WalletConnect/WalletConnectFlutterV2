@@ -1,4 +1,3 @@
-import 'package:event/event.dart';
 import 'package:walletconnect_flutter_v2/apis/core/store/i_generic_store.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/i_sessions.dart';
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';

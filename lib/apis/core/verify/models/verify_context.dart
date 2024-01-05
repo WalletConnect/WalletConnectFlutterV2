@@ -41,3 +41,10 @@ class AttestationResponse with _$AttestationResponse {
   factory AttestationResponse.fromJson(Map<String, dynamic> json) =>
       _$AttestationResponseFromJson(json);
 }
+
+class AttestationNotFound implements Exception {
+  int code;
+  String message;
+
+  AttestationNotFound({required this.code, required this.message}) : super();
+}
