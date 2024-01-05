@@ -1,3 +1,7 @@
+## 2.1.12
+
+- Minor improvements and updated dependencies
+
 ## 2.1.11
 
 - Fixed an issue with `generatedNamespaces` during session proposal
