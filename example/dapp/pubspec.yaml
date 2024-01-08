@@ -36,7 +36,7 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
   qr_flutter: ^4.0.0
-  json_annotation: ^4.8.0
+  json_annotation: ^4.8.1
   walletconnect_flutter_v2:
     path: ../..
   fl_toast: ^3.1.0
