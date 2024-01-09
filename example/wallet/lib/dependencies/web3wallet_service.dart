@@ -47,7 +47,7 @@ class Web3WalletService extends IWeb3WalletService {
         description: 'Example Wallet',
         url: 'https://walletconnect.com/',
         icons: [
-          'https://github.com/WalletConnect/Web3ModalFlutter/blob/master/assets/png/logo_wc.png'
+          'https://images.prismic.io/wallet-connect/65785a56531ac2845a260732_WalletConnect-App-Logo-1024X1024.png'
         ],
         redirect: Redirect(
           native: 'myflutterwallet://',

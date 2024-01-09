@@ -37,15 +37,28 @@ class PairingItem extends StatelessWidget {
                 : const AssetImage('assets/images/default_icon.png'))
             as ImageProvider<Object>,
       ),
-      title: Text(metadata.name),
+      title: Text(
+        metadata.name,
+        style: const TextStyle(color: Colors.white),
+      ),
       subtitle: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(metadata.url),
-          Text('Expires on: $expiryDate'),
+          Text(
+            metadata.url,
+            style: const TextStyle(color: Colors.white60),
+          ),
+          Text(
+            'Expires on: $expiryDate',
+            style: const TextStyle(color: Colors.white60),
+          ),
         ],
       ),
-      trailing: const Icon(Icons.arrow_forward_ios, size: 20.0),
+      trailing: const Icon(
+        Icons.arrow_forward_ios,
+        size: 20.0,
+        color: Colors.white60,
+      ),
       onTap: onTap,
     );
   }

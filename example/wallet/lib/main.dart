@@ -205,7 +205,10 @@ class _MyHomePageState extends State<MyHomePage> with GetItStateMixin {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(_pageDatas[_selectedIndex].title),
+        title: Text(
+          _pageDatas[_selectedIndex].title,
+          style: const TextStyle(color: Colors.white),
+        ),
       ),
       bottomNavigationBar:
           MediaQuery.of(context).size.width < Constants.smallScreen

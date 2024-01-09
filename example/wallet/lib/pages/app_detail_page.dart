@@ -57,12 +57,18 @@ class AppDetailPageState extends State<AppDetailPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.pairing.peerMetadata?.name ?? 'Unknown'),
+        title: Text(
+          widget.pairing.peerMetadata?.name ?? 'Unknown',
+          style: const TextStyle(color: Colors.white),
+        ),
       ),
       body: SingleChildScrollView(
         child: Container(
-          padding: const EdgeInsets.all(
-            StyleConstants.linear8,
+          padding: const EdgeInsets.only(
+            left: StyleConstants.linear8,
+            top: StyleConstants.linear8,
+            right: StyleConstants.linear8,
+            bottom: StyleConstants.linear32,
           ),
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -75,11 +81,6 @@ class AppDetailPageState extends State<AppDetailPage> {
                           : const AssetImage('assets/images/default_icon.png'))
                       as ImageProvider<Object>,
                 ),
-              ),
-              const SizedBox(height: 20.0),
-              Text(
-                widget.pairing.peerMetadata!.name,
-                style: StyleConstants.subtitleText,
               ),
               const SizedBox(height: 20.0),
               Text(widget.pairing.peerMetadata!.url),

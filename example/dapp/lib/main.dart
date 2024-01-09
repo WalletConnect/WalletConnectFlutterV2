@@ -67,10 +67,12 @@ class _MyHomePageState extends State<MyHomePage> {
       projectId: DartDefines.projectId,
       logLevel: LogLevel.info,
       metadata: const PairingMetadata(
-        name: 'Flutter WalletConnect',
-        description: 'Flutter WalletConnect Dapp Example',
+        name: 'Example dApp',
+        description: 'Example dApp',
         url: 'https://walletconnect.com/',
-        icons: ['https://walletconnect.com/walletconnect-logo.png'],
+        icons: [
+          'https://images.prismic.io/wallet-connect/65785a56531ac2845a260732_WalletConnect-App-Logo-1024X1024.png'
+        ],
         redirect: Redirect(
           native: 'myflutterdapp://',
           universal: 'https://walletconnect.com',
@@ -82,6 +84,7 @@ class _MyHomePageState extends State<MyHomePage> {
     for (final ChainMetadata chain in ChainData.allChains) {
       // Loop through the events for that chain
       for (final event in getChainEvents(chain.type)) {
+        debugPrint('registerEventHandler $event for chain ${chain.chainId}');
         _web3App!.registerEventHandler(chainId: chain.chainId, event: event);
       }
     }
@@ -89,6 +92,7 @@ class _MyHomePageState extends State<MyHomePage> {
     // Register event handlers
     _web3App!.onSessionPing.subscribe(_onSessionPing);
     _web3App!.onSessionEvent.subscribe(_onSessionEvent);
+    _web3App!.onSessionUpdate.subscribe(_onSessionUpdate);
     _web3App!.core.relayClient.onRelayClientConnect.subscribe(_setState);
     _web3App!.core.relayClient.onRelayClientDisconnect.subscribe(_setState);
     _web3App!.onSessionConnect.subscribe(_onSessionConnect);
@@ -133,6 +137,7 @@ class _MyHomePageState extends State<MyHomePage> {
     _web3App!.core.relayClient.onRelayClientDisconnect.unsubscribe(_setState);
     _web3App!.onSessionPing.unsubscribe(_onSessionPing);
     _web3App!.onSessionEvent.unsubscribe(_onSessionEvent);
+    _web3App!.onSessionUpdate.unsubscribe(_onSessionUpdate);
     super.dispose();
   }
 
@@ -241,6 +246,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _onSessionPing(SessionPing? args) {
+    debugPrint('[$runtimeType] _onSessionPing $args');
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -253,6 +259,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _onSessionEvent(SessionEvent? args) {
+    debugPrint('[$runtimeType] _onSessionEvent $args');
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -267,5 +274,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _onSessionConnect(SessionConnect? event) {
     debugPrint(jsonEncode(event?.session.toJson()));
+  }
+
+  void _onSessionUpdate(SessionUpdate? args) {
+    debugPrint('[$runtimeType] _onSessionUpdate $args');
   }
 }

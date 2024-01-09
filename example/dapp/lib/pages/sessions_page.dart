@@ -45,8 +45,7 @@ class SessionsPageState extends State<SessionsPage> {
       children: [
         Container(
           constraints: const BoxConstraints(
-            maxWidth: 200,
-            minWidth: 150,
+            maxWidth: 150,
           ),
           decoration: const BoxDecoration(
             border: Border(
@@ -79,9 +78,11 @@ class SessionsPageState extends State<SessionsPage> {
         ),
         Expanded(
           child: Container(
-            // color: StyleConstants.primaryColor,
-            padding: const EdgeInsets.all(
-              StyleConstants.linear8,
+            padding: const EdgeInsets.only(
+              left: StyleConstants.linear8,
+              top: StyleConstants.linear8,
+              right: StyleConstants.linear8,
+              bottom: StyleConstants.linear72,
             ),
             child: _buildSessionView(),
           ),
