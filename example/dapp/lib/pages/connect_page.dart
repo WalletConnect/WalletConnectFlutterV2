@@ -4,6 +4,8 @@ import 'package:fl_toast/fl_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:qr_flutter/qr_flutter.dart';
+// ignore: unused_import
+import 'package:url_launcher/url_launcher_string.dart';
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 import 'package:walletconnect_flutter_v2_dapp/models/chain_metadata.dart';
 import 'package:walletconnect_flutter_v2_dapp/utils/constants.dart';
@@ -156,23 +158,23 @@ class ConnectPageState extends State<ConnectPage> {
     // It is currently safer to send chains approvals on optionalNamespaces
     // but depending on Wallet implementation you may need to send some (for innstance eip155:1) as required
     final ConnectResponse res = await widget.web3App.connect(
-      requiredNamespaces: {
-        'eip155': const RequiredNamespace(
-          chains: [],
-          methods: MethodsConstants.requiredMethods,
-          events: EventsConstants.requiredEvents,
-        ),
-      },
       optionalNamespaces: {
         'eip155': RequiredNamespace(
           chains: _selectedChains.map((c) => c.chainId).toList(),
-          methods: MethodsConstants.optionalMethods,
-          events: EventsConstants.optionalEvents,
+          methods: MethodsConstants.allMethods,
+          events: EventsConstants.allEvents,
         ),
       },
     );
 
     _showQrCode(res);
+
+    // // Uncomment to use a wallet
+    // final String encodedUri = Uri.encodeComponent(res.uri.toString());
+    // await launchUrlString(
+    //   'wcflutterwallet://wc?uri=$encodedUri',
+    //   mode: LaunchMode.externalApplication,
+    // );
 
     try {
       debugPrint('Awaiting session proposal settlement');

@@ -64,7 +64,7 @@
 	</array>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
-		<string>myflutterwallet</string>
+		<string>wcflutterwallet</string>
 	</array>
 </dict>
 </plist>

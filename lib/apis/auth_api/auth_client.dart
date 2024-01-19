@@ -13,6 +13,7 @@ import 'package:walletconnect_flutter_v2/apis/core/i_core.dart';
 import 'package:walletconnect_flutter_v2/apis/models/basic_models.dart';
 import 'package:walletconnect_flutter_v2/apis/core/pairing/utils/pairing_models.dart';
 import 'package:walletconnect_flutter_v2/apis/utils/constants.dart';
+import 'package:walletconnect_flutter_v2/apis/utils/log_level.dart';
 
 class AuthClient implements IAuthClient {
   bool _initialized = false;
@@ -50,6 +51,7 @@ class AuthClient implements IAuthClient {
     required PairingMetadata metadata,
     bool memoryStore = false,
     IHttpClient httpClient = const HttpWrapper(),
+    LogLevel logLevel = LogLevel.nothing,
   }) async {
     final client = AuthClient(
       core: Core(
@@ -57,6 +59,7 @@ class AuthClient implements IAuthClient {
         relayUrl: relayUrl,
         memoryStore: memoryStore,
         httpClient: httpClient,
+        logLevel: logLevel,
       ),
       metadata: metadata,
     );

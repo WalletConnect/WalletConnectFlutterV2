@@ -25,8 +25,8 @@ class WCConnectionRequestWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Get the connection metadata
-    final ConnectionMetadata? metadata =
-        authRequest?.request.requester ?? sessionProposal?.request.proposer;
+    final proposerMetadata = sessionProposal?.request.proposer;
+    final metadata = authRequest?.request.requester ?? proposerMetadata;
 
     if (metadata == null) {
       return const Text('ERROR');
@@ -34,7 +34,7 @@ class WCConnectionRequestWidget extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: StyleConstants.layerColor1,
+        color: StyleConstants.lightGray,
         borderRadius: BorderRadius.circular(
           StyleConstants.linear8,
         ),
@@ -43,10 +43,12 @@ class WCConnectionRequestWidget extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
         children: [
-          _buildTitle(metadata.metadata.name),
-          const Text(
-            StringConstants.wouldLikeToConnect,
-            style: StyleConstants.subtitleText,
+          Text(
+            '${metadata.metadata.name}\n${StringConstants.wouldLikeToConnect}',
+            style: StyleConstants.subtitleText.copyWith(
+              fontSize: 18,
+              color: Colors.black,
+            ),
             textAlign: TextAlign.center,
           ),
           const SizedBox(height: StyleConstants.linear8),
@@ -59,14 +61,6 @@ class WCConnectionRequestWidget extends StatelessWidget {
               : _buildSessionProposalView(context),
         ],
       ),
-    );
-  }
-
-  Widget _buildTitle(String text) {
-    return Text(
-      text,
-      style: StyleConstants.titleText,
-      textAlign: TextAlign.center,
     );
   }
 

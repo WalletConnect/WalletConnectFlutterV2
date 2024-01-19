@@ -1,12 +1,12 @@
-// ignore_for_file: depend_on_referenced_packages
-
 import 'dart:convert';
+// ignore: depend_on_referenced_packages
 import 'package:http/http.dart' as http;
 import 'dart:typed_data';
 
 import 'package:convert/convert.dart';
 import 'package:eth_sig_util/eth_sig_util.dart';
 import 'package:get_it/get_it.dart';
+import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/bottom_sheet/i_bottom_sheet_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/i_web3wallet_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/key_service/chain_key.dart';
@@ -16,7 +16,6 @@ import 'package:walletconnect_flutter_v2_wallet/utils/eth_utils.dart';
 import 'package:walletconnect_flutter_v2_wallet/widgets/wc_connection_widget/wc_connection_model.dart';
 import 'package:walletconnect_flutter_v2_wallet/widgets/wc_connection_widget/wc_connection_widget.dart';
 import 'package:walletconnect_flutter_v2_wallet/widgets/wc_request_widget.dart/wc_request_widget.dart';
-import 'package:web3dart/web3dart.dart';
 
 enum EVMChainsSupported {
   ethereum,
@@ -55,25 +54,23 @@ enum EVMChainsSupported {
 }
 
 class EVMService {
-  final IBottomSheetService _bottomSheetService =
-      GetIt.I<IBottomSheetService>();
-  final IWeb3WalletService _web3WalletService = GetIt.I<IWeb3WalletService>();
+  final _bottomSheetService = GetIt.I<IBottomSheetService>();
+  final _web3WalletService = GetIt.I<IWeb3WalletService>();
 
   final EVMChainsSupported chainSupported;
-
   final Web3Client ethClient;
 
-  EVMService({required this.chainSupported, Web3Client? ethClient})
-      : ethClient = ethClient ??
+  EVMService({
+    required this.chainSupported,
+    Web3Client? ethClient,
+  }) : ethClient = ethClient ??
             Web3Client(
                 'https://mainnet.infura.io/v3/51716d2096df4e73bec298680a51f0c5',
                 http.Client()) {
     final wallet = _web3WalletService.getWeb3Wallet();
+
     // Supported events
-    final supportedEvents = [
-      'chainChanged',
-      'accountsChanged'
-    ]; // add whatever event you want to support
+    const supportedEvents = EventsConstants.requiredEvents;
     for (final String event in supportedEvents) {
       print('Supported event ${chainSupported.chain()} $event');
       wallet.registerEventEmitter(
@@ -88,8 +85,10 @@ class EVMService {
       'eth_signTransaction': ethSignTransaction,
       'eth_signTypedData': ethSignTypedData,
       'eth_sendTransaction': ethSignTransaction,
+      'eth_signTypedData_v4': ethSignTypedData,
+      'wallet_switchEthereumChain': switchChain,
+      'wallet_addEthereumChain': addChain,
       // add whatever method/handler you want to support
-      // 'eth_signTypedData_v4': ethSignTypedDataV4,
     };
 
     for (var handler in methodsHandlers.entries) {
@@ -106,7 +105,9 @@ class EVMService {
       widget: WCRequestWidget(
         child: WCConnectionWidget(
           title: 'Sign Transaction',
-          info: [WCConnectionModel(text: text)],
+          info: [
+            WCConnectionModel(text: text),
+          ],
         ),
       ),
     );
@@ -121,7 +122,8 @@ class EVMService {
   Future<String?> personalSign(String topic, dynamic parameters) async {
     print('received personal sign request: $parameters');
 
-    final String message = EthUtils.getUtf8Message(parameters[0]);
+    final data = EthUtils.getDataFromParamsList(parameters);
+    final String message = EthUtils.getUtf8Message(data.toString());
 
     final String? authAcquired = await requestAuthorization(message);
     if (authAcquired != null) {
@@ -130,16 +132,14 @@ class EVMService {
 
     try {
       // Load the private key
-      final List<ChainKey> keys = GetIt.I<IKeyService>().getKeysForChain(
+      final keys = GetIt.I<IKeyService>().getKeysForChain(
         chainSupported.chain(),
       );
-      final Credentials credentials = EthPrivateKey.fromHex(keys[0].privateKey);
+      final credentials = EthPrivateKey.fromHex(keys[0].privateKey);
 
       final String signature = hex.encode(
         credentials.signPersonalMessageToUint8List(
-          Uint8List.fromList(
-            utf8.encode(message),
-          ),
+          Uint8List.fromList(utf8.encode(message)),
         ),
       );
 
@@ -165,15 +165,7 @@ class EVMService {
       final List<ChainKey> keys = GetIt.I<IKeyService>().getKeysForChain(
         chainSupported.chain(),
       );
-      // print('private key');
-      // print(keys[0].privateKey);
 
-      // final String signature = EthSigUtil.signMessage(
-      //   message: Uint8List.fromList(
-      //     utf8.encode(message),
-      //   ),
-      //   privateKey: keys[0].privateKey,
-      // );
       final EthPrivateKey credentials = EthPrivateKey.fromHex(
         keys[0].privateKey,
       );
@@ -280,9 +272,6 @@ class EVMService {
       chainSupported.chain(),
     );
 
-    // EthPrivateKey credentials = EthPrivateKey.fromHex(keys[0].privateKey);
-    // credentials.
-
     return EthSigUtil.signTypedData(
       privateKey: keys[0].privateKey,
       jsonData: data,
@@ -290,69 +279,23 @@ class EVMService {
     );
   }
 
-  // Future<void> interactWithContract(String topic, dynamic parameters) async {
-  //   final contractAddr =
-  //       EthereumAddress.fromHex('0xf451659CF5688e31a31fC3316efbcC2339A490Fb');
-  //   final receiver =
-  //       EthereumAddress.fromHex('0x6c87E1a114C3379BEc929f6356c5263d62542C13');
+  Future<void> switchChain(String topic, dynamic parameters) async {
+    print('received switchChain request: $topic $parameters');
+    final params = (parameters as List).first as Map<String, dynamic>;
+    final hexChainId = params['chainId'].toString().replaceFirst('0x', '');
+    final chainId = int.parse(hexChainId, radix: 16);
+    final web3wallet = _web3WalletService.getWeb3Wallet();
+    await web3wallet.emitSessionEvent(
+      topic: topic,
+      chainId: 'eip155:$chainId',
+      event: SessionEventParams(
+        name: 'chainChanged',
+        data: chainId,
+      ),
+    );
+  }
 
-  //   final File abiFile = File(join(dirname(Platform.script.path), 'abi.json'));
-  //   final List<ChainKey> keys = GetIt.I<IKeyService>().getKeysForChain(
-  //     chainSupported.chain(),
-  //   );
-
-  //   final credentials = EthPrivateKey.fromHex('0x${keys[0].privateKey}');
-  //   final ownAddress = credentials.address;
-
-  //   // read the contract abi and tell web3dart where it's deployed (contractAddr)
-  //   final abiCode = await abiFile.readAsString();
-  //   final contract = DeployedContract(
-  //     ContractAbi.fromJson(abiCode, 'MetaCoin'),
-  //     contractAddr,
-  //   );
-
-  //   // extracting some functions and events that we'll need later
-  //   final transferEvent = contract.event('Transfer');
-  //   final balanceFunction = contract.function('getBalance');
-  //   final sendFunction = contract.function('sendCoin');
-
-  //   // listen for the Transfer event when it's emitted by the contract above
-  //   final subscription = ethClient
-  //       .events(FilterOptions.events(contract: contract, event: transferEvent))
-  //       .take(1)
-  //       .listen((event) {
-  //     final decoded = transferEvent.decodeResults(
-  //       event.topics ?? [],
-  //       event.data ?? '',
-  //     );
-
-  //     final from = decoded[0] as EthereumAddress;
-  //     final to = decoded[1] as EthereumAddress;
-  //     final value = decoded[2] as BigInt;
-
-  //     print('$from sent $value MetaCoins to $to');
-  //   });
-
-  //   // check our balance in MetaCoins by calling the appropriate function
-  //   final balance = await ethClient.call(
-  //     contract: contract,
-  //     function: balanceFunction,
-  //     params: [ownAddress],
-  //   );
-  //   print('We have ${balance.first} MetaCoins');
-
-  //   // send all our MetaCoins to the other address by calling the sendCoin
-  //   // function
-  //   await ethClient.sendTransaction(
-  //     credentials,
-  //     Transaction.callContract(
-  //       contract: contract,
-  //       function: sendFunction,
-  //       parameters: [receiver, balance.first],
-  //     ),
-  //   );
-
-  //   await subscription.asFuture();
-  //   await subscription.cancel();
-  // }
+  Future<void> addChain(String topic, dynamic parameters) async {
+    print('received addChain request: $topic $parameters');
+  }
 }

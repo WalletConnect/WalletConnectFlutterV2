@@ -19,6 +19,7 @@ import 'package:walletconnect_flutter_v2/apis/sign_api/models/sign_client_events
 import 'package:walletconnect_flutter_v2/apis/sign_api/models/session_models.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/sessions.dart';
 import 'package:walletconnect_flutter_v2/apis/utils/constants.dart';
+import 'package:walletconnect_flutter_v2/apis/utils/log_level.dart';
 
 class SignClient implements ISignClient {
   bool _initialized = false;
@@ -71,12 +72,14 @@ class SignClient implements ISignClient {
     String relayUrl = WalletConnectConstants.DEFAULT_RELAY_URL,
     required PairingMetadata metadata,
     bool memoryStore = false,
+    LogLevel logLevel = LogLevel.nothing,
   }) async {
     final client = SignClient(
       core: Core(
         projectId: projectId,
         relayUrl: relayUrl,
         memoryStore: memoryStore,
+        logLevel: logLevel,
       ),
       metadata: metadata,
     );

@@ -39,25 +39,24 @@ class PairingItem extends StatelessWidget {
       ),
       title: Text(
         metadata.name,
-        style: const TextStyle(color: Colors.white),
+        style: const TextStyle(color: Colors.black),
       ),
       subtitle: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            metadata.url,
-            style: const TextStyle(color: Colors.white60),
-          ),
-          Text(
             'Expires on: $expiryDate',
-            style: const TextStyle(color: Colors.white60),
+            style: const TextStyle(
+              color: Colors.grey,
+              fontSize: 12.0,
+            ),
           ),
         ],
       ),
       trailing: const Icon(
         Icons.arrow_forward_ios,
         size: 20.0,
-        color: Colors.white60,
+        color: Colors.black,
       ),
       onTap: onTap,
     );

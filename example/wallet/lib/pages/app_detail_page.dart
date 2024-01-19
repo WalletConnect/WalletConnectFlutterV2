@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
+import 'package:walletconnect_flutter_v2_wallet/dependencies/deep_link_handler.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/i_web3wallet_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/utils/constants.dart';
 import 'package:walletconnect_flutter_v2_wallet/utils/namespace_model_builder.dart';
@@ -57,65 +58,87 @@ class AppDetailPageState extends State<AppDetailPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          widget.pairing.peerMetadata?.name ?? 'Unknown',
-          style: const TextStyle(color: Colors.white),
-        ),
+        title: Text(widget.pairing.peerMetadata?.name ?? 'Unknown'),
+        actions: [
+          IconButton(
+            icon: const Icon(
+              Icons.open_in_new_rounded,
+            ),
+            onPressed: () {
+              final scheme =
+                  widget.pairing.peerMetadata?.redirect?.native ?? '';
+              DeepLinkHandler.goTo(scheme);
+            },
+          )
+        ],
       ),
       body: SingleChildScrollView(
-        child: Container(
-          padding: const EdgeInsets.only(
-            left: StyleConstants.linear8,
-            top: StyleConstants.linear8,
-            right: StyleConstants.linear8,
-            bottom: StyleConstants.linear32,
-          ),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Flexible(
-                child: CircleAvatar(
+        padding: const EdgeInsets.only(
+          left: StyleConstants.linear8,
+          top: StyleConstants.linear8,
+          right: StyleConstants.linear8,
+          bottom: StyleConstants.linear32,
+        ),
+        child: Column(
+          children: [
+            Row(
+              children: [
+                CircleAvatar(
+                  radius: 40.0,
                   backgroundImage: (widget
                               .pairing.peerMetadata!.icons.isNotEmpty
                           ? NetworkImage(widget.pairing.peerMetadata!.icons[0])
                           : const AssetImage('assets/images/default_icon.png'))
                       as ImageProvider<Object>,
                 ),
-              ),
-              const SizedBox(height: 20.0),
-              Text(widget.pairing.peerMetadata!.url),
-              Text('Expires on: $expiryDate'),
-              const SizedBox(height: 20.0),
-              Column(
-                mainAxisAlignment: MainAxisAlignment.start,
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: sessionWidgets,
-              ),
-              const SizedBox(height: 20.0),
-              Row(
-                children: [
-                  CustomButton(
-                    type: CustomButtonType.invalid,
-                    onTap: () async {
-                      try {
-                        await GetIt.I<IWeb3WalletService>()
-                            .getWeb3Wallet()
-                            .core
-                            .pairing
-                            .disconnect(topic: widget.pairing.topic);
-                        _back();
-                      } catch (e) {
-                        //debugPrint(e.toString());
-                      }
-                    },
-                    child: const Center(
-                      child: Text(StringConstants.delete),
+                const SizedBox(width: 10.0),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(widget.pairing.peerMetadata!.url),
+                      Text('Expires on: $expiryDate'),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20.0),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: sessionWidgets,
+            ),
+            const SizedBox(height: 20.0),
+            Row(
+              children: [
+                CustomButton(
+                  type: CustomButtonType.invalid,
+                  onTap: () async {
+                    try {
+                      await GetIt.I<IWeb3WalletService>()
+                          .getWeb3Wallet()
+                          .core
+                          .pairing
+                          .disconnect(topic: widget.pairing.topic);
+                      _back();
+                    } catch (e) {
+                      //debugPrint(e.toString());
+                    }
+                  },
+                  child: const Center(
+                    child: Text(
+                      StringConstants.delete,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
-                ],
-              ),
-            ],
-          ),
+                ),
+              ],
+            ),
+          ],
         ),
       ),
     );

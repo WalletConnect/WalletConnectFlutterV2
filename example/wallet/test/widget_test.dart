@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:convert/convert.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:web3dart/web3dart.dart';
+import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 
 //https://www.wizardsarena.net/me
 //https://dao.swarms.finance/intro

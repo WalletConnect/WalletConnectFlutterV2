@@ -10,15 +10,13 @@ import 'package:walletconnect_flutter_v2_wallet/dependencies/i_web3wallet_servic
 import 'package:walletconnect_flutter_v2_wallet/dependencies/key_service/chain_key.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/key_service/i_key_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/utils/dart_defines.dart';
-import 'package:walletconnect_flutter_v2_wallet/utils/eth_utils.dart';
 import 'package:walletconnect_flutter_v2_wallet/widgets/wc_connection_request/wc_auth_request_model.dart';
 import 'package:walletconnect_flutter_v2_wallet/widgets/wc_connection_request/wc_connection_request_widget.dart';
 import 'package:walletconnect_flutter_v2_wallet/widgets/wc_connection_request/wc_session_request_model.dart';
 import 'package:walletconnect_flutter_v2_wallet/widgets/wc_request_widget.dart/wc_request_widget.dart';
 
 class Web3WalletService extends IWeb3WalletService {
-  final IBottomSheetService _bottomSheetHandler =
-      GetIt.I<IBottomSheetService>();
+  final _bottomSheetHandler = GetIt.I<IBottomSheetService>();
 
   Web3Wallet? _web3Wallet;
 
@@ -43,14 +41,14 @@ class Web3WalletService extends IWeb3WalletService {
         logLevel: LogLevel.error,
       ),
       metadata: const PairingMetadata(
-        name: 'Example Wallet',
-        description: 'Example Wallet',
+        name: 'Web3Wallet Flutter Example',
+        description: 'Web3Wallet Flutter Example',
         url: 'https://walletconnect.com/',
         icons: [
           'https://images.prismic.io/wallet-connect/65785a56531ac2845a260732_WalletConnect-App-Logo-1024X1024.png'
         ],
         redirect: Redirect(
-          native: 'myflutterwallet://',
+          native: 'wcflutterwallet://',
           universal: 'https://walletconnect.com',
         ),
       ),
@@ -136,21 +134,19 @@ class Web3WalletService extends IWeb3WalletService {
 
   void _onSessionProposal(SessionProposalEvent? args) async {
     if (args != null) {
-      final Widget w = WCRequestWidget(
-        child: WCConnectionRequestWidget(
-          wallet: _web3Wallet!,
-          sessionProposal: WCSessionRequestModel(
-            request: args.params,
-            verifyContext: args.verifyContext,
+      final approved = await _bottomSheetHandler.queueBottomSheet(
+        widget: WCRequestWidget(
+          child: WCConnectionRequestWidget(
+            wallet: _web3Wallet!,
+            sessionProposal: WCSessionRequestModel(
+              request: args.params,
+              verifyContext: args.verifyContext,
+            ),
           ),
         ),
       );
-      final bool? approved = await _bottomSheetHandler.queueBottomSheet(
-        widget: w,
-      );
-      // print('approved: $approved');
 
-      if (approved != null && approved) {
+      if (approved == true) {
         _web3Wallet!.approveSession(
           id: args.id,
           namespaces: args.params.generatedNamespaces!,
@@ -158,9 +154,7 @@ class Web3WalletService extends IWeb3WalletService {
       } else {
         _web3Wallet!.rejectSession(
           id: args.id,
-          reason: Errors.getSdkError(
-            Errors.USER_REJECTED,
-          ),
+          reason: Errors.getSdkError(Errors.USER_REJECTED),
         );
       }
     }
@@ -179,31 +173,16 @@ class Web3WalletService extends IWeb3WalletService {
 
     final id = args.id;
     final topic = args.topic;
+    final chainId = args.chainId;
+    final method = args.method;
     final parameters = args.params;
 
-    final message = EthUtils.getUtf8Message(parameters[0]);
-
-    debugPrint('On session request event: $id, $topic, $message');
-
-    // // Load the private key
-    // final keys = GetIt.I<IKeyService>().getKeysForChain(getChainId());
-    // final credentials = EthPrivateKey.fromHex(keys[0].privateKey);
-
-    // final signedMessage = hex.encode(
-    //   credentials.signPersonalMessageToUint8List(
-    //     Uint8List.fromList(utf8.encode(message)),
-    //   ),
-    // );
-
-    // final r = {'id': id, 'result': signedMessage, 'jsonrpc': '2.0'};
-    // final response = JsonRpcResponse.fromJson(r);
-    // print(r);
-    // _web3Wallet?.respondSessionRequest(topic: topic, response: response);
+    debugPrint('On session request event: '
+        '$id, $topic, $chainId, $method, $parameters');
   }
 
   void _onSessionConnect(SessionConnect? args) {
     if (args != null) {
-      print(args);
       sessions.value.add(args.session);
     }
   }
@@ -217,18 +196,16 @@ class Web3WalletService extends IWeb3WalletService {
       // Create the message to be signed
       final String iss = 'did:pkh:eip155:1:${chainKeys.first.publicKey}';
 
-      // print(args);
-      final Widget w = WCRequestWidget(
-        child: WCConnectionRequestWidget(
-          wallet: _web3Wallet!,
-          authRequest: WCAuthRequestModel(
-            iss: iss,
-            request: args,
+      final bool? auth = await _bottomSheetHandler.queueBottomSheet(
+        widget: WCRequestWidget(
+          child: WCConnectionRequestWidget(
+            wallet: _web3Wallet!,
+            authRequest: WCAuthRequestModel(
+              iss: iss,
+              request: args,
+            ),
           ),
         ),
-      );
-      final bool? auth = await _bottomSheetHandler.queueBottomSheet(
-        widget: w,
       );
 
       if (auth != null && auth) {

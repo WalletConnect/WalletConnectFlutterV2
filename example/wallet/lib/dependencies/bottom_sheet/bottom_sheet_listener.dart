@@ -45,7 +45,7 @@ class BottomSheetListenerState extends State<BottomSheetListener> {
         builder: (context) {
           return Container(
             decoration: const BoxDecoration(
-              color: StyleConstants.layerColor1,
+              color: StyleConstants.lightGray,
               borderRadius: BorderRadius.all(
                 Radius.circular(
                   StyleConstants.linear16,
