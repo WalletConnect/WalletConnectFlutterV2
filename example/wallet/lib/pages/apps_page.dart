@@ -25,13 +25,12 @@ class AppsPageState extends State<AppsPage> with GetItStateMixin {
 
   @override
   void initState() {
+    super.initState();
     web3Wallet = GetIt.I<IWeb3WalletService>().getWeb3Wallet();
     _pairings = web3Wallet.pairings.getAll();
     web3Wallet.core.pairing.onPairingDelete.subscribe(_onPairingDelete);
     web3Wallet.core.pairing.onPairingExpire.subscribe(_onPairingDelete);
-    web3Wallet.onSessionConnect.subscribe(_callbackToDapp);
     DeepLinkHandler.onLink.listen(_deepLinkListener);
-    super.initState();
   }
 
   void _deepLinkListener(String uri) {
@@ -39,13 +38,6 @@ class AppsPageState extends State<AppsPage> with GetItStateMixin {
       _onFoundUri(uri);
     } catch (e) {
       debugPrint('[$runtimeType] onLink $e');
-    }
-  }
-
-  void _callbackToDapp(SessionConnect? args) async {
-    if (args != null) {
-      final scheme = args.session.peer.metadata.redirect?.native ?? '';
-      DeepLinkHandler.goTo(scheme);
     }
   }
 

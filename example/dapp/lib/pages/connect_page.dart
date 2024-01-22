@@ -167,14 +167,13 @@ class ConnectPageState extends State<ConnectPage> {
       },
     );
 
-    _showQrCode(res);
-
-    // // Uncomment to use a wallet
-    // final String encodedUri = Uri.encodeComponent(res.uri.toString());
-    // await launchUrlString(
-    //   'wcflutterwallet://wc?uri=$encodedUri',
-    //   mode: LaunchMode.externalApplication,
-    // );
+    final encodedUri = Uri.encodeComponent(res.uri.toString());
+    final uri = 'wcflutterwallet://wc?uri=$encodedUri';
+    if (await canLaunchUrlString(uri)) {
+      launchUrlString(uri, mode: LaunchMode.externalApplication);
+    } else {
+      _showQrCode(res);
+    }
 
     try {
       debugPrint('Awaiting session proposal settlement');

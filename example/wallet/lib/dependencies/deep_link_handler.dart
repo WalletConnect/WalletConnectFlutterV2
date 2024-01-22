@@ -7,7 +7,8 @@ import 'package:url_launcher/url_launcher_string.dart';
 class DeepLinkHandler {
   //
   static final _linksController = StreamController<String>.broadcast();
-
+  static const _methodChannel =
+      MethodChannel('com.walletconnect.flutterwallet/methods');
   static const _eventChannel =
       EventChannel('com.walletconnect.flutterwallet/events');
 
@@ -25,15 +26,19 @@ class DeepLinkHandler {
     }, onError: (Object error) {
       debugPrint('[DeepLinkHandler] _onError $error');
     });
+
+    _methodChannel.invokeMethod('initialLink').then(
+          (value) => debugPrint('[DeepLinkHandler] initialLink $value'),
+        );
   }
 
   static Stream<String> get onLink => _linksController.stream;
 
   static Future<void> goTo(String scheme) async {
     try {
-      await launchUrlString(scheme, mode: LaunchMode.externalApplication);
+      launchUrlString(scheme, mode: LaunchMode.externalApplication);
     } catch (e) {
-      debugPrint('[$DeepLinkHandler] error re-opening dapp. $e');
+      debugPrint('[DeepLinkHandler] error re-opening dapp ($scheme). $e');
     }
   }
 }

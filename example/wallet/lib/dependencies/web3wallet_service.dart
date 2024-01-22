@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/bottom_sheet/i_bottom_sheet_service.dart';
+import 'package:walletconnect_flutter_v2_wallet/dependencies/deep_link_handler.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/i_web3wallet_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/key_service/chain_key.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/key_service/i_key_service.dart';
@@ -81,8 +82,6 @@ class Web3WalletService extends IWeb3WalletService {
     _web3Wallet!.pairings.onSync.subscribe(_onPairingsSync);
     _web3Wallet!.onSessionProposal.subscribe(_onSessionProposal);
     _web3Wallet!.onSessionProposalError.subscribe(_onSessionProposalError);
-    _web3Wallet!.onSessionConnect.subscribe(_onSessionConnect);
-    _web3Wallet!.onSessionRequest.subscribe(_onSessionRequest);
     _web3Wallet!.onAuthRequest.subscribe(_onAuthRequest);
     _web3Wallet!.core.relayClient.onRelayClientError
         .subscribe(_onRelayClientError);
@@ -106,8 +105,6 @@ class Web3WalletService extends IWeb3WalletService {
     _web3Wallet!.pairings.onSync.unsubscribe(_onPairingsSync);
     _web3Wallet!.onSessionProposal.unsubscribe(_onSessionProposal);
     _web3Wallet!.onSessionProposalError.unsubscribe(_onSessionProposalError);
-    _web3Wallet!.onSessionConnect.unsubscribe(_onSessionConnect);
-    _web3Wallet!.onSessionRequest.unsubscribe(_onSessionRequest);
     _web3Wallet!.onAuthRequest.unsubscribe(_onAuthRequest);
     _web3Wallet!.core.relayClient.onRelayClientError
         .unsubscribe(_onRelayClientError);
@@ -157,6 +154,11 @@ class Web3WalletService extends IWeb3WalletService {
           reason: Errors.getSdkError(Errors.USER_REJECTED),
         );
       }
+
+      Future.delayed(const Duration(milliseconds: 300), () {
+        final scheme = args.params.proposer.metadata.redirect?.native ?? '';
+        DeepLinkHandler.goTo(scheme);
+      });
     }
   }
 
@@ -166,25 +168,6 @@ class Web3WalletService extends IWeb3WalletService {
 
   void _onPairingCreate(PairingEvent? args) {
     debugPrint('[$runtimeType] _onPairingCreate $args');
-  }
-
-  void _onSessionRequest(SessionRequestEvent? args) {
-    if (args == null) return;
-
-    final id = args.id;
-    final topic = args.topic;
-    final chainId = args.chainId;
-    final method = args.method;
-    final parameters = args.params;
-
-    debugPrint('On session request event: '
-        '$id, $topic, $chainId, $method, $parameters');
-  }
-
-  void _onSessionConnect(SessionConnect? args) {
-    if (args != null) {
-      sessions.value.add(args.session);
-    }
   }
 
   Future<void> _onAuthRequest(AuthRequest? args) async {

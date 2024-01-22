@@ -4,8 +4,11 @@ import Flutter
 @UIApplicationMain
 @objc class AppDelegate: FlutterAppDelegate {
     
-    private var deepLinkChannel: FlutterEventChannel?
-    private static let CHANNEL = "com.walletconnect.flutterwallet/events"
+    private static let EVENTS_CHANNEL = "com.walletconnect.flutterwallet/events"
+    private static let METHODS_CHANNEL = "com.walletconnect.flutterwallet/methods"
+    
+    private var eventsChannel: FlutterEventChannel?
+    private var methodsChannel: FlutterMethodChannel?
     var initialLink: String?
     
     private let linkStreamHandler = LinkStreamHandler()
@@ -14,15 +17,28 @@ import Flutter
         GeneratedPluginRegistrant.register(with: self)
         
         let controller = window.rootViewController as! FlutterViewController
-        deepLinkChannel = FlutterEventChannel(name: AppDelegate.CHANNEL, binaryMessenger: controller.binaryMessenger)
-        deepLinkChannel?.setStreamHandler(linkStreamHandler)
+        eventsChannel = FlutterEventChannel(name: AppDelegate.EVENTS_CHANNEL, binaryMessenger: controller.binaryMessenger)
+        eventsChannel?.setStreamHandler(linkStreamHandler)
+        
+        methodsChannel = FlutterMethodChannel(name: AppDelegate.METHODS_CHANNEL, binaryMessenger: controller.binaryMessenger)
+        methodsChannel?.setMethodCallHandler({ [weak self] (call: FlutterMethodCall, result: FlutterResult) -> Void in
+            if (call.method == "initialLink") {
+                print("\(String(describing: launchOptions))")
+            }
+        })
         
         return super.application(application, didFinishLaunchingWithOptions: launchOptions)
     }
     
     override func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
+        print("open url \(url)")
         return linkStreamHandler.handleLink(url.absoluteString)
     }
+//    
+//    override func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
+//        print("\(userActivity)")
+//        return true
+//    }
 }
 
 class LinkStreamHandler: NSObject, FlutterStreamHandler {
