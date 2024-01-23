@@ -21,7 +21,10 @@ class DeepLinkHandler {
 
   static void checkInitialLink() {
     try {
-      _methodChannel.invokeMethod('initialLink');
+      _methodChannel.invokeMethod('initialLink').then(
+            _onLink,
+            onError: _onError,
+          );
     } catch (e) {
       debugPrint('[DeepLinkHandler] checkInitialLink $e');
     }
@@ -36,12 +39,7 @@ class DeepLinkHandler {
   }) async {
     await Future.delayed(Duration(milliseconds: delay));
     try {
-      final canLaunch = await canLaunchUrlString(scheme);
-      if (canLaunch) {
-        launchUrlString(scheme, mode: LaunchMode.externalApplication);
-      } else {
-        throw Exception('Can not launch scheme');
-      }
+      await launchUrlString(scheme, mode: LaunchMode.externalApplication);
     } catch (e) {
       debugPrint('[DeepLinkHandler] error re-opening dapp ($scheme). $e');
       _goBackModal(title: modalTitle);
