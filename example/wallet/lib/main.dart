@@ -17,7 +17,7 @@ import 'package:walletconnect_flutter_v2_wallet/utils/string_constants.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  DeepLinkHandler.initPlatformState();
+  DeepLinkHandler.initListener();
   runApp(const MyApp());
 }
 

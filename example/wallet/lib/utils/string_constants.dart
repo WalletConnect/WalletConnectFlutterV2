@@ -23,7 +23,7 @@ class StringConstants {
   // Uri Input Popup
   static const String enterUri = 'Enter a WalletConnect URI';
   static const String enterUriMessage =
-      'To get the URI press the copy to clipboard button in the wallet connection interface';
+      'To get the URI press the "copy to clipboard" button in the wallet connection interfaces.';
   static const String textFieldPlaceholder = 'wc://a13aef...';
 
   // Session Proposal

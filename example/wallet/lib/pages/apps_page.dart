@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:get_it_mixin/get_it_mixin.dart';
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
+import 'package:walletconnect_flutter_v2_wallet/dependencies/bottom_sheet/i_bottom_sheet_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/deep_link_handler.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/i_web3wallet_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/pages/app_detail_page.dart';
@@ -31,6 +32,7 @@ class AppsPageState extends State<AppsPage> with GetItStateMixin {
     web3Wallet.core.pairing.onPairingDelete.subscribe(_onPairingDelete);
     web3Wallet.core.pairing.onPairingExpire.subscribe(_onPairingDelete);
     DeepLinkHandler.onLink.listen(_deepLinkListener);
+    DeepLinkHandler.checkInitialLink();
   }
 
   void _deepLinkListener(String uri) {
@@ -118,15 +120,13 @@ class AppsPageState extends State<AppsPage> with GetItStateMixin {
     );
   }
 
-  Future _onCopyQrCode() async {
-    final String? uri = await showDialog<String>(
-      context: context,
-      builder: (BuildContext context) {
-        return UriInputPopup();
-      },
+  Future<dynamic> _onCopyQrCode() async {
+    final uri = await GetIt.I<IBottomSheetService>().queueBottomSheet(
+      widget: UriInputPopup(),
     );
-
-    _onFoundUri(uri);
+    if (uri is String) {
+      _onFoundUri(uri);
+    }
   }
 
   Future _onScanQrCode() async {

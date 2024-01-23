@@ -60,13 +60,11 @@ class Web3WalletService extends IWeb3WalletService {
     for (final chainKey in chainKeys) {
       for (final chainId in chainKey.chains) {
         if (chainId.startsWith('kadena')) {
-          // print('registering kadena $chainId:${chainKey.publicKey}');
           _web3Wallet!.registerAccount(
             chainId: chainId,
             accountAddress: 'k**${chainKey.publicKey}',
           );
         } else {
-          // print('registering other $chainId:${chainKey.publicKey}');
           _web3Wallet!.registerAccount(
             chainId: chainId,
             accountAddress: chainKey.publicKey,
@@ -76,7 +74,7 @@ class Web3WalletService extends IWeb3WalletService {
     }
 
     // Setup our listeners
-    print('web3wallet create');
+    debugPrint('web3wallet create');
     _web3Wallet!.core.pairing.onPairingInvalid.subscribe(_onPairingInvalid);
     _web3Wallet!.core.pairing.onPairingCreate.subscribe(_onPairingCreate);
     _web3Wallet!.pairings.onSync.subscribe(_onPairingsSync);
@@ -90,7 +88,7 @@ class Web3WalletService extends IWeb3WalletService {
   @override
   Future<void> init() async {
     // Await the initialization of the web3wallet
-    print('web3wallet init');
+    debugPrint('web3wallet init');
     await _web3Wallet!.init();
 
     pairings.value = _web3Wallet!.pairings.getAll();
@@ -100,7 +98,7 @@ class Web3WalletService extends IWeb3WalletService {
 
   @override
   FutureOr onDispose() {
-    print('web3wallet dispose');
+    debugPrint('web3wallet dispose');
     _web3Wallet!.core.pairing.onPairingInvalid.unsubscribe(_onPairingInvalid);
     _web3Wallet!.pairings.onSync.unsubscribe(_onPairingsSync);
     _web3Wallet!.onSessionProposal.unsubscribe(_onSessionProposal);
@@ -155,10 +153,8 @@ class Web3WalletService extends IWeb3WalletService {
         );
       }
 
-      Future.delayed(const Duration(milliseconds: 300), () {
-        final scheme = args.params.proposer.metadata.redirect?.native ?? '';
-        DeepLinkHandler.goTo(scheme);
-      });
+      final scheme = args.params.proposer.metadata.redirect?.native ?? '';
+      DeepLinkHandler.goTo(scheme, delay: 300);
     }
   }
 
@@ -172,7 +168,6 @@ class Web3WalletService extends IWeb3WalletService {
 
   Future<void> _onAuthRequest(AuthRequest? args) async {
     if (args != null) {
-      print(args);
       List<ChainKey> chainKeys = GetIt.I<IKeyService>().getKeysForChain(
         'eip155:1',
       );

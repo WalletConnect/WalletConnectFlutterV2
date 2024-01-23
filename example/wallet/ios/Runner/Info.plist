@@ -62,7 +62,11 @@
 			</array>
 		</dict>
 	</array>
-    <key>FlutterDeepLinkingEnabled</key>
-    <true/>
+	<key>FlutterDeepLinkingEnabled</key>
+	<true/>
+	<key>LSApplicationQueriesSchemes</key>
+	<array>
+		<string>web3modalflutter</string>
+	</array>
 </dict>
 </plist>

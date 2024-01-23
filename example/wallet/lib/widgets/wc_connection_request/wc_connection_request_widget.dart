@@ -34,7 +34,7 @@ class WCConnectionRequestWidget extends StatelessWidget {
 
     return Container(
       decoration: BoxDecoration(
-        color: StyleConstants.lightGray,
+        color: Colors.white,
         borderRadius: BorderRadius.circular(
           StyleConstants.linear8,
         ),
@@ -190,7 +190,7 @@ class VerifyBanner extends StatelessWidget {
         Text(
           origin,
           style: const TextStyle(
-            color: Colors.white,
+            color: Colors.black54,
             fontWeight: FontWeight.bold,
           ),
         ),

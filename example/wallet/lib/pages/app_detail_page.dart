@@ -55,20 +55,21 @@ class AppDetailPageState extends State<AppDetailPage> {
         }
       }
     }
-
+    final scheme = widget.pairing.peerMetadata?.redirect?.native ?? '';
     return Scaffold(
       appBar: AppBar(
         title: Text(widget.pairing.peerMetadata?.name ?? 'Unknown'),
         actions: [
-          IconButton(
-            icon: const Icon(
-              Icons.open_in_new_rounded,
+          Visibility(
+            visible: scheme.isNotEmpty,
+            child: IconButton(
+              icon: const Icon(
+                Icons.open_in_new_rounded,
+              ),
+              onPressed: () {
+                DeepLinkHandler.goTo(scheme);
+              },
             ),
-            onPressed: () {
-              final scheme =
-                  widget.pairing.peerMetadata?.redirect?.native ?? '';
-              DeepLinkHandler.goTo(scheme);
-            },
           )
         ],
       ),

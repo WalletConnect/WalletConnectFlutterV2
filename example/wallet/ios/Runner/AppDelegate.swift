@@ -23,22 +23,35 @@ import Flutter
         methodsChannel = FlutterMethodChannel(name: AppDelegate.METHODS_CHANNEL, binaryMessenger: controller.binaryMessenger)
         methodsChannel?.setMethodCallHandler({ [weak self] (call: FlutterMethodCall, result: FlutterResult) -> Void in
             if (call.method == "initialLink") {
-                print("\(String(describing: launchOptions))")
+                if let link = self?.initialLink {
+                    self?.initialLink = nil
+                    let _ = self?.linkStreamHandler.handleLink(link)
+                    return
+                }
             }
         })
+        
+        // Add your deep link handling logic here
+        if let url = launchOptions?[.url] as? URL {
+            self.initialLink = url.absoluteString
+        }
         
         return super.application(application, didFinishLaunchingWithOptions: launchOptions)
     }
     
     override func application(_ app: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey : Any] = [:]) -> Bool {
-        print("open url \(url)")
         return linkStreamHandler.handleLink(url.absoluteString)
     }
-//    
-//    override func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
-//        print("\(userActivity)")
-//        return true
-//    }
+    
+    override func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
+        // Handle universal links
+        if userActivity.activityType == NSUserActivityTypeBrowsingWeb {
+            if let url = userActivity.webpageURL {
+                return linkStreamHandler.handleLink(url.absoluteString)
+            }
+        }
+        return false
+    }
 }
 
 class LinkStreamHandler: NSObject, FlutterStreamHandler {
