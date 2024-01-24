@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 import 'package:walletconnect_flutter_v2_dapp/models/chain_metadata.dart';
 import 'package:walletconnect_flutter_v2_dapp/utils/constants.dart';
@@ -183,22 +184,20 @@ class SessionWidgetState extends State<SessionWidget> {
           ),
           child: ElevatedButton(
             onPressed: () async {
+              final walletUrl = widget.session.peer.metadata.redirect?.native;
+              if ((walletUrl ?? '').isNotEmpty) {
+                launchUrlString(
+                  walletUrl!,
+                  mode: LaunchMode.externalApplication,
+                );
+              }
               Future<dynamic> future = callChainMethod(
                 chainMetadata.type,
                 method,
                 chainMetadata,
                 address,
               );
-              // print('got here');
-              // print(await future);
-              // if (chainMetadata.type == ChainType.eip155) {
-              //   future =
-              // }
-              MethodDialog.show(
-                context,
-                method,
-                future,
-              );
+              MethodDialog.show(context, method, future);
             },
             style: ButtonStyle(
               backgroundColor: MaterialStateProperty.all<Color>(

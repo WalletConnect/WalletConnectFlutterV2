@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:get_it_mixin/get_it_mixin.dart';
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
+import 'package:walletconnect_flutter_v2_wallet/dependencies/bottom_sheet/i_bottom_sheet_service.dart';
+import 'package:walletconnect_flutter_v2_wallet/dependencies/deep_link_handler.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/i_web3wallet_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/pages/app_detail_page.dart';
 import 'package:walletconnect_flutter_v2_wallet/utils/constants.dart';
@@ -12,9 +14,7 @@ import 'package:walletconnect_flutter_v2_wallet/widgets/qr_scan_sheet.dart';
 import 'package:walletconnect_flutter_v2_wallet/widgets/uri_input_popup.dart';
 
 class AppsPage extends StatefulWidget with GetItStatefulWidgetMixin {
-  AppsPage({
-    Key? key,
-  }) : super(key: key);
+  AppsPage({Key? key}) : super(key: key);
 
   @override
   AppsPageState createState() => AppsPageState();
@@ -22,21 +22,29 @@ class AppsPage extends StatefulWidget with GetItStatefulWidgetMixin {
 
 class AppsPageState extends State<AppsPage> with GetItStateMixin {
   List<PairingInfo> _pairings = [];
-
-  final Web3Wallet web3Wallet = GetIt.I<IWeb3WalletService>().getWeb3Wallet();
+  late Web3Wallet web3Wallet;
 
   @override
   void initState() {
+    super.initState();
+    web3Wallet = GetIt.I<IWeb3WalletService>().getWeb3Wallet();
     _pairings = web3Wallet.pairings.getAll();
-    // web3wallet.onSessionDelete.subscribe(_onSessionDelete);
     web3Wallet.core.pairing.onPairingDelete.subscribe(_onPairingDelete);
     web3Wallet.core.pairing.onPairingExpire.subscribe(_onPairingDelete);
-    super.initState();
+    DeepLinkHandler.onLink.listen(_deepLinkListener);
+    DeepLinkHandler.checkInitialLink();
+  }
+
+  void _deepLinkListener(String uri) {
+    try {
+      _onFoundUri(uri);
+    } catch (e) {
+      debugPrint('[$runtimeType] onLink $e');
+    }
   }
 
   @override
   void dispose() {
-    // web3wallet.onSessionDelete.unsubscribe(_onSessionDelete);
     web3Wallet.core.pairing.onPairingDelete.unsubscribe(_onPairingDelete);
     web3Wallet.core.pairing.onPairingExpire.unsubscribe(_onPairingDelete);
     super.dispose();
@@ -44,10 +52,7 @@ class AppsPageState extends State<AppsPage> with GetItStateMixin {
 
   @override
   Widget build(BuildContext context) {
-    _pairings = watch(
-      target: GetIt.I<IWeb3WalletService>().pairings,
-    );
-
+    _pairings = watch(target: GetIt.I<IWeb3WalletService>().pairings);
     return Stack(
       children: [
         _pairings.isEmpty ? _buildNoPairingMessage() : _buildPairingList(),
@@ -56,36 +61,10 @@ class AppsPageState extends State<AppsPage> with GetItStateMixin {
           right: StyleConstants.magic20,
           child: Row(
             children: [
-              // Disconnect buttons for testing
-              _buildIconButton(
-                Icons.wifi_off,
-                () {
-                  web3Wallet.core.relayClient.disconnect();
-                },
-              ),
-              const SizedBox(
-                width: StyleConstants.magic20,
-              ),
-              _buildIconButton(
-                Icons.wifi,
-                () {
-                  web3Wallet.core.relayClient.connect();
-                },
-              ),
-              const SizedBox(
-                width: StyleConstants.magic20,
-              ),
-              _buildIconButton(
-                Icons.copy,
-                _onCopyQrCode,
-              ),
-              const SizedBox(
-                width: StyleConstants.magic20,
-              ),
-              _buildIconButton(
-                Icons.qr_code_rounded,
-                _onScanQrCode,
-              ),
+              const SizedBox(width: StyleConstants.magic20),
+              _buildIconButton(Icons.copy, _onCopyQrCode),
+              const SizedBox(width: StyleConstants.magic20),
+              _buildIconButton(Icons.qr_code_rounded, _onScanQrCode),
             ],
           ),
         ),
@@ -141,17 +120,13 @@ class AppsPageState extends State<AppsPage> with GetItStateMixin {
     );
   }
 
-  Future _onCopyQrCode() async {
-    final String? uri = await showDialog<String>(
-      context: context,
-      builder: (BuildContext context) {
-        return UriInputPopup();
-      },
+  Future<dynamic> _onCopyQrCode() async {
+    final uri = await GetIt.I<IBottomSheetService>().queueBottomSheet(
+      widget: UriInputPopup(),
     );
-
-    // print(uri);
-
-    _onFoundUri(uri);
+    if (uri is String) {
+      _onFoundUri(uri);
+    }
   }
 
   Future _onScanQrCode() async {
@@ -171,9 +146,7 @@ class AppsPageState extends State<AppsPage> with GetItStateMixin {
     if (uri != null) {
       try {
         final Uri uriData = Uri.parse(uri);
-        await web3Wallet.pair(
-          uri: uriData,
-        );
+        await web3Wallet.pair(uri: uriData);
       } catch (e) {
         _invalidUriToast();
       }

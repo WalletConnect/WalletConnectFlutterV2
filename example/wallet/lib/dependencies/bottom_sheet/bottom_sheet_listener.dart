@@ -45,15 +45,19 @@ class BottomSheetListenerState extends State<BottomSheetListener> {
         builder: (context) {
           return Container(
             decoration: const BoxDecoration(
-              color: StyleConstants.layerColor1,
+              color: Colors.white,
               borderRadius: BorderRadius.all(
                 Radius.circular(
                   StyleConstants.linear16,
                 ),
               ),
             ),
-            padding: const EdgeInsets.all(
-              StyleConstants.linear16,
+            padding: EdgeInsets.only(
+              top: StyleConstants.linear16,
+              left: StyleConstants.linear16,
+              right: StyleConstants.linear16,
+              bottom: MediaQuery.of(context).viewInsets.bottom +
+                  StyleConstants.linear16,
             ),
             margin: const EdgeInsets.all(
               StyleConstants.linear16,

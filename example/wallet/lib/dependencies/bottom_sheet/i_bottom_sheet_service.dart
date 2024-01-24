@@ -15,9 +15,7 @@ class BottomSheetQueueItem {
 abstract class IBottomSheetService {
   abstract final ValueNotifier<BottomSheetQueueItem?> currentSheet;
 
-  Future<dynamic> queueBottomSheet({
-    required Widget widget,
-  });
+  Future<dynamic> queueBottomSheet({required Widget widget});
 
   void showNext();
 }
