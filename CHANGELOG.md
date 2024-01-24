@@ -1,3 +1,7 @@
+## 2.1.14
+
+- Updated dependencies
+
 ## 2.1.13
 
 - Updated dependencies
