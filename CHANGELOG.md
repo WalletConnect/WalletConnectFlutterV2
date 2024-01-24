@@ -1,6 +1,6 @@
 ## 2.1.14
 
-- Updated dependencies
+- Minor improvements
 
 ## 2.1.13
 
