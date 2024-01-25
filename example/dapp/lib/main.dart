@@ -50,10 +50,6 @@ class _MyHomePageState extends State<MyHomePage> {
   List<PageData> _pageDatas = [];
   int _selectedIndex = 0;
 
-  // SessionData? _selectedSession;
-  // List<SessionData> _allSessions = [];
-  // List<PairingInfo> _allPairings = [];
-
   @override
   void initState() {
     initialize();
@@ -67,14 +63,14 @@ class _MyHomePageState extends State<MyHomePage> {
       projectId: DartDefines.projectId,
       logLevel: LogLevel.info,
       metadata: const PairingMetadata(
-        name: 'Example dApp',
-        description: 'Example dApp',
+        name: 'Sample dApp Fllutter',
+        description: 'WalletConnect\'s sample dapp with Flutter',
         url: 'https://walletconnect.com/',
         icons: [
           'https://images.prismic.io/wallet-connect/65785a56531ac2845a260732_WalletConnect-App-Logo-1024X1024.png'
         ],
         redirect: Redirect(
-          native: 'myflutterdapp://',
+          native: 'wcflutterdapp://',
           universal: 'https://walletconnect.com',
         ),
       ),
@@ -157,33 +153,7 @@ class _MyHomePageState extends State<MyHomePage> {
     }
     navRail.add(
       Expanded(
-        child: Stack(
-          children: [
-            _pageDatas[_selectedIndex].page,
-            Positioned(
-              bottom: StyleConstants.magic20,
-              right: StyleConstants.magic20,
-              child: Row(
-                children: [
-                  Text(_web3App!.core.relayClient.isConnected
-                      ? 'Relay Connected'
-                      : 'Relay Disconnected'),
-                  Switch(
-                    value: _web3App!.core.relayClient.isConnected,
-                    onChanged: (value) {
-                      if (!value) {
-                        _web3App!.core.relayClient.disconnect();
-                      } else {
-                        _web3App!.core.relayClient.connect();
-                      }
-                      setState(() {});
-                    },
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
+        child: _pageDatas[_selectedIndex].page,
       ),
     );
 

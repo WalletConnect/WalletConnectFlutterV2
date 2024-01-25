@@ -20,7 +20,7 @@ enum EVMChainsSupported {
   ethereum,
   polygon,
   arbitrum,
-  goerli,
+  sepolia,
   bsc,
   mumbai;
 
@@ -37,8 +37,8 @@ enum EVMChainsSupported {
       case EVMChainsSupported.arbitrum:
         id = '42161';
         break;
-      case EVMChainsSupported.goerli:
-        id = '5';
+      case EVMChainsSupported.sepolia:
+        id = '11155111';
         break;
       case EVMChainsSupported.bsc:
         id = '56';

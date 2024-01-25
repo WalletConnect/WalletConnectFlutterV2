@@ -70,8 +70,9 @@ class StoreVersions {
 class MethodsConstants {
   static const walletSwitchEthChain = 'wallet_switchEthereumChain';
   static const walletAddEthChain = 'wallet_addEthereumChain';
+  static const ethSendTransaction = 'eth_sendTransaction';
   static const requiredMethods = [
-    'eth_sendTransaction',
+    ethSendTransaction,
     'personal_sign',
   ];
   static const optionalMethods = [
@@ -83,8 +84,6 @@ class MethodsConstants {
     'eth_signTypedData',
     'eth_signTypedData_v3',
     'eth_signTypedData_v4',
-    'eth_sendTransaction',
-    'personal_sign',
     walletSwitchEthChain,
     walletAddEthChain,
     'wallet_getPermissions',

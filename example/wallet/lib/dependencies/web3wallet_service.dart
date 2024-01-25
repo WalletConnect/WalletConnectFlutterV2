@@ -42,11 +42,11 @@ class Web3WalletService extends IWeb3WalletService {
         logLevel: LogLevel.error,
       ),
       metadata: const PairingMetadata(
-        name: 'Web3Wallet Flutter Example',
-        description: 'Web3Wallet Flutter Example',
+        name: 'Sample Wallet Flutter',
+        description: 'WalletConnect\'s sample wallet with Flutter',
         url: 'https://walletconnect.com/',
         icons: [
-          'https://raw.githubusercontent.com/WalletConnect/WalletConnectFlutterV2/master/example/wallet/AppIcon.png'
+          'https://docs.walletconnect.com/assets/images/web3walletLogo-54d3b546146931ceaf47a3500868a73a.png'
         ],
         redirect: Redirect(
           native: 'wcflutterwallet://',
