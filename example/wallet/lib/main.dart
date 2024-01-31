@@ -11,6 +11,7 @@ import 'package:walletconnect_flutter_v2_wallet/dependencies/key_service/key_ser
 import 'package:walletconnect_flutter_v2_wallet/dependencies/web3wallet_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/models/page_data.dart';
 import 'package:walletconnect_flutter_v2_wallet/pages/apps_page.dart';
+import 'package:walletconnect_flutter_v2_wallet/pages/settings_page.dart';
 import 'package:walletconnect_flutter_v2_wallet/utils/constants.dart';
 import 'package:flutter/material.dart';
 import 'package:walletconnect_flutter_v2_wallet/utils/string_constants.dart';
@@ -88,12 +89,7 @@ class _MyHomePageState extends State<MyHomePage> with GetItStateMixin {
           icon: Icons.inbox_rounded,
         ),
         PageData(
-          page: const Center(
-            child: Text(
-              'Settings (Not Implemented)',
-              style: StyleConstants.bodyText,
-            ),
-          ),
+          page: const SettingsPage(),
           title: 'Settings',
           icon: Icons.settings_outlined,
         ),

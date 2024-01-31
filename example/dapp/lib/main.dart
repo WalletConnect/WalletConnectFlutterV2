@@ -63,7 +63,7 @@ class _MyHomePageState extends State<MyHomePage> {
       projectId: DartDefines.projectId,
       logLevel: LogLevel.info,
       metadata: const PairingMetadata(
-        name: 'Sample dApp Fllutter',
+        name: 'Sample dApp Flutter',
         description: 'WalletConnect\'s sample dapp with Flutter',
         url: 'https://walletconnect.com/',
         icons: [
@@ -86,12 +86,17 @@ class _MyHomePageState extends State<MyHomePage> {
     }
 
     // Register event handlers
+    _web3App!.onSessionConnect.subscribe(_onSessionConnect);
     _web3App!.onSessionPing.subscribe(_onSessionPing);
     _web3App!.onSessionEvent.subscribe(_onSessionEvent);
     _web3App!.onSessionUpdate.subscribe(_onSessionUpdate);
+
     _web3App!.core.relayClient.onRelayClientConnect.subscribe(_setState);
     _web3App!.core.relayClient.onRelayClientDisconnect.subscribe(_setState);
-    _web3App!.onSessionConnect.subscribe(_onSessionConnect);
+    _web3App!.core.relayClient.onRelayClientMessage.subscribe(_onRelayMessage);
+
+    _web3App!.signEngine.onSessionEvent.subscribe(_onSessionEvent);
+    _web3App!.signEngine.onSessionUpdate.subscribe(_onSessionUpdate);
 
     setState(() {
       _pageDatas = [
@@ -128,12 +133,19 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   void dispose() {
+    // Unregister event handlers
     _web3App!.onSessionConnect.unsubscribe(_onSessionConnect);
-    _web3App!.core.relayClient.onRelayClientConnect.unsubscribe(_setState);
-    _web3App!.core.relayClient.onRelayClientDisconnect.unsubscribe(_setState);
     _web3App!.onSessionPing.unsubscribe(_onSessionPing);
     _web3App!.onSessionEvent.unsubscribe(_onSessionEvent);
     _web3App!.onSessionUpdate.unsubscribe(_onSessionUpdate);
+
+    _web3App!.core.relayClient.onRelayClientConnect.unsubscribe(_setState);
+    _web3App!.core.relayClient.onRelayClientDisconnect.unsubscribe(_setState);
+    _web3App!.core.relayClient.onRelayClientMessage
+        .unsubscribe(_onRelayMessage);
+
+    _web3App!.signEngine.onSessionEvent.unsubscribe(_onSessionEvent);
+    _web3App!.signEngine.onSessionUpdate.unsubscribe(_onSessionUpdate);
     super.dispose();
   }
 
@@ -248,5 +260,16 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _onSessionUpdate(SessionUpdate? args) {
     debugPrint('[$runtimeType] _onSessionUpdate $args');
+  }
+
+  void _onRelayMessage(MessageEvent? args) async {
+    if (args != null) {
+      final payloadString = await _web3App!.core.crypto.decode(
+        args.topic,
+        args.message,
+      );
+      final data = jsonDecode(payloadString ?? '{}') as Map<String, dynamic>;
+      debugPrint(data.toString());
+    }
   }
 }

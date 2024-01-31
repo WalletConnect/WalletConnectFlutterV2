@@ -15,7 +15,7 @@ class WCConnectionWidgetInfo extends StatelessWidget {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        color: Colors.grey,
+        color: Colors.black12,
         borderRadius: BorderRadius.circular(
           StyleConstants.linear16,
         ),

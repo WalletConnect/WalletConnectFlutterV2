@@ -5,17 +5,17 @@ enum CustomButtonType { normal, valid, invalid }
 
 class CustomButton extends StatelessWidget {
   final Widget child;
-  final CustomButtonType type;
+  final CustomButtonType? type;
   final VoidCallback onTap;
 
   const CustomButton({
     super.key,
     required this.child,
-    required this.type,
     required this.onTap,
+    this.type,
   });
 
-  Color _getBackgroundColor(CustomButtonType type) {
+  Color _getBackgroundColor(CustomButtonType? type) {
     switch (type) {
       case CustomButtonType.normal:
         return Colors.blue;
@@ -24,7 +24,7 @@ class CustomButton extends StatelessWidget {
       case CustomButtonType.invalid:
         return StyleConstants.errorColor;
       default:
-        return Colors.blue;
+        return Colors.blue[200]!;
     }
   }
 

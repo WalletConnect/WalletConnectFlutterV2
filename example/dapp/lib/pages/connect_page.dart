@@ -107,7 +107,7 @@ class ConnectPageState extends State<ConnectPage> {
           children: <Widget>[
             const Text(
               StringConstants.appTitle,
-              style: StyleConstants.titleText,
+              style: StyleConstants.subtitleText,
               textAlign: TextAlign.center,
             ),
             const SizedBox(
@@ -115,7 +115,7 @@ class ConnectPageState extends State<ConnectPage> {
             ),
             const Text(
               StringConstants.selectChains,
-              style: StyleConstants.subtitleText,
+              style: StyleConstants.paragraph,
               textAlign: TextAlign.center,
             ),
             const SizedBox(
@@ -169,8 +169,32 @@ class ConnectPageState extends State<ConnectPage> {
 
     final encodedUri = Uri.encodeComponent(res.uri.toString());
     final uri = 'wcflutterwallet://wc?uri=$encodedUri';
+    // final uri = 'metamask://wc?uri=$encodedUri';
     if (await canLaunchUrlString(uri)) {
-      launchUrlString(uri, mode: LaunchMode.externalApplication);
+      // ignore: use_build_context_synchronously
+      final openApp = await showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            content: const Text('Do you want to open with Web3Wallet Flutter'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text('Show QR'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: const Text('Open'),
+              ),
+            ],
+          );
+        },
+      );
+      if (openApp) {
+        launchUrlString(uri, mode: LaunchMode.externalApplication);
+      } else {
+        _showQrCode(res);
+      }
     } else {
       _showQrCode(res);
     }
@@ -203,13 +227,14 @@ class ConnectPageState extends State<ConnectPage> {
         showToast?.call(StringConstants.authSucceeded);
       }
 
-      if (_shouldDismissQrCode) {
+      // ignore: use_build_context_synchronously
+      if (_shouldDismissQrCode && Navigator.canPop(context)) {
         // ignore: use_build_context_synchronously
         Navigator.pop(context);
       }
     } catch (e) {
-      // debugPrint(e.toString());
-      if (_shouldDismissQrCode) {
+      // ignore: use_build_context_synchronously
+      if (_shouldDismissQrCode && Navigator.canPop(context)) {
         // ignore: use_build_context_synchronously
         Navigator.pop(context);
       }
@@ -217,9 +242,7 @@ class ConnectPageState extends State<ConnectPage> {
     }
   }
 
-  Future<void> _showQrCode(
-    ConnectResponse response,
-  ) async {
+  Future<void> _showQrCode(ConnectResponse response) async {
     // Show the QR code
     debugPrint('Showing QR Code: ${response.uri}');
 
