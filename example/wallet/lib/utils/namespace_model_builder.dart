@@ -57,10 +57,12 @@ class ConnectionWidgetBuilder {
           elements: ns.accounts,
         ),
       );
-      models.add(WCConnectionModel(
-        title: StringConstants.methods,
-        elements: ns.methods,
-      ));
+      models.add(
+        WCConnectionModel(
+          title: StringConstants.methods,
+          elements: ns.methods,
+        ),
+      );
 
       Map<String, void Function()> actions = {};
       for (final String event in ns.events) {
@@ -78,11 +80,13 @@ class ConnectionWidgetBuilder {
               );
         };
       }
-      models.add(WCConnectionModel(
-        title: StringConstants.events,
-        elements: ns.events,
-        elementActions: actions,
-      ));
+      models.add(
+        WCConnectionModel(
+          title: StringConstants.events,
+          elements: ns.events,
+          elementActions: actions,
+        ),
+      );
 
       views.add(
         WCConnectionWidget(

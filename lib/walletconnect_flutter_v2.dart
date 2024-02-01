@@ -19,6 +19,7 @@ export 'apis/models/uri_parse_result.dart';
 export 'apis/utils/method_constants.dart';
 export 'apis/utils/namespace_utils.dart';
 export 'apis/utils/log_level.dart';
+export 'apis/utils/extensions.dart';
 
 // Sign API
 export 'apis/sign_api/i_sign_client.dart';
@@ -57,4 +58,3 @@ export 'package:logger/logger.dart';
 export 'package:shared_preferences/shared_preferences.dart';
 export 'package:universal_io/io.dart';
 export 'package:web3dart/web3dart.dart';
-export 'package:web3dart/crypto.dart';

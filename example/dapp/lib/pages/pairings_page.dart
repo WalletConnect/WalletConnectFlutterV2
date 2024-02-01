@@ -88,21 +88,6 @@ class PairingsPageState extends State<PairingsPage> {
         )
         .toList();
 
-    final List<Widget> children = [
-      const SizedBox(
-        height: StyleConstants.linear48,
-      ),
-      const Text(
-        StringConstants.pairings,
-        style: StyleConstants.titleText,
-        textAlign: TextAlign.center,
-      ),
-      const SizedBox(
-        height: StyleConstants.linear48,
-      ),
-    ];
-    children.addAll(pairingItems);
-
     return Center(
       child: Container(
         // color: StyleConstants.primaryColor,
@@ -113,7 +98,7 @@ class PairingsPageState extends State<PairingsPage> {
           maxWidth: StyleConstants.maxWidth,
         ),
         child: ListView(
-          children: children,
+          children: pairingItems,
         ),
       ),
     );

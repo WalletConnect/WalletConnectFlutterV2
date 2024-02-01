@@ -7,6 +7,7 @@ const TEST_RELAY_URL = String.fromEnvironment(
 );
 const TEST_PROJECT_ID = String.fromEnvironment(
   'PROJECT_ID',
+  defaultValue: 'cad4956f31a5e40a00b62865b030c6f8',
 );
 
 const PROPOSER = PairingMetadata(

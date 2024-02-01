@@ -31,6 +31,7 @@ class AppsPageState extends State<AppsPage> with GetItStateMixin {
     _pairings = web3Wallet.pairings.getAll();
     web3Wallet.core.pairing.onPairingDelete.subscribe(_onPairingDelete);
     web3Wallet.core.pairing.onPairingExpire.subscribe(_onPairingDelete);
+    // TODO web3Wallet.core.echo.register(firebaseAccessToken);
     DeepLinkHandler.onLink.listen(_deepLinkListener);
     DeepLinkHandler.checkInitialLink();
   }

@@ -42,8 +42,7 @@ class AppDetailPageState extends State<AppDetailPage> {
 
     List<Widget> sessionWidgets = [];
     for (final SessionData session in sessions) {
-      List<Widget> namespaceWidget =
-          ConnectionWidgetBuilder.buildFromNamespaces(
+      final namespaceWidget = ConnectionWidgetBuilder.buildFromNamespaces(
         session.topic,
         session.namespaces,
       );

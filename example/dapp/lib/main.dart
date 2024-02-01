@@ -50,10 +50,6 @@ class _MyHomePageState extends State<MyHomePage> {
   List<PageData> _pageDatas = [];
   int _selectedIndex = 0;
 
-  // SessionData? _selectedSession;
-  // List<SessionData> _allSessions = [];
-  // List<PairingInfo> _allPairings = [];
-
   @override
   void initState() {
     initialize();
@@ -67,14 +63,14 @@ class _MyHomePageState extends State<MyHomePage> {
       projectId: DartDefines.projectId,
       logLevel: LogLevel.info,
       metadata: const PairingMetadata(
-        name: 'Example dApp',
-        description: 'Example dApp',
+        name: 'Sample dApp Flutter',
+        description: 'WalletConnect\'s sample dapp with Flutter',
         url: 'https://walletconnect.com/',
         icons: [
           'https://images.prismic.io/wallet-connect/65785a56531ac2845a260732_WalletConnect-App-Logo-1024X1024.png'
         ],
         redirect: Redirect(
-          native: 'myflutterdapp://',
+          native: 'wcflutterdapp://',
           universal: 'https://walletconnect.com',
         ),
       ),
@@ -90,12 +86,17 @@ class _MyHomePageState extends State<MyHomePage> {
     }
 
     // Register event handlers
+    _web3App!.onSessionConnect.subscribe(_onSessionConnect);
     _web3App!.onSessionPing.subscribe(_onSessionPing);
     _web3App!.onSessionEvent.subscribe(_onSessionEvent);
     _web3App!.onSessionUpdate.subscribe(_onSessionUpdate);
+
     _web3App!.core.relayClient.onRelayClientConnect.subscribe(_setState);
     _web3App!.core.relayClient.onRelayClientDisconnect.subscribe(_setState);
-    _web3App!.onSessionConnect.subscribe(_onSessionConnect);
+    _web3App!.core.relayClient.onRelayClientMessage.subscribe(_onRelayMessage);
+
+    _web3App!.signEngine.onSessionEvent.subscribe(_onSessionEvent);
+    _web3App!.signEngine.onSessionUpdate.subscribe(_onSessionUpdate);
 
     setState(() {
       _pageDatas = [
@@ -132,12 +133,19 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   void dispose() {
+    // Unregister event handlers
     _web3App!.onSessionConnect.unsubscribe(_onSessionConnect);
-    _web3App!.core.relayClient.onRelayClientConnect.unsubscribe(_setState);
-    _web3App!.core.relayClient.onRelayClientDisconnect.unsubscribe(_setState);
     _web3App!.onSessionPing.unsubscribe(_onSessionPing);
     _web3App!.onSessionEvent.unsubscribe(_onSessionEvent);
     _web3App!.onSessionUpdate.unsubscribe(_onSessionUpdate);
+
+    _web3App!.core.relayClient.onRelayClientConnect.unsubscribe(_setState);
+    _web3App!.core.relayClient.onRelayClientDisconnect.unsubscribe(_setState);
+    _web3App!.core.relayClient.onRelayClientMessage
+        .unsubscribe(_onRelayMessage);
+
+    _web3App!.signEngine.onSessionEvent.unsubscribe(_onSessionEvent);
+    _web3App!.signEngine.onSessionUpdate.unsubscribe(_onSessionUpdate);
     super.dispose();
   }
 
@@ -157,33 +165,7 @@ class _MyHomePageState extends State<MyHomePage> {
     }
     navRail.add(
       Expanded(
-        child: Stack(
-          children: [
-            _pageDatas[_selectedIndex].page,
-            Positioned(
-              bottom: StyleConstants.magic20,
-              right: StyleConstants.magic20,
-              child: Row(
-                children: [
-                  Text(_web3App!.core.relayClient.isConnected
-                      ? 'Relay Connected'
-                      : 'Relay Disconnected'),
-                  Switch(
-                    value: _web3App!.core.relayClient.isConnected,
-                    onChanged: (value) {
-                      if (!value) {
-                        _web3App!.core.relayClient.disconnect();
-                      } else {
-                        _web3App!.core.relayClient.connect();
-                      }
-                      setState(() {});
-                    },
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
+        child: _pageDatas[_selectedIndex].page,
       ),
     );
 
@@ -278,5 +260,16 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _onSessionUpdate(SessionUpdate? args) {
     debugPrint('[$runtimeType] _onSessionUpdate $args');
+  }
+
+  void _onRelayMessage(MessageEvent? args) async {
+    if (args != null) {
+      final payloadString = await _web3App!.core.crypto.decode(
+        args.topic,
+        args.message,
+      );
+      final data = jsonDecode(payloadString ?? '{}') as Map<String, dynamic>;
+      debugPrint(data.toString());
+    }
   }
 }

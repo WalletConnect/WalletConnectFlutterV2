@@ -34,7 +34,7 @@ class Web3WalletService extends IWeb3WalletService {
   ValueNotifier<List<StoredCacao>> auth = ValueNotifier<List<StoredCacao>>([]);
 
   @override
-  void create() {
+  void create() async {
     // Create the web3wallet
     _web3Wallet = Web3Wallet(
       core: Core(
@@ -42,11 +42,11 @@ class Web3WalletService extends IWeb3WalletService {
         logLevel: LogLevel.error,
       ),
       metadata: const PairingMetadata(
-        name: 'Web3Wallet Flutter Example',
-        description: 'Web3Wallet Flutter Example',
+        name: 'Sample Wallet Flutter',
+        description: 'WalletConnect\'s sample wallet with Flutter',
         url: 'https://walletconnect.com/',
         icons: [
-          'https://raw.githubusercontent.com/WalletConnect/WalletConnectFlutterV2/master/example/wallet/AppIcon.png'
+          'https://docs.walletconnect.com/assets/images/web3walletLogo-54d3b546146931ceaf47a3500868a73a.png'
         ],
         redirect: Redirect(
           native: 'wcflutterwallet://',
@@ -56,18 +56,22 @@ class Web3WalletService extends IWeb3WalletService {
     );
 
     // Setup our accounts
-    List<ChainKey> chainKeys = GetIt.I<IKeyService>().getKeys();
+    List<ChainKey> chainKeys = await GetIt.I<IKeyService>().setKeys();
+    if (chainKeys.isEmpty) {
+      await GetIt.I<IKeyService>().createWallet();
+      chainKeys = await GetIt.I<IKeyService>().setKeys();
+    }
     for (final chainKey in chainKeys) {
       for (final chainId in chainKey.chains) {
         if (chainId.startsWith('kadena')) {
           _web3Wallet!.registerAccount(
             chainId: chainId,
-            accountAddress: 'k**${chainKey.publicKey}',
+            accountAddress: 'k**${chainKey.address}',
           );
         } else {
           _web3Wallet!.registerAccount(
             chainId: chainId,
-            accountAddress: chainKey.publicKey,
+            accountAddress: chainKey.address,
           );
         }
       }
@@ -172,7 +176,7 @@ class Web3WalletService extends IWeb3WalletService {
         'eip155:1',
       );
       // Create the message to be signed
-      final String iss = 'did:pkh:eip155:1:${chainKeys.first.publicKey}';
+      final String iss = 'did:pkh:eip155:1:${chainKeys.first.address}';
 
       final bool? auth = await _bottomSheetHandler.queueBottomSheet(
         widget: WCRequestWidget(

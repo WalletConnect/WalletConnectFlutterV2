@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:walletconnect_flutter_v2_dapp/models/chain_metadata.dart';
+import 'package:walletconnect_flutter_v2_wallet/models/chain_metadata.dart';
 
 class ChainData {
   static final List<ChainMetadata> mainChains = [
@@ -63,7 +63,7 @@ class ChainData {
       logo: 'TODO',
       color: Colors.purple.shade600,
       rpc: [
-        "https://api.testnet.chainweb.com",
+        'https://api.testnet.chainweb.com',
       ],
     ),
   ];
