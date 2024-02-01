@@ -45,11 +45,7 @@ class MethodDialogState extends State<MethodDialog> {
         future: widget.response,
         builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
           if (snapshot.hasData) {
-            dynamic data = snapshot.data;
-            if (snapshot.data is String) {
-              data = jsonDecode(snapshot.data);
-            }
-            final String t = jsonEncode(data);
+            final String t = jsonEncode(snapshot.data);
             return InkWell(
               onTap: () {
                 Clipboard.setData(ClipboardData(text: t)).then(
