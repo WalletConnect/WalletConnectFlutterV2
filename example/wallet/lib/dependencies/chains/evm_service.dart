@@ -98,14 +98,13 @@ class EVMService {
     }
   }
 
-  Future<String?> personalSign(String topic, dynamic parameters) async {
+  Future<dynamic> personalSign(String topic, dynamic parameters) async {
     debugPrint('[$runtimeType] personalSign request: $parameters');
-    String? result;
+    dynamic result;
     final data = EthUtils.getDataFromParamsList(parameters);
     final message = EthUtils.getUtf8Message(data.toString());
 
-    result = await requestApproval(message);
-    if (result == null) {
+    if (await requestApproval(message)) {
       try {
         // Load the private key
         final keys = GetIt.I<IKeyService>().getKeysForChain(
@@ -122,9 +121,10 @@ class EVMService {
         result = '0x$signature';
       } catch (e) {
         debugPrint('[$runtimeType] personalSign error $e');
-        result = e.toString();
-        // _web3Wallet.respondSessionRequest(topic: topic, response: response)
+        result = JsonRpcError(code: 0, message: e.toString());
       }
+    } else {
+      result = const JsonRpcError(code: 5001, message: 'User rejected method');
     }
 
     final session = _web3Wallet.sessions.get(topic);
@@ -134,14 +134,13 @@ class EVMService {
     return result;
   }
 
-  Future<String?> ethSign(String topic, dynamic parameters) async {
+  Future<dynamic> ethSign(String topic, dynamic parameters) async {
     debugPrint('[$runtimeType] ethSign request: $parameters');
-    String? result;
+    dynamic result;
     final data = EthUtils.getDataFromParamsList(parameters);
     final message = EthUtils.getUtf8Message(data.toString());
 
-    result = await requestApproval(message);
-    if (result == null) {
+    if (await requestApproval(message)) {
       try {
         // Load the private key
         final keys = GetIt.I<IKeyService>().getKeysForChain(
@@ -158,8 +157,10 @@ class EVMService {
         result = '0x$signature';
       } catch (e) {
         debugPrint('[$runtimeType] ethSign error $e');
-        result = e.toString();
+        result = JsonRpcError(code: 0, message: e.toString());
       }
+    } else {
+      result = const JsonRpcError(code: 5001, message: 'User rejected method');
     }
 
     final session = _web3Wallet.sessions.get(topic);
@@ -169,93 +170,12 @@ class EVMService {
     return result;
   }
 
-  Future<String?> ethSignTransaction(String topic, dynamic parameters) async {
-    debugPrint('[$runtimeType] ethSignTransaction request: $parameters');
-    String? result;
-
-    final tJson = parameters[0] as Map<String, dynamic>;
-    final transaction = await approveTransaction(jsonEncode(tJson));
-    if (transaction != null) {
-      try {
-        // Load the private key
-        final keys = GetIt.I<IKeyService>().getKeysForChain(
-          chainSupported.chain(),
-        );
-        final credentials = EthPrivateKey.fromHex('0x${keys[0].privateKey}');
-
-        final chainId = chainSupported.chain().split(':').last;
-        debugPrint('[$runtimeType] ethSignTransaction chainId: $chainId');
-
-        final signature = await ethClient.signTransaction(
-          credentials,
-          transaction,
-          chainId: int.parse(chainId),
-        );
-
-        // Sign the transaction
-        final signedTx = hex.encode(signature);
-
-        // Return the signed transaction as a hexadecimal string
-        result = '0x$signedTx';
-      } catch (e, s) {
-        debugPrint('[$runtimeType] ethSignTransaction error $e');
-        print(s);
-        result = e.toString();
-      }
-    }
-
-    final session = _web3Wallet.sessions.get(topic);
-    final scheme = session?.peer.metadata.redirect?.native ?? '';
-    DeepLinkHandler.goTo(scheme, delay: 300, modalTitle: 'Success');
-
-    return result;
-  }
-
-  Future<String?> ethSendTransaction(String topic, dynamic parameters) async {
-    debugPrint('[$runtimeType] ethSendTransaction request: $parameters');
-    String? result;
-
-    final tJson = parameters[0] as Map<String, dynamic>;
-    final transaction = await approveTransaction(jsonEncode(tJson));
-    if (transaction != null) {
-      try {
-        // Load the private key
-        final keys = GetIt.I<IKeyService>().getKeysForChain(
-          chainSupported.chain(),
-        );
-        final credentials = EthPrivateKey.fromHex('0x${keys[0].privateKey}');
-
-        final chainId = chainSupported.chain().split(':').last;
-        debugPrint('[$runtimeType] ethSendTransaction chainId: $chainId');
-
-        final signedTx = await ethClient.sendTransaction(
-          credentials,
-          transaction,
-          chainId: int.parse(chainId),
-        );
-
-        result = '0x$signedTx';
-      } catch (e, s) {
-        debugPrint('[$runtimeType] ethSendTransaction error $e');
-        print(s);
-        result = e.toString();
-      }
-    }
-
-    final session = _web3Wallet.sessions.get(topic);
-    final scheme = session?.peer.metadata.redirect?.native ?? '';
-    DeepLinkHandler.goTo(scheme, delay: 300, modalTitle: 'Success');
-
-    return result;
-  }
-
-  Future<String?> ethSignTypedData(String topic, dynamic parameters) async {
+  Future<dynamic> ethSignTypedData(String topic, dynamic parameters) async {
     debugPrint('[$runtimeType] ethSignTypedData request: $parameters');
-    String? result;
+    dynamic result;
     final data = parameters[1] as String;
 
-    result = await requestApproval(data);
-    if (result == null) {
+    if (await requestApproval(data)) {
       try {
         final keys = GetIt.I<IKeyService>().getKeysForChain(
           chainSupported.chain(),
@@ -268,8 +188,10 @@ class EVMService {
         );
       } catch (e) {
         debugPrint('[$runtimeType] ethSignTypedData error $e');
-        result = e.toString();
+        result = JsonRpcError(code: 0, message: e.toString());
       }
+    } else {
+      result = const JsonRpcError(code: 5001, message: 'User rejected method');
     }
 
     final session = _web3Wallet.sessions.get(topic);
@@ -295,15 +217,95 @@ class EVMService {
     );
   }
 
+  Future<dynamic> ethSignTransaction(String topic, dynamic parameters) async {
+    debugPrint('[$runtimeType] ethSignTransaction request: $parameters');
+    dynamic result;
+
+    final tJson = parameters[0] as Map<String, dynamic>;
+    final transaction = await approveTransaction(tJson);
+    if (transaction != null) {
+      try {
+        // Load the private key
+        final keys = GetIt.I<IKeyService>().getKeysForChain(
+          chainSupported.chain(),
+        );
+        final credentials = EthPrivateKey.fromHex('0x${keys[0].privateKey}');
+        final chainId = chainSupported.chain().split(':').last;
+
+        final signature = await ethClient.signTransaction(
+          credentials,
+          transaction,
+          chainId: int.parse(chainId),
+        );
+
+        // Sign the transaction
+        final signedTx = hex.encode(signature);
+
+        // Return the signed transaction as a hexadecimal string
+        result = '0x$signedTx';
+      } catch (e) {
+        debugPrint('[$runtimeType] ethSignTransaction error $e');
+        result = JsonRpcError(code: 0, message: e.toString());
+      }
+    } else {
+      result = const JsonRpcError(code: 5001, message: 'User rejected method');
+    }
+
+    final session = _web3Wallet.sessions.get(topic);
+    final scheme = session?.peer.metadata.redirect?.native ?? '';
+    DeepLinkHandler.goTo(scheme, delay: 300, modalTitle: 'Success');
+
+    return result;
+  }
+
+  Future<dynamic> ethSendTransaction(String topic, dynamic parameters) async {
+    debugPrint('[$runtimeType] ethSendTransaction request: $parameters');
+    dynamic result;
+
+    final tJson = parameters[0] as Map<String, dynamic>;
+    final transaction = await approveTransaction(tJson);
+    if (transaction != null) {
+      try {
+        // Load the private key
+        final keys = GetIt.I<IKeyService>().getKeysForChain(
+          chainSupported.chain(),
+        );
+        final credentials = EthPrivateKey.fromHex('0x${keys[0].privateKey}');
+
+        final chainId = chainSupported.chain().split(':').last;
+        debugPrint('[$runtimeType] ethSendTransaction chainId: $chainId');
+
+        final signedTx = await ethClient.sendTransaction(
+          credentials,
+          transaction,
+          chainId: int.parse(chainId),
+        );
+
+        result = '0x$signedTx';
+      } catch (e) {
+        debugPrint('[$runtimeType] ethSendTransaction error $e');
+        result = JsonRpcError(code: 0, message: e.toString());
+      }
+    } else {
+      result = const JsonRpcError(code: 5001, message: 'User rejected method');
+    }
+
+    final session = _web3Wallet.sessions.get(topic);
+    final scheme = session?.peer.metadata.redirect?.native ?? '';
+    DeepLinkHandler.goTo(scheme, delay: 300, modalTitle: 'Success');
+
+    return result;
+  }
+
   Future<void> addChain(String topic, dynamic parameters) async {
     debugPrint('received addChain request: $topic $parameters');
   }
 
-  Future<String?> requestApproval(String text) async {
+  Future<bool> requestApproval(String text) async {
     final approved = await _bottomSheetService.queueBottomSheet(
       widget: WCRequestWidget(
         child: WCConnectionWidget(
-          title: 'Sign Transaction',
+          title: 'Approve Request',
           info: [
             WCConnectionModel(text: text),
           ],
@@ -311,17 +313,11 @@ class EVMService {
       ),
     );
 
-    if (approved != null && approved == false) {
-      return 'User rejected signature';
-    }
-
-    return null;
+    return approved ?? false;
   }
 
-  Future<Transaction?> approveTransaction(String text) async {
-    final tJson = jsonDecode(text) as Map<String, dynamic>;
+  Future<Transaction?> approveTransaction(Map<String, dynamic> tJson) async {
     String? tValue = tJson['value'];
-    debugPrint('tValue $tValue');
     EtherAmount? value;
     if (tValue != null) {
       tValue = tValue.replaceFirst('0x', '');
@@ -344,68 +340,42 @@ class EVMService {
           : null,
     );
 
-    // Gas limit
+    final gasPrice = await ethClient.getGasPrice();
     final gasLimit = await ethClient.estimateGas(
       sender: transaction.from,
       to: transaction.to,
       value: transaction.value,
       data: transaction.data,
-    );
-    print(gasLimit.toInt().toString());
-    // BigInt estimateGas;
-    // BigInt maxFee;
-
-    final gasPrice = await ethClient.getGasPrice();
-    print(gasPrice.getInWei);
-
-    transaction = transaction.copyWith(
-      maxGas: gasLimit.toInt(),
       gasPrice: gasPrice,
     );
 
-    final estimateGas = gasLimit * gasPrice.getInWei;
-    final maxFee = estimateGas;
-    final trxValue = transaction.value ?? EtherAmount.zero();
+    transaction = transaction.copyWith(
+      gasPrice: gasPrice,
+      maxGas: gasLimit.toInt(),
+    );
 
-    BigInt total = estimateGas + trxValue.getInWei;
-    BigInt maxAmount = maxFee + trxValue.getInWei;
-
-    // Adjust the amount if it exceeds the balance
-    if (trxValue.getInWei > BigInt.zero) {
-      final chainId = await ethClient.getNetworkId();
-      debugPrint(chainId.toString());
-      final balance = await ethClient.getBalance(transaction.from!);
-      if (maxAmount > balance.getInWei) {
-        final amountLeft = balance.getInWei - maxFee;
-        if (amountLeft <= BigInt.zero) {
-          throw Exception(
-            'Insufficient funds for transfer, maybe it needs gas fee.',
-          );
-        }
-
-        transaction = transaction.copyWith(
-          value: EtherAmount.inWei(amountLeft),
-        );
-        total = estimateGas + trxValue.getInWei;
-        maxAmount = maxFee + trxValue.getInWei;
-      }
-    }
+    final gweiGasPrice = (transaction.gasPrice?.getInWei ?? BigInt.zero) /
+        BigInt.from(1000000000);
 
     final approved = await _bottomSheetService.queueBottomSheet(
       widget: WCRequestWidget(
         child: WCConnectionWidget(
-          title: 'Sign Transaction',
+          title: 'Approve Transaction',
           info: [
-            WCConnectionModel(text: text),
+            WCConnectionModel(elements: [jsonEncode(tJson)]),
+            WCConnectionModel(
+              title: 'Gas price',
+              elements: ['${gweiGasPrice.toStringAsFixed(2)} GWEI'],
+            ),
           ],
         ),
       ),
     );
 
-    if (approved != null && approved == false) {
-      return null;
+    if (approved == true) {
+      return transaction;
     }
 
-    return transaction;
+    return null;
   }
 }

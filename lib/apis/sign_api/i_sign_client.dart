@@ -78,6 +78,23 @@ abstract class ISignClient {
     required String chainId,
     required SessionRequestParams request,
   });
+  Future<dynamic> requestReadContract({
+    required DeployedContract deployedContract,
+    required String functionName,
+    required String rpcUrl,
+    List<dynamic> parameters = const [],
+  });
+  Future<dynamic> requestWriteContract({
+    required String topic,
+    required String chainId,
+    required String rpcUrl,
+    required DeployedContract deployedContract,
+    required String functionName,
+    required Transaction transaction,
+    String? method,
+    List<dynamic> parameters = const [],
+  });
+
   void registerEventHandler({
     required String chainId,
     required String event,

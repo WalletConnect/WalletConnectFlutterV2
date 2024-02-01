@@ -34,11 +34,12 @@ class WCConnectionWidgetInfo extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          model.title!,
-          style: StyleConstants.layerTextStyle3,
-        ),
-        const SizedBox(height: StyleConstants.linear8),
+        if (model.title != null)
+          Text(
+            model.title!,
+            style: StyleConstants.layerTextStyle3,
+          ),
+        if (model.title != null) const SizedBox(height: StyleConstants.linear8),
         Wrap(
           spacing: 4,
           runSpacing: 4,

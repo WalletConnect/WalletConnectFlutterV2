@@ -245,19 +245,19 @@ class EIP155 {
   }) async {
     final results = await Future.wait([
       // results[0]
-      web3App.readContractCall(
+      web3App.requestReadContract(
         deployedContract: contract,
         functionName: 'name',
         rpcUrl: rpcUrl,
       ),
       // results[1]
-      web3App.readContractCall(
+      web3App.requestReadContract(
         deployedContract: contract,
         functionName: 'totalSupply',
         rpcUrl: rpcUrl,
       ),
       // results[2]
-      web3App.readContractCall(
+      web3App.requestReadContract(
         deployedContract: contract,
         functionName: 'balanceOf',
         rpcUrl: rpcUrl,
@@ -288,7 +288,7 @@ class EIP155 {
     required DeployedContract contract,
     required Transaction transaction,
   }) async {
-    return await web3App.writeContractCall(
+    return await web3App.requestWriteContract(
       topic: topic,
       chainId: chainId,
       rpcUrl: rpcUrl,

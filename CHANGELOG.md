@@ -1,3 +1,7 @@
+## 2.2.0-beta01
+
+- Added Smart Contract interactions to SignEngine
+
 ## 2.1.14
 
 - Minor improvements

@@ -1,31 +1,15 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:http/http.dart' as http;
 
-import 'package:event/event.dart';
-import 'package:walletconnect_flutter_v2/apis/core/i_core.dart';
-import 'package:walletconnect_flutter_v2/apis/core/pairing/i_pairing_store.dart';
 import 'package:walletconnect_flutter_v2/apis/core/pairing/utils/json_rpc_utils.dart';
-import 'package:walletconnect_flutter_v2/apis/core/pairing/utils/pairing_models.dart';
-import 'package:walletconnect_flutter_v2/apis/core/relay_client/relay_client_models.dart';
 import 'package:walletconnect_flutter_v2/apis/core/store/i_generic_store.dart';
 import 'package:walletconnect_flutter_v2/apis/core/verify/models/verify_context.dart';
-import 'package:walletconnect_flutter_v2/apis/models/basic_models.dart';
-import 'package:walletconnect_flutter_v2/apis/models/json_rpc_error.dart';
 import 'package:walletconnect_flutter_v2/apis/models/json_rpc_request.dart';
-import 'package:walletconnect_flutter_v2/apis/models/json_rpc_response.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/i_sessions.dart';
-import 'package:walletconnect_flutter_v2/apis/sign_api/i_sign_engine.dart';
-import 'package:walletconnect_flutter_v2/apis/sign_api/models/json_rpc_models.dart';
-import 'package:walletconnect_flutter_v2/apis/sign_api/models/proposal_models.dart';
-import 'package:walletconnect_flutter_v2/apis/sign_api/models/session_models.dart';
-import 'package:walletconnect_flutter_v2/apis/sign_api/models/sign_client_events.dart';
-import 'package:walletconnect_flutter_v2/apis/sign_api/models/sign_client_models.dart';
+import 'package:walletconnect_flutter_v2/apis/sign_api/utils/custom_credentials.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/utils/sign_api_validator_utils.dart';
-import 'package:walletconnect_flutter_v2/apis/utils/constants.dart';
-import 'package:walletconnect_flutter_v2/apis/utils/errors.dart';
-import 'package:walletconnect_flutter_v2/apis/utils/method_constants.dart';
-import 'package:walletconnect_flutter_v2/apis/utils/namespace_utils.dart';
-import 'package:walletconnect_flutter_v2/apis/utils/walletconnect_utils.dart';
+import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 
 class SignEngine implements ISignEngine {
   static const List<List<String>> DEFAULT_METHODS = [
@@ -485,6 +469,68 @@ class SignEngine implements ISignEngine {
         chainId: chainId,
         request: request,
       ),
+    );
+  }
+
+  @override
+  Future<dynamic> requestReadContract({
+    required DeployedContract deployedContract,
+    required String functionName,
+    required String rpcUrl,
+    List<dynamic> parameters = const [],
+  }) async {
+    try {
+      core.logger.i('readContractCall: with function $functionName');
+      final result = await Web3Client(rpcUrl, http.Client()).call(
+        contract: deployedContract,
+        function: deployedContract.function(functionName),
+        params: parameters,
+      );
+
+      core.logger.i(
+          'readContractCall - function: $functionName - result: ${result.first}');
+      return result.first;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<dynamic> requestWriteContract({
+    required String topic,
+    required String chainId,
+    required String rpcUrl,
+    required DeployedContract deployedContract,
+    required String functionName,
+    required Transaction transaction,
+    String? method,
+    List<dynamic> parameters = const [],
+  }) async {
+    final credentials = CustomCredentials(
+      signEngine: this,
+      topic: topic,
+      chainId: chainId,
+      address: transaction.from!,
+      method: method,
+    );
+    final trx = Transaction.callContract(
+      contract: deployedContract,
+      function: deployedContract.function(functionName),
+      from: credentials.address,
+      parameters: [
+        if (transaction.to != null) transaction.to,
+        if (transaction.value != null) transaction.value!.getInWei,
+        ...parameters,
+      ],
+    );
+
+    if (chainId.contains(':')) {
+      chainId = chainId.split(':').last;
+    }
+    return await Web3Client(rpcUrl, http.Client()).sendTransaction(
+      credentials,
+      trx,
+      chainId: int.parse(chainId),
     );
   }
 
