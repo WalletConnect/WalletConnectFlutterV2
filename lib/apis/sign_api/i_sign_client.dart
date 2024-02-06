@@ -1,5 +1,6 @@
 import 'package:walletconnect_flutter_v2/apis/core/store/i_generic_store.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/i_sessions.dart';
+import 'package:walletconnect_flutter_v2/apis/sign_api/i_sign_engine_wallet.dart';
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 
 abstract class ISignClient {
@@ -62,7 +63,7 @@ abstract class ISignClient {
   void registerRequestHandler({
     required String chainId,
     required String method,
-    dynamic Function(String, dynamic)? handler,
+    RequestHandler? handler,
   });
   Future<void> respond({
     required String topic,

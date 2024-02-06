@@ -4,6 +4,7 @@ import 'package:walletconnect_flutter_v2/apis/core/relay_client/websocket/i_http
 import 'package:walletconnect_flutter_v2/apis/core/store/generic_store.dart';
 import 'package:walletconnect_flutter_v2/apis/core/store/i_generic_store.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/i_sessions.dart';
+import 'package:walletconnect_flutter_v2/apis/sign_api/i_sign_engine_wallet.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/sign_engine.dart';
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 
@@ -239,7 +240,7 @@ class Web3Wallet implements IWeb3Wallet {
   void registerRequestHandler({
     required String chainId,
     required String method,
-    dynamic Function(String, dynamic)? handler,
+    RequestHandler? handler,
   }) {
     try {
       return signEngine.registerRequestHandler(

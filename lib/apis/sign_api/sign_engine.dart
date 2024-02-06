@@ -1,12 +1,13 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:http/http.dart' as http;
 
+import 'package:http/http.dart' as http;
 import 'package:walletconnect_flutter_v2/apis/core/pairing/utils/json_rpc_utils.dart';
 import 'package:walletconnect_flutter_v2/apis/core/store/i_generic_store.dart';
 import 'package:walletconnect_flutter_v2/apis/core/verify/models/verify_context.dart';
 import 'package:walletconnect_flutter_v2/apis/models/json_rpc_request.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/i_sessions.dart';
+import 'package:walletconnect_flutter_v2/apis/sign_api/i_sign_engine_wallet.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/utils/custom_credentials.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/utils/sign_api_validator_utils.dart';
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
@@ -439,13 +440,13 @@ class SignEngine implements ISignEngine {
   }
 
   /// Maps a request using chainId:method to its handler
-  final Map<String, dynamic Function(String, dynamic)?> _methodHandlers = {};
+  final Map<String, RequestHandler?> _methodHandlers = {};
 
   @override
   void registerRequestHandler({
     required String chainId,
     required String method,
-    dynamic Function(String, dynamic)? handler,
+    RequestHandler? handler,
   }) {
     _methodHandlers[_getRegisterKey(chainId, method)] = handler;
   }
@@ -1284,6 +1285,7 @@ class SignEngine implements ISignEngine {
           try {
             final result = await handler(
               topic,
+              request.chainId,
               request.request.params,
             );
             await core.pairing.sendResult(

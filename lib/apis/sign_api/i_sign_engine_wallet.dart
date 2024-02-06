@@ -9,6 +9,12 @@ import 'package:walletconnect_flutter_v2/apis/sign_api/models/session_models.dar
 import 'package:walletconnect_flutter_v2/apis/sign_api/models/sign_client_events.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/models/sign_client_models.dart';
 
+typedef RequestHandler = dynamic Function(
+  String topic,
+  String chainId,
+  dynamic params,
+);
+
 abstract class ISignEngineWallet extends ISignEngineCommon {
   abstract final Event<SessionProposalEvent> onSessionProposal;
   abstract final Event<SessionProposalErrorEvent> onSessionProposalError;
@@ -36,7 +42,7 @@ abstract class ISignEngineWallet extends ISignEngineCommon {
   void registerRequestHandler({
     required String chainId,
     required String method,
-    dynamic Function(String, dynamic)? handler,
+    RequestHandler? handler,
   });
   Future<void> respondSessionRequest({
     required String topic,

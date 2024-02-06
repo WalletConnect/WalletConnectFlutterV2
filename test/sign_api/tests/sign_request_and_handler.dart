@@ -75,8 +75,9 @@ void signRequestAndHandler({
       expect(clientB.getPendingSessionRequests().length, 0);
 
       // Valid handler
-      Future<dynamic> Function(String, dynamic) requestHandler = (
+      RequestHandler requestHandler = (
         String topic,
+        String chainId,
         dynamic request,
       ) async {
         expect(topic, sessionTopic);
@@ -148,6 +149,7 @@ void signRequestAndHandler({
       // Valid handler that throws an error
       requestHandler = (
         String topic,
+        String chainId,
         dynamic request,
       ) async {
         if (request is String) {

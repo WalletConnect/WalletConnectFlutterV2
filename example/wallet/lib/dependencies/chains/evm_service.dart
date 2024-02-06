@@ -1,10 +1,12 @@
 import 'dart:convert';
-import 'package:flutter/foundation.dart';
-// ignore: depend_on_referenced_packages
-import 'package:http/http.dart' as http;
+
 import 'package:convert/convert.dart';
 import 'package:eth_sig_util/eth_sig_util.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
+// ignore: depend_on_referenced_packages
+import 'package:http/http.dart' as http;
+import 'package:walletconnect_flutter_v2/apis/sign_api/i_sign_engine_wallet.dart';
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/bottom_sheet/i_bottom_sheet_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/deep_link_handler.dart';
@@ -77,7 +79,7 @@ class EVMService {
       );
     }
     // Supported methods
-    Map<String, dynamic Function(String, dynamic)> methodsHandlers = {
+    Map<String, RequestHandler> methodsHandlers = {
       'personal_sign': personalSign,
       'eth_sign': ethSign,
       'eth_signTransaction': ethSignTransaction,
@@ -98,7 +100,8 @@ class EVMService {
     }
   }
 
-  Future<dynamic> personalSign(String topic, dynamic parameters) async {
+  Future<dynamic> personalSign(
+      String topic, String chainId, dynamic parameters) async {
     debugPrint('[$runtimeType] personalSign request: $parameters');
     dynamic result;
     final data = EthUtils.getDataFromParamsList(parameters);
@@ -134,7 +137,8 @@ class EVMService {
     return result;
   }
 
-  Future<dynamic> ethSign(String topic, dynamic parameters) async {
+  Future<dynamic> ethSign(
+      String topic, String chainId, dynamic parameters) async {
     debugPrint('[$runtimeType] ethSign request: $parameters');
     dynamic result;
     final data = EthUtils.getDataFromParamsList(parameters);
@@ -170,7 +174,8 @@ class EVMService {
     return result;
   }
 
-  Future<dynamic> ethSignTypedData(String topic, dynamic parameters) async {
+  Future<dynamic> ethSignTypedData(
+      String topic, String chainId, dynamic parameters) async {
     debugPrint('[$runtimeType] ethSignTypedData request: $parameters');
     dynamic result;
     final data = parameters[1] as String;
@@ -201,7 +206,8 @@ class EVMService {
     return result;
   }
 
-  Future<void> switchChain(String topic, dynamic parameters) async {
+  Future<void> switchChain(
+      String topic, String chainId, dynamic parameters) async {
     debugPrint('received switchChain request: $topic $parameters');
     final params = (parameters as List).first as Map<String, dynamic>;
     final hexChainId = params['chainId'].toString().replaceFirst('0x', '');
@@ -217,7 +223,8 @@ class EVMService {
     );
   }
 
-  Future<dynamic> ethSignTransaction(String topic, dynamic parameters) async {
+  Future<dynamic> ethSignTransaction(
+      String topic, String chainId, dynamic parameters) async {
     debugPrint('[$runtimeType] ethSignTransaction request: $parameters');
     dynamic result;
 
@@ -258,7 +265,8 @@ class EVMService {
     return result;
   }
 
-  Future<dynamic> ethSendTransaction(String topic, dynamic parameters) async {
+  Future<dynamic> ethSendTransaction(
+      String topic, String chainId, dynamic parameters) async {
     debugPrint('[$runtimeType] ethSendTransaction request: $parameters');
     dynamic result;
 
@@ -297,7 +305,8 @@ class EVMService {
     return result;
   }
 
-  Future<void> addChain(String topic, dynamic parameters) async {
+  Future<void> addChain(
+      String topic, String chainId, dynamic parameters) async {
     debugPrint('received addChain request: $topic $parameters');
   }
 
