@@ -10,6 +10,7 @@ import 'package:walletconnect_flutter_v2_wallet/dependencies/deep_link_handler.d
 import 'package:walletconnect_flutter_v2_wallet/dependencies/i_web3wallet_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/key_service/chain_key.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/key_service/i_key_service.dart';
+import 'package:walletconnect_flutter_v2_wallet/utils/constants.dart';
 import 'package:walletconnect_flutter_v2_wallet/utils/dart_defines.dart';
 import 'package:walletconnect_flutter_v2_wallet/widgets/wc_connection_request/wc_auth_request_model.dart';
 import 'package:walletconnect_flutter_v2_wallet/widgets/wc_connection_request/wc_connection_request_widget.dart';
@@ -127,8 +128,41 @@ class Web3WalletService extends IWeb3WalletService {
     debugPrint('[$runtimeType] _onRelayClientError ${args?.error}');
   }
 
-  void _onSessionProposalError(SessionProposalErrorEvent? args) {
+  void _onSessionProposalError(SessionProposalErrorEvent? args) async {
     debugPrint('[$runtimeType] _onSessionProposalError $args');
+    if (args != null) {
+      String errorMessage = args.error.message;
+      if (args.error.code == 5100) {
+        errorMessage =
+            errorMessage.replaceFirst('Requested:', '\n\nRequested:');
+        errorMessage =
+            errorMessage.replaceFirst('Supported:', '\n\nSupported:');
+      }
+      GetIt.I<IBottomSheetService>().queueBottomSheet(
+        widget: Container(
+          color: Colors.white,
+          width: double.infinity,
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            children: [
+              Icon(
+                Icons.error_outline_sharp,
+                color: Colors.red[100],
+                size: 80.0,
+              ),
+              Text(
+                'Error',
+                style: StyleConstants.subtitleText.copyWith(
+                  color: Colors.black,
+                  fontSize: 18.0,
+                ),
+              ),
+              Text(errorMessage),
+            ],
+          ),
+        ),
+      );
+    }
   }
 
   void _onSessionProposal(SessionProposalEvent? args) async {
@@ -150,15 +184,26 @@ class Web3WalletService extends IWeb3WalletService {
           id: args.id,
           namespaces: args.params.generatedNamespaces!,
         );
+        final scheme = args.params.proposer.metadata.redirect?.native ?? '';
+        DeepLinkHandler.goTo(scheme, delay: 300);
       } else {
         _web3Wallet!.rejectSession(
           id: args.id,
           reason: Errors.getSdkError(Errors.USER_REJECTED),
         );
-      }
+        _web3Wallet!.core.pairing.disconnect(
+          topic: args.params.pairingTopic,
+        );
 
-      final scheme = args.params.proposer.metadata.redirect?.native ?? '';
-      DeepLinkHandler.goTo(scheme, delay: 300);
+        final scheme = args.params.proposer.metadata.redirect?.native ?? '';
+        DeepLinkHandler.goTo(
+          scheme,
+          delay: 300,
+          modalTitle: 'Error',
+          modalMessage: 'User rejected',
+          success: false,
+        );
+      }
     }
   }
 

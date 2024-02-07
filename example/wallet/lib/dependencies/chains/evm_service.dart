@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 // ignore: depend_on_referenced_packages
 import 'package:http/http.dart' as http;
 import 'package:convert/convert.dart';
@@ -11,57 +12,23 @@ import 'package:walletconnect_flutter_v2_wallet/dependencies/deep_link_handler.d
 import 'package:walletconnect_flutter_v2_wallet/dependencies/i_web3wallet_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/key_service/i_key_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/models/chain_data.dart';
+import 'package:walletconnect_flutter_v2_wallet/models/chain_metadata.dart';
+import 'package:walletconnect_flutter_v2_wallet/utils/constants.dart';
 import 'package:walletconnect_flutter_v2_wallet/utils/eth_utils.dart';
 import 'package:walletconnect_flutter_v2_wallet/widgets/wc_connection_widget/wc_connection_model.dart';
 import 'package:walletconnect_flutter_v2_wallet/widgets/wc_connection_widget/wc_connection_widget.dart';
 import 'package:walletconnect_flutter_v2_wallet/widgets/wc_request_widget.dart/wc_request_widget.dart';
-
-enum EVMChainsSupported {
-  ethereum,
-  polygon,
-  arbitrum,
-  sepolia,
-  // bsc,
-  mumbai;
-
-  String chain() {
-    String id = '';
-
-    switch (this) {
-      case EVMChainsSupported.ethereum:
-        id = '1';
-        break;
-      case EVMChainsSupported.polygon:
-        id = '137';
-        break;
-      case EVMChainsSupported.arbitrum:
-        id = '42161';
-        break;
-      case EVMChainsSupported.sepolia:
-        id = '11155111';
-        break;
-      // case EVMChainsSupported.bsc:
-      //   id = '56';
-      //   break;
-      case EVMChainsSupported.mumbai:
-        id = '80001';
-        break;
-    }
-
-    return 'eip155:$id';
-  }
-}
 
 class EVMService {
   final _bottomSheetService = GetIt.I<IBottomSheetService>();
   final _web3WalletService = GetIt.I<IWeb3WalletService>();
   final _web3Wallet = GetIt.I<IWeb3WalletService>().getWeb3Wallet();
 
-  final EVMChainsSupported chainSupported;
+  final ChainMetadata chainSupported;
   late final Web3Client ethClient;
 
   EVMService({required this.chainSupported}) {
-    final supportedId = chainSupported.chain();
+    final supportedId = chainSupported.chainId;
     final chainMetadata = ChainData.allChains.firstWhere(
       (c) => c.chainId == supportedId,
     );
@@ -70,9 +37,9 @@ class EVMService {
 
     const supportedEvents = EventsConstants.requiredEvents;
     for (final String event in supportedEvents) {
-      debugPrint('Supported event ${chainSupported.chain()} $event');
+      debugPrint('Supported event ${chainSupported.chainId} $event');
       _web3Wallet.registerEventEmitter(
-        chainId: chainSupported.chain(),
+        chainId: chainSupported.chainId,
         event: event,
       );
     }
@@ -81,8 +48,8 @@ class EVMService {
       'personal_sign': personalSign,
       'eth_sign': ethSign,
       'eth_signTransaction': ethSignTransaction,
-      'eth_signTypedData': ethSignTypedData,
       'eth_sendTransaction': ethSendTransaction,
+      'eth_signTypedData': ethSignTypedData,
       'eth_signTypedData_v4': ethSignTypedData,
       'wallet_switchEthereumChain': switchChain,
       'wallet_addEthereumChain': addChain,
@@ -91,7 +58,7 @@ class EVMService {
 
     for (var handler in methodsHandlers.entries) {
       _web3Wallet.registerRequestHandler(
-        chainId: chainSupported.chain(),
+        chainId: chainSupported.chainId,
         method: handler.key,
         handler: handler.value,
       );
@@ -101,6 +68,8 @@ class EVMService {
   Future<dynamic> personalSign(String topic, dynamic parameters) async {
     debugPrint('[$runtimeType] personalSign request: $parameters');
     dynamic result;
+
+    // final pRequest = _web3Wallet.pendingRequests.getAll().first;
     final data = EthUtils.getDataFromParamsList(parameters);
     final message = EthUtils.getUtf8Message(data.toString());
 
@@ -108,7 +77,7 @@ class EVMService {
       try {
         // Load the private key
         final keys = GetIt.I<IKeyService>().getKeysForChain(
-          chainSupported.chain(),
+          chainSupported.chainId,
         );
         final credentials = EthPrivateKey.fromHex(keys[0].privateKey);
 
@@ -127,9 +96,7 @@ class EVMService {
       result = const JsonRpcError(code: 5001, message: 'User rejected method');
     }
 
-    final session = _web3Wallet.sessions.get(topic);
-    final scheme = session?.peer.metadata.redirect?.native ?? '';
-    DeepLinkHandler.goTo(scheme, delay: 300, modalTitle: 'Success');
+    _goBackToDapp(topic, result);
 
     return result;
   }
@@ -137,6 +104,8 @@ class EVMService {
   Future<dynamic> ethSign(String topic, dynamic parameters) async {
     debugPrint('[$runtimeType] ethSign request: $parameters');
     dynamic result;
+
+    // final pRequest = _web3Wallet.pendingRequests.getAll().first;
     final data = EthUtils.getDataFromParamsList(parameters);
     final message = EthUtils.getUtf8Message(data.toString());
 
@@ -144,7 +113,7 @@ class EVMService {
       try {
         // Load the private key
         final keys = GetIt.I<IKeyService>().getKeysForChain(
-          chainSupported.chain(),
+          chainSupported.chainId,
         );
         final credentials = EthPrivateKey.fromHex(keys[0].privateKey);
 
@@ -163,9 +132,7 @@ class EVMService {
       result = const JsonRpcError(code: 5001, message: 'User rejected method');
     }
 
-    final session = _web3Wallet.sessions.get(topic);
-    final scheme = session?.peer.metadata.redirect?.native ?? '';
-    DeepLinkHandler.goTo(scheme, delay: 300, modalTitle: 'Success');
+    _goBackToDapp(topic, result);
 
     return result;
   }
@@ -173,12 +140,13 @@ class EVMService {
   Future<dynamic> ethSignTypedData(String topic, dynamic parameters) async {
     debugPrint('[$runtimeType] ethSignTypedData request: $parameters');
     dynamic result;
-    final data = parameters[1] as String;
 
+    // final pRequest = _web3Wallet.pendingRequests.getAll().first;
+    final data = parameters[1] as String;
     if (await requestApproval(data)) {
       try {
         final keys = GetIt.I<IKeyService>().getKeysForChain(
-          chainSupported.chain(),
+          chainSupported.chainId,
         );
 
         result = EthSigUtil.signTypedData(
@@ -194,9 +162,7 @@ class EVMService {
       result = const JsonRpcError(code: 5001, message: 'User rejected method');
     }
 
-    final session = _web3Wallet.sessions.get(topic);
-    final scheme = session?.peer.metadata.redirect?.native ?? '';
-    DeepLinkHandler.goTo(scheme, delay: 300, modalTitle: 'Success');
+    _goBackToDapp(topic, result);
 
     return result;
   }
@@ -221,28 +187,31 @@ class EVMService {
     debugPrint('[$runtimeType] ethSignTransaction request: $parameters');
     dynamic result;
 
+    // final pRequest = _web3Wallet.pendingRequests.getAll().first;
     final tJson = parameters[0] as Map<String, dynamic>;
     final transaction = await approveTransaction(tJson);
     if (transaction != null) {
       try {
         // Load the private key
         final keys = GetIt.I<IKeyService>().getKeysForChain(
-          chainSupported.chain(),
+          chainSupported.chainId,
         );
         final credentials = EthPrivateKey.fromHex('0x${keys[0].privateKey}');
-        final chainId = chainSupported.chain().split(':').last;
+        final chainId = chainSupported.chainId.split(':').last;
+        debugPrint('[$runtimeType] ethSignTransaction chainId: $chainId');
 
         final signature = await ethClient.signTransaction(
           credentials,
           transaction,
           chainId: int.parse(chainId),
         );
-
         // Sign the transaction
         final signedTx = hex.encode(signature);
 
-        // Return the signed transaction as a hexadecimal string
         result = '0x$signedTx';
+      } on RPCError catch (e) {
+        debugPrint('[$runtimeType] ethSignTransaction error $e');
+        result = JsonRpcError(code: e.errorCode, message: e.message);
       } catch (e) {
         debugPrint('[$runtimeType] ethSignTransaction error $e');
         result = JsonRpcError(code: 0, message: e.toString());
@@ -251,9 +220,7 @@ class EVMService {
       result = const JsonRpcError(code: 5001, message: 'User rejected method');
     }
 
-    final session = _web3Wallet.sessions.get(topic);
-    final scheme = session?.peer.metadata.redirect?.native ?? '';
-    DeepLinkHandler.goTo(scheme, delay: 300, modalTitle: 'Success');
+    _goBackToDapp(topic, result);
 
     return result;
   }
@@ -262,17 +229,17 @@ class EVMService {
     debugPrint('[$runtimeType] ethSendTransaction request: $parameters');
     dynamic result;
 
+    // final pRequest = _web3Wallet.pendingRequests.getAll().first;
     final tJson = parameters[0] as Map<String, dynamic>;
     final transaction = await approveTransaction(tJson);
-    if (transaction != null) {
+    if (transaction is Transaction) {
       try {
         // Load the private key
         final keys = GetIt.I<IKeyService>().getKeysForChain(
-          chainSupported.chain(),
+          chainSupported.chainId,
         );
         final credentials = EthPrivateKey.fromHex('0x${keys[0].privateKey}');
-
-        final chainId = chainSupported.chain().split(':').last;
+        final chainId = chainSupported.chainId.split(':').last;
         debugPrint('[$runtimeType] ethSendTransaction chainId: $chainId');
 
         final signedTx = await ethClient.sendTransaction(
@@ -282,19 +249,41 @@ class EVMService {
         );
 
         result = '0x$signedTx';
+      } on RPCError catch (e) {
+        debugPrint('[$runtimeType] ethSendTransaction error $e');
+        result = JsonRpcError(code: e.errorCode, message: e.message);
       } catch (e) {
         debugPrint('[$runtimeType] ethSendTransaction error $e');
         result = JsonRpcError(code: 0, message: e.toString());
       }
     } else {
-      result = const JsonRpcError(code: 5001, message: 'User rejected method');
+      result = transaction as JsonRpcError;
     }
 
-    final session = _web3Wallet.sessions.get(topic);
-    final scheme = session?.peer.metadata.redirect?.native ?? '';
-    DeepLinkHandler.goTo(scheme, delay: 300, modalTitle: 'Success');
+    _goBackToDapp(topic, result);
 
     return result;
+  }
+
+  void _goBackToDapp(String topic, dynamic result) {
+    try {
+      final session = _web3Wallet.sessions.get(topic);
+      final scheme = session?.peer.metadata.redirect?.native ?? '';
+      if (result is String) {
+        DeepLinkHandler.goTo(scheme, delay: 300, modalTitle: 'Success');
+      } else {
+        DeepLinkHandler.goTo(
+          scheme,
+          delay: 300,
+          modalTitle: 'Error',
+          modalMessage: result.toString(),
+          success: false,
+        );
+      }
+    } catch (e, s) {
+      debugPrint(e.toString());
+      print(s);
+    }
   }
 
   Future<void> addChain(String topic, dynamic parameters) async {
@@ -316,43 +305,52 @@ class EVMService {
     return approved ?? false;
   }
 
-  Future<Transaction?> approveTransaction(Map<String, dynamic> tJson) async {
-    String? tValue = tJson['value'];
-    EtherAmount? value;
-    if (tValue != null) {
-      tValue = tValue.replaceFirst('0x', '');
-      value = EtherAmount.fromBigInt(
-        EtherUnit.wei,
-        BigInt.from(int.parse(tValue, radix: 16)),
-      );
-    }
-    Transaction transaction = Transaction(
-      from: EthereumAddress.fromHex(tJson['from']),
-      to: EthereumAddress.fromHex(tJson['to']),
-      value: value,
-      gasPrice: tJson['gasPrice'],
-      maxFeePerGas: tJson['maxFeePerGas'],
-      maxPriorityFeePerGas: tJson['maxPriorityFeePerGas'],
-      maxGas: tJson['maxGas'],
-      nonce: tJson['nonce'],
-      data: (tJson['data'] != null && tJson['data'] != '0x')
-          ? Uint8List.fromList(hex.decode(tJson['data']!))
-          : null,
-    );
+  Future<dynamic> approveTransaction(Map<String, dynamic> tJson) async {
+    Transaction transaction = tJson.toTransaction();
 
     final gasPrice = await ethClient.getGasPrice();
-    final gasLimit = await ethClient.estimateGas(
-      sender: transaction.from,
-      to: transaction.to,
-      value: transaction.value,
-      data: transaction.data,
-      gasPrice: gasPrice,
-    );
+    try {
+      final gasLimit = await ethClient.estimateGas(
+        sender: transaction.from,
+        to: transaction.to,
+        value: transaction.value,
+        data: transaction.data,
+        gasPrice: gasPrice,
+      );
 
-    transaction = transaction.copyWith(
-      gasPrice: gasPrice,
-      maxGas: gasLimit.toInt(),
-    );
+      transaction = transaction.copyWith(
+        gasPrice: gasPrice,
+        maxGas: gasLimit.toInt(),
+      );
+    } on RPCError catch (e) {
+      await _bottomSheetService.queueBottomSheet(
+        widget: Container(
+          color: Colors.white,
+          height: 210.0,
+          width: double.infinity,
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            children: [
+              Icon(
+                Icons.error_outline_sharp,
+                color: Colors.red[100],
+                size: 80.0,
+              ),
+              Text(
+                'Error',
+                style: StyleConstants.subtitleText.copyWith(
+                  color: Colors.black,
+                  fontSize: 18.0,
+                ),
+              ),
+              Text(e.message),
+            ],
+          ),
+        ),
+      );
+
+      return JsonRpcError(code: e.errorCode, message: e.message);
+    }
 
     final gweiGasPrice = (transaction.gasPrice?.getInWei ?? BigInt.zero) /
         BigInt.from(1000000000);
@@ -376,6 +374,6 @@ class EVMService {
       return transaction;
     }
 
-    return null;
+    return const JsonRpcError(code: 5001, message: 'User rejected method');
   }
 }

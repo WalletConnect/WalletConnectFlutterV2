@@ -60,10 +60,11 @@ class SessionWidgetState extends State<SessionWidget> {
         child: ElevatedButton(
           onPressed: () async {
             await widget.web3App.disconnectSession(
-                topic: widget.session.topic,
-                reason: Errors.getSdkError(
-                  Errors.USER_DISCONNECTED,
-                ));
+              topic: widget.session.topic,
+              reason: Errors.getSdkError(
+                Errors.USER_DISCONNECTED,
+              ),
+            );
           },
           style: ButtonStyle(
             backgroundColor: MaterialStateProperty.all<Color>(

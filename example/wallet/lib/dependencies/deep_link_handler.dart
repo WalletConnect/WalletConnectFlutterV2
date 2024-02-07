@@ -36,13 +36,20 @@ class DeepLinkHandler {
     String scheme, {
     int delay = 0,
     String? modalTitle,
+    String? modalMessage,
+    bool success = true,
   }) async {
+    if (scheme.isEmpty) return;
     await Future.delayed(Duration(milliseconds: delay));
     try {
       await launchUrlString(scheme, mode: LaunchMode.externalApplication);
     } catch (e) {
       debugPrint('[DeepLinkHandler] error re-opening dapp ($scheme). $e');
-      _goBackModal(title: modalTitle);
+      _goBackModal(
+        title: modalTitle,
+        message: modalMessage,
+        success: success,
+      );
     }
   }
 
@@ -62,18 +69,23 @@ class DeepLinkHandler {
     debugPrint('[DeepLinkHandler] _onError $error');
   }
 
-  static void _goBackModal({String? title}) async {
-    GetIt.I<IBottomSheetService>().queueBottomSheet(
+  static void _goBackModal({
+    String? title,
+    String? message,
+    bool success = true,
+  }) async {
+    await GetIt.I<IBottomSheetService>().queueBottomSheet(
+      closeAfter: success ? 3 : 0,
       widget: Container(
         color: Colors.white,
-        height: 180.0,
+        height: 210.0,
         width: double.infinity,
         padding: const EdgeInsets.all(20.0),
         child: Column(
           children: [
             Icon(
-              Icons.check_circle_sharp,
-              color: Colors.green[100],
+              success ? Icons.check_circle_sharp : Icons.error_outline_sharp,
+              color: success ? Colors.green[100] : Colors.red[100],
               size: 80.0,
             ),
             Text(
@@ -83,7 +95,7 @@ class DeepLinkHandler {
                 fontSize: 18.0,
               ),
             ),
-            const Text('You can go back to your dApp now'),
+            Text(message ?? 'You can go back to your dApp now'),
           ],
         ),
       ),

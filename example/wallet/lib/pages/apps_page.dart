@@ -29,8 +29,12 @@ class AppsPageState extends State<AppsPage> with GetItStateMixin {
     super.initState();
     web3Wallet = GetIt.I<IWeb3WalletService>().getWeb3Wallet();
     _pairings = web3Wallet.pairings.getAll();
+    _pairings = _pairings.where((p) => p.active).toList();
     web3Wallet.core.pairing.onPairingDelete.subscribe(_onPairingDelete);
     web3Wallet.core.pairing.onPairingExpire.subscribe(_onPairingDelete);
+    web3Wallet.onSessionDelete.subscribe(_updateState);
+    web3Wallet.onSessionExpire.subscribe(_updateState);
+    web3Wallet.onSessionConnect.subscribe(_updateState);
     // TODO web3Wallet.core.echo.register(firebaseAccessToken);
     DeepLinkHandler.onLink.listen(_deepLinkListener);
     DeepLinkHandler.checkInitialLink();
@@ -48,12 +52,16 @@ class AppsPageState extends State<AppsPage> with GetItStateMixin {
   void dispose() {
     web3Wallet.core.pairing.onPairingDelete.unsubscribe(_onPairingDelete);
     web3Wallet.core.pairing.onPairingExpire.unsubscribe(_onPairingDelete);
+    web3Wallet.onSessionDelete.unsubscribe(_updateState);
+    web3Wallet.onSessionExpire.unsubscribe(_updateState);
+    web3Wallet.onSessionConnect.unsubscribe(_updateState);
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    _pairings = watch(target: GetIt.I<IWeb3WalletService>().pairings);
+    _pairings = (watch(target: GetIt.I<IWeb3WalletService>().pairings));
+    _pairings = _pairings.where((p) => p.active).toList();
     return Stack(
       children: [
         _pairings.isEmpty ? _buildNoPairingMessage() : _buildPairingList(),
@@ -84,7 +92,7 @@ class AppsPageState extends State<AppsPage> with GetItStateMixin {
   }
 
   Widget _buildPairingList() {
-    final List<PairingItem> pairingItems = _pairings
+    final pairingItems = _pairings
         .map(
           (PairingInfo pairing) => PairingItem(
             key: ValueKey(pairing.topic),
@@ -179,6 +187,12 @@ class AppsPageState extends State<AppsPage> with GetItStateMixin {
   }
 
   void _onPairingDelete(PairingEvent? event) {
+    setState(() {
+      _pairings = web3Wallet.pairings.getAll();
+    });
+  }
+
+  void _updateState(dynamic args) {
     setState(() {
       _pairings = web3Wallet.pairings.getAll();
     });

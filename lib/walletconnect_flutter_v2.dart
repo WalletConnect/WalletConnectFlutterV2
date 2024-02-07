@@ -58,3 +58,5 @@ export 'package:logger/logger.dart';
 export 'package:shared_preferences/shared_preferences.dart';
 export 'package:universal_io/io.dart';
 export 'package:web3dart/web3dart.dart';
+export 'package:web3dart/crypto.dart';
+export 'package:web3dart/json_rpc.dart';

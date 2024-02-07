@@ -43,13 +43,16 @@ class BottomSheetListenerState extends State<BottomSheetListener> {
           maxHeight: MediaQuery.of(context).size.height * 0.9,
         ),
         builder: (context) {
+          if (item.closeAfter > 0) {
+            Future.delayed(Duration(seconds: item.closeAfter), () {
+              Navigator.pop(context);
+            });
+          }
           return Container(
             decoration: const BoxDecoration(
               color: Colors.white,
               borderRadius: BorderRadius.all(
-                Radius.circular(
-                  StyleConstants.linear16,
-                ),
+                Radius.circular(StyleConstants.linear16),
               ),
             ),
             padding: EdgeInsets.only(
@@ -62,7 +65,23 @@ class BottomSheetListenerState extends State<BottomSheetListener> {
             margin: const EdgeInsets.all(
               StyleConstants.linear16,
             ),
-            child: item.widget,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    IconButton(
+                      padding: const EdgeInsets.all(0.0),
+                      visualDensity: VisualDensity.compact,
+                      onPressed: () => Navigator.pop(context),
+                      icon: const Icon(Icons.close_sharp),
+                    ),
+                  ],
+                ),
+                Flexible(child: item.widget),
+              ],
+            ),
           );
         },
       );

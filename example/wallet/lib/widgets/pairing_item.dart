@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
+import 'package:walletconnect_flutter_v2_wallet/dependencies/i_web3wallet_service.dart';
 
 class PairingItem extends StatelessWidget {
   const PairingItem({
@@ -20,15 +22,12 @@ class PairingItem extends StatelessWidget {
         subtitle: Text('No metadata available'),
       );
     }
-
-    DateTime dateTime =
-        DateTime.fromMillisecondsSinceEpoch(pairing.expiry * 1000);
-    int year = dateTime.year;
-    int month = dateTime.month;
-    int day = dateTime.day;
-
-    String expiryDate =
-        '$year-${month.toString().padLeft(2, '0')}-${day.toString().padLeft(2, '0')}';
+    final sessions = GetIt.I<IWeb3WalletService>()
+        .getWeb3Wallet()
+        .sessions
+        .getAll()
+        .where((element) => element.pairingTopic == pairing.topic)
+        .toList();
 
     return ListTile(
       leading: CircleAvatar(
@@ -41,17 +40,14 @@ class PairingItem extends StatelessWidget {
         metadata.name,
         style: const TextStyle(color: Colors.black),
       ),
-      subtitle: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            'Expires on: $expiryDate',
-            style: const TextStyle(
-              color: Colors.grey,
-              fontSize: 12.0,
-            ),
-          ),
-        ],
+      subtitle: Text(
+        sessions.isEmpty
+            ? 'No active sessions'
+            : 'Active sessions: ${sessions.length}',
+        style: TextStyle(
+          color: sessions.isEmpty ? Colors.black : Colors.blueAccent,
+          fontSize: 13.0,
+        ),
       ),
       trailing: const Icon(
         Icons.arrow_forward_ios,

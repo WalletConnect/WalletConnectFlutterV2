@@ -9,6 +9,7 @@ import 'package:walletconnect_flutter_v2_wallet/dependencies/i_web3wallet_servic
 import 'package:walletconnect_flutter_v2_wallet/dependencies/key_service/i_key_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/key_service/key_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/web3wallet_service.dart';
+import 'package:walletconnect_flutter_v2_wallet/models/chain_data.dart';
 import 'package:walletconnect_flutter_v2_wallet/models/page_data.dart';
 import 'package:walletconnect_flutter_v2_wallet/pages/apps_page.dart';
 import 'package:walletconnect_flutter_v2_wallet/pages/settings_page.dart';
@@ -62,10 +63,10 @@ class _MyHomePageState extends State<MyHomePage> with GetItStateMixin {
     web3WalletService.create();
     GetIt.I.registerSingleton<IWeb3WalletService>(web3WalletService);
 
-    for (final supportedChain in EVMChainsSupported.values) {
+    for (final chainData in ChainData.allChains) {
       GetIt.I.registerSingleton<EVMService>(
-        EVMService(chainSupported: supportedChain),
-        instanceName: supportedChain.chain(),
+        EVMService(chainSupported: chainData),
+        instanceName: chainData.chainId,
       );
     }
 
