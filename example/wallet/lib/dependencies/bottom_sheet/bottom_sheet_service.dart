@@ -13,12 +13,14 @@ class BottomSheetService extends IBottomSheetService {
   @override
   Future<dynamic> queueBottomSheet({
     required Widget widget,
+    int closeAfter = 0,
   }) async {
     // Create the bottom sheet queue item
     final completer = Completer<dynamic>();
     final queueItem = BottomSheetQueueItem(
       widget: widget,
       completer: completer,
+      closeAfter: closeAfter,
     );
 
     // If the current sheet it null, set it to the queue item

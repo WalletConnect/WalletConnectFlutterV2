@@ -5,7 +5,6 @@ import 'package:walletconnect_flutter_v2_wallet/dependencies/deep_link_handler.d
 import 'package:walletconnect_flutter_v2_wallet/dependencies/i_web3wallet_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/utils/constants.dart';
 import 'package:walletconnect_flutter_v2_wallet/utils/namespace_model_builder.dart';
-import 'package:walletconnect_flutter_v2_wallet/utils/string_constants.dart';
 import 'package:walletconnect_flutter_v2_wallet/widgets/custom_button.dart';
 
 class AppDetailPage extends StatefulWidget {
@@ -21,6 +20,31 @@ class AppDetailPage extends StatefulWidget {
 }
 
 class AppDetailPageState extends State<AppDetailPage> {
+  late Web3Wallet _web3Wallet;
+
+  @override
+  void initState() {
+    super.initState();
+    _web3Wallet = GetIt.I<IWeb3WalletService>().getWeb3Wallet();
+    _web3Wallet.onSessionDelete.subscribe(_onSessionDelete);
+    _web3Wallet.onSessionExpire.subscribe(_onSessionDelete);
+  }
+
+  @override
+  void dispose() {
+    _web3Wallet.onSessionDelete.unsubscribe(_onSessionDelete);
+    _web3Wallet.onSessionExpire.unsubscribe(_onSessionDelete);
+    super.dispose();
+  }
+
+  void _onSessionDelete(dynamic args) {
+    _web3Wallet = GetIt.I<IWeb3WalletService>().getWeb3Wallet();
+    setState(() {
+      // _pairings = web3Wallet.pairings.getAll();
+      // _sessions = web3Wallet.sessions.getAll();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     DateTime dateTime =
@@ -32,10 +56,7 @@ class AppDetailPageState extends State<AppDetailPage> {
     String expiryDate =
         '$year-${month.toString().padLeft(2, '0')}-${day.toString().padLeft(2, '0')}';
 
-    List<SessionData> sessions = GetIt.I
-        .get<IWeb3WalletService>()
-        .getWeb3Wallet()
-        .sessions
+    final sessions = _web3Wallet.sessions
         .getAll()
         .where((element) => element.pairingTopic == widget.pairing.topic)
         .toList();
@@ -53,6 +74,36 @@ class AppDetailPageState extends State<AppDetailPage> {
           sessionWidgets.add(const SizedBox(height: 20.0));
         }
       }
+      sessionWidgets.add(const SizedBox.square(dimension: 10.0));
+      sessionWidgets.add(
+        Row(
+          children: [
+            CustomButton(
+              type: CustomButtonType.normal,
+              onTap: () async {
+                try {
+                  await _web3Wallet.disconnectSession(
+                    topic: session.topic,
+                    reason: Errors.getSdkError(Errors.USER_DISCONNECTED),
+                  );
+                  setState(() {});
+                } catch (e) {
+                  debugPrint(e.toString());
+                }
+              },
+              child: const Center(
+                child: Text(
+                  'Disconnect Session',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
+      );
     }
     final scheme = widget.pairing.peerMetadata?.redirect?.native ?? '';
     return Scaffold(
@@ -116,11 +167,15 @@ class AppDetailPageState extends State<AppDetailPage> {
                   type: CustomButtonType.invalid,
                   onTap: () async {
                     try {
-                      await GetIt.I<IWeb3WalletService>()
-                          .getWeb3Wallet()
-                          .core
-                          .pairing
-                          .disconnect(topic: widget.pairing.topic);
+                      for (var session in sessions) {
+                        await _web3Wallet.disconnectSession(
+                          topic: session.topic,
+                          reason: Errors.getSdkError(Errors.USER_DISCONNECTED),
+                        );
+                      }
+                      await _web3Wallet.core.pairing.disconnect(
+                        topic: widget.pairing.topic,
+                      );
                       _back();
                     } catch (e) {
                       //debugPrint(e.toString());
@@ -128,7 +183,7 @@ class AppDetailPageState extends State<AppDetailPage> {
                   },
                   child: const Center(
                     child: Text(
-                      StringConstants.delete,
+                      'Delete Pairing',
                       style: TextStyle(
                         color: Colors.white,
                         fontWeight: FontWeight.bold,

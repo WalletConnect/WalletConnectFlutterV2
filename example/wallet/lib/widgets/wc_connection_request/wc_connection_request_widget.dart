@@ -162,8 +162,8 @@ class VerifyHeader extends StatelessWidget {
         const SizedBox(width: StyleConstants.linear8),
         Text(
           title,
-          style: const TextStyle(
-            color: Colors.white,
+          style: TextStyle(
+            color: iconColor,
             fontWeight: FontWeight.bold,
           ),
         ),
@@ -198,19 +198,23 @@ class VerifyBanner extends StatelessWidget {
         Container(
           padding: const EdgeInsets.all(8.0),
           decoration: BoxDecoration(
-            color: color,
+            color: color.withOpacity(0.2),
             borderRadius: const BorderRadius.all(Radius.circular(12.0)),
           ),
           child: Column(
             children: [
               VerifyHeader(
-                iconColor: Colors.white,
+                iconColor: color,
                 title: title,
               ),
               const SizedBox(height: 4.0),
               Text(
                 text,
-                style: const TextStyle(color: Colors.white),
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: color,
+                  fontWeight: FontWeight.bold,
+                ),
               ),
             ],
           ),

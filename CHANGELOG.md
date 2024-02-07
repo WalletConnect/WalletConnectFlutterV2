@@ -1,3 +1,7 @@
+## 2.2.0-beta02
+
+- Improvements on example wallet
+
 ## 2.2.0-beta01
 
 - Added Smart Contract interactions to SignEngine

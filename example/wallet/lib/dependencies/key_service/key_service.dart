@@ -2,9 +2,9 @@ import 'package:convert/convert.dart';
 import 'package:flutter/foundation.dart';
 import 'package:walletconnect_flutter_v2/apis/core/crypto/crypto_models.dart';
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
-import 'package:walletconnect_flutter_v2_wallet/dependencies/chains/evm_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/key_service/chain_key.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/key_service/i_key_service.dart';
+import 'package:walletconnect_flutter_v2_wallet/models/chain_data.dart';
 import 'package:walletconnect_flutter_v2_wallet/utils/dart_defines.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/bip39/bip39_base.dart'
     as bip39;
@@ -25,7 +25,7 @@ class KeyService extends IKeyService {
     final publicKey = prefs.getString('publicKey') ?? '';
     final address = getAddressFromPrivateKey(privateKey);
     final evmChainKey = ChainKey(
-      chains: EVMChainsSupported.values.map((e) => e.chain()).toList(),
+      chains: ChainData.allChains.map((e) => e.chainId).toList(),
       privateKey: privateKey,
       publicKey: publicKey,
       address: address,
@@ -107,11 +107,10 @@ class KeyService extends IKeyService {
 
   @override
   Future<void> restoreWallet({required String mnemonic}) async {
-    print(mnemonic);
     final keyPair = keyPairFromMnemonic(mnemonic);
     final address = getAddressFromPrivateKey(keyPair.privateKey);
     final evmChainKey = ChainKey(
-      chains: EVMChainsSupported.values.map((e) => e.chain()).toList(),
+      chains: ChainData.allChains.map((e) => e.chainId).toList(),
       privateKey: keyPair.privateKey,
       publicKey: keyPair.publicKey,
       address: address,
