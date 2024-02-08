@@ -82,7 +82,7 @@ class ConnectionWidgetBuilder {
       }
       models.add(
         WCConnectionModel(
-          title: StringConstants.events,
+          title: '${StringConstants.events} (Tap to send)',
           elements: ns.events,
           elementActions: actions,
         ),

@@ -43,6 +43,7 @@ class EVMService {
         event: event,
       );
     }
+
     // Supported methods
     Map<String, dynamic Function(String, dynamic)> methodsHandlers = {
       'personal_sign': personalSign,
@@ -65,49 +66,16 @@ class EVMService {
     }
   }
 
-  Future<dynamic> personalSign(String topic, dynamic parameters) async {
+  Future<void> personalSign(String topic, dynamic parameters) async {
     debugPrint('[$runtimeType] personalSign request: $parameters');
-    dynamic result;
 
-    // final pRequest = _web3Wallet.pendingRequests.getAll().first;
+    final pRequest = _web3Wallet.pendingRequests.getAll().first;
     final data = EthUtils.getDataFromParamsList(parameters);
     final message = EthUtils.getUtf8Message(data.toString());
-
-    if (await requestApproval(message)) {
-      try {
-        // Load the private key
-        final keys = GetIt.I<IKeyService>().getKeysForChain(
-          chainSupported.chainId,
-        );
-        final credentials = EthPrivateKey.fromHex(keys[0].privateKey);
-
-        final String signature = hex.encode(
-          credentials.signPersonalMessageToUint8List(
-            Uint8List.fromList(utf8.encode(message)),
-          ),
-        );
-
-        result = '0x$signature';
-      } catch (e) {
-        debugPrint('[$runtimeType] personalSign error $e');
-        result = JsonRpcError(code: 0, message: e.toString());
-      }
-    } else {
-      result = const JsonRpcError(code: 5001, message: 'User rejected method');
-    }
-
-    _goBackToDapp(topic, result);
-
-    return result;
-  }
-
-  Future<dynamic> ethSign(String topic, dynamic parameters) async {
-    debugPrint('[$runtimeType] ethSign request: $parameters');
-    dynamic result;
-
-    // final pRequest = _web3Wallet.pendingRequests.getAll().first;
-    final data = EthUtils.getDataFromParamsList(parameters);
-    final message = EthUtils.getUtf8Message(data.toString());
+    var response = JsonRpcResponse(
+      id: pRequest.id,
+      jsonrpc: '2.0',
+    );
 
     if (await requestApproval(message)) {
       try {
@@ -123,48 +91,214 @@ class EVMService {
           ),
         );
 
-        result = '0x$signature';
+        response = response.copyWith(result: '0x$signature');
       } catch (e) {
-        debugPrint('[$runtimeType] ethSign error $e');
-        result = JsonRpcError(code: 0, message: e.toString());
+        debugPrint('[$runtimeType] personalSign error $e');
+        response = response.copyWith(
+          error: JsonRpcError(code: 0, message: e.toString()),
+        );
       }
     } else {
-      result = const JsonRpcError(code: 5001, message: 'User rejected method');
+      response = response.copyWith(
+        error: const JsonRpcError(code: 5001, message: 'User rejected method'),
+      );
     }
 
-    _goBackToDapp(topic, result);
+    _goBackToDapp(topic, response.result ?? response.error);
 
-    return result;
+    return _web3Wallet.respondSessionRequest(
+      topic: topic,
+      response: response,
+    );
   }
 
-  Future<dynamic> ethSignTypedData(String topic, dynamic parameters) async {
-    debugPrint('[$runtimeType] ethSignTypedData request: $parameters');
-    dynamic result;
+  Future<void> ethSign(String topic, dynamic parameters) async {
+    debugPrint('[$runtimeType] ethSign request: $parameters');
 
-    // final pRequest = _web3Wallet.pendingRequests.getAll().first;
+    final pRequest = _web3Wallet.pendingRequests.getAll().first;
+    final data = EthUtils.getDataFromParamsList(parameters);
+    final message = EthUtils.getUtf8Message(data.toString());
+    var response = JsonRpcResponse(
+      id: pRequest.id,
+      jsonrpc: '2.0',
+    );
+
+    if (await requestApproval(message)) {
+      try {
+        // Load the private key
+        final keys = GetIt.I<IKeyService>().getKeysForChain(
+          chainSupported.chainId,
+        );
+        final credentials = EthPrivateKey.fromHex(keys[0].privateKey);
+
+        final signature = hex.encode(
+          credentials.signPersonalMessageToUint8List(
+            Uint8List.fromList(utf8.encode(message)),
+          ),
+        );
+
+        response = response.copyWith(result: '0x$signature');
+      } catch (e) {
+        debugPrint('[$runtimeType] ethSign error $e');
+        response = response.copyWith(
+          error: JsonRpcError(code: 0, message: e.toString()),
+        );
+      }
+    } else {
+      response = response.copyWith(
+        error: const JsonRpcError(code: 5001, message: 'User rejected method'),
+      );
+    }
+
+    _goBackToDapp(topic, response.result ?? response.error);
+
+    return _web3Wallet.respondSessionRequest(
+      topic: topic,
+      response: response,
+    );
+  }
+
+  Future<void> ethSignTypedData(String topic, dynamic parameters) async {
+    debugPrint('[$runtimeType] ethSignTypedData request: $parameters');
+
+    final pRequest = _web3Wallet.pendingRequests.getAll().first;
     final data = parameters[1] as String;
+    var response = JsonRpcResponse(
+      id: pRequest.id,
+      jsonrpc: '2.0',
+    );
     if (await requestApproval(data)) {
       try {
         final keys = GetIt.I<IKeyService>().getKeysForChain(
           chainSupported.chainId,
         );
 
-        result = EthSigUtil.signTypedData(
+        final signature = EthSigUtil.signTypedData(
           privateKey: keys[0].privateKey,
           jsonData: data,
           version: TypedDataVersion.V4,
         );
+        response = response.copyWith(result: signature);
       } catch (e) {
         debugPrint('[$runtimeType] ethSignTypedData error $e');
-        result = JsonRpcError(code: 0, message: e.toString());
+        response = response.copyWith(
+          error: JsonRpcError(code: 0, message: e.toString()),
+        );
       }
     } else {
-      result = const JsonRpcError(code: 5001, message: 'User rejected method');
+      response = response.copyWith(
+        error: const JsonRpcError(code: 5001, message: 'User rejected method'),
+      );
     }
 
-    _goBackToDapp(topic, result);
+    _goBackToDapp(topic, response.result ?? response.error);
 
-    return result;
+    return _web3Wallet.respondSessionRequest(
+      topic: topic,
+      response: response,
+    );
+  }
+
+  Future<dynamic> ethSignTransaction(String topic, dynamic parameters) async {
+    debugPrint('[$runtimeType] ethSignTransaction request: $parameters');
+    final pRequest = _web3Wallet.pendingRequests.getAll().first;
+    var response = JsonRpcResponse(
+      id: pRequest.id,
+      jsonrpc: '2.0',
+    );
+
+    final tJson = parameters[0] as Map<String, dynamic>;
+    final result = await approveTransaction(tJson);
+    if (result is Transaction) {
+      try {
+        // Load the private key
+        final keys = GetIt.I<IKeyService>().getKeysForChain(
+          chainSupported.chainId,
+        );
+        final credentials = EthPrivateKey.fromHex('0x${keys[0].privateKey}');
+        final chainId = chainSupported.chainId.split(':').last;
+        debugPrint('[$runtimeType] ethSignTransaction chainId: $chainId');
+
+        final signature = await ethClient.signTransaction(
+          credentials,
+          result,
+          chainId: int.parse(chainId),
+        );
+        // Sign the transaction
+        final signedTx = hex.encode(signature);
+
+        response = response.copyWith(result: '0x$signedTx');
+      } on RPCError catch (e) {
+        debugPrint('[$runtimeType] ethSignTransaction error $e');
+        response = response.copyWith(
+          error: JsonRpcError(code: e.errorCode, message: e.message),
+        );
+      } catch (e) {
+        debugPrint('[$runtimeType] ethSignTransaction error $e');
+        response = response.copyWith(
+          error: JsonRpcError(code: 0, message: e.toString()),
+        );
+      }
+    } else {
+      response = response.copyWith(error: result as JsonRpcError);
+    }
+
+    _goBackToDapp(topic, response.result ?? response.error);
+
+    return _web3Wallet.respondSessionRequest(
+      topic: topic,
+      response: response,
+    );
+  }
+
+  Future<dynamic> ethSendTransaction(String topic, dynamic parameters) async {
+    debugPrint('[$runtimeType] ethSendTransaction request: $parameters');
+    final pRequest = _web3Wallet.pendingRequests.getAll().first;
+    var response = JsonRpcResponse(
+      id: pRequest.id,
+      jsonrpc: '2.0',
+    );
+
+    final tJson = parameters[0] as Map<String, dynamic>;
+    final result = await approveTransaction(tJson);
+    if (result is Transaction) {
+      try {
+        // Load the private key
+        final keys = GetIt.I<IKeyService>().getKeysForChain(
+          chainSupported.chainId,
+        );
+        final credentials = EthPrivateKey.fromHex('0x${keys[0].privateKey}');
+        final chainId = chainSupported.chainId.split(':').last;
+        debugPrint('[$runtimeType] ethSendTransaction chainId: $chainId');
+
+        final signedTx = await ethClient.sendTransaction(
+          credentials,
+          result,
+          chainId: int.parse(chainId),
+        );
+
+        response = response.copyWith(result: '0x$signedTx');
+      } on RPCError catch (e) {
+        debugPrint('[$runtimeType] ethSendTransaction error $e');
+        response = response.copyWith(
+          error: JsonRpcError(code: e.errorCode, message: e.message),
+        );
+      } catch (e) {
+        debugPrint('[$runtimeType] ethSendTransaction error $e');
+        response = response.copyWith(
+          error: JsonRpcError(code: 0, message: e.toString()),
+        );
+      }
+    } else {
+      response = response.copyWith(error: result as JsonRpcError);
+    }
+
+    _goBackToDapp(topic, response.result ?? response.error);
+
+    return _web3Wallet.respondSessionRequest(
+      topic: topic,
+      response: response,
+    );
   }
 
   Future<void> switchChain(String topic, dynamic parameters) async {
@@ -181,88 +315,6 @@ class EVMService {
         data: chainId,
       ),
     );
-  }
-
-  Future<dynamic> ethSignTransaction(String topic, dynamic parameters) async {
-    debugPrint('[$runtimeType] ethSignTransaction request: $parameters');
-    dynamic result;
-
-    // final pRequest = _web3Wallet.pendingRequests.getAll().first;
-    final tJson = parameters[0] as Map<String, dynamic>;
-    final transaction = await approveTransaction(tJson);
-    if (transaction != null) {
-      try {
-        // Load the private key
-        final keys = GetIt.I<IKeyService>().getKeysForChain(
-          chainSupported.chainId,
-        );
-        final credentials = EthPrivateKey.fromHex('0x${keys[0].privateKey}');
-        final chainId = chainSupported.chainId.split(':').last;
-        debugPrint('[$runtimeType] ethSignTransaction chainId: $chainId');
-
-        final signature = await ethClient.signTransaction(
-          credentials,
-          transaction,
-          chainId: int.parse(chainId),
-        );
-        // Sign the transaction
-        final signedTx = hex.encode(signature);
-
-        result = '0x$signedTx';
-      } on RPCError catch (e) {
-        debugPrint('[$runtimeType] ethSignTransaction error $e');
-        result = JsonRpcError(code: e.errorCode, message: e.message);
-      } catch (e) {
-        debugPrint('[$runtimeType] ethSignTransaction error $e');
-        result = JsonRpcError(code: 0, message: e.toString());
-      }
-    } else {
-      result = const JsonRpcError(code: 5001, message: 'User rejected method');
-    }
-
-    _goBackToDapp(topic, result);
-
-    return result;
-  }
-
-  Future<dynamic> ethSendTransaction(String topic, dynamic parameters) async {
-    debugPrint('[$runtimeType] ethSendTransaction request: $parameters');
-    dynamic result;
-
-    // final pRequest = _web3Wallet.pendingRequests.getAll().first;
-    final tJson = parameters[0] as Map<String, dynamic>;
-    final transaction = await approveTransaction(tJson);
-    if (transaction is Transaction) {
-      try {
-        // Load the private key
-        final keys = GetIt.I<IKeyService>().getKeysForChain(
-          chainSupported.chainId,
-        );
-        final credentials = EthPrivateKey.fromHex('0x${keys[0].privateKey}');
-        final chainId = chainSupported.chainId.split(':').last;
-        debugPrint('[$runtimeType] ethSendTransaction chainId: $chainId');
-
-        final signedTx = await ethClient.sendTransaction(
-          credentials,
-          transaction,
-          chainId: int.parse(chainId),
-        );
-
-        result = '0x$signedTx';
-      } on RPCError catch (e) {
-        debugPrint('[$runtimeType] ethSendTransaction error $e');
-        result = JsonRpcError(code: e.errorCode, message: e.message);
-      } catch (e) {
-        debugPrint('[$runtimeType] ethSendTransaction error $e');
-        result = JsonRpcError(code: 0, message: e.toString());
-      }
-    } else {
-      result = transaction as JsonRpcError;
-    }
-
-    _goBackToDapp(topic, result);
-
-    return result;
   }
 
   void _goBackToDapp(String topic, dynamic result) {
