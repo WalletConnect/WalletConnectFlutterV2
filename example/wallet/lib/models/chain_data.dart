@@ -45,6 +45,14 @@ class ChainData {
     ),
     const ChainMetadata(
       type: ChainType.eip155,
+      chainId: 'eip155:56',
+      name: 'BNB Smart Chain Mainnet',
+      logo: '/chain-logos/eip155-56.png',
+      color: Colors.orange,
+      rpc: ['https://bsc-dataseed1.bnbchain.org'],
+    ),
+    const ChainMetadata(
+      type: ChainType.eip155,
       chainId: 'eip155:42220',
       name: 'Celo',
       logo: '/chain-logos/eip155-42220.png',
