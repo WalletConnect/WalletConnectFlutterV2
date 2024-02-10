@@ -51,7 +51,7 @@ class EVMService {
       'eth_signTransaction': ethSignTransaction,
       'eth_sendTransaction': ethSendTransaction,
       'eth_signTypedData': ethSignTypedData,
-      'eth_signTypedData_v4': ethSignTypedData,
+      'eth_signTypedData_v4': ethSignTypedDataV4,
       'wallet_switchEthereumChain': switchChain,
       'wallet_addEthereumChain': addChain,
       // add whatever method/handler you want to support
@@ -162,7 +162,48 @@ class EVMService {
     debugPrint('[$runtimeType] ethSignTypedData request: $parameters');
 
     final pRequest = _web3Wallet.pendingRequests.getAll().first;
-    final data = parameters[1] as String;
+    final data = EthUtils.getDataFromParamsList(parameters);
+    var response = JsonRpcResponse(
+      id: pRequest.id,
+      jsonrpc: '2.0',
+    );
+    if (await requestApproval(data)) {
+      try {
+        final keys = GetIt.I<IKeyService>().getKeysForChain(
+          chainSupported.chainId,
+        );
+
+        final signature = EthSigUtil.signTypedData(
+          privateKey: keys[0].privateKey,
+          jsonData: data,
+          version: TypedDataVersion.V1,
+        );
+        response = response.copyWith(result: signature);
+      } catch (e) {
+        debugPrint('[$runtimeType] ethSignTypedData error $e');
+        response = response.copyWith(
+          error: JsonRpcError(code: 0, message: e.toString()),
+        );
+      }
+    } else {
+      response = response.copyWith(
+        error: const JsonRpcError(code: 5001, message: 'User rejected method'),
+      );
+    }
+
+    _goBackToDapp(topic, response.result ?? response.error);
+
+    return _web3Wallet.respondSessionRequest(
+      topic: topic,
+      response: response,
+    );
+  }
+
+  Future<void> ethSignTypedDataV4(String topic, dynamic parameters) async {
+    debugPrint('[$runtimeType] ethSignTypedDataV4 request: $parameters');
+
+    final pRequest = _web3Wallet.pendingRequests.getAll().first;
+    final data = EthUtils.getDataFromParamsList(parameters);
     var response = JsonRpcResponse(
       id: pRequest.id,
       jsonrpc: '2.0',
@@ -180,7 +221,7 @@ class EVMService {
         );
         response = response.copyWith(result: signature);
       } catch (e) {
-        debugPrint('[$runtimeType] ethSignTypedData error $e');
+        debugPrint('[$runtimeType] ethSignTypedDataV4 error $e');
         response = response.copyWith(
           error: JsonRpcError(code: 0, message: e.toString()),
         );
@@ -207,8 +248,8 @@ class EVMService {
       jsonrpc: '2.0',
     );
 
-    final tJson = parameters[0] as Map<String, dynamic>;
-    final result = await approveTransaction(tJson);
+    final data = EthUtils.getTransactionFromParams(parameters);
+    final result = await approveTransaction(data);
     if (result is Transaction) {
       try {
         // Load the private key
@@ -259,8 +300,8 @@ class EVMService {
       jsonrpc: '2.0',
     );
 
-    final tJson = parameters[0] as Map<String, dynamic>;
-    final result = await approveTransaction(tJson);
+    final data = EthUtils.getTransactionFromParams(parameters);
+    final result = await approveTransaction(data);
     if (result is Transaction) {
       try {
         // Load the private key
