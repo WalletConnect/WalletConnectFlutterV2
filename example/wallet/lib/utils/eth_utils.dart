@@ -4,6 +4,11 @@ import 'package:convert/convert.dart';
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 
 class EthUtils {
+  static final addressRegEx = RegExp(
+    r'^0x[a-fA-F0-9]{40}$',
+    caseSensitive: false,
+  );
+
   static String getUtf8Message(String maybeHex) {
     if (maybeHex.startsWith('0x')) {
       final List<int> decoded = hex.decode(
@@ -15,26 +20,35 @@ class EthUtils {
     return maybeHex;
   }
 
-  static String getAddressFromParamsList(dynamic params) {
+  static dynamic getAddressFromParamsList(dynamic params) {
     return (params as List).firstWhere((p) {
       try {
-        EthereumAddress.fromHex(p);
-        return true;
+        if (addressRegEx.hasMatch(p)) {
+          EthereumAddress.fromHex(p);
+          return true;
+        }
+        return false;
       } catch (e) {
         return false;
       }
-    });
+    }, orElse: () => null);
   }
 
   static dynamic getDataFromParamsList(dynamic params) {
-    return (params as List).firstWhere((p) {
-      final address = getAddressFromParamsList(params);
-      return p != address;
-    });
+    final address = getAddressFromParamsList(params);
+    final param = (params as List).firstWhere(
+      (p) => p != address,
+      orElse: () => null,
+    );
+    return param;
   }
 
-  static Map<String, dynamic> getTransactionFromParams(dynamic params) {
-    final param = (params as List<dynamic>).first;
-    return param as Map<String, dynamic>;
+  static Map<String, dynamic>? getTransactionFromParams(dynamic params) {
+    final address = getAddressFromParamsList(params);
+    final param = params.firstWhere(
+      (p) => p != address,
+      orElse: () => null,
+    );
+    return param as Map<String, dynamic>?;
   }
 }

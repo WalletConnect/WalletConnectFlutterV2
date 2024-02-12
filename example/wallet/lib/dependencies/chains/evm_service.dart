@@ -68,6 +68,7 @@ class EVMService {
 
   Future<void> personalSign(String topic, dynamic parameters) async {
     debugPrint('[$runtimeType] personalSign request: $parameters');
+    // message, address
 
     final pRequest = _web3Wallet.pendingRequests.getAll().first;
     final data = EthUtils.getDataFromParamsList(parameters);
@@ -114,6 +115,7 @@ class EVMService {
 
   Future<void> ethSign(String topic, dynamic parameters) async {
     debugPrint('[$runtimeType] ethSign request: $parameters');
+    // address, message
 
     final pRequest = _web3Wallet.pendingRequests.getAll().first;
     final data = EthUtils.getDataFromParamsList(parameters);
@@ -176,7 +178,7 @@ class EVMService {
         final signature = EthSigUtil.signTypedData(
           privateKey: keys[0].privateKey,
           jsonData: data,
-          version: TypedDataVersion.V1,
+          version: TypedDataVersion.V4,
         );
         response = response.copyWith(result: signature);
       } catch (e) {
@@ -249,6 +251,7 @@ class EVMService {
     );
 
     final data = EthUtils.getTransactionFromParams(parameters);
+    if (data == null) return;
     final result = await approveTransaction(data);
     if (result is Transaction) {
       try {
@@ -301,6 +304,7 @@ class EVMService {
     );
 
     final data = EthUtils.getTransactionFromParams(parameters);
+    if (data == null) return;
     final result = await approveTransaction(data);
     if (result is Transaction) {
       try {

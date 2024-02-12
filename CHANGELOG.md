@@ -1,5 +1,4 @@
-## 2.2.0-beta03
-## 2.2.0-beta02
+## 2.2.0-beta04
 
 - Improvements on example wallet
 
