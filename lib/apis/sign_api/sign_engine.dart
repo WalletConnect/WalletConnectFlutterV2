@@ -1273,49 +1273,64 @@ class SignEngine implements ISignEngine {
         sessionRequest,
       );
 
-      final methodKey = _getRegisterKey(
+      final String methodKey = _getRegisterKey(
         request.chainId,
         request.request.method,
       );
+      // print('method key: $methodKey');
+      if (_methodHandlers.containsKey(methodKey)) {
+        final handler = _methodHandlers[methodKey];
+        if (handler != null) {
+          try {
+            final result = await handler(
+              topic,
+              request.request.params,
+            );
+            await core.pairing.sendResult(
+              payload.id,
+              topic,
+              MethodConstants.WC_SESSION_REQUEST,
+              result,
+            );
+          } on WalletConnectError catch (e) {
+            await core.pairing.sendError(
+              payload.id,
+              topic,
+              payload.method,
+              JsonRpcError.fromJson(
+                e.toJson(),
+              ),
+            );
+          } on WalletConnectErrorSilent catch (_) {
+            // Do nothing on silent error
+          } catch (err) {
+            await core.pairing.sendError(
+              payload.id,
+              topic,
+              payload.method,
+              JsonRpcError.invalidParams(
+                err.toString(),
+              ),
+            );
+          }
 
-      // We send onSessionRequest event on every session request,
-      // the developer can decide wether to use it or just register method handlers
-      onSessionRequest.broadcast(
-        SessionRequestEvent.fromSessionRequest(
-          sessionRequest,
-        ),
-      );
-
-      final methodHandler = _methodHandlers[methodKey];
-      // If a method handler has been set using registerRequestHandler we use it to process the request
-      if (methodHandler != null) {
-        try {
-          final result = await methodHandler(topic, request.request.params);
-          await core.pairing.sendResult(
-            payload.id,
-            topic,
-            MethodConstants.WC_SESSION_REQUEST,
-            result,
-          );
-        } on WalletConnectError catch (e) {
-          await core.pairing.sendError(
-            payload.id,
-            topic,
-            payload.method,
-            JsonRpcError.fromJson(e.toJson()),
-          );
-        } on WalletConnectErrorSilent catch (_) {
-          // Do nothing on silent error
-        } catch (err) {
-          await core.pairing.sendError(
-            payload.id,
-            topic,
-            payload.method,
-            JsonRpcError.invalidParams(err.toString()),
-          );
+          await _deletePendingRequest(payload.id);
         }
 
-        await _deletePendingRequest(payload.id);
+        onSessionRequest.broadcast(
+          SessionRequestEvent.fromSessionRequest(
+            sessionRequest,
+          ),
+        );
+      } else {
+        await core.pairing.sendError(
+          payload.id,
+          topic,
+          payload.method,
+          JsonRpcError.methodNotFound(
+            'No handler found for chainId:method -> $methodKey',
+          ),
+        );
       }
     } on WalletConnectError catch (err) {
       await core.pairing.sendError(
