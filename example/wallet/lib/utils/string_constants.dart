@@ -28,6 +28,7 @@ class StringConstants {
 
   // Session Proposal
   static const String chains = 'Chains';
+  static const String accounts = 'Accounts';
   static const String methods = 'Methods';
   static const String events = 'Events';
 

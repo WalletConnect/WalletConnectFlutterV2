@@ -167,6 +167,9 @@ class Web3WalletService extends IWeb3WalletService {
 
   void _onSessionProposal(SessionProposalEvent? args) async {
     if (args != null) {
+      final accounts = args.params.generatedNamespaces?['eip155']?.accounts;
+      final allChains = NamespaceUtils.getChainsFromAccounts(accounts ?? []);
+      debugPrint('[$runtimeType] _onSessionProposal chains: $allChains');
       final approved = await _bottomSheetHandler.queueBottomSheet(
         widget: WCRequestWidget(
           child: WCConnectionRequestWidget(

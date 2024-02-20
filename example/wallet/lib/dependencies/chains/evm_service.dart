@@ -27,50 +27,60 @@ class EVMService {
   final ChainMetadata chainSupported;
   late final Web3Client ethClient;
 
+  Map<String, dynamic Function(String, dynamic)> get sessionRequestHandlers => {
+        'personal_sign': personalSign,
+      };
+
+  Map<String, dynamic Function(String, dynamic)> get methodRequestHandlers => {
+        'eth_sign': ethSign,
+        'eth_signTransaction': ethSignTransaction,
+        'eth_sendTransaction': ethSendTransaction,
+        'eth_signTypedData': ethSignTypedData,
+        'eth_signTypedData_v4': ethSignTypedDataV4,
+        'wallet_switchEthereumChain': switchChain,
+        'wallet_addEthereumChain': addChain,
+      };
+
   EVMService({required this.chainSupported}) {
     final supportedId = chainSupported.chainId;
     final chainMetadata = ChainData.allChains.firstWhere(
       (c) => c.chainId == supportedId,
     );
-    debugPrint('supportedId $supportedId - ${chainMetadata.rpc.first}');
     ethClient = Web3Client(chainMetadata.rpc.first, http.Client());
 
     const supportedEvents = EventsConstants.requiredEvents;
-    for (final String event in supportedEvents) {
-      debugPrint('Supported event ${chainSupported.chainId} $event');
+    for (final event in supportedEvents) {
       _web3Wallet.registerEventEmitter(
         chainId: chainSupported.chainId,
         event: event,
       );
     }
 
-    // Supported methods
-    Map<String, dynamic Function(String, dynamic)> methodsHandlers = {
-      'personal_sign': personalSign,
-      'eth_sign': ethSign,
-      'eth_signTransaction': ethSignTransaction,
-      'eth_sendTransaction': ethSendTransaction,
-      'eth_signTypedData': ethSignTypedData,
-      'eth_signTypedData_v4': ethSignTypedDataV4,
-      'wallet_switchEthereumChain': switchChain,
-      'wallet_addEthereumChain': addChain,
-      // add whatever method/handler you want to support
-    };
-
-    for (var handler in methodsHandlers.entries) {
+    for (var handler in methodRequestHandlers.entries) {
       _web3Wallet.registerRequestHandler(
         chainId: chainSupported.chainId,
         method: handler.key,
         handler: handler.value,
       );
     }
+
+    _web3Wallet.onSessionRequest.subscribe(_onSessionRequest);
   }
 
+  void _onSessionRequest(SessionRequestEvent? args) async {
+    if (args != null && args.chainId == chainSupported.chainId) {
+      debugPrint('[$runtimeType] onSessionRequest $args');
+      final handler = sessionRequestHandlers[args.method];
+      if (handler != null) {
+        await handler(args.topic, args.params);
+      }
+    }
+  }
+
+  // personal_sign is handled using onSessionRequest event for demo purposes
   Future<void> personalSign(String topic, dynamic parameters) async {
     debugPrint('[$runtimeType] personalSign request: $parameters');
-    // message, address
-
-    final pRequest = _web3Wallet.pendingRequests.getAll().first;
+    final pRequest = _web3Wallet.pendingRequests.getAll().last;
     final data = EthUtils.getDataFromParamsList(parameters);
     final message = EthUtils.getUtf8Message(data.toString());
     var response = JsonRpcResponse(
@@ -115,9 +125,7 @@ class EVMService {
 
   Future<void> ethSign(String topic, dynamic parameters) async {
     debugPrint('[$runtimeType] ethSign request: $parameters');
-    // address, message
-
-    final pRequest = _web3Wallet.pendingRequests.getAll().first;
+    final pRequest = _web3Wallet.pendingRequests.getAll().last;
     final data = EthUtils.getDataFromParamsList(parameters);
     final message = EthUtils.getUtf8Message(data.toString());
     var response = JsonRpcResponse(
@@ -162,13 +170,13 @@ class EVMService {
 
   Future<void> ethSignTypedData(String topic, dynamic parameters) async {
     debugPrint('[$runtimeType] ethSignTypedData request: $parameters');
-
-    final pRequest = _web3Wallet.pendingRequests.getAll().first;
+    final pRequest = _web3Wallet.pendingRequests.getAll().last;
     final data = EthUtils.getDataFromParamsList(parameters);
     var response = JsonRpcResponse(
       id: pRequest.id,
       jsonrpc: '2.0',
     );
+
     if (await requestApproval(data)) {
       try {
         final keys = GetIt.I<IKeyService>().getKeysForChain(
@@ -203,13 +211,13 @@ class EVMService {
 
   Future<void> ethSignTypedDataV4(String topic, dynamic parameters) async {
     debugPrint('[$runtimeType] ethSignTypedDataV4 request: $parameters');
-
-    final pRequest = _web3Wallet.pendingRequests.getAll().first;
+    final pRequest = _web3Wallet.pendingRequests.getAll().last;
     final data = EthUtils.getDataFromParamsList(parameters);
     var response = JsonRpcResponse(
       id: pRequest.id,
       jsonrpc: '2.0',
     );
+
     if (await requestApproval(data)) {
       try {
         final keys = GetIt.I<IKeyService>().getKeysForChain(
@@ -244,14 +252,14 @@ class EVMService {
 
   Future<dynamic> ethSignTransaction(String topic, dynamic parameters) async {
     debugPrint('[$runtimeType] ethSignTransaction request: $parameters');
-    final pRequest = _web3Wallet.pendingRequests.getAll().first;
+    final pRequest = _web3Wallet.pendingRequests.getAll().last;
+    final data = EthUtils.getTransactionFromParams(parameters);
+    if (data == null) return;
     var response = JsonRpcResponse(
       id: pRequest.id,
       jsonrpc: '2.0',
     );
 
-    final data = EthUtils.getTransactionFromParams(parameters);
-    if (data == null) return;
     final result = await approveTransaction(data);
     if (result is Transaction) {
       try {
@@ -297,14 +305,14 @@ class EVMService {
 
   Future<dynamic> ethSendTransaction(String topic, dynamic parameters) async {
     debugPrint('[$runtimeType] ethSendTransaction request: $parameters');
-    final pRequest = _web3Wallet.pendingRequests.getAll().first;
+    final pRequest = _web3Wallet.pendingRequests.getAll().last;
+    final data = EthUtils.getTransactionFromParams(parameters);
+    if (data == null) return;
     var response = JsonRpcResponse(
       id: pRequest.id,
       jsonrpc: '2.0',
     );
 
-    final data = EthUtils.getTransactionFromParams(parameters);
-    if (data == null) return;
     final result = await approveTransaction(data);
     if (result is Transaction) {
       try {
