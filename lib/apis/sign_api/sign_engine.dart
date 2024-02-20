@@ -1278,7 +1278,8 @@ class SignEngine implements ISignEngine {
         request.request.method,
       );
 
-      // else, we send an onSessionRequest event
+      // We send onSessionRequest event on every session request,
+      // the developer can decide wether to use it or just register method handlers
       onSessionRequest.broadcast(
         SessionRequestEvent.fromSessionRequest(
           sessionRequest,
@@ -1286,8 +1287,8 @@ class SignEngine implements ISignEngine {
       );
 
       final methodHandler = _methodHandlers[methodKey];
+      // If a method handler has been set using registerRequestHandler we use it to process the request
       if (methodHandler != null) {
-        // If a method handler has been set using registerRequestHandler we use it to process the request
         try {
           final result = await methodHandler(topic, request.request.params);
           await core.pairing.sendResult(
