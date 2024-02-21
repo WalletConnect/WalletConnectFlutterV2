@@ -12,7 +12,7 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   PackageInfo.setMockInitialValues(
     appName: 'walletconnect_flutter_v2',
-    packageName: 'sdk.test',
+    packageName: 'com.walletconnect.flutterdapp',
     version: '1.0',
     buildNumber: '2',
     buildSignature: 'buildSignature',
