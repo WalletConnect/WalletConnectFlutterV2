@@ -312,7 +312,7 @@ class SignEngine implements ISignEngine {
         metadata: metadata,
       ),
       peer: proposal.proposer,
-      sessionProperties: sessionProperties,
+      sessionProperties: proposal.sessionProperties,
     );
 
     // print('session connect');
