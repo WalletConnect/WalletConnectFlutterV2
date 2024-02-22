@@ -12,7 +12,7 @@
 ///
 /// [spec]: http://www.jsonrpc.org/specification#error_object
 /// An error code indicating that invalid JSON was received by the server.
-const PARSE_ERROR = -32700;
+// const PARSE_ERROR = -32700;
 
 /// An error code indicating that the request JSON was invalid according to the
 /// JSON-RPC 2.0 spec.
@@ -24,7 +24,7 @@ const METHOD_NOT_FOUND = -32601;
 
 /// An error code indicating that the request parameters are invalid for the
 /// requested method.
-const INVALID_PARAMS = -32602;
+// const INVALID_PARAMS = -32602;
 
 /// An internal JSON-RPC error.
 const INTERNAL_ERROR = -32603;
@@ -41,14 +41,14 @@ const SERVER_ERROR = -32000;
 /// If [errorCode] isn't defined in the JSON-RPC 2.0 spec, returns null.
 String? name(int errorCode) {
   switch (errorCode) {
-    case PARSE_ERROR:
-      return 'parse error';
+    // case PARSE_ERROR:
+    //   return 'parse error';
     case INVALID_REQUEST:
       return 'invalid request';
     case METHOD_NOT_FOUND:
       return 'method not found';
-    case INVALID_PARAMS:
-      return 'invalid parameters';
+    // case INVALID_PARAMS:
+    //   return 'invalid parameters';
     case INTERNAL_ERROR:
       return 'internal error';
     default:

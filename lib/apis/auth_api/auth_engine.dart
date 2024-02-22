@@ -431,7 +431,7 @@ class AuthEngine implements IAuthEngine {
         payload.id,
         topic,
         payload.method,
-        JsonRpcError.invalidParams(
+        JsonRpcError.invalidRequest(
           err.message,
         ),
       );

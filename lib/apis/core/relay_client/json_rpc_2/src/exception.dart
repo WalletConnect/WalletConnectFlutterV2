@@ -39,7 +39,7 @@ class RpcException implements Exception {
   ///
   /// Methods can use this to reject requests with invalid parameters.
   RpcException.invalidParams(String message)
-      : this(error_code.INVALID_PARAMS, message);
+      : this(error_code.INVALID_REQUEST, message);
 
   /// Converts this exception into a JSON-serializable object that's a valid
   /// JSON-RPC 2.0 error response.

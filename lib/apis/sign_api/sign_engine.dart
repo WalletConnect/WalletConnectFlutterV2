@@ -268,7 +268,7 @@ class SignEngine implements ISignEngine {
     );
     // print('approve session topic: $sessionTopic');
     final relay = Relay(
-      relayProtocol ?? 'irn',
+      relayProtocol ?? WalletConnectConstants.RELAYER_DEFAULT_PROTOCOL,
     );
 
     // Respond to the proposal
@@ -1101,7 +1101,7 @@ class SignEngine implements ISignEngine {
         payload.id,
         topic,
         payload.method,
-        JsonRpcError.invalidParams(
+        JsonRpcError.invalidRequest(
           err.message,
         ),
       );
@@ -1139,7 +1139,7 @@ class SignEngine implements ISignEngine {
         payload.id,
         topic,
         payload.method,
-        JsonRpcError.invalidParams(
+        JsonRpcError.invalidRequest(
           err.message,
         ),
       );
@@ -1176,7 +1176,7 @@ class SignEngine implements ISignEngine {
         payload.id,
         topic,
         payload.method,
-        JsonRpcError.invalidParams(
+        JsonRpcError.invalidRequest(
           err.message,
         ),
       );
@@ -1207,7 +1207,7 @@ class SignEngine implements ISignEngine {
         payload.id,
         topic,
         payload.method,
-        JsonRpcError.invalidParams(
+        JsonRpcError.invalidRequest(
           err.message,
         ),
       );
@@ -1233,7 +1233,7 @@ class SignEngine implements ISignEngine {
         payload.id,
         topic,
         payload.method,
-        JsonRpcError.invalidParams(
+        JsonRpcError.invalidRequest(
           err.message,
         ),
       );
@@ -1308,7 +1308,7 @@ class SignEngine implements ISignEngine {
               payload.id,
               topic,
               payload.method,
-              JsonRpcError.invalidParams(
+              JsonRpcError.invalidRequest(
                 err.toString(),
               ),
             );
@@ -1337,7 +1337,7 @@ class SignEngine implements ISignEngine {
         payload.id,
         topic,
         payload.method,
-        JsonRpcError.invalidParams(
+        JsonRpcError.invalidRequest(
           err.message,
         ),
       );
@@ -1375,7 +1375,7 @@ class SignEngine implements ISignEngine {
               payload.id,
               topic,
               payload.method,
-              JsonRpcError.invalidParams(
+              JsonRpcError.invalidRequest(
                 err.toString(),
               ),
             );
@@ -1413,7 +1413,7 @@ class SignEngine implements ISignEngine {
         payload.id,
         topic,
         payload.method,
-        JsonRpcError.invalidParams(
+        JsonRpcError.invalidRequest(
           err.message,
         ),
       );

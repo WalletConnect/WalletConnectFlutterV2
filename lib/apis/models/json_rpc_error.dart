@@ -13,12 +13,12 @@ class JsonRpcError with _$JsonRpcError {
 
   factory JsonRpcError.serverError(String message) =>
       JsonRpcError(code: -32000, message: message);
-  factory JsonRpcError.invalidParams(String message) =>
-      JsonRpcError(code: -32602, message: message);
+//   factory JsonRpcError.invalidParams(String message) =>
+//       JsonRpcError(code: -32602, message: message);
   factory JsonRpcError.invalidRequest(String message) =>
       JsonRpcError(code: -32600, message: message);
-  factory JsonRpcError.parseError(String message) =>
-      JsonRpcError(code: -32700, message: message);
+//   factory JsonRpcError.parseError(String message) =>
+//       JsonRpcError(code: -32700, message: message);
   factory JsonRpcError.methodNotFound(String message) =>
       JsonRpcError(code: -32601, message: message);
 
