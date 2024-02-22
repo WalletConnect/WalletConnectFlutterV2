@@ -180,16 +180,6 @@ void signRequestAndHandler({
       );
 
       try {
-        // print('silent error');
-        // clientA.request(
-        //   topic: connectionInfo.session.topic,
-        //   chainId: TEST_ETHEREUM_CHAIN,
-        //   request: const SessionRequestParams(
-        //     method: TEST_METHOD_1,
-        //     params: 'silent',
-        //   ),
-        // );
-
         // print('user rejected sign');
         await clientA.request(
           topic: connectionInfo.session.topic,
