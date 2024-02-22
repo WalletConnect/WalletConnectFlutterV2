@@ -61,8 +61,8 @@ class _RespondToFormatExceptionsTransformer
     return channel.changeStream((stream) {
       return stream.handleError((dynamic error) {
         final formatException = error as FormatException;
-        var exception = RpcException(
-            error_code.PARSE_ERROR, 'Invalid JSON: ${formatException.message}');
+        var exception = RpcException(error_code.INVALID_REQUEST,
+            'Invalid JSON: ${formatException.message}');
         channel.sink.add(exception.serialize(formatException.source));
       }, test: (error) => error is FormatException);
     });

@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:logger/logger.dart';
 import 'package:walletconnect_flutter_v2/apis/core/crypto/crypto.dart';
 import 'package:walletconnect_flutter_v2/apis/core/crypto/i_crypto.dart';
@@ -75,6 +76,8 @@ class Core implements ICore {
   @override
   late IStore<Map<String, dynamic>> storage;
 
+  void _logListener(LogEvent event) => debugPrint('${event.message}');
+
   Core({
     required this.projectId,
     this.relayUrl = WalletConnectConstants.DEFAULT_RELAY_URL,
@@ -88,6 +91,12 @@ class Core implements ICore {
       level: logLevel.toLevel(),
       printer: PrettyPrinter(),
     );
+    try {
+      Logger.removeLogListener(_logListener);
+    } catch (_) {}
+    if (kDebugMode && logLevel == LogLevel.debug) {
+      Logger.addLogListener(_logListener);
+    }
     heartbeat = HeartBeat();
     storage = SharedPrefsStores(
       memoryStore: memoryStore,

@@ -214,7 +214,7 @@ void signRequestAndHandler({
       } on JsonRpcError catch (e) {
         expect(
           e.code,
-          JsonRpcError.invalidParams('swag').code,
+          JsonRpcError.invalidRequest('swag').code,
         );
       }
 
@@ -276,7 +276,7 @@ void signRequestAndHandler({
             topic: request.topic,
             response: JsonRpcResponse(
               id: request.id,
-              error: JsonRpcError.invalidParams(request.params.toString()),
+              error: JsonRpcError.invalidRequest(request.params.toString()),
             ),
           );
         }
@@ -308,7 +308,7 @@ void signRequestAndHandler({
         // print(e);
         expect(
           e.code,
-          JsonRpcError.invalidParams('swag').code,
+          JsonRpcError.invalidRequest('swag').code,
         );
         expect(e.message!.contains(TEST_MESSAGE_1.toString()), true);
       }
@@ -328,7 +328,7 @@ void signRequestAndHandler({
           topic: session.topic,
           response: JsonRpcResponse<String>(
             id: session.id,
-            error: JsonRpcError.invalidParams('invalid'),
+            error: JsonRpcError.invalidRequest('invalid'),
           ),
         );
 

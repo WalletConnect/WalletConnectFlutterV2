@@ -61,7 +61,7 @@ class _MyHomePageState extends State<MyHomePage> {
     debugPrint('Project ID: ${DartDefines.projectId}');
     _web3App = await Web3App.createInstance(
       projectId: DartDefines.projectId,
-      logLevel: LogLevel.info,
+      logLevel: LogLevel.debug,
       metadata: const PairingMetadata(
         name: 'Sample dApp Flutter',
         description: 'WalletConnect\'s sample dapp with Flutter',
