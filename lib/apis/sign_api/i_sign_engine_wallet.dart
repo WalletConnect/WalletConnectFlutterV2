@@ -20,6 +20,7 @@ abstract class ISignEngineWallet extends ISignEngineCommon {
   Future<ApproveResponse> approveSession({
     required int id,
     required Map<String, Namespace> namespaces,
+    Map<String, String>? sessionProperties,
     String? relayProtocol,
   });
   Future<void> rejectSession({
