@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
-import 'package:http/http.dart' as http;
 
+import 'package:http/http.dart' as http;
 import 'package:walletconnect_flutter_v2/apis/core/pairing/utils/json_rpc_utils.dart';
 import 'package:walletconnect_flutter_v2/apis/core/store/i_generic_store.dart';
 import 'package:walletconnect_flutter_v2/apis/core/verify/models/verify_context.dart';
@@ -312,6 +312,7 @@ class SignEngine implements ISignEngine {
         metadata: metadata,
       ),
       peer: proposal.proposer,
+      sessionProperties: sessionProperties,
     );
 
     // print('session connect');
