@@ -48,8 +48,7 @@ class EVMService {
     );
     ethClient = Web3Client(chainMetadata.rpc.first, http.Client());
 
-    const supportedEvents = EventsConstants.requiredEvents;
-    for (final event in supportedEvents) {
+    for (final event in EventsConstants.requiredEvents) {
       _web3Wallet.registerEventEmitter(
         chainId: chainSupported.chainId,
         event: event,
@@ -68,8 +67,8 @@ class EVMService {
   }
 
   void _onSessionRequest(SessionRequestEvent? args) async {
-    if (args != null && args.chainId == chainSupported.chainId) {
-      debugPrint('[$runtimeType] onSessionRequest $args');
+    if (args?.chainId == chainSupported.chainId) {
+      debugPrint('[$runtimeType] onSessionRequest ${args!}');
       final handler = sessionRequestHandlers[args.method];
       if (handler != null) {
         await handler(args.topic, args.params);
@@ -250,7 +249,7 @@ class EVMService {
     );
   }
 
-  Future<dynamic> ethSignTransaction(String topic, dynamic parameters) async {
+  Future<void> ethSignTransaction(String topic, dynamic parameters) async {
     debugPrint('[$runtimeType] ethSignTransaction request: $parameters');
     final pRequest = _web3Wallet.pendingRequests.getAll().last;
     final data = EthUtils.getTransactionFromParams(parameters);
@@ -303,7 +302,7 @@ class EVMService {
     );
   }
 
-  Future<dynamic> ethSendTransaction(String topic, dynamic parameters) async {
+  Future<void> ethSendTransaction(String topic, dynamic parameters) async {
     debugPrint('[$runtimeType] ethSendTransaction request: $parameters');
     final pRequest = _web3Wallet.pendingRequests.getAll().last;
     final data = EthUtils.getTransactionFromParams(parameters);

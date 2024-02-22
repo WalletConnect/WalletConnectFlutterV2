@@ -167,6 +167,8 @@ class SessionWidgetState extends State<SessionWidget> {
     final List<Widget> buttons = [];
     // Add Methods
     for (final String method in getChainMethods(chainMetadata.type)) {
+      final namespaces = widget.session.namespaces[chainMetadata.type.name];
+      final supported = namespaces?.methods.contains(method) ?? false;
       buttons.add(
         Container(
           width: double.infinity,
@@ -175,20 +177,24 @@ class SessionWidgetState extends State<SessionWidget> {
             vertical: StyleConstants.linear8,
           ),
           child: ElevatedButton(
-            onPressed: () async {
-              final future = EIP155.callMethod(
-                web3App: widget.web3App,
-                topic: widget.session.topic,
-                method: method.toEip155Method()!,
-                chainData: chainMetadata,
-                address: address.toLowerCase(),
-              );
-              MethodDialog.show(context, method, future);
-              _launchWallet();
-            },
+            onPressed: supported
+                ? () async {
+                    final future = EIP155.callMethod(
+                      web3App: widget.web3App,
+                      topic: widget.session.topic,
+                      method: method.toEip155Method()!,
+                      chainData: chainMetadata,
+                      address: address.toLowerCase(),
+                    );
+                    MethodDialog.show(context, method, future);
+                    _launchWallet();
+                  }
+                : null,
             style: ButtonStyle(
-              backgroundColor: MaterialStateProperty.all<Color>(
-                chainMetadata.color,
+              backgroundColor: MaterialStateProperty.resolveWith<Color>(
+                (states) => states.contains(MaterialState.disabled)
+                    ? Colors.grey
+                    : chainMetadata.color,
               ),
               shape: MaterialStateProperty.all<RoundedRectangleBorder>(
                 RoundedRectangleBorder(

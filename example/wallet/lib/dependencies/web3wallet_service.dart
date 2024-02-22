@@ -10,6 +10,7 @@ import 'package:walletconnect_flutter_v2_wallet/dependencies/deep_link_handler.d
 import 'package:walletconnect_flutter_v2_wallet/dependencies/i_web3wallet_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/key_service/chain_key.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/key_service/i_key_service.dart';
+import 'package:walletconnect_flutter_v2_wallet/models/chain_metadata.dart';
 import 'package:walletconnect_flutter_v2_wallet/utils/constants.dart';
 import 'package:walletconnect_flutter_v2_wallet/utils/dart_defines.dart';
 import 'package:walletconnect_flutter_v2_wallet/widgets/wc_connection_request/wc_auth_request_model.dart';
@@ -165,17 +166,38 @@ class Web3WalletService extends IWeb3WalletService {
     }
   }
 
+  Map<String, Namespace> _generateNamespaces(
+    Map<String, Namespace>? approvedNamespaces,
+    ChainType chainType,
+  ) {
+    //
+    final constructedNS = Map<String, Namespace>.from(approvedNamespaces ?? {});
+    constructedNS[chainType.name] = constructedNS[chainType.name]!.copyWith(
+      methods: [
+        'personal_sign',
+        ...constructedNS[chainType.name]!.methods,
+      ],
+    );
+    return constructedNS;
+  }
+
   void _onSessionProposal(SessionProposalEvent? args) async {
     if (args != null) {
-      final accounts = args.params.generatedNamespaces?['eip155']?.accounts;
-      final allChains = NamespaceUtils.getChainsFromAccounts(accounts ?? []);
-      debugPrint('[$runtimeType] _onSessionProposal chains: $allChains');
+      // generatedNamespaces is constructed based on registered methods handlers
+      // so if you want to handle requests using onSessionRequest event then you would need to manually add that method in the approved namespaces
+      final approvedNS = _generateNamespaces(
+        args.params.generatedNamespaces!,
+        ChainType.eip155,
+      );
+      final proposalData = args.params.copyWith(
+        generatedNamespaces: approvedNS,
+      );
       final approved = await _bottomSheetHandler.queueBottomSheet(
         widget: WCRequestWidget(
           child: WCConnectionRequestWidget(
             wallet: _web3Wallet!,
             sessionProposal: WCSessionRequestModel(
-              request: args.params,
+              request: proposalData,
               verifyContext: args.verifyContext,
             ),
           ),
@@ -185,7 +207,7 @@ class Web3WalletService extends IWeb3WalletService {
       if (approved == true) {
         _web3Wallet!.approveSession(
           id: args.id,
-          namespaces: args.params.generatedNamespaces!,
+          namespaces: approvedNS,
         );
         final scheme = args.params.proposer.metadata.redirect?.native ?? '';
         DeepLinkHandler.goTo(scheme, delay: 300);
@@ -220,11 +242,9 @@ class Web3WalletService extends IWeb3WalletService {
 
   Future<void> _onAuthRequest(AuthRequest? args) async {
     if (args != null) {
-      List<ChainKey> chainKeys = GetIt.I<IKeyService>().getKeysForChain(
-        'eip155:1',
-      );
+      final chainKeys = GetIt.I<IKeyService>().getKeysForChain('eip155:1');
       // Create the message to be signed
-      final String iss = 'did:pkh:eip155:1:${chainKeys.first.address}';
+      final iss = 'did:pkh:eip155:1:${chainKeys.first.address}';
 
       final bool? auth = await _bottomSheetHandler.queueBottomSheet(
         widget: WCRequestWidget(
