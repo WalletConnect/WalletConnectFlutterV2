@@ -1,3 +1,7 @@
+## 2.2.1
+
+- [Wallet] Fixed and issue where Sign Engine was not properly deciding between using a registered request handler or emitting an onSessionRequest event.
+
 ## 2.2.0
 
 - Added Smart Contract interactions to SignEngine

@@ -62,6 +62,12 @@ class Verify implements IVerify {
       final error = 'Attestation response error: ${response.statusCode}';
       throw Exception(error);
     }
+    if (response.body.isEmpty) {
+      throw AttestationNotFound(
+        code: 404,
+        message: 'Attestion for this dapp could not be found',
+      );
+    }
     return AttestationResponse.fromJson(jsonDecode(response.body));
   }
 
