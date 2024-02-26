@@ -83,8 +83,14 @@ void signRequestAndHandler({
         // expect(request, TEST_MESSAGE_1);
         // print(clientB.getPendingSessionRequests());
         expect(clientB.getPendingSessionRequests().length, 1);
-
-        return request;
+        final pRequest = clientB.pendingRequests.getAll().last;
+        return await clientB.respondSessionRequest(
+          topic: sessionTopic,
+          response: JsonRpcResponse(
+            id: pRequest.id,
+            result: request,
+          ),
+        );
       };
       clientB.registerRequestHandler(
         chainId: TEST_ETHEREUM_CHAIN,
@@ -150,15 +156,22 @@ void signRequestAndHandler({
         String topic,
         dynamic request,
       ) async {
-        if (request is String) {
-          if (request == TEST_MESSAGE_2) {
-            throw Errors.getSdkError(Errors.USER_REJECTED_SIGN);
-          } else {
-            throw WalletConnectErrorSilent();
-          }
-        } else {
-          return request['try']!;
+        expect(topic, sessionTopic);
+        expect(clientB.getPendingSessionRequests().length, 1);
+        if (request == 'silent') {
+          throw WalletConnectErrorSilent();
         }
+        final pRequest = clientB.pendingRequests.getAll().last;
+        late dynamic error = (request is String)
+            ? Errors.getSdkError(Errors.USER_REJECTED_SIGN)
+            : JsonRpcError.invalidParams('swag');
+        return await clientB.respondSessionRequest(
+          topic: sessionTopic,
+          response: JsonRpcResponse(
+            id: pRequest.id,
+            error: JsonRpcError(code: error.code, message: error.message),
+          ),
+        );
       };
       clientB.registerRequestHandler(
         chainId: TEST_ETHEREUM_CHAIN,
@@ -167,16 +180,6 @@ void signRequestAndHandler({
       );
 
       try {
-        // print('silent error');
-        clientA.request(
-          topic: connectionInfo.session.topic,
-          chainId: TEST_ETHEREUM_CHAIN,
-          request: const SessionRequestParams(
-            method: TEST_METHOD_1,
-            params: 'silent',
-          ),
-        );
-
         // print('user rejected sign');
         await clientA.request(
           topic: connectionInfo.session.topic,
@@ -200,8 +203,20 @@ void signRequestAndHandler({
         );
       }
 
+      Completer pendingRequestCompleter = Completer();
+      clientB.pendingRequests.onSync.subscribe((_) {
+        if (clientB.getPendingSessionRequests().isEmpty) {
+          pendingRequestCompleter.complete();
+        }
+      });
+      if (!pendingRequestCompleter.isCompleted) {
+        clientA.core.logger.i('waiting pendingRequestCompleter');
+        await pendingRequestCompleter.future;
+      }
+      clientB.pendingRequests.onSync.unsubscribeAll();
+
       try {
-        final _ = await clientA.request(
+        await clientA.request(
           topic: connectionInfo.session.topic,
           chainId: TEST_ETHEREUM_CHAIN,
           request: const SessionRequestParams(
@@ -218,31 +233,18 @@ void signRequestAndHandler({
         );
       }
 
-      Completer pendingRequestCompleter = Completer();
-      Completer sessionRequestCompleter = Completer();
+      pendingRequestCompleter = Completer();
       clientB.pendingRequests.onSync.subscribe((_) {
         if (clientB.getPendingSessionRequests().isEmpty) {
           pendingRequestCompleter.complete();
         }
       });
-      clientB.onSessionRequest.subscribe((args) {
-        sessionRequestCompleter.complete();
-        sessionRequestCompleter = Completer();
-      });
-
       if (!pendingRequestCompleter.isCompleted) {
         clientA.core.logger.i('waiting pendingRequestCompleter');
         await pendingRequestCompleter.future;
       }
-      if (!sessionRequestCompleter.isCompleted) {
-        clientA.core.logger.i('waiting sessionRequestComplete');
-        await sessionRequestCompleter.future;
-      }
       clientB.pendingRequests.onSync.unsubscribeAll();
-      clientB.onSessionRequest.unsubscribeAll();
-      expect(clientB.getPendingSessionRequests().length, 0);
 
-      /// Event driven, null handler ///
       clientB.registerRequestHandler(
         chainId: TEST_ETHEREUM_CHAIN,
         method: TEST_METHOD_1,
@@ -252,31 +254,31 @@ void signRequestAndHandler({
         method: TEST_METHOD_2,
       );
       clientB.onSessionRequest.subscribe((
-        SessionRequestEvent? request,
+        SessionRequestEvent? event,
       ) async {
-        expect(request != null, true);
-        expect(request!.topic, sessionTopic);
-        expect(request.params, TEST_MESSAGE_1);
+        expect(event != null, true);
+        expect(event!.topic, sessionTopic);
+        expect(event.params, TEST_MESSAGE_1);
 
-        if (request.method == TEST_METHOD_1) {
-          expect(clientB.pendingRequests.has(request.id.toString()), true);
+        if (event.method == TEST_METHOD_1) {
+          expect(clientB.pendingRequests.has(event.id.toString()), true);
           expect(clientB.getPendingSessionRequests().length, 1);
 
           await clientB.respondSessionRequest(
-            topic: request.topic,
+            topic: event.topic,
             response: JsonRpcResponse<Map<String, String>>(
-              id: request.id,
+              id: event.id,
               result: TEST_MESSAGE_1,
             ),
           );
 
-          expect(clientB.pendingRequests.has(request.id.toString()), false);
-        } else if (request.method == TEST_METHOD_2) {
+          expect(clientB.pendingRequests.has(event.id.toString()), false);
+        } else if (event.method == TEST_METHOD_2) {
           await clientB.respondSessionRequest(
-            topic: request.topic,
+            topic: event.topic,
             response: JsonRpcResponse(
-              id: request.id,
-              error: JsonRpcError.invalidParams(request.params.toString()),
+              id: event.id,
+              error: JsonRpcError.invalidParams(event.params.toString()),
             ),
           );
         }
@@ -316,23 +318,23 @@ void signRequestAndHandler({
       // Try an error
       clientB.onSessionRequest.unsubscribeAll();
       clientB.onSessionRequest.subscribe((
-        SessionRequestEvent? session,
+        SessionRequestEvent? event,
       ) async {
-        expect(session != null, true);
-        expect(session!.topic, sessionTopic);
-        expect(session.params, TEST_MESSAGE_1);
+        expect(event != null, true);
+        expect(event!.topic, sessionTopic);
+        expect(event.params, TEST_MESSAGE_1);
 
-        expect(clientB.pendingRequests.has(session.id.toString()), true);
+        expect(clientB.pendingRequests.has(event.id.toString()), true);
 
         await clientB.respondSessionRequest(
-          topic: session.topic,
+          topic: event.topic,
           response: JsonRpcResponse<String>(
-            id: session.id,
+            id: event.id,
             error: JsonRpcError.invalidParams('invalid'),
           ),
         );
 
-        expect(clientB.pendingRequests.has(session.id.toString()), false);
+        expect(clientB.pendingRequests.has(event.id.toString()), false);
       });
 
       try {

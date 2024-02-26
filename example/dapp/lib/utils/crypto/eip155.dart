@@ -66,7 +66,7 @@ class EIP155 {
           topic: topic,
           chainId: chainData.chainId,
           address: address,
-          data: testSignData,
+          message: testSignData,
         );
       case EIP155Methods.ethSign:
         return ethSign(
@@ -74,7 +74,7 @@ class EIP155 {
           topic: topic,
           chainId: chainData.chainId,
           address: address,
-          data: testSignData,
+          message: testSignData,
         );
       case EIP155Methods.ethSignTypedData:
         return ethSignTypedData(
@@ -159,14 +159,14 @@ class EIP155 {
     required String topic,
     required String chainId,
     required String address,
-    required String data,
+    required String message,
   }) async {
     return await web3App.request(
       topic: topic,
       chainId: chainId,
       request: SessionRequestParams(
         method: methods[EIP155Methods.personalSign]!,
-        params: [data, address],
+        params: [message, address],
       ),
     );
   }
@@ -176,14 +176,14 @@ class EIP155 {
     required String topic,
     required String chainId,
     required String address,
-    required String data,
+    required String message,
   }) async {
     return await web3App.request(
       topic: topic,
       chainId: chainId,
       request: SessionRequestParams(
         method: methods[EIP155Methods.ethSign]!,
-        params: [address, data],
+        params: [address, message],
       ),
     );
   }

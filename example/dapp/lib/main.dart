@@ -264,12 +264,16 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _onRelayMessage(MessageEvent? args) async {
     if (args != null) {
-      final payloadString = await _web3App!.core.crypto.decode(
-        args.topic,
-        args.message,
-      );
-      final data = jsonDecode(payloadString ?? '{}') as Map<String, dynamic>;
-      debugPrint(data.toString());
+      try {
+        final payloadString = await _web3App!.core.crypto.decode(
+          args.topic,
+          args.message,
+        );
+        final data = jsonDecode(payloadString ?? '{}') as Map<String, dynamic>;
+        debugPrint('[$runtimeType] _onRelayMessage data $data');
+      } catch (e) {
+        debugPrint('[$runtimeType] _onRelayMessage error $e');
+      }
     }
   }
 }
