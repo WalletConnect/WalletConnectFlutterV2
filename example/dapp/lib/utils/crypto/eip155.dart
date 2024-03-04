@@ -1,4 +1,8 @@
 import 'dart:convert';
+// ignore: depend_on_referenced_packages
+import 'package:convert/convert.dart';
+
+import 'package:flutter/foundation.dart';
 
 import 'package:intl/intl.dart';
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
@@ -161,12 +165,16 @@ class EIP155 {
     required String address,
     required String message,
   }) async {
+    final bytes = utf8.encode(message);
+    final encoded = '0x${hex.encode(bytes)}';
+    debugPrint('personalSign $encoded');
+
     return await web3App.request(
       topic: topic,
       chainId: chainId,
       request: SessionRequestParams(
         method: methods[EIP155Methods.personalSign]!,
-        params: [message, address],
+        params: [encoded, address],
       ),
     );
   }

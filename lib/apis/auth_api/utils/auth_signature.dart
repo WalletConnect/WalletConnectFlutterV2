@@ -48,9 +48,7 @@ class AuthSignature {
     // Get the sig bytes
     // print(sig);
     final sigBytes = Uint8List.fromList(
-      hex.decode(
-        sig.substring(2),
-      ),
+      hex.decode(sig.substring(2)),
     );
 
     // If the sig bytes aren't 65 bytes long, throw an error
@@ -60,15 +58,11 @@ class AuthSignature {
 
     // Get the r and s values from the sig bytes
     final r = BigInt.parse(
-      hex.encode(
-        sigBytes.sublist(0, 32),
-      ),
+      hex.encode(sigBytes.sublist(0, 32)),
       radix: 16,
     );
     final s = BigInt.parse(
-      hex.encode(
-        sigBytes.sublist(32, 64),
-      ),
+      hex.encode(sigBytes.sublist(32, 64)),
       radix: 16,
     );
     // print(sigBytes[64]);
