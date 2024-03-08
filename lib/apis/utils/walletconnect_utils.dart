@@ -213,7 +213,7 @@ class WalletConnectUtils {
         'CFBundleURLTypes',
       );
       if (metaDataValue == null) {
-        return 'CFBundleURLSchemes\'s key is missing on iOS\'s Info.plist.\n'
+        return 'CFBundleURLTypes\'s key is missing on iOS\'s Info.plist.\n'
             'Check out https://docs.walletconnect.com/web3wallet/mobileLinking on how to include it';
       }
       final properties = metaDataValue as List;
