@@ -1,11 +1,9 @@
 import 'dart:convert';
 
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:universal_io/io.dart';
+import 'package:platform_metadata/platform_metadata.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
-import 'package:walletconnect_flutter_v2/apis/core/relay_client/relay_client_models.dart';
-import 'package:walletconnect_flutter_v2/apis/models/basic_models.dart';
-import 'package:walletconnect_flutter_v2/apis/models/uri_parse_result.dart';
+import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 
 class WalletConnectUtils {
   static bool isExpired(int expiry) {
@@ -207,5 +205,41 @@ class WalletConnectUtils {
       m[entry.key] = entry.value as T;
     }
     return m;
+  }
+
+  static Future<String?> validateRedirect(Redirect? redirect) async {
+    try {
+      final metaDataValue = await PlatformMetadata.getMetaDataValue(
+        'CFBundleURLTypes',
+      );
+      if (metaDataValue == null) {
+        return 'CFBundleURLSchemes\'s key is missing on iOS\'s Info.plist.\n'
+            'Check out https://docs.walletconnect.com/web3wallet/mobileLinking on how to include it';
+      }
+      final properties = metaDataValue as List;
+      for (var prop in properties) {
+        if (prop is Map && prop.keys.contains('CFBundleURLSchemes')) {
+          final plistSchemas = prop['CFBundleURLSchemes'] as List;
+          final nativeSchema = redirect?.native ?? '';
+          final universalLink = redirect?.universal ?? '';
+          if (nativeSchema.isEmpty && universalLink.isEmpty) {
+            return 'No metadata.redirect object has been set\n'
+                'Check out https://docs.walletconnect.com/web3wallet/wallet-usage#initialization';
+          }
+          if (nativeSchema.isEmpty) {
+            return 'Metadata\'s native redirect value has not been set\n'
+                'Check out https://docs.walletconnect.com/web3wallet/wallet-usage#initialization';
+          }
+          final uri = Uri.parse(nativeSchema);
+          if (!plistSchemas.contains(uri.scheme)) {
+            return 'Metadata\'s native redirect ($uri) is not included under CFBundleURLSchemes\'s key.\n'
+                'Check out https://docs.walletconnect.com/web3wallet/mobileLinking on how to include it';
+          }
+        }
+      }
+      return null;
+    } catch (e) {
+      return 'Web3Wallet: failed to get iOS configuration: $e';
+    }
   }
 }

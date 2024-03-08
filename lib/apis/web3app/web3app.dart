@@ -131,6 +131,13 @@ class Web3App implements IWeb3App {
       return;
     }
 
+    final validation = await WalletConnectUtils.validateRedirect(
+      metadata.redirect,
+    );
+    if (validation != null) {
+      core.logger.e(validation);
+    }
+
     await core.start();
     await signEngine.init();
     await authEngine.init();
