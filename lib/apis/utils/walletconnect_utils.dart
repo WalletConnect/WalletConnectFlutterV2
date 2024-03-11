@@ -214,6 +214,7 @@ class WalletConnectUtils {
       );
       if (metaDataValue == null) {
         return 'CFBundleURLTypes\'s key is missing on iOS\'s Info.plist.\n'
+            'If you want deep linking to work this key must be added.\n'
             'Check out https://docs.walletconnect.com/web3wallet/mobileLinking on how to include it';
       }
       final properties = metaDataValue as List;
@@ -224,13 +225,17 @@ class WalletConnectUtils {
           final universalLink = redirect?.universal ?? '';
           if (nativeSchema.isEmpty && universalLink.isEmpty) {
             return 'No metadata.redirect object has been set\n'
-                'Check out https://docs.walletconnect.com/web3wallet/wallet-usage#initialization';
+                'If you want deep linking to work redirect object must be set.\n'
+                'Check out https://docs.walletconnect.com/web3wallet/wallet-usage#initialization ';
           }
           if (nativeSchema.isEmpty) {
             return 'Metadata\'s native redirect value has not been set\n'
-                'Check out https://docs.walletconnect.com/web3wallet/wallet-usage#initialization';
+                'Check out https://docs.walletconnect.com/web3wallet/wallet-usage#initialization ';
           }
           final uri = Uri.parse(nativeSchema);
+          if (uri.scheme.isEmpty) {
+            return 'Metadata\'s native redirect must be a valid scheme. E.g.: example:// ';
+          }
           if (!plistSchemas.contains(uri.scheme)) {
             return 'Metadata\'s native redirect ($uri) is not included under CFBundleURLSchemes\'s key.\n'
                 'Check out https://docs.walletconnect.com/web3wallet/mobileLinking on how to include it';
@@ -239,7 +244,7 @@ class WalletConnectUtils {
       }
       return null;
     } catch (e) {
-      return 'Web3Wallet: failed to get iOS configuration: $e';
+      return 'Failed to get iOS configuration: $e';
     }
   }
 }

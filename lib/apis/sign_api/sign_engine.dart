@@ -75,6 +75,13 @@ class SignEngine implements ISignEngine {
       return;
     }
 
+    final validation = await WalletConnectUtils.validateRedirect(
+      metadata.redirect,
+    );
+    if (validation != null) {
+      core.logger.e(validation);
+    }
+
     await core.pairing.init();
     await core.verify.init(verifyUrl: metadata.verifyUrl);
     await proposals.init();
