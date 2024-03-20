@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 // ignore: depend_on_referenced_packages
 import 'package:http/http.dart' as http;
@@ -93,15 +92,13 @@ class EVMService {
         final keys = GetIt.I<IKeyService>().getKeysForChain(
           chainSupported.chainId,
         );
-        final credentials = EthPrivateKey.fromHex(keys[0].privateKey);
 
-        final signature = hex.encode(
-          credentials.signPersonalMessageToUint8List(
-            Uint8List.fromList(utf8.encode(message)),
-          ),
+        final signature = EthSigUtil.signPersonalMessage(
+          privateKey: keys[0].privateKey,
+          message: utf8.encode(message),
         );
 
-        response = response.copyWith(result: '0x$signature');
+        response = response.copyWith(result: signature);
       } catch (e) {
         debugPrint('[$runtimeType] personalSign error $e');
         response = response.copyWith(
@@ -138,15 +135,13 @@ class EVMService {
         final keys = GetIt.I<IKeyService>().getKeysForChain(
           chainSupported.chainId,
         );
-        final credentials = EthPrivateKey.fromHex(keys[0].privateKey);
 
-        final signature = hex.encode(
-          credentials.signPersonalMessageToUint8List(
-            Uint8List.fromList(utf8.encode(message)),
-          ),
+        final signature = EthSigUtil.signPersonalMessage(
+          privateKey: keys[0].privateKey,
+          message: utf8.encode(message),
         );
 
-        response = response.copyWith(result: '0x$signature');
+        response = response.copyWith(result: signature);
       } catch (e) {
         debugPrint('[$runtimeType] ethSign error $e');
         response = response.copyWith(

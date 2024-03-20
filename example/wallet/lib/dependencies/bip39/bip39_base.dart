@@ -53,8 +53,10 @@ Uint8List _randomBytes(int size) {
   return bytes;
 }
 
-String generateMnemonic(
-    {int strength = 128, RandomBytes randomBytes = _randomBytes}) {
+String generateMnemonic({
+  int strength = 128,
+  RandomBytes randomBytes = _randomBytes,
+}) {
   assert(strength % 32 == 0);
   final entropy = randomBytes(strength ~/ 8);
   return entropyToMnemonic(hex.encode(entropy));
