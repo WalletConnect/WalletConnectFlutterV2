@@ -46,6 +46,7 @@ abstract class ISignClient {
   Future<ApproveResponse> approve({
     required int id,
     required Map<String, Namespace> namespaces,
+    Map<String, String>? sessionProperties,
     String? relayProtocol,
   });
   Future<void> reject({

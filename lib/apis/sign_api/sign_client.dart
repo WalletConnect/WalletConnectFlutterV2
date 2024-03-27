@@ -1,23 +1,23 @@
 import 'package:event/event.dart';
 import 'package:walletconnect_flutter_v2/apis/core/core.dart';
+import 'package:walletconnect_flutter_v2/apis/core/i_core.dart';
+import 'package:walletconnect_flutter_v2/apis/core/pairing/i_pairing_store.dart';
+import 'package:walletconnect_flutter_v2/apis/core/pairing/utils/pairing_models.dart';
+import 'package:walletconnect_flutter_v2/apis/core/relay_client/relay_client_models.dart';
 import 'package:walletconnect_flutter_v2/apis/core/store/generic_store.dart';
 import 'package:walletconnect_flutter_v2/apis/core/store/i_generic_store.dart';
-import 'package:walletconnect_flutter_v2/apis/core/pairing/i_pairing_store.dart';
-import 'package:walletconnect_flutter_v2/apis/core/relay_client/relay_client_models.dart';
 import 'package:walletconnect_flutter_v2/apis/models/basic_models.dart';
 import 'package:walletconnect_flutter_v2/apis/models/json_rpc_response.dart';
-import 'package:walletconnect_flutter_v2/apis/sign_api/sign_engine.dart';
-import 'package:walletconnect_flutter_v2/apis/sign_api/i_sign_engine.dart';
-import 'package:walletconnect_flutter_v2/apis/core/pairing/utils/pairing_models.dart';
-import 'package:walletconnect_flutter_v2/apis/core/i_core.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/i_sessions.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/i_sign_client.dart';
+import 'package:walletconnect_flutter_v2/apis/sign_api/i_sign_engine.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/models/json_rpc_models.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/models/proposal_models.dart';
-import 'package:walletconnect_flutter_v2/apis/sign_api/models/sign_client_models.dart';
-import 'package:walletconnect_flutter_v2/apis/sign_api/models/sign_client_events.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/models/session_models.dart';
+import 'package:walletconnect_flutter_v2/apis/sign_api/models/sign_client_events.dart';
+import 'package:walletconnect_flutter_v2/apis/sign_api/models/sign_client_models.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/sessions.dart';
+import 'package:walletconnect_flutter_v2/apis/sign_api/sign_engine.dart';
 import 'package:walletconnect_flutter_v2/apis/utils/constants.dart';
 import 'package:walletconnect_flutter_v2/apis/utils/log_level.dart';
 import 'package:web3dart/web3dart.dart';
@@ -174,12 +174,14 @@ class SignClient implements ISignClient {
   Future<ApproveResponse> approve({
     required int id,
     required Map<String, Namespace> namespaces,
+    Map<String, String>? sessionProperties,
     String? relayProtocol,
   }) async {
     try {
       return await engine.approveSession(
         id: id,
         namespaces: namespaces,
+        sessionProperties: sessionProperties,
         relayProtocol: relayProtocol,
       );
     } catch (e) {

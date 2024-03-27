@@ -180,12 +180,14 @@ class Web3Wallet implements IWeb3Wallet {
   Future<ApproveResponse> approveSession({
     required int id,
     required Map<String, Namespace> namespaces,
+    Map<String, String>? sessionProperties,
     String? relayProtocol,
   }) async {
     try {
       return await signEngine.approveSession(
         id: id,
         namespaces: namespaces,
+        sessionProperties: sessionProperties,
         relayProtocol: relayProtocol,
       );
     } catch (e) {
