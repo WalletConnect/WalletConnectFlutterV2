@@ -12,25 +12,36 @@ jobs:
       id-token: write
     runs-on: ubuntu-latest
     steps:
-    # Checkout the repo
-    - uses: actions/checkout@v3
+      # Checkout the repo
+      - uses: actions/checkout@v3
 
-    # Install Flutter
-    - name: Install and set Flutter version
-      uses: subosito/flutter-action@v2
-      with:
-        channel: 'stable'
-    
-    # Setup Dart SDK
-    - uses: dart-lang/setup-dart@v1
+      # Install Flutter
+      - name: Install and set Flutter version
+        uses: subosito/flutter-action@v2
+        with:
+          channel: 'stable'
+      
+      # Setup Dart SDK
+      - uses: dart-lang/setup-dart@v1
 
-    # Setup Dependencies
-    - uses: ./.github/actions/dependencies
+      # Setup Dependencies
+      - uses: ./.github/actions/dependencies
 
-    # Publish
-    - name: Check Publish Warnings
-      shell: bash
-      run: flutter pub publish --dry-run
-    - name: Publish Package
-      shell: bash
-      run: flutter pub publish -f
+      # Publish
+      - name: Check Publish Warnings
+        shell: bash
+        run: flutter pub publish --dry-run
+      - name: Publish Package
+        shell: bash
+        run: flutter pub publish -f
+      # Notify
+      - name: Notify Channel
+        uses: slackapi/slack-github-action@v1.24.0
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+          SLACK_WEBHOOK_TYPE: 'INCOMING_WEBHOOK'
+        with:
+          payload: |-
+            {
+              "text":"🚀 WalletConnectFlutterV2 *${{ github.ref_name }}* was just published at https://pub.dev/packages/walletconnect_flutter_v2"
+            }
