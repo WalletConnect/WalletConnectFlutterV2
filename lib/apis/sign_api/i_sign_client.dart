@@ -78,7 +78,7 @@ abstract class ISignClient {
     required String chainId,
     required SessionRequestParams request,
   });
-  Future<dynamic> requestReadContract({
+  Future<List<dynamic>> requestReadContract({
     required DeployedContract deployedContract,
     required String functionName,
     required String rpcUrl,

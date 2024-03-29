@@ -471,7 +471,7 @@ class SignEngine implements ISignEngine {
   }
 
   @override
-  Future<dynamic> requestReadContract({
+  Future<List<dynamic>> requestReadContract({
     required DeployedContract deployedContract,
     required String functionName,
     required String rpcUrl,
@@ -479,15 +479,14 @@ class SignEngine implements ISignEngine {
   }) async {
     try {
       core.logger.i('readContractCall: with function $functionName');
-      final result = await Web3Client(rpcUrl, http.Client()).call(
+      final results = await Web3Client(rpcUrl, http.Client()).call(
         contract: deployedContract,
         function: deployedContract.function(functionName),
         params: parameters,
       );
 
-      core.logger.i(
-          'readContractCall - function: $functionName - result: ${result.first}');
-      return result.first;
+      core.logger.i('readContractCall: $functionName - results: $results');
+      return results;
     } catch (e) {
       rethrow;
     }
