@@ -23,11 +23,12 @@ class StringConstants {
   // Uri Input Popup
   static const String enterUri = 'Enter a WalletConnect URI';
   static const String enterUriMessage =
-      'To get the URI press the copy to clipboard button in the wallet connection interface';
+      'To get the URI press the "copy to clipboard" button in the wallet connection interfaces.';
   static const String textFieldPlaceholder = 'wc://a13aef...';
 
   // Session Proposal
   static const String chains = 'Chains';
+  static const String accounts = 'Accounts';
   static const String methods = 'Methods';
   static const String events = 'Events';
 
@@ -36,8 +37,8 @@ class StringConstants {
   static const String reject = 'Reject';
 
   // Main Page
-  static const String appTitle = 'Wallet Connect v2 Flutter Wallet Demo';
-  static const String connectPageTitle = 'Connect';
+  static const String appTitle = 'Web3Wallet Flutter Example';
+  static const String connectPageTitle = 'Connections';
   static const String pairingsPageTitle = 'Pairings';
   static const String sessionsPageTitle = 'Sessions';
   static const String authPageTitle = 'Auth';

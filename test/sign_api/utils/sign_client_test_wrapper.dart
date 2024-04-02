@@ -1,4 +1,3 @@
-import 'package:logger/logger.dart';
 import 'package:walletconnect_flutter_v2/apis/core/relay_client/websocket/http_client.dart';
 import 'package:walletconnect_flutter_v2/apis/core/relay_client/websocket/i_http_client.dart';
 import 'package:walletconnect_flutter_v2/apis/core/store/i_generic_store.dart';
@@ -202,7 +201,7 @@ class SignClientTestWrapper implements ISignEngine {
   }
 
   @override
-  Future request({
+  Future<dynamic> request({
     required String topic,
     required String chainId,
     required SessionRequestParams request,
@@ -212,6 +211,52 @@ class SignClientTestWrapper implements ISignEngine {
         topic: topic,
         chainId: chainId,
         request: request,
+      );
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<List<dynamic>> requestReadContract({
+    required DeployedContract deployedContract,
+    required String functionName,
+    required String rpcUrl,
+    List parameters = const [],
+  }) async {
+    try {
+      return await client.requestReadContract(
+        deployedContract: deployedContract,
+        functionName: functionName,
+        rpcUrl: rpcUrl,
+        parameters: parameters,
+      );
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<dynamic> requestWriteContract({
+    required String topic,
+    required String chainId,
+    required String rpcUrl,
+    required DeployedContract deployedContract,
+    required String functionName,
+    required Transaction transaction,
+    String? method,
+    List parameters = const [],
+  }) async {
+    try {
+      return await client.requestWriteContract(
+        topic: topic,
+        chainId: chainId,
+        rpcUrl: rpcUrl,
+        deployedContract: deployedContract,
+        functionName: functionName,
+        transaction: transaction,
+        method: method,
+        parameters: parameters,
       );
     } catch (e) {
       rethrow;

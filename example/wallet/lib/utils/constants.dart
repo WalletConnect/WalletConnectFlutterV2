@@ -12,7 +12,7 @@ class StyleConstants {
   static const Color primaryColor = Color(0xFF3396FF);
 
   static const Color darkGray = Color(0xFF141414);
-  static const Color lightGray = Color.fromARGB(255, 196, 196, 196);
+  static const Color lightGray = Color.fromARGB(255, 227, 227, 227);
 
   static const Color clear = Color.fromARGB(0, 0, 0, 0);
   static const Color layerColor0 = Color(0xFF000000);
@@ -53,7 +53,7 @@ class StyleConstants {
 
   // Text styles
   static const TextStyle titleText = TextStyle(
-    color: Colors.white,
+    color: Colors.grey,
     fontSize: magic40,
     fontWeight: FontWeight.w600,
   );
@@ -68,12 +68,12 @@ class StyleConstants {
     fontWeight: FontWeight.w600,
   );
   static const TextStyle bodyTextBold = TextStyle(
-    color: Colors.white,
+    color: Colors.grey,
     fontSize: magic14,
     fontWeight: FontWeight.w900,
   );
   static const TextStyle bodyText = TextStyle(
-    color: Colors.white,
+    color: Colors.grey,
     fontSize: magic14,
     fontWeight: FontWeight.w400,
   );
@@ -87,7 +87,7 @@ class StyleConstants {
     fontWeight: FontWeight.w600,
   );
   static const TextStyle layerTextStyle3 = TextStyle(
-    color: layerTextColor3,
+    color: Colors.black,
     fontSize: magic14,
     fontWeight: FontWeight.w600,
   );

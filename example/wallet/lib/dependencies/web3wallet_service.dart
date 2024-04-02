@@ -6,19 +6,20 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/bottom_sheet/i_bottom_sheet_service.dart';
+import 'package:walletconnect_flutter_v2_wallet/dependencies/deep_link_handler.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/i_web3wallet_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/key_service/chain_key.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/key_service/i_key_service.dart';
+import 'package:walletconnect_flutter_v2_wallet/models/chain_metadata.dart';
+import 'package:walletconnect_flutter_v2_wallet/utils/constants.dart';
 import 'package:walletconnect_flutter_v2_wallet/utils/dart_defines.dart';
-import 'package:walletconnect_flutter_v2_wallet/utils/eth_utils.dart';
 import 'package:walletconnect_flutter_v2_wallet/widgets/wc_connection_request/wc_auth_request_model.dart';
 import 'package:walletconnect_flutter_v2_wallet/widgets/wc_connection_request/wc_connection_request_widget.dart';
 import 'package:walletconnect_flutter_v2_wallet/widgets/wc_connection_request/wc_session_request_model.dart';
 import 'package:walletconnect_flutter_v2_wallet/widgets/wc_request_widget.dart/wc_request_widget.dart';
 
 class Web3WalletService extends IWeb3WalletService {
-  final IBottomSheetService _bottomSheetHandler =
-      GetIt.I<IBottomSheetService>();
+  final _bottomSheetHandler = GetIt.I<IBottomSheetService>();
 
   Web3Wallet? _web3Wallet;
 
@@ -35,7 +36,7 @@ class Web3WalletService extends IWeb3WalletService {
   ValueNotifier<List<StoredCacao>> auth = ValueNotifier<List<StoredCacao>>([]);
 
   @override
-  void create() {
+  void create() async {
     // Create the web3wallet
     _web3Wallet = Web3Wallet(
       core: Core(
@@ -43,48 +44,48 @@ class Web3WalletService extends IWeb3WalletService {
         logLevel: LogLevel.error,
       ),
       metadata: const PairingMetadata(
-        name: 'Example Wallet',
-        description: 'Example Wallet',
+        name: 'Sample Wallet Flutter',
+        description: 'WalletConnect\'s sample wallet with Flutter',
         url: 'https://walletconnect.com/',
         icons: [
-          'https://github.com/WalletConnect/Web3ModalFlutter/blob/master/assets/png/logo_wc.png'
+          'https://docs.walletconnect.com/assets/images/web3walletLogo-54d3b546146931ceaf47a3500868a73a.png'
         ],
         redirect: Redirect(
-          native: 'myflutterwallet://',
+          native: 'wcflutterwallet://',
           universal: 'https://walletconnect.com',
         ),
       ),
     );
 
     // Setup our accounts
-    List<ChainKey> chainKeys = GetIt.I<IKeyService>().getKeys();
+    List<ChainKey> chainKeys = await GetIt.I<IKeyService>().setKeys();
+    if (chainKeys.isEmpty) {
+      await GetIt.I<IKeyService>().createWallet();
+      chainKeys = await GetIt.I<IKeyService>().setKeys();
+    }
     for (final chainKey in chainKeys) {
       for (final chainId in chainKey.chains) {
         if (chainId.startsWith('kadena')) {
-          // print('registering kadena $chainId:${chainKey.publicKey}');
           _web3Wallet!.registerAccount(
             chainId: chainId,
-            accountAddress: 'k**${chainKey.publicKey}',
+            accountAddress: 'k**${chainKey.address}',
           );
         } else {
-          // print('registering other $chainId:${chainKey.publicKey}');
           _web3Wallet!.registerAccount(
             chainId: chainId,
-            accountAddress: chainKey.publicKey,
+            accountAddress: chainKey.address,
           );
         }
       }
     }
 
     // Setup our listeners
-    print('web3wallet create');
+    debugPrint('web3wallet create');
     _web3Wallet!.core.pairing.onPairingInvalid.subscribe(_onPairingInvalid);
     _web3Wallet!.core.pairing.onPairingCreate.subscribe(_onPairingCreate);
     _web3Wallet!.pairings.onSync.subscribe(_onPairingsSync);
     _web3Wallet!.onSessionProposal.subscribe(_onSessionProposal);
     _web3Wallet!.onSessionProposalError.subscribe(_onSessionProposalError);
-    _web3Wallet!.onSessionConnect.subscribe(_onSessionConnect);
-    _web3Wallet!.onSessionRequest.subscribe(_onSessionRequest);
     _web3Wallet!.onAuthRequest.subscribe(_onAuthRequest);
     _web3Wallet!.core.relayClient.onRelayClientError
         .subscribe(_onRelayClientError);
@@ -93,7 +94,7 @@ class Web3WalletService extends IWeb3WalletService {
   @override
   Future<void> init() async {
     // Await the initialization of the web3wallet
-    print('web3wallet init');
+    debugPrint('web3wallet init');
     await _web3Wallet!.init();
 
     pairings.value = _web3Wallet!.pairings.getAll();
@@ -103,13 +104,11 @@ class Web3WalletService extends IWeb3WalletService {
 
   @override
   FutureOr onDispose() {
-    print('web3wallet dispose');
+    debugPrint('web3wallet dispose');
     _web3Wallet!.core.pairing.onPairingInvalid.unsubscribe(_onPairingInvalid);
     _web3Wallet!.pairings.onSync.unsubscribe(_onPairingsSync);
     _web3Wallet!.onSessionProposal.unsubscribe(_onSessionProposal);
     _web3Wallet!.onSessionProposalError.unsubscribe(_onSessionProposalError);
-    _web3Wallet!.onSessionConnect.unsubscribe(_onSessionConnect);
-    _web3Wallet!.onSessionRequest.unsubscribe(_onSessionRequest);
     _web3Wallet!.onAuthRequest.unsubscribe(_onAuthRequest);
     _web3Wallet!.core.relayClient.onRelayClientError
         .unsubscribe(_onRelayClientError);
@@ -130,37 +129,104 @@ class Web3WalletService extends IWeb3WalletService {
     debugPrint('[$runtimeType] _onRelayClientError ${args?.error}');
   }
 
-  void _onSessionProposalError(SessionProposalErrorEvent? args) {
+  void _onSessionProposalError(SessionProposalErrorEvent? args) async {
     debugPrint('[$runtimeType] _onSessionProposalError $args');
+    if (args != null) {
+      String errorMessage = args.error.message;
+      if (args.error.code == 5100) {
+        errorMessage =
+            errorMessage.replaceFirst('Requested:', '\n\nRequested:');
+        errorMessage =
+            errorMessage.replaceFirst('Supported:', '\n\nSupported:');
+      }
+      GetIt.I<IBottomSheetService>().queueBottomSheet(
+        widget: Container(
+          color: Colors.white,
+          width: double.infinity,
+          padding: const EdgeInsets.all(20.0),
+          child: Column(
+            children: [
+              Icon(
+                Icons.error_outline_sharp,
+                color: Colors.red[100],
+                size: 80.0,
+              ),
+              Text(
+                'Error',
+                style: StyleConstants.subtitleText.copyWith(
+                  color: Colors.black,
+                  fontSize: 18.0,
+                ),
+              ),
+              Text(errorMessage),
+            ],
+          ),
+        ),
+      );
+    }
+  }
+
+  Map<String, Namespace> _generateNamespaces(
+    Map<String, Namespace>? approvedNamespaces,
+    ChainType chainType,
+  ) {
+    //
+    final constructedNS = Map<String, Namespace>.from(approvedNamespaces ?? {});
+    constructedNS[chainType.name] = constructedNS[chainType.name]!.copyWith(
+      methods: [
+        'personal_sign',
+        ...constructedNS[chainType.name]!.methods,
+      ],
+    );
+    return constructedNS;
   }
 
   void _onSessionProposal(SessionProposalEvent? args) async {
     if (args != null) {
-      final Widget w = WCRequestWidget(
-        child: WCConnectionRequestWidget(
-          wallet: _web3Wallet!,
-          sessionProposal: WCSessionRequestModel(
-            request: args.params,
-            verifyContext: args.verifyContext,
+      // generatedNamespaces is constructed based on registered methods handlers
+      // so if you want to handle requests using onSessionRequest event then you would need to manually add that method in the approved namespaces
+      final approvedNS = _generateNamespaces(
+        args.params.generatedNamespaces!,
+        ChainType.eip155,
+      );
+      final proposalData = args.params.copyWith(
+        generatedNamespaces: approvedNS,
+      );
+      final approved = await _bottomSheetHandler.queueBottomSheet(
+        widget: WCRequestWidget(
+          child: WCConnectionRequestWidget(
+            wallet: _web3Wallet!,
+            sessionProposal: WCSessionRequestModel(
+              request: proposalData,
+              verifyContext: args.verifyContext,
+            ),
           ),
         ),
       );
-      final bool? approved = await _bottomSheetHandler.queueBottomSheet(
-        widget: w,
-      );
-      // print('approved: $approved');
 
-      if (approved != null && approved) {
+      if (approved == true) {
         _web3Wallet!.approveSession(
           id: args.id,
-          namespaces: args.params.generatedNamespaces!,
+          namespaces: approvedNS,
         );
+        final scheme = args.params.proposer.metadata.redirect?.native ?? '';
+        DeepLinkHandler.goTo(scheme, delay: 300);
       } else {
         _web3Wallet!.rejectSession(
           id: args.id,
-          reason: Errors.getSdkError(
-            Errors.USER_REJECTED,
-          ),
+          reason: Errors.getSdkError(Errors.USER_REJECTED),
+        );
+        _web3Wallet!.core.pairing.disconnect(
+          topic: args.params.pairingTopic,
+        );
+
+        final scheme = args.params.proposer.metadata.redirect?.native ?? '';
+        DeepLinkHandler.goTo(
+          scheme,
+          delay: 300,
+          modalTitle: 'Error',
+          modalMessage: 'User rejected',
+          success: false,
         );
       }
     }
@@ -174,61 +240,22 @@ class Web3WalletService extends IWeb3WalletService {
     debugPrint('[$runtimeType] _onPairingCreate $args');
   }
 
-  void _onSessionRequest(SessionRequestEvent? args) {
-    if (args == null) return;
-
-    final id = args.id;
-    final topic = args.topic;
-    final parameters = args.params;
-
-    final message = EthUtils.getUtf8Message(parameters[0]);
-
-    debugPrint('On session request event: $id, $topic, $message');
-
-    // // Load the private key
-    // final keys = GetIt.I<IKeyService>().getKeysForChain(getChainId());
-    // final credentials = EthPrivateKey.fromHex(keys[0].privateKey);
-
-    // final signedMessage = hex.encode(
-    //   credentials.signPersonalMessageToUint8List(
-    //     Uint8List.fromList(utf8.encode(message)),
-    //   ),
-    // );
-
-    // final r = {'id': id, 'result': signedMessage, 'jsonrpc': '2.0'};
-    // final response = JsonRpcResponse.fromJson(r);
-    // print(r);
-    // _web3Wallet?.respondSessionRequest(topic: topic, response: response);
-  }
-
-  void _onSessionConnect(SessionConnect? args) {
-    if (args != null) {
-      print(args);
-      sessions.value.add(args.session);
-    }
-  }
-
   Future<void> _onAuthRequest(AuthRequest? args) async {
     if (args != null) {
-      print(args);
-      List<ChainKey> chainKeys = GetIt.I<IKeyService>().getKeysForChain(
-        'eip155:1',
-      );
+      final chainKeys = GetIt.I<IKeyService>().getKeysForChain('eip155:1');
       // Create the message to be signed
-      final String iss = 'did:pkh:eip155:1:${chainKeys.first.publicKey}';
+      final iss = 'did:pkh:eip155:1:${chainKeys.first.address}';
 
-      // print(args);
-      final Widget w = WCRequestWidget(
-        child: WCConnectionRequestWidget(
-          wallet: _web3Wallet!,
-          authRequest: WCAuthRequestModel(
-            iss: iss,
-            request: args,
+      final bool? auth = await _bottomSheetHandler.queueBottomSheet(
+        widget: WCRequestWidget(
+          child: WCConnectionRequestWidget(
+            wallet: _web3Wallet!,
+            authRequest: WCAuthRequestModel(
+              iss: iss,
+              request: args,
+            ),
           ),
         ),
-      );
-      final bool? auth = await _bottomSheetHandler.queueBottomSheet(
-        widget: w,
       );
 
       if (auth != null && auth) {

@@ -19,6 +19,8 @@ import 'package:walletconnect_flutter_v2/apis/sign_api/models/sign_client_events
 import 'package:walletconnect_flutter_v2/apis/sign_api/models/session_models.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/sessions.dart';
 import 'package:walletconnect_flutter_v2/apis/utils/constants.dart';
+import 'package:walletconnect_flutter_v2/apis/utils/log_level.dart';
+import 'package:web3dart/web3dart.dart';
 
 class SignClient implements ISignClient {
   bool _initialized = false;
@@ -71,12 +73,14 @@ class SignClient implements ISignClient {
     String relayUrl = WalletConnectConstants.DEFAULT_RELAY_URL,
     required PairingMetadata metadata,
     bool memoryStore = false,
+    LogLevel logLevel = LogLevel.nothing,
   }) async {
     final client = SignClient(
       core: Core(
         projectId: projectId,
         relayUrl: relayUrl,
         memoryStore: memoryStore,
+        logLevel: logLevel,
       ),
       metadata: metadata,
     );
@@ -243,7 +247,7 @@ class SignClient implements ISignClient {
   }
 
   @override
-  Future request({
+  Future<dynamic> request({
     required String topic,
     required String chainId,
     required SessionRequestParams request,
@@ -253,6 +257,52 @@ class SignClient implements ISignClient {
         topic: topic,
         chainId: chainId,
         request: request,
+      );
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<List<dynamic>> requestReadContract({
+    required DeployedContract deployedContract,
+    required String functionName,
+    required String rpcUrl,
+    List parameters = const [],
+  }) async {
+    try {
+      return await engine.requestReadContract(
+        deployedContract: deployedContract,
+        functionName: functionName,
+        rpcUrl: rpcUrl,
+        parameters: parameters,
+      );
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<dynamic> requestWriteContract({
+    required String topic,
+    required String chainId,
+    required String rpcUrl,
+    required DeployedContract deployedContract,
+    required String functionName,
+    required Transaction transaction,
+    String? method,
+    List parameters = const [],
+  }) async {
+    try {
+      return await engine.requestWriteContract(
+        topic: topic,
+        chainId: chainId,
+        rpcUrl: rpcUrl,
+        deployedContract: deployedContract,
+        functionName: functionName,
+        transaction: transaction,
+        method: method,
+        parameters: parameters,
       );
     } catch (e) {
       rethrow;

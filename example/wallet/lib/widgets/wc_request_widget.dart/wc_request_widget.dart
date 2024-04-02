@@ -3,18 +3,17 @@ import 'package:walletconnect_flutter_v2_wallet/utils/constants.dart';
 import 'package:walletconnect_flutter_v2_wallet/utils/string_constants.dart';
 import 'package:walletconnect_flutter_v2_wallet/widgets/custom_button.dart';
 
-// ignore: must_be_immutable
 class WCRequestWidget extends StatelessWidget {
-  WCRequestWidget({
+  const WCRequestWidget({
     super.key,
     required this.child,
     this.onAccept,
     this.onReject,
   });
 
-  Widget child;
-  VoidCallback? onAccept;
-  VoidCallback? onReject;
+  final Widget child;
+  final VoidCallback? onAccept;
+  final VoidCallback? onReject;
 
   @override
   Widget build(BuildContext context) {
@@ -30,18 +29,6 @@ class WCRequestWidget extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
               CustomButton(
-                onTap: onAccept ?? () => Navigator.of(context).pop(true),
-                type: CustomButtonType.valid,
-                child: const Text(
-                  StringConstants.approve,
-                  style: StyleConstants.buttonText,
-                  textAlign: TextAlign.center,
-                ),
-              ),
-              const SizedBox(
-                width: StyleConstants.linear16,
-              ),
-              CustomButton(
                 onTap: onReject ?? () => Navigator.of(context).pop(false),
                 type: CustomButtonType.invalid,
                 child: const Text(
@@ -50,9 +37,20 @@ class WCRequestWidget extends StatelessWidget {
                   textAlign: TextAlign.center,
                 ),
               ),
+              const SizedBox(
+                width: StyleConstants.linear16,
+              ),
+              CustomButton(
+                onTap: onAccept ?? () => Navigator.of(context).pop(true),
+                type: CustomButtonType.valid,
+                child: const Text(
+                  StringConstants.approve,
+                  style: StyleConstants.buttonText,
+                  textAlign: TextAlign.center,
+                ),
+              ),
             ],
           ),
-          // ),
         ],
       ),
     );

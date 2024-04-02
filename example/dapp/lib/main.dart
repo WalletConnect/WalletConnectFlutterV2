@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 import 'package:walletconnect_flutter_v2_dapp/models/chain_metadata.dart';
 import 'package:walletconnect_flutter_v2_dapp/models/page_data.dart';
@@ -61,12 +63,14 @@ class _MyHomePageState extends State<MyHomePage> {
       projectId: DartDefines.projectId,
       logLevel: LogLevel.info,
       metadata: const PairingMetadata(
-        name: 'Flutter WalletConnect',
-        description: 'Flutter WalletConnect Dapp Example',
+        name: 'Sample dApp Flutter',
+        description: 'WalletConnect\'s sample dapp with Flutter',
         url: 'https://walletconnect.com/',
-        icons: ['https://walletconnect.com/walletconnect-logo.png'],
+        icons: [
+          'https://images.prismic.io/wallet-connect/65785a56531ac2845a260732_WalletConnect-App-Logo-1024X1024.png'
+        ],
         redirect: Redirect(
-          native: 'myflutterdapp://',
+          native: 'wcflutterdapp://',
           universal: 'https://walletconnect.com',
         ),
       ),
@@ -76,19 +80,27 @@ class _MyHomePageState extends State<MyHomePage> {
     for (final ChainMetadata chain in ChainData.allChains) {
       // Loop through the events for that chain
       for (final event in getChainEvents(chain.type)) {
+        debugPrint('registerEventHandler $event for chain ${chain.chainId}');
         _web3App!.registerEventHandler(chainId: chain.chainId, event: event);
       }
     }
 
     // Register event handlers
+    _web3App!.onSessionConnect.subscribe(_onSessionConnect);
     _web3App!.onSessionPing.subscribe(_onSessionPing);
     _web3App!.onSessionEvent.subscribe(_onSessionEvent);
     _web3App!.core.relayClient.onRelayClientConnect
         .subscribe(_onRelayClientStatus);
     _web3App!.core.relayClient.onRelayClientDisconnect
         .subscribe(_onRelayClientStatus);
+    _web3App!.onSessionUpdate.subscribe(_onSessionUpdate);
+
     _web3App!.core.relayClient.onRelayClientConnect.subscribe(_setState);
     _web3App!.core.relayClient.onRelayClientDisconnect.subscribe(_setState);
+    _web3App!.core.relayClient.onRelayClientMessage.subscribe(_onRelayMessage);
+
+    _web3App!.signEngine.onSessionEvent.subscribe(_onSessionEvent);
+    _web3App!.signEngine.onSessionUpdate.subscribe(_onSessionUpdate);
 
     setState(() {
       _pageDatas = [
@@ -129,14 +141,23 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   void dispose() {
-    _web3App!.core.relayClient.onRelayClientConnect.unsubscribe(_setState);
-    _web3App!.core.relayClient.onRelayClientDisconnect.unsubscribe(_setState);
+    // Unregister event handlers
+    _web3App!.onSessionConnect.unsubscribe(_onSessionConnect);
     _web3App!.onSessionPing.unsubscribe(_onSessionPing);
     _web3App!.onSessionEvent.unsubscribe(_onSessionEvent);
     _web3App!.core.relayClient.onRelayClientConnect
         .unsubscribe(_onRelayClientStatus);
     _web3App!.core.relayClient.onRelayClientDisconnect
         .unsubscribe(_onRelayClientStatus);
+    _web3App!.onSessionUpdate.unsubscribe(_onSessionUpdate);
+
+    _web3App!.core.relayClient.onRelayClientConnect.unsubscribe(_setState);
+    _web3App!.core.relayClient.onRelayClientDisconnect.unsubscribe(_setState);
+    _web3App!.core.relayClient.onRelayClientMessage
+        .unsubscribe(_onRelayMessage);
+
+    _web3App!.signEngine.onSessionEvent.unsubscribe(_onSessionEvent);
+    _web3App!.signEngine.onSessionUpdate.unsubscribe(_onSessionUpdate);
     super.dispose();
   }
 
@@ -156,33 +177,7 @@ class _MyHomePageState extends State<MyHomePage> {
     }
     navRail.add(
       Expanded(
-        child: Stack(
-          children: [
-            _pageDatas[_selectedIndex].page,
-            Positioned(
-              bottom: StyleConstants.magic20,
-              right: StyleConstants.magic20,
-              child: Row(
-                children: [
-                  Text(_web3App!.core.relayClient.isConnected
-                      ? 'Relay Connected'
-                      : 'Relay Disconnected'),
-                  Switch(
-                    value: _web3App!.core.relayClient.isConnected,
-                    onChanged: (value) {
-                      if (!value) {
-                        _web3App!.core.relayClient.disconnect();
-                      } else {
-                        _web3App!.core.relayClient.connect();
-                      }
-                      setState(() {});
-                    },
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
+        child: _pageDatas[_selectedIndex].page,
       ),
     );
 
@@ -247,6 +242,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _onSessionPing(SessionPing? args) {
+    debugPrint('[$runtimeType] _onSessionPing $args');
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -259,6 +255,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _onSessionEvent(SessionEvent? args) {
+    debugPrint('[$runtimeType] _onSessionEvent $args');
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -269,5 +266,28 @@ class _MyHomePageState extends State<MyHomePage> {
         );
       },
     );
+  }
+
+  void _onSessionConnect(SessionConnect? event) {
+    debugPrint(jsonEncode(event?.session.toJson()));
+  }
+
+  void _onSessionUpdate(SessionUpdate? args) {
+    debugPrint('[$runtimeType] _onSessionUpdate $args');
+  }
+
+  void _onRelayMessage(MessageEvent? args) async {
+    if (args != null) {
+      try {
+        final payloadString = await _web3App!.core.crypto.decode(
+          args.topic,
+          args.message,
+        );
+        final data = jsonDecode(payloadString ?? '{}') as Map<String, dynamic>;
+        debugPrint('[$runtimeType] _onRelayMessage data $data');
+      } catch (e) {
+        debugPrint('[$runtimeType] _onRelayMessage error $e');
+      }
+    }
   }
 }

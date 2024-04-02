@@ -1,5 +1,14 @@
+import 'dart:convert';
+// ignore: depend_on_referenced_packages
+import 'package:convert/convert.dart';
+
+import 'package:flutter/foundation.dart';
+
+import 'package:intl/intl.dart';
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
-import 'package:walletconnect_flutter_v2_dapp/models/eth/ethereum_transaction.dart';
+import 'package:walletconnect_flutter_v2_dapp/models/chain_metadata.dart';
+import 'package:walletconnect_flutter_v2_dapp/utils/crypto/chain_data.dart';
+import 'package:walletconnect_flutter_v2_dapp/utils/smart_contracts.dart';
 import 'package:walletconnect_flutter_v2_dapp/utils/test_data.dart';
 
 enum EIP155Methods {
@@ -15,10 +24,6 @@ enum EIP155Events {
   accountsChanged,
 }
 
-extension EIP155MethodsX on EIP155Methods {
-  String? get value => EIP155.methods[this];
-}
-
 extension EIP155MethodsStringX on String {
   EIP155Methods? toEip155Method() {
     final entries = EIP155.methods.entries.where(
@@ -26,10 +31,6 @@ extension EIP155MethodsStringX on String {
     );
     return (entries.isNotEmpty) ? entries.first.key : null;
   }
-}
-
-extension EIP155EventsX on EIP155Events {
-  String? get value => EIP155.events[this];
 }
 
 extension EIP155EventsStringX on String {
@@ -59,7 +60,7 @@ class EIP155 {
     required Web3App web3App,
     required String topic,
     required EIP155Methods method,
-    required String chainId,
+    required ChainMetadata chainData,
     required String address,
   }) {
     switch (method) {
@@ -67,23 +68,23 @@ class EIP155 {
         return personalSign(
           web3App: web3App,
           topic: topic,
-          chainId: chainId,
+          chainId: chainData.chainId,
           address: address,
-          data: testSignData,
+          message: testSignData,
         );
       case EIP155Methods.ethSign:
         return ethSign(
           web3App: web3App,
           topic: topic,
-          chainId: chainId,
+          chainId: chainData.chainId,
           address: address,
-          data: testSignData,
+          message: testSignData,
         );
       case EIP155Methods.ethSignTypedData:
         return ethSignTypedData(
           web3App: web3App,
           topic: topic,
-          chainId: chainId,
+          chainId: chainData.chainId,
           address: address,
           data: typedData,
         );
@@ -91,24 +92,69 @@ class EIP155 {
         return ethSignTransaction(
           web3App: web3App,
           topic: topic,
-          chainId: chainId,
-          transaction: EthereumTransaction(
-            from: address,
-            to: address,
-            value: '0x01',
+          chainId: chainData.chainId,
+          transaction: Transaction(
+            from: EthereumAddress.fromHex(address),
+            to: EthereumAddress.fromHex(
+                '0x59e2f66C0E96803206B6486cDb39029abAE834c0'),
+            value: EtherAmount.fromInt(EtherUnit.finney, 12), // == 0.012
           ),
         );
       case EIP155Methods.ethSendTransaction:
         return ethSendTransaction(
           web3App: web3App,
           topic: topic,
-          chainId: chainId,
-          transaction: EthereumTransaction(
-            from: address,
-            to: address,
-            value: '0x01',
+          chainId: chainData.chainId,
+          transaction: Transaction(
+            from: EthereumAddress.fromHex(address),
+            to: EthereumAddress.fromHex(
+                '0x59e2f66C0E96803206B6486cDb39029abAE834c0'),
+            value: EtherAmount.fromInt(EtherUnit.finney, 11), // == 0.011
           ),
         );
+    }
+  }
+
+  static Future<dynamic> callSmartContract({
+    required Web3App web3App,
+    required String topic,
+    required String address,
+    required String action,
+  }) {
+    // Create DeployedContract object using contract's ABI and address
+    final deployedContract = DeployedContract(
+      ContractAbi.fromJson(
+        jsonEncode(SepoliaTestContract.readContractAbi),
+        'Alfreedoms',
+      ),
+      EthereumAddress.fromHex(SepoliaTestContract.contractAddress),
+    );
+
+    switch (action) {
+      case 'read':
+        return readSmartContract(
+          web3App: web3App,
+          rpcUrl: ChainData.testChains.first.rpc.first,
+          contract: deployedContract,
+          address: address,
+        );
+      case 'write':
+        return writeToSmartContract(
+          web3App: web3App,
+          rpcUrl: ChainData.testChains.first.rpc.first,
+          address: address,
+          topic: topic,
+          chainId: ChainData.testChains.first.chainId,
+          contract: deployedContract,
+          transaction: Transaction(
+            from: EthereumAddress.fromHex(address),
+            to: EthereumAddress.fromHex(
+                '0x59e2f66C0E96803206B6486cDb39029abAE834c0'),
+            value: EtherAmount.fromInt(EtherUnit.finney, 10), // == 0.010
+          ),
+        );
+      default:
+        return Future.value();
     }
   }
 
@@ -117,14 +163,18 @@ class EIP155 {
     required String topic,
     required String chainId,
     required String address,
-    required String data,
+    required String message,
   }) async {
+    final bytes = utf8.encode(message);
+    final encoded = '0x${hex.encode(bytes)}';
+    debugPrint('personalSign $encoded');
+
     return await web3App.request(
       topic: topic,
       chainId: chainId,
       request: SessionRequestParams(
         method: methods[EIP155Methods.personalSign]!,
-        params: [data, address],
+        params: [encoded, address],
       ),
     );
   }
@@ -134,14 +184,14 @@ class EIP155 {
     required String topic,
     required String chainId,
     required String address,
-    required String data,
+    required String message,
   }) async {
     return await web3App.request(
       topic: topic,
       chainId: chainId,
       request: SessionRequestParams(
         method: methods[EIP155Methods.ethSign]!,
-        params: [address, data],
+        params: [address, message],
       ),
     );
   }
@@ -167,7 +217,7 @@ class EIP155 {
     required Web3App web3App,
     required String topic,
     required String chainId,
-    required EthereumTransaction transaction,
+    required Transaction transaction,
   }) async {
     return await web3App.request(
       topic: topic,
@@ -183,7 +233,7 @@ class EIP155 {
     required Web3App web3App,
     required String topic,
     required String chainId,
-    required EthereumTransaction transaction,
+    required Transaction transaction,
   }) async {
     return await web3App.request(
       topic: topic,
@@ -192,6 +242,67 @@ class EIP155 {
         method: methods[EIP155Methods.ethSendTransaction]!,
         params: [transaction.toJson()],
       ),
+    );
+  }
+
+  static Future<dynamic> readSmartContract({
+    required Web3App web3App,
+    required String rpcUrl,
+    required String address,
+    required DeployedContract contract,
+  }) async {
+    final results = await Future.wait([
+      // results[0]
+      web3App.requestReadContract(
+        deployedContract: contract,
+        functionName: 'name',
+        rpcUrl: rpcUrl,
+      ),
+      // results[1]
+      web3App.requestReadContract(
+        deployedContract: contract,
+        functionName: 'totalSupply',
+        rpcUrl: rpcUrl,
+      ),
+      // results[2]
+      web3App.requestReadContract(
+        deployedContract: contract,
+        functionName: 'balanceOf',
+        rpcUrl: rpcUrl,
+        parameters: [
+          EthereumAddress.fromHex(address),
+        ],
+      ),
+    ]);
+
+    final oCcy = NumberFormat("#,##0.00", "en_US");
+    final name = results[0].first.toString();
+    final total = results[1].first / BigInt.from(1000000000000000000);
+    final balance = results[2].first / BigInt.from(1000000000000000000);
+
+    return {
+      'name': name,
+      'totalSupply': oCcy.format(total),
+      'balance': oCcy.format(balance),
+    };
+  }
+
+  static Future<dynamic> writeToSmartContract({
+    required Web3App web3App,
+    required String rpcUrl,
+    required String topic,
+    required String chainId,
+    required String address,
+    required DeployedContract contract,
+    required Transaction transaction,
+  }) async {
+    return await web3App.requestWriteContract(
+      topic: topic,
+      chainId: chainId,
+      rpcUrl: rpcUrl,
+      deployedContract: contract,
+      functionName: 'transfer',
+      transaction: transaction,
     );
   }
 }

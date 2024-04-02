@@ -5,6 +5,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:qr_flutter_wc/qr_flutter_wc.dart';
+import 'package:qr_flutter/qr_flutter.dart';
+// ignore: unused_import
+import 'package:url_launcher/url_launcher_string.dart';
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 import 'package:walletconnect_flutter_v2_dapp/models/chain_metadata.dart';
 import 'package:walletconnect_flutter_v2_dapp/utils/constants.dart';
@@ -114,7 +117,7 @@ class ConnectPageState extends State<ConnectPage> {
           children: <Widget>[
             const Text(
               StringConstants.appTitle,
-              style: StyleConstants.titleText,
+              style: StyleConstants.subtitleText,
               textAlign: TextAlign.center,
             ),
             const SizedBox(
@@ -122,7 +125,7 @@ class ConnectPageState extends State<ConnectPage> {
             ),
             const Text(
               StringConstants.selectChains,
-              style: StyleConstants.subtitleText,
+              style: StyleConstants.paragraph,
               textAlign: TextAlign.center,
             ),
             const SizedBox(
@@ -184,7 +187,37 @@ class ConnectPageState extends State<ConnectPage> {
       },
     );
 
-    _showQrCode(res);
+    final encodedUri = Uri.encodeComponent(res.uri.toString());
+    final uri = 'wcflutterwallet://wc?uri=$encodedUri';
+    // final uri = 'metamask://wc?uri=$encodedUri';
+    if (await canLaunchUrlString(uri)) {
+      // ignore: use_build_context_synchronously
+      final openApp = await showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            content: const Text('Do you want to open with Web3Wallet Flutter'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text('Show QR'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: const Text('Open'),
+              ),
+            ],
+          );
+        },
+      );
+      if (openApp) {
+        launchUrlString(uri, mode: LaunchMode.externalApplication);
+      } else {
+        _showQrCode(res);
+      }
+    } else {
+      _showQrCode(res);
+    }
 
     try {
       debugPrint('Awaiting session proposal settlement');
@@ -214,16 +247,18 @@ class ConnectPageState extends State<ConnectPage> {
         showToast?.call(StringConstants.authSucceeded);
         closeModal?.call();
       }
-    } on JsonRpcError catch (e) {
-      final rejectedError = Errors.getSdkError(Errors.USER_REJECTED_CHAINS);
-      if (e.code == rejectedError.code) {
-        showToast?.call(StringConstants.connectionRejected);
-      } else {
-        showToast?.call(StringConstants.connectionFailed);
-        closeModal?.call();
+
+      // ignore: use_build_context_synchronously
+      if (_shouldDismissQrCode && Navigator.canPop(context)) {
+        // ignore: use_build_context_synchronously
+        Navigator.pop(context);
       }
     } catch (e) {
-      debugPrint(e.toString());
+      // ignore: use_build_context_synchronously
+      if (_shouldDismissQrCode && Navigator.canPop(context)) {
+        // ignore: use_build_context_synchronously
+        Navigator.pop(context);
+      }
       showToast?.call(StringConstants.connectionFailed);
       closeModal?.call();
     }

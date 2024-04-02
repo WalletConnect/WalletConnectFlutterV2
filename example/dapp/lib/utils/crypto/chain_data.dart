@@ -9,7 +9,7 @@ class ChainData {
       name: 'Ethereum',
       logo: '/chain-logos/eip155-1.png',
       color: Colors.blue.shade300,
-      rpc: ['https://cloudflare-eth.com/'],
+      rpc: ['https://eth.drpc.org'],
     ),
     ChainMetadata(
       type: ChainType.eip155,
@@ -24,7 +24,7 @@ class ChainData {
       chainId: 'eip155:42161',
       name: 'Arbitrum',
       logo: '/chain-logos/eip155-42161.png',
-      color: Colors.black,
+      color: Colors.blue,
       rpc: ['https://arbitrum.blockpi.network/v1/rpc/public'],
     ),
     const ChainMetadata(
@@ -40,12 +40,12 @@ class ChainData {
   static final List<ChainMetadata> testChains = [
     ChainMetadata(
       type: ChainType.eip155,
-      chainId: 'eip155:5',
-      name: 'Ethereum Goerli',
+      chainId: 'eip155:11155111',
+      name: 'Sepolia',
       logo: '/chain-logos/eip155-1.png',
       color: Colors.blue.shade300,
       isTestnet: true,
-      rpc: ['https://goerli.infura.io/v3/9aa3d95b3bc440fa88ea12eaa4456161'],
+      rpc: ['https://ethereum-sepolia.publicnode.com'],
     ),
     ChainMetadata(
       type: ChainType.eip155,

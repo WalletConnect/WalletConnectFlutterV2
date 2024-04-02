@@ -44,7 +44,6 @@ class MethodDialogState extends State<MethodDialog> {
       content: FutureBuilder<dynamic>(
         future: widget.response,
         builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-          debugPrint('snapshot: $snapshot');
           if (snapshot.hasData) {
             final String t = jsonEncode(snapshot.data);
             return InkWell(
@@ -77,7 +76,7 @@ class MethodDialogState extends State<MethodDialog> {
             return const SizedBox(
               width: StyleConstants.linear48,
               height: StyleConstants.linear48,
-              child: CircularProgressIndicator(),
+              child: Center(child: CircularProgressIndicator()),
             );
           }
         },

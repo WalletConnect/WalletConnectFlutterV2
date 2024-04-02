@@ -1,3 +1,32 @@
+## 2.2.2
+
+- Fix on requestReadContract. Fixes issues https://github.com/WalletConnect/WalletConnectFlutterV2/issues/278 and https://github.com/WalletConnect/Web3ModalFlutter/issues/99
+
+## 2.2.2-beta01
+
+- Updated dependencies
+  
+## 2.2.1
+
+- [Wallet] Fixed and issue where Sign Engine was not properly deciding between using a registered request handler or emitting an onSessionRequest event.
+
+## 2.2.0
+
+- Added Smart Contract interactions to SignEngine
+- Improvements on example wallet
+
+## 2.1.14
+
+- Minor improvements
+
+## 2.1.13
+
+- Updated dependencies
+
+## 2.1.12
+
+- Minor improvements and updated dependencies
+
 ## 2.1.11
 
 - Fixed an issue with `generatedNamespaces` during session proposal

@@ -1,7 +1,6 @@
 @Timeout(Duration(seconds: 45))
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:logger/logger.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 
@@ -14,7 +13,7 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
   PackageInfo.setMockInitialValues(
     appName: 'walletconnect_flutter_v2',
-    packageName: 'sdk.test',
+    packageName: 'com.walletconnect.flutterdapp',
     version: '1.0',
     buildNumber: '2',
     buildSignature: 'buildSignature',

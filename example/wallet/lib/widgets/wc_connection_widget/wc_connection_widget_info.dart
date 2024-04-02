@@ -15,7 +15,7 @@ class WCConnectionWidgetInfo extends StatelessWidget {
     return Container(
       width: double.infinity,
       decoration: BoxDecoration(
-        color: StyleConstants.layerColor3,
+        color: Colors.black12,
         borderRadius: BorderRadius.circular(
           StyleConstants.linear16,
         ),
@@ -34,11 +34,12 @@ class WCConnectionWidgetInfo extends StatelessWidget {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          model.title!,
-          style: StyleConstants.layerTextStyle3,
-        ),
-        const SizedBox(height: StyleConstants.linear8),
+        if (model.title != null)
+          Text(
+            model.title!,
+            style: StyleConstants.layerTextStyle3,
+          ),
+        if (model.title != null) const SizedBox(height: StyleConstants.linear8),
         Wrap(
           spacing: 4,
           runSpacing: 4,
@@ -50,24 +51,34 @@ class WCConnectionWidgetInfo extends StatelessWidget {
   }
 
   Widget _buildElement(String text) {
-    return InkWell(
-      onTap: model.elementActions != null ? model.elementActions![text] : null,
-      child: Container(
-        decoration: BoxDecoration(
-          color: StyleConstants.layerColor4,
-          borderRadius: BorderRadius.circular(
-            StyleConstants.linear16,
-          ),
+    return ElevatedButton(
+      onPressed:
+          model.elementActions != null ? model.elementActions![text] : null,
+      style: ButtonStyle(
+        elevation: model.elementActions != null
+            ? MaterialStateProperty.all(4.0)
+            : MaterialStateProperty.all(0.0),
+        padding: MaterialStateProperty.all(const EdgeInsets.all(0.0)),
+        visualDensity: VisualDensity.compact,
+        backgroundColor: MaterialStateProperty.all(
+          StyleConstants.layerColor4,
         ),
-        // margin: const EdgeInsets.all(2),
+        overlayColor: MaterialStateProperty.all(Colors.white),
+        shape: MaterialStateProperty.resolveWith<RoundedRectangleBorder>(
+          (states) {
+            return RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(StyleConstants.linear16),
+            );
+          },
+        ),
+      ),
+      child: Container(
         padding: const EdgeInsets.all(
           StyleConstants.linear8,
         ),
         child: Text(
           text,
           style: StyleConstants.layerTextStyle4,
-          maxLines: 10,
-          overflow: TextOverflow.ellipsis,
         ),
       ),
     );
@@ -77,7 +88,6 @@ class WCConnectionWidgetInfo extends StatelessWidget {
     return Text(
       model.text!,
       style: StyleConstants.layerTextStyle3,
-      // textAlign: TextAlign.center,
     );
   }
 }

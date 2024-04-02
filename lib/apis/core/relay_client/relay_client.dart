@@ -236,7 +236,7 @@ class RelayClient implements IRelayClient {
   Future<void> _createJsonRPCProvider() async {
     _connecting = true;
     _active = true;
-    var auth = await core.crypto.signJWT(core.relayUrl);
+    final auth = await core.crypto.signJWT(core.relayUrl);
     core.logger.t('Signed JWT: $auth');
     try {
       final url = WalletConnectUtils.formatRelayRpcUrl(

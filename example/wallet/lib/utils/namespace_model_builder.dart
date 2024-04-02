@@ -11,25 +11,28 @@ class ConnectionWidgetBuilder {
   ) {
     final List<WCConnectionWidget> views = [];
     for (final key in generatedNamespaces.keys) {
-      Namespace ns = generatedNamespaces[key]!;
+      final namespaces = generatedNamespaces[key]!;
+      final chains = NamespaceUtils.getChainsFromAccounts(namespaces.accounts);
       final List<WCConnectionModel> models = [];
       // If the chains property is present, add the chain data to the models
       models.add(
         WCConnectionModel(
           title: StringConstants.chains,
-          elements: ns.accounts.map((acc) {
-            return NamespaceUtils.getChainFromAccount(acc);
-          }).toList(),
+          elements: chains,
         ),
       );
-      models.add(WCConnectionModel(
-        title: StringConstants.methods,
-        elements: ns.methods,
-      ));
-      models.add(WCConnectionModel(
-        title: StringConstants.events,
-        elements: ns.events,
-      ));
+      models.add(
+        WCConnectionModel(
+          title: StringConstants.methods,
+          elements: namespaces.methods,
+        ),
+      );
+      models.add(
+        WCConnectionModel(
+          title: StringConstants.events,
+          elements: namespaces.events,
+        ),
+      );
 
       views.add(
         WCConnectionWidget(
@@ -48,19 +51,21 @@ class ConnectionWidgetBuilder {
   ) {
     final List<WCConnectionWidget> views = [];
     for (final key in namespaces.keys) {
-      final Namespace ns = namespaces[key]!;
+      final ns = namespaces[key]!;
       final List<WCConnectionModel> models = [];
       // If the chains property is present, add the chain data to the models
       models.add(
         WCConnectionModel(
-          title: StringConstants.chains,
+          title: StringConstants.accounts,
           elements: ns.accounts,
         ),
       );
-      models.add(WCConnectionModel(
-        title: StringConstants.methods,
-        elements: ns.methods,
-      ));
+      models.add(
+        WCConnectionModel(
+          title: StringConstants.methods,
+          elements: ns.methods,
+        ),
+      );
 
       Map<String, void Function()> actions = {};
       for (final String event in ns.events) {
@@ -78,11 +83,13 @@ class ConnectionWidgetBuilder {
               );
         };
       }
-      models.add(WCConnectionModel(
-        title: StringConstants.events,
-        elements: ns.events,
-        elementActions: actions,
-      ));
+      models.add(
+        WCConnectionModel(
+          title: '${StringConstants.events} (Tap to send)',
+          elements: ns.events,
+          elementActions: actions,
+        ),
+      );
 
       views.add(
         WCConnectionWidget(

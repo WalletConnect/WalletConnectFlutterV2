@@ -44,6 +44,11 @@ class StyleConstants {
     fontSize: linear24,
     fontWeight: FontWeight.w600,
   );
+  static const TextStyle paragraph = TextStyle(
+    color: Colors.black,
+    fontSize: linear16,
+    fontWeight: FontWeight.w600,
+  );
   static const TextStyle buttonText = TextStyle(
     color: Colors.black,
     fontSize: magic14,
