@@ -56,7 +56,7 @@ dev_dependencies:
 platforms:
   android:
   ios:
-  # web:
+  web:
   # linux:
   # macos:
   # windows:

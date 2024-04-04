@@ -132,9 +132,13 @@ class Web3Wallet implements IWeb3Wallet {
   }
 
   @override
-  Future<PairingInfo> pair({required Uri uri}) async {
+  Future<PairingInfo> pair({
+    required Uri uri,
+  }) async {
     try {
-      return await signEngine.pair(uri: uri);
+      return await signEngine.pair(
+        uri: uri,
+      );
     } catch (e) {
       rethrow;
     }

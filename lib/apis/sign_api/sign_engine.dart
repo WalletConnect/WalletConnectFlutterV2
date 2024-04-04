@@ -227,10 +227,14 @@ class SignEngine implements ISignEngine {
   }
 
   @override
-  Future<PairingInfo> pair({required Uri uri}) async {
+  Future<PairingInfo> pair({
+    required Uri uri,
+  }) async {
     _checkInitialized();
 
-    return await core.pairing.pair(uri: uri);
+    return await core.pairing.pair(
+      uri: uri,
+    );
   }
 
   /// Approves a proposal with the id provided in the parameters.
