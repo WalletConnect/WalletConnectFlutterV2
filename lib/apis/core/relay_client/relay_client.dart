@@ -381,7 +381,6 @@ class RelayClient implements IRelayClient {
     return true;
   }
 
-  // TODO check https://www.notion.so/walletconnect/Relay-Log-Triage-Nov-15-2023-9d887df8f8d9415ea07bde7d3ea68e31?pvs=4
   Future<bool> _handleSubscription(Parameters params) async {
     String topic = params['data']['topic'].value;
     String message = params['data']['message'].value;

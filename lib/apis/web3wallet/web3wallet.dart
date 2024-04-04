@@ -136,9 +136,7 @@ class Web3Wallet implements IWeb3Wallet {
     required Uri uri,
   }) async {
     try {
-      return await signEngine.pair(
-        uri: uri,
-      );
+      return await signEngine.pair(uri: uri);
     } catch (e) {
       rethrow;
     }
