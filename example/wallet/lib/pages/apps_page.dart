@@ -48,10 +48,6 @@ class AppsPageState extends State<AppsPage> with GetItStateMixin {
     }
   }
 
-  void _onRelayClientStatus(dynamic args) {
-    setState(() {});
-  }
-
   @override
   void dispose() {
     web3Wallet.core.pairing.onPairingDelete.unsubscribe(_onPairingDelete);

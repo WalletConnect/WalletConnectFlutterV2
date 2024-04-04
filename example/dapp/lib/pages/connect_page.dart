@@ -4,7 +4,6 @@ import 'package:fl_toast/fl_toast.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:qr_flutter_wc/qr_flutter_wc.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 // ignore: unused_import
 import 'package:url_launcher/url_launcher_string.dart';
@@ -30,6 +29,7 @@ class ConnectPage extends StatefulWidget {
 class ConnectPageState extends State<ConnectPage> {
   bool _testnetOnly = false;
   final List<ChainMetadata> _selectedChains = [];
+  bool _shouldDismissQrCode = true;
 
   void setTestnet(bool value) {
     if (value != _testnetOnly) {
@@ -191,8 +191,8 @@ class ConnectPageState extends State<ConnectPage> {
     final uri = 'wcflutterwallet://wc?uri=$encodedUri';
     // final uri = 'metamask://wc?uri=$encodedUri';
     if (await canLaunchUrlString(uri)) {
-      // ignore: use_build_context_synchronously
       final openApp = await showDialog(
+        // ignore: use_build_context_synchronously
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
@@ -267,8 +267,9 @@ class ConnectPageState extends State<ConnectPage> {
   Future<void> _showQrCode(ConnectResponse response) async {
     // Show the QR code
     debugPrint('Showing QR Code: ${response.uri}');
+    _shouldDismissQrCode = true;
     if (kIsWeb) {
-      return showDialog(
+      await showDialog(
         context: context,
         barrierDismissible: false,
         builder: (BuildContext context) {
@@ -297,6 +298,8 @@ class ConnectPageState extends State<ConnectPage> {
           );
         },
       );
+      _shouldDismissQrCode = false;
+      return;
     }
     Navigator.push(
       context,

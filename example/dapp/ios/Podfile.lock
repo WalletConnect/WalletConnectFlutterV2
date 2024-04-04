@@ -28,7 +28,7 @@ SPEC CHECKSUMS:
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
   package_info_plus: 58f0028419748fad15bf008b270aaa8e54380b1c
   shared_preferences_foundation: 5b919d13b803cadd15ed2dc053125c68730e5126
-  url_launcher_ios: bf5ce03e0e2088bad9cc378ea97fa0ed5b49673b
+  url_launcher_ios: 6116280ddcfe98ab8820085d8d76ae7449447586
 
 PODFILE CHECKSUM: c4c93c5f6502fe2754f48404d3594bf779584011
 

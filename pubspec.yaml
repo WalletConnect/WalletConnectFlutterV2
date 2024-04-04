@@ -19,6 +19,7 @@ dependencies:
   json_annotation: ^4.8.1
   logger: ^2.2.0
   package_info_plus: ^6.0.0
+  plugin_platform_interface: ^2.1.8
   pointycastle: ^3.7.4
   shared_preferences: ^2.2.2
   stack_trace: ^1.10.0
@@ -41,13 +42,14 @@ dev_dependencies:
   json_serializable: ^6.7.0
   mockito: ^5.4.3
 
-flutter:
-  plugin:
-    platforms:
-      # android:
-      #   fileName: walletconnect_flutter_v2.dart
-      # ios:
-      #   fileName: walletconnect_flutter_v2.dart
-      web:
-        pluginClass: WalletconnectFlutterV2Web
-        fileName: walletconnect_flutter_v2_web.dart
+# flutter:
+#   plugin:
+#     platforms:
+#       android:
+#         pluginClass: WalletconnectFlutterV2
+#         package: com.example.walletconnectflutterv2
+#       ios:
+#         pluginClass: WalletconnectFlutterV2
+#       web:
+#         pluginClass: WalletconnectFlutterV2
+#         fileName: walletconnect_flutter_v2_web.dart
