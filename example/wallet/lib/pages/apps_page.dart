@@ -23,6 +23,7 @@ class AppsPage extends StatefulWidget with GetItStatefulWidgetMixin {
 class AppsPageState extends State<AppsPage> with GetItStateMixin {
   List<PairingInfo> _pairings = [];
   late Web3Wallet web3Wallet;
+  bool _showLoading = false;
 
   @override
   void initState() {
@@ -36,16 +37,8 @@ class AppsPageState extends State<AppsPage> with GetItStateMixin {
     web3Wallet.onSessionExpire.subscribe(_updateState);
     web3Wallet.onSessionConnect.subscribe(_updateState);
     // TODO web3Wallet.core.echo.register(firebaseAccessToken);
-    DeepLinkHandler.onLink.listen(_deepLinkListener);
+    DeepLinkHandler.onLink.listen(_onFoundUri);
     DeepLinkHandler.checkInitialLink();
-  }
-
-  void _deepLinkListener(String uri) {
-    try {
-      _onFoundUri(uri);
-    } catch (e) {
-      debugPrint('[$runtimeType] onLink $e');
-    }
   }
 
   @override
@@ -76,6 +69,21 @@ class AppsPageState extends State<AppsPage> with GetItStateMixin {
               const SizedBox(width: StyleConstants.magic20),
               _buildIconButton(Icons.qr_code_rounded, _onScanQrCode),
             ],
+          ),
+        ),
+        Visibility(
+          visible: _showLoading,
+          child: Center(
+            child: Container(
+              decoration: const BoxDecoration(
+                color: Colors.black38,
+                borderRadius: BorderRadius.all(Radius.circular(50.0)),
+              ),
+              padding: const EdgeInsets.all(12.0),
+              child: const CircularProgressIndicator(
+                color: Colors.white,
+              ),
+            ),
           ),
         ),
       ],
@@ -152,15 +160,12 @@ class AppsPageState extends State<AppsPage> with GetItStateMixin {
     _onFoundUri(scannedString);
   }
 
-  Future _onFoundUri(String? uri) async {
-    if (uri != null) {
-      try {
-        final Uri uriData = Uri.parse(uri);
-        await web3Wallet.pair(uri: uriData);
-      } catch (e) {
-        _invalidUriToast();
-      }
-    } else {
+  Future<void> _onFoundUri(String? uri) async {
+    try {
+      setState(() => _showLoading = true);
+      final Uri uriData = Uri.parse(uri!);
+      await web3Wallet.pair(uri: uriData);
+    } catch (e) {
       _invalidUriToast();
     }
   }
@@ -195,6 +200,7 @@ class AppsPageState extends State<AppsPage> with GetItStateMixin {
 
   void _updateState(dynamic args) {
     setState(() {
+      _showLoading = false;
       _pairings = web3Wallet.pairings.getAll();
     });
   }

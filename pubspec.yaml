@@ -53,3 +53,10 @@ dev_dependencies:
 #       web:
 #         pluginClass: WalletconnectFlutterV2
 #         fileName: walletconnect_flutter_v2_web.dart
+platforms:
+  android:
+  ios:
+  # web:
+  # linux:
+  # macos:
+  # windows:
