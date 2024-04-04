@@ -41,3 +41,10 @@ dev_dependencies:
   json_serializable: ^6.7.0
   mockito: ^5.4.3
 
+platforms:
+  android:
+  ios:
+  # web:
+  # linux:
+  # macos:
+  # windows:

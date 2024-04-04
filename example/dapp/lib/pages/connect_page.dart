@@ -171,8 +171,8 @@ class ConnectPageState extends State<ConnectPage> {
     final uri = 'wcflutterwallet://wc?uri=$encodedUri';
     // final uri = 'metamask://wc?uri=$encodedUri';
     if (await canLaunchUrlString(uri)) {
-      // ignore: use_build_context_synchronously
       final openApp = await showDialog(
+        // ignore: use_build_context_synchronously
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
