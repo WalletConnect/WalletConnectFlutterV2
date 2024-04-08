@@ -36,12 +36,16 @@ extension TransactionExtension2 on Map<String, dynamic> {
           (this['maxPriorityFeePerGas'] as String?).toEthereAmount(),
       maxGas: (this['maxGas'] as String?).toIntFromHex(),
       nonce: (this['nonce'] as String?).toInt(),
-      data: (this['data'] != null && this['data'] != '0x')
-          ? Uint8List.fromList(hex.decode(this['data']!.startsWith('0x')
-              ? this['data']!.substring(2)
-              : this['data']!))
-          : null,
+      data: _parseTransactionData(this['data']),
     );
+  }
+
+  Uint8List? _parseTransactionData(dynamic data) {
+    if (data != null && data != '0x') {
+      return Uint8List.fromList(hex.decode(
+          data.startsWith('0x') ? data.substring(2) : data));
+    }
+    return null;
   }
 }
 
