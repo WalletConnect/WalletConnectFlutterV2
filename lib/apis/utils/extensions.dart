@@ -37,7 +37,9 @@ extension TransactionExtension2 on Map<String, dynamic> {
       maxGas: (this['maxGas'] as String?).toIntFromHex(),
       nonce: (this['nonce'] as String?).toInt(),
       data: (this['data'] != null && this['data'] != '0x')
-          ? Uint8List.fromList(hex.decode(this['data']!))
+          ? Uint8List.fromList(hex.decode(this['data']!.startsWith('0x')
+              ? this['data']!.substring(2)
+              : this['data']!))
           : null,
     );
   }
