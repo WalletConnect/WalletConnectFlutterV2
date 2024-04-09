@@ -19,6 +19,8 @@ class DeepLinkHandler {
     _eventChannel.receiveBroadcastStream().listen(_onLink, onError: _onError);
   }
 
+  static final ValueNotifier<bool> waiting = ValueNotifier(false);
+
   static void checkInitialLink() {
     try {
       _methodChannel.invokeMethod('initialLink').then(
@@ -26,31 +28,34 @@ class DeepLinkHandler {
             onError: _onError,
           );
     } catch (e) {
-      debugPrint('[DeepLinkHandler] checkInitialLink $e');
+      debugPrint('[WALLET] [DeepLinkHandler] checkInitialLink $e');
     }
   }
 
   static Stream<String> get onLink => _linksController.stream;
 
-  static Future<void> goTo(
+  static void goTo(
     String scheme, {
-    int delay = 0,
+    int delay = 100,
     String? modalTitle,
     String? modalMessage,
     bool success = true,
   }) async {
+    waiting.value = false;
     if (scheme.isEmpty) return;
     await Future.delayed(Duration(milliseconds: delay));
-    try {
-      await launchUrlString(scheme, mode: LaunchMode.externalApplication);
-    } catch (e) {
-      debugPrint('[DeepLinkHandler] error re-opening dapp ($scheme). $e');
-      _goBackModal(
-        title: modalTitle,
-        message: modalMessage,
-        success: success,
-      );
-    }
+    launchUrlString(scheme, mode: LaunchMode.externalApplication).catchError(
+      (e) {
+        debugPrint(
+            '[WALLET] [DeepLinkHandler] error re-opening dapp ($scheme). $e');
+        _goBackModal(
+          title: modalTitle,
+          message: modalMessage,
+          success: success,
+        );
+        return true;
+      },
+    );
   }
 
   static void _onLink(Object? event) {
@@ -62,11 +67,13 @@ class DeepLinkHandler {
     if (!pairingUri.toString().startsWith('wc:')) {
       return;
     }
+    waiting.value = true;
     _linksController.sink.add(pairingUri);
   }
 
   static void _onError(Object error) {
-    debugPrint('[DeepLinkHandler] _onError $error');
+    waiting.value = false;
+    debugPrint('[WALLET] [DeepLinkHandler] _onError $error');
   }
 
   static void _goBackModal({
@@ -74,6 +81,7 @@ class DeepLinkHandler {
     String? message,
     bool success = true,
   }) async {
+    waiting.value = false;
     await GetIt.I<IBottomSheetService>().queueBottomSheet(
       closeAfter: success ? 3 : 0,
       widget: Container(

@@ -88,6 +88,9 @@ class Core implements ICore {
       level: logLevel.toLevel(),
       printer: PrettyPrinter(),
     );
+    Logger.addLogListener(
+      (LogEvent event) => print('LOGGER: ${event.message}'),
+    );
     heartbeat = HeartBeat();
     storage = SharedPrefsStores(
       memoryStore: memoryStore,

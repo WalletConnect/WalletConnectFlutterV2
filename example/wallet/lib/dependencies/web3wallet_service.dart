@@ -20,20 +20,7 @@ import 'package:walletconnect_flutter_v2_wallet/widgets/wc_request_widget.dart/w
 
 class Web3WalletService extends IWeb3WalletService {
   final _bottomSheetHandler = GetIt.I<IBottomSheetService>();
-
   Web3Wallet? _web3Wallet;
-
-  /// The list of requests from the dapp
-  /// Potential types include, but aren't limited to:
-  /// [SessionProposalEvent], [AuthRequest]
-  @override
-  ValueNotifier<List<PairingInfo>> pairings =
-      ValueNotifier<List<PairingInfo>>([]);
-  @override
-  ValueNotifier<List<SessionData>> sessions =
-      ValueNotifier<List<SessionData>>([]);
-  @override
-  ValueNotifier<List<StoredCacao>> auth = ValueNotifier<List<StoredCacao>>([]);
 
   @override
   void create() async {
@@ -79,58 +66,61 @@ class Web3WalletService extends IWeb3WalletService {
       }
     }
 
+    // for (var pairing in _web3Wallet!.pairings.getAll()) {
+    //   print('LOGGER: pairing $pairing');
+    //   if (!pairing.active) {
+    //     await _web3Wallet!.core.expirer.expire(pairing.topic);
+    //   }
+    // }
+
     // Setup our listeners
-    debugPrint('web3wallet create');
+    debugPrint('[WALLET] [$runtimeType] create');
     _web3Wallet!.core.pairing.onPairingInvalid.subscribe(_onPairingInvalid);
     _web3Wallet!.core.pairing.onPairingCreate.subscribe(_onPairingCreate);
     _web3Wallet!.pairings.onSync.subscribe(_onPairingsSync);
     _web3Wallet!.onSessionProposal.subscribe(_onSessionProposal);
     _web3Wallet!.onSessionProposalError.subscribe(_onSessionProposalError);
     _web3Wallet!.onAuthRequest.subscribe(_onAuthRequest);
-    _web3Wallet!.core.relayClient.onRelayClientError
-        .subscribe(_onRelayClientError);
+    _web3Wallet!.core.relayClient.onRelayClientError.subscribe(
+      _onRelayClientError,
+    );
+    _web3Wallet!.core.relayClient.onRelayClientMessage.subscribe(
+      _onRelayClientMessage,
+    );
   }
 
   @override
   Future<void> init() async {
     // Await the initialization of the web3wallet
-    debugPrint('web3wallet init');
+    debugPrint('[$runtimeType] [WALLET] init');
     await _web3Wallet!.init();
-
-    pairings.value = _web3Wallet!.pairings.getAll();
-    sessions.value = _web3Wallet!.sessions.getAll();
-    auth.value = _web3Wallet!.completeRequests.getAll();
   }
 
   @override
   FutureOr onDispose() {
-    debugPrint('web3wallet dispose');
+    debugPrint('[$runtimeType] [WALLET] dispose');
     _web3Wallet!.core.pairing.onPairingInvalid.unsubscribe(_onPairingInvalid);
     _web3Wallet!.pairings.onSync.unsubscribe(_onPairingsSync);
     _web3Wallet!.onSessionProposal.unsubscribe(_onSessionProposal);
     _web3Wallet!.onSessionProposalError.unsubscribe(_onSessionProposalError);
     _web3Wallet!.onAuthRequest.unsubscribe(_onAuthRequest);
-    _web3Wallet!.core.relayClient.onRelayClientError
-        .unsubscribe(_onRelayClientError);
+    _web3Wallet!.core.relayClient.onRelayClientError.unsubscribe(
+      _onRelayClientError,
+    );
+    _web3Wallet!.core.relayClient.onRelayClientMessage.unsubscribe(
+      _onRelayClientMessage,
+    );
   }
 
   @override
-  Web3Wallet getWeb3Wallet() {
-    return _web3Wallet!;
-  }
+  Web3Wallet get web3wallet => _web3Wallet!;
 
   void _onPairingsSync(StoreSyncEvent? args) {
-    if (args != null) {
-      pairings.value = _web3Wallet!.pairings.getAll();
-    }
-  }
-
-  void _onRelayClientError(ErrorEvent? args) {
-    debugPrint('[$runtimeType] _onRelayClientError ${args?.error}');
+    debugPrint('[$runtimeType] [WALLET] _onPairingsSync');
   }
 
   void _onSessionProposalError(SessionProposalErrorEvent? args) async {
-    debugPrint('[$runtimeType] _onSessionProposalError $args');
+    debugPrint('[$runtimeType] [WALLET] _onSessionProposalError $args');
     if (args != null) {
       String errorMessage = args.error.message;
       if (args.error.code == 5100) {
@@ -182,6 +172,7 @@ class Web3WalletService extends IWeb3WalletService {
   }
 
   void _onSessionProposal(SessionProposalEvent? args) async {
+    debugPrint('[$runtimeType] [WALLET] _onSessionProposal $args');
     if (args != null) {
       // generatedNamespaces is constructed based on registered methods handlers
       // so if you want to handle requests using onSessionRequest event then you would need to manually add that method in the approved namespaces
@@ -204,26 +195,19 @@ class Web3WalletService extends IWeb3WalletService {
         ),
       );
 
-      if (approved == true) {
-        _web3Wallet!.approveSession(
-          id: args.id,
-          namespaces: approvedNS,
-        );
-        final scheme = args.params.proposer.metadata.redirect?.native ?? '';
-        DeepLinkHandler.goTo(scheme, delay: 300);
-      } else {
-        _web3Wallet!.rejectSession(
-          id: args.id,
-          reason: Errors.getSdkError(Errors.USER_REJECTED),
-        );
-        _web3Wallet!.core.pairing.disconnect(
-          topic: args.params.pairingTopic,
-        );
+      final scheme = args.params.proposer.metadata.redirect?.native ?? '';
 
-        final scheme = args.params.proposer.metadata.redirect?.native ?? '';
+      if (approved == true) {
+        await _web3Wallet!.approveSession(id: args.id, namespaces: approvedNS);
+        DeepLinkHandler.goTo(scheme);
+      } else {
+        final error = Errors.getSdkError(Errors.USER_REJECTED);
+        await _web3Wallet!.rejectSession(id: args.id, reason: error);
+        // await _web3Wallet!.core.pairing.disconnect(
+        //   topic: args.params.pairingTopic,
+        // );
         DeepLinkHandler.goTo(
           scheme,
-          delay: 300,
           modalTitle: 'Error',
           modalMessage: 'User rejected',
           success: false,
@@ -232,15 +216,26 @@ class Web3WalletService extends IWeb3WalletService {
     }
   }
 
+  void _onRelayClientMessage(MessageEvent? args) {
+    debugPrint(
+      '[$runtimeType] [WALLET] _onRelayClientMessage ${args.toString()}',
+    );
+  }
+
+  void _onRelayClientError(ErrorEvent? args) {
+    debugPrint('[$runtimeType] [WALLET] _onRelayClientError ${args?.error}');
+  }
+
   void _onPairingInvalid(PairingInvalidEvent? args) {
-    debugPrint('[$runtimeType] _onPairingInvalid $args');
+    debugPrint('[$runtimeType] [WALLET] _onPairingInvalid $args');
   }
 
   void _onPairingCreate(PairingEvent? args) {
-    debugPrint('[$runtimeType] _onPairingCreate $args');
+    debugPrint('[$runtimeType] [WALLET] _onPairingCreate $args');
   }
 
   Future<void> _onAuthRequest(AuthRequest? args) async {
+    debugPrint('[$runtimeType] [WALLET] _onAuthRequest $args');
     if (args != null) {
       final chainKeys = GetIt.I<IKeyService>().getKeysForChain('eip155:1');
       // Create the message to be signed

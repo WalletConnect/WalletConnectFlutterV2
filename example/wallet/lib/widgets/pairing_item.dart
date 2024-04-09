@@ -23,7 +23,7 @@ class PairingItem extends StatelessWidget {
       );
     }
     final sessions = GetIt.I<IWeb3WalletService>()
-        .getWeb3Wallet()
+        .web3wallet
         .sessions
         .getAll()
         .where((element) => element.pairingTopic == pairing.topic)

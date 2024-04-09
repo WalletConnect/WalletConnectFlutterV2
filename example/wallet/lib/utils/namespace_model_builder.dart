@@ -73,7 +73,7 @@ class ConnectionWidgetBuilder {
           final String chainId = NamespaceUtils.isValidChainId(key)
               ? key
               : NamespaceUtils.getChainFromAccount(ns.accounts.first);
-          await GetIt.I<IWeb3WalletService>().getWeb3Wallet().emitSessionEvent(
+          await GetIt.I<IWeb3WalletService>().web3wallet.emitSessionEvent(
                 topic: topic,
                 chainId: chainId,
                 event: SessionEventParams(

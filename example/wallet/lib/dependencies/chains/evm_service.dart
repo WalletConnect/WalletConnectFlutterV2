@@ -21,7 +21,7 @@ import 'package:walletconnect_flutter_v2_wallet/widgets/wc_request_widget.dart/w
 class EVMService {
   final _bottomSheetService = GetIt.I<IBottomSheetService>();
   final _web3WalletService = GetIt.I<IWeb3WalletService>();
-  final _web3Wallet = GetIt.I<IWeb3WalletService>().getWeb3Wallet();
+  final _web3Wallet = GetIt.I<IWeb3WalletService>().web3wallet;
 
   final ChainMetadata chainSupported;
   late final Web3Client ethClient;
@@ -31,6 +31,7 @@ class EVMService {
       };
 
   Map<String, dynamic Function(String, dynamic)> get methodRequestHandlers => {
+        'personal_sign': personalSign,
         'eth_sign': ethSign,
         'eth_signTransaction': ethSignTransaction,
         'eth_sendTransaction': ethSendTransaction,
@@ -66,8 +67,8 @@ class EVMService {
   }
 
   void _onSessionRequest(SessionRequestEvent? args) async {
-    if (args?.chainId == chainSupported.chainId) {
-      debugPrint('[$runtimeType] onSessionRequest ${args!}');
+    debugPrint('[WALLET] _onSessionRequest ${args?.toString()}');
+    if (args != null && args.chainId == chainSupported.chainId) {
       final handler = sessionRequestHandlers[args.method];
       if (handler != null) {
         await handler(args.topic, args.params);
@@ -77,7 +78,8 @@ class EVMService {
 
   // personal_sign is handled using onSessionRequest event for demo purposes
   Future<void> personalSign(String topic, dynamic parameters) async {
-    debugPrint('[$runtimeType] personalSign request: $parameters');
+    debugPrint('[WALLET] personalSign request: $parameters');
+    DeepLinkHandler.waiting.value = true;
     final pRequest = _web3Wallet.pendingRequests.getAll().last;
     final data = EthUtils.getDataFromParamsList(parameters);
     final message = EthUtils.getUtf8Message(data.toString());
@@ -100,7 +102,7 @@ class EVMService {
 
         response = response.copyWith(result: signature);
       } catch (e) {
-        debugPrint('[$runtimeType] personalSign error $e');
+        debugPrint('[WALLET] personalSign error $e');
         response = response.copyWith(
           error: JsonRpcError(code: 0, message: e.toString()),
         );
@@ -111,16 +113,17 @@ class EVMService {
       );
     }
 
-    _goBackToDapp(topic, response.result ?? response.error);
-
-    return _web3Wallet.respondSessionRequest(
+    await _web3Wallet.respondSessionRequest(
       topic: topic,
       response: response,
     );
+
+    _goBackToDapp(topic, response.result ?? response.error);
   }
 
   Future<void> ethSign(String topic, dynamic parameters) async {
-    debugPrint('[$runtimeType] ethSign request: $parameters');
+    debugPrint('[WALLET] ethSign request: $parameters');
+    DeepLinkHandler.waiting.value = true;
     final pRequest = _web3Wallet.pendingRequests.getAll().last;
     final data = EthUtils.getDataFromParamsList(parameters);
     final message = EthUtils.getUtf8Message(data.toString());
@@ -143,7 +146,7 @@ class EVMService {
 
         response = response.copyWith(result: signature);
       } catch (e) {
-        debugPrint('[$runtimeType] ethSign error $e');
+        debugPrint('[WALLET] ethSign error $e');
         response = response.copyWith(
           error: JsonRpcError(code: 0, message: e.toString()),
         );
@@ -154,16 +157,17 @@ class EVMService {
       );
     }
 
-    _goBackToDapp(topic, response.result ?? response.error);
-
-    return _web3Wallet.respondSessionRequest(
+    await _web3Wallet.respondSessionRequest(
       topic: topic,
       response: response,
     );
+
+    _goBackToDapp(topic, response.result ?? response.error);
   }
 
   Future<void> ethSignTypedData(String topic, dynamic parameters) async {
-    debugPrint('[$runtimeType] ethSignTypedData request: $parameters');
+    debugPrint('[WALLET] ethSignTypedData request: $parameters');
+    DeepLinkHandler.waiting.value = true;
     final pRequest = _web3Wallet.pendingRequests.getAll().last;
     final data = EthUtils.getDataFromParamsList(parameters);
     var response = JsonRpcResponse(
@@ -184,7 +188,7 @@ class EVMService {
         );
         response = response.copyWith(result: signature);
       } catch (e) {
-        debugPrint('[$runtimeType] ethSignTypedData error $e');
+        debugPrint('[WALLET] ethSignTypedData error $e');
         response = response.copyWith(
           error: JsonRpcError(code: 0, message: e.toString()),
         );
@@ -195,16 +199,17 @@ class EVMService {
       );
     }
 
-    _goBackToDapp(topic, response.result ?? response.error);
-
-    return _web3Wallet.respondSessionRequest(
+    await _web3Wallet.respondSessionRequest(
       topic: topic,
       response: response,
     );
+
+    _goBackToDapp(topic, response.result ?? response.error);
   }
 
   Future<void> ethSignTypedDataV4(String topic, dynamic parameters) async {
-    debugPrint('[$runtimeType] ethSignTypedDataV4 request: $parameters');
+    debugPrint('[WALLET] ethSignTypedDataV4 request: $parameters');
+    DeepLinkHandler.waiting.value = true;
     final pRequest = _web3Wallet.pendingRequests.getAll().last;
     final data = EthUtils.getDataFromParamsList(parameters);
     var response = JsonRpcResponse(
@@ -225,7 +230,7 @@ class EVMService {
         );
         response = response.copyWith(result: signature);
       } catch (e) {
-        debugPrint('[$runtimeType] ethSignTypedDataV4 error $e');
+        debugPrint('[WALLET] ethSignTypedDataV4 error $e');
         response = response.copyWith(
           error: JsonRpcError(code: 0, message: e.toString()),
         );
@@ -236,16 +241,17 @@ class EVMService {
       );
     }
 
-    _goBackToDapp(topic, response.result ?? response.error);
-
-    return _web3Wallet.respondSessionRequest(
+    await _web3Wallet.respondSessionRequest(
       topic: topic,
       response: response,
     );
+
+    _goBackToDapp(topic, response.result ?? response.error);
   }
 
   Future<void> ethSignTransaction(String topic, dynamic parameters) async {
-    debugPrint('[$runtimeType] ethSignTransaction request: $parameters');
+    debugPrint('[WALLET] ethSignTransaction request: $parameters');
+    DeepLinkHandler.waiting.value = true;
     final pRequest = _web3Wallet.pendingRequests.getAll().last;
     final data = EthUtils.getTransactionFromParams(parameters);
     if (data == null) return;
@@ -263,7 +269,7 @@ class EVMService {
         );
         final credentials = EthPrivateKey.fromHex('0x${keys[0].privateKey}');
         final chainId = chainSupported.chainId.split(':').last;
-        debugPrint('[$runtimeType] ethSignTransaction chainId: $chainId');
+        debugPrint('[WALLET] ethSignTransaction chainId: $chainId');
 
         final signature = await ethClient.signTransaction(
           credentials,
@@ -275,12 +281,12 @@ class EVMService {
 
         response = response.copyWith(result: '0x$signedTx');
       } on RPCError catch (e) {
-        debugPrint('[$runtimeType] ethSignTransaction error $e');
+        debugPrint('[WALLET] ethSignTransaction error $e');
         response = response.copyWith(
           error: JsonRpcError(code: e.errorCode, message: e.message),
         );
       } catch (e) {
-        debugPrint('[$runtimeType] ethSignTransaction error $e');
+        debugPrint('[WALLET] ethSignTransaction error $e');
         response = response.copyWith(
           error: JsonRpcError(code: 0, message: e.toString()),
         );
@@ -289,16 +295,17 @@ class EVMService {
       response = response.copyWith(error: result as JsonRpcError);
     }
 
-    _goBackToDapp(topic, response.result ?? response.error);
-
-    return _web3Wallet.respondSessionRequest(
+    await _web3Wallet.respondSessionRequest(
       topic: topic,
       response: response,
     );
+
+    _goBackToDapp(topic, response.result ?? response.error);
   }
 
   Future<void> ethSendTransaction(String topic, dynamic parameters) async {
-    debugPrint('[$runtimeType] ethSendTransaction request: $parameters');
+    debugPrint('[WALLET] ethSendTransaction request: $parameters');
+    DeepLinkHandler.waiting.value = true;
     final pRequest = _web3Wallet.pendingRequests.getAll().last;
     final data = EthUtils.getTransactionFromParams(parameters);
     if (data == null) return;
@@ -316,7 +323,7 @@ class EVMService {
         );
         final credentials = EthPrivateKey.fromHex('0x${keys[0].privateKey}');
         final chainId = chainSupported.chainId.split(':').last;
-        debugPrint('[$runtimeType] ethSendTransaction chainId: $chainId');
+        debugPrint('[WALLET] ethSendTransaction chainId: $chainId');
 
         final signedTx = await ethClient.sendTransaction(
           credentials,
@@ -326,12 +333,12 @@ class EVMService {
 
         response = response.copyWith(result: '0x$signedTx');
       } on RPCError catch (e) {
-        debugPrint('[$runtimeType] ethSendTransaction error $e');
+        debugPrint('[WALLET] ethSendTransaction error $e');
         response = response.copyWith(
           error: JsonRpcError(code: e.errorCode, message: e.message),
         );
       } catch (e) {
-        debugPrint('[$runtimeType] ethSendTransaction error $e');
+        debugPrint('[WALLET] ethSendTransaction error $e');
         response = response.copyWith(
           error: JsonRpcError(code: 0, message: e.toString()),
         );
@@ -340,20 +347,20 @@ class EVMService {
       response = response.copyWith(error: result as JsonRpcError);
     }
 
-    _goBackToDapp(topic, response.result ?? response.error);
-
-    return _web3Wallet.respondSessionRequest(
+    await _web3Wallet.respondSessionRequest(
       topic: topic,
       response: response,
     );
+
+    _goBackToDapp(topic, response.result ?? response.error);
   }
 
   Future<void> switchChain(String topic, dynamic parameters) async {
-    debugPrint('received switchChain request: $topic $parameters');
+    debugPrint('[WALLET] switchChain request: $topic $parameters');
     final params = (parameters as List).first as Map<String, dynamic>;
     final hexChainId = params['chainId'].toString().replaceFirst('0x', '');
     final chainId = int.parse(hexChainId, radix: 16);
-    final web3wallet = _web3WalletService.getWeb3Wallet();
+    final web3wallet = _web3WalletService.web3wallet;
     await web3wallet.emitSessionEvent(
       topic: topic,
       chainId: 'eip155:$chainId',
@@ -369,24 +376,22 @@ class EVMService {
       final session = _web3Wallet.sessions.get(topic);
       final scheme = session?.peer.metadata.redirect?.native ?? '';
       if (result is String) {
-        DeepLinkHandler.goTo(scheme, delay: 300, modalTitle: 'Success');
+        DeepLinkHandler.goTo(scheme, modalTitle: 'Success');
       } else {
         DeepLinkHandler.goTo(
           scheme,
-          delay: 300,
           modalTitle: 'Error',
           modalMessage: result.toString(),
           success: false,
         );
       }
-    } catch (e, s) {
-      debugPrint(e.toString());
-      print(s);
+    } catch (e) {
+      debugPrint('[WALLET] ${e.toString()}');
     }
   }
 
   Future<void> addChain(String topic, dynamic parameters) async {
-    debugPrint('received addChain request: $topic $parameters');
+    debugPrint('[WALLET] addChain request: $topic $parameters');
   }
 
   Future<bool> requestApproval(String text) async {
