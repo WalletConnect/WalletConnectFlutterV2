@@ -39,14 +39,16 @@ extension TransactionExtension2 on Map<String, dynamic> {
       data: _parseTransactionData(this['data']),
     );
   }
+}
 
-  Uint8List? _parseTransactionData(dynamic data) {
-    if (data != null && data != '0x') {
-      return Uint8List.fromList(hex.decode(
-          data.startsWith('0x') ? data.substring(2) : data));
+Uint8List? _parseTransactionData(dynamic data) {
+  if (data != null && data != '0x') {
+    if (data.startsWith('0x')) {
+      return Uint8List.fromList(hex.decode(data.substring(2)));
     }
-    return null;
+    return Uint8List.fromList(hex.decode(data));
   }
+  return null;
 }
 
 extension EtheraAmountExtension on String? {
