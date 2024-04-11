@@ -81,13 +81,6 @@ class Web3WalletService extends IWeb3WalletService {
       }
     }
 
-    // for (var pairing in _web3Wallet!.pairings.getAll()) {
-    //   print('LOGGER: pairing $pairing');
-    //   if (!pairing.active) {
-    //     await _web3Wallet!.core.expirer.expire(pairing.topic);
-    //   }
-    // }
-
     // Setup our listeners
     debugPrint('[WALLET] [$runtimeType] create');
     _web3Wallet!.core.pairing.onPairingInvalid.subscribe(_onPairingInvalid);

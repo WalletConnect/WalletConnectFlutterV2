@@ -40,8 +40,6 @@ class AppDetailPageState extends State<AppDetailPage> {
   void _onSessionDelete(dynamic args) {
     setState(() {
       _web3Wallet = GetIt.I<IWeb3WalletService>().web3wallet;
-      // _pairings = web3Wallet.pairings.getAll();
-      // _sessions = web3Wallet.sessions.getAll();
     });
   }
 
