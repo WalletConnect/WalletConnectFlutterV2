@@ -4,7 +4,7 @@ version: 2.2.2
 repository: https://github.com/WalletConnect/WalletConnectFlutterV2
 
 environment:
-  sdk: '>=2.19.0 <4.0.0'
+  sdk: ">=2.19.0 <4.0.0"
 
 dependencies:
   bs58: ^1.0.2
@@ -24,7 +24,6 @@ dependencies:
   shared_preferences: ^2.2.2
   stack_trace: ^1.10.0
   stream_channel: ^2.1.0
-  universal_io: ^2.2.2
   web3dart: ^2.7.3
   web_socket_channel: ^2.4.4
   x25519: ^0.1.1
@@ -36,8 +35,7 @@ dev_dependencies:
   eth_sig_util: ^0.0.9
   flutter_lints: ^2.0.0
   flutter_test:
-    sdk:
-      flutter
+    sdk: flutter
   freezed: ^2.4.5
   json_serializable: ^6.7.0
   mockito: ^5.4.3
