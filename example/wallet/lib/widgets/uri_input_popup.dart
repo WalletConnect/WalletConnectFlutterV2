@@ -47,12 +47,6 @@ class UriInputPopup extends StatelessWidget {
               // onChanged: (value) {
               //   // _debouncer.run(() => widget.onTextChanged(value));
               // },
-              onSaved: (value) {
-                debugPrint('saved $value');
-              },
-              onFieldSubmitted: (value) {
-                debugPrint('onFieldSubmitted $value');
-              },
               textAlignVertical: TextAlignVertical.center,
               cursorColor: Colors.blue,
               enableSuggestions: false,

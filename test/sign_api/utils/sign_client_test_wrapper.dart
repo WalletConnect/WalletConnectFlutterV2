@@ -219,7 +219,7 @@ class SignClientTestWrapper implements ISignEngine {
   }
 
   @override
-  Future<dynamic> requestReadContract({
+  Future<List<dynamic>> requestReadContract({
     required DeployedContract deployedContract,
     required String functionName,
     required String rpcUrl,

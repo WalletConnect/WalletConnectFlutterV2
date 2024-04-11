@@ -276,9 +276,9 @@ class EIP155 {
     ]);
 
     final oCcy = NumberFormat("#,##0.00", "en_US");
-    final name = results[0].toString();
-    final total = results[1] / BigInt.from(1000000000000000000);
-    final balance = results[2] / BigInt.from(1000000000000000000);
+    final name = results[0].first.toString();
+    final total = results[1].first / BigInt.from(1000000000000000000);
+    final balance = results[2].first / BigInt.from(1000000000000000000);
 
     return {
       'name': name,

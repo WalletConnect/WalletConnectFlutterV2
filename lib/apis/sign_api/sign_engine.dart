@@ -5,7 +5,6 @@ import 'package:http/http.dart' as http;
 import 'package:walletconnect_flutter_v2/apis/core/pairing/utils/json_rpc_utils.dart';
 import 'package:walletconnect_flutter_v2/apis/core/store/i_generic_store.dart';
 import 'package:walletconnect_flutter_v2/apis/core/verify/models/verify_context.dart';
-import 'package:walletconnect_flutter_v2/apis/models/json_rpc_request.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/i_sessions.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/utils/custom_credentials.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/utils/sign_api_validator_utils.dart';
@@ -472,7 +471,7 @@ class SignEngine implements ISignEngine {
   }
 
   @override
-  Future<dynamic> requestReadContract({
+  Future<List<dynamic>> requestReadContract({
     required DeployedContract deployedContract,
     required String functionName,
     required String rpcUrl,
@@ -480,15 +479,14 @@ class SignEngine implements ISignEngine {
   }) async {
     try {
       core.logger.i('readContractCall: with function $functionName');
-      final result = await Web3Client(rpcUrl, http.Client()).call(
+      final results = await Web3Client(rpcUrl, http.Client()).call(
         contract: deployedContract,
         function: deployedContract.function(functionName),
         params: parameters,
       );
 
-      core.logger.i(
-          'readContractCall - function: $functionName - result: ${result.first}');
-      return result.first;
+      core.logger.i('readContractCall: $functionName - results: $results');
+      return results;
     } catch (e) {
       rethrow;
     }
