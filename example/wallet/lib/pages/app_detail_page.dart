@@ -25,7 +25,7 @@ class AppDetailPageState extends State<AppDetailPage> {
   @override
   void initState() {
     super.initState();
-    _web3Wallet = GetIt.I<IWeb3WalletService>().getWeb3Wallet();
+    _web3Wallet = GetIt.I<IWeb3WalletService>().web3wallet;
     _web3Wallet.onSessionDelete.subscribe(_onSessionDelete);
     _web3Wallet.onSessionExpire.subscribe(_onSessionDelete);
   }
@@ -38,10 +38,8 @@ class AppDetailPageState extends State<AppDetailPage> {
   }
 
   void _onSessionDelete(dynamic args) {
-    _web3Wallet = GetIt.I<IWeb3WalletService>().getWeb3Wallet();
     setState(() {
-      // _pairings = web3Wallet.pairings.getAll();
-      // _sessions = web3Wallet.sessions.getAll();
+      _web3Wallet = GetIt.I<IWeb3WalletService>().web3wallet;
     });
   }
 
@@ -66,6 +64,7 @@ class AppDetailPageState extends State<AppDetailPage> {
       final namespaceWidget = ConnectionWidgetBuilder.buildFromNamespaces(
         session.topic,
         session.namespaces,
+        context,
       );
       // Loop through and add the namespace widgets, but put 20 pixels between each one
       for (int i = 0; i < namespaceWidget.length; i++) {
@@ -88,7 +87,7 @@ class AppDetailPageState extends State<AppDetailPage> {
                   );
                   setState(() {});
                 } catch (e) {
-                  debugPrint(e.toString());
+                  debugPrint('[WALLET] ${e.toString()}');
                 }
               },
               child: const Center(
@@ -167,18 +166,21 @@ class AppDetailPageState extends State<AppDetailPage> {
                   type: CustomButtonType.invalid,
                   onTap: () async {
                     try {
-                      for (var session in sessions) {
+                      await _web3Wallet.core.pairing.disconnect(
+                        topic: widget.pairing.topic,
+                      );
+                      final topicSession = sessions.where(
+                        (s) => s.pairingTopic == widget.pairing.topic,
+                      );
+                      for (var session in topicSession) {
                         await _web3Wallet.disconnectSession(
                           topic: session.topic,
                           reason: Errors.getSdkError(Errors.USER_DISCONNECTED),
                         );
                       }
-                      await _web3Wallet.core.pairing.disconnect(
-                        topic: widget.pairing.topic,
-                      );
                       _back();
                     } catch (e) {
-                      //debugPrint(e.toString());
+                      debugPrint('[WALLET] ${e.toString()}');
                     }
                   },
                   child: const Center(

@@ -26,6 +26,9 @@ class MessageEvent extends EventArgs {
     this.topic,
     this.message,
   );
+
+  @override
+  String toString() => 'topic: $topic, message: $message';
 }
 
 class ErrorEvent extends EventArgs {

@@ -30,7 +30,7 @@ class KeyService extends IKeyService {
       publicKey: publicKey,
       address: address,
     );
-    debugPrint(evmChainKey.toString());
+    debugPrint('[WALLET] ${evmChainKey.toString()}');
     final kadenaChainKey = ChainKey(
       chains: [
         'kadena:mainnet01',
@@ -115,7 +115,7 @@ class KeyService extends IKeyService {
       publicKey: keyPair.publicKey,
       address: address,
     );
-    debugPrint(evmChainKey.toString());
+    debugPrint('[WALLET] ${evmChainKey.toString()}');
     final kadenaChainKey = ChainKey(
       chains: [
         'kadena:mainnet01',
