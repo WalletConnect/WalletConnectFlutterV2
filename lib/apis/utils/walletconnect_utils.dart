@@ -32,6 +32,7 @@ class WalletConnectUtils {
 
   static String getOS() {
     if (kIsWeb) {
+      // TODO change this into an actual value
       return 'web-browser';
     } else {
       return <String>[Platform.operatingSystem, Platform.operatingSystemVersion]

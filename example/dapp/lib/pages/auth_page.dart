@@ -47,10 +47,6 @@ class AuthPageState extends State<AuthPage> {
 
     return Center(
       child: Container(
-        // color: StyleConstants.primaryColor,
-        padding: const EdgeInsets.all(
-          StyleConstants.linear8,
-        ),
         constraints: const BoxConstraints(
           maxWidth: StyleConstants.maxWidth,
         ),

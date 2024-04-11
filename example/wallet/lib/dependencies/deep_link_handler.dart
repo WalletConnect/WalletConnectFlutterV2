@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
@@ -16,12 +17,17 @@ class DeepLinkHandler {
       EventChannel('com.walletconnect.flutterwallet/events');
 
   static void initListener() {
-    _eventChannel.receiveBroadcastStream().listen(_onLink, onError: _onError);
+    if (kIsWeb) return;
+    _eventChannel.receiveBroadcastStream().listen(
+          _onLink,
+          onError: _onError,
+        );
   }
 
   static final ValueNotifier<bool> waiting = ValueNotifier(false);
 
   static void checkInitialLink() {
+    if (kIsWeb) return;
     try {
       _methodChannel.invokeMethod('initialLink').then(
             _onLink,
@@ -41,6 +47,7 @@ class DeepLinkHandler {
     String? modalMessage,
     bool success = true,
   }) async {
+    if (kIsWeb) return;
     waiting.value = false;
     if (scheme.isEmpty) return;
     await Future.delayed(Duration(milliseconds: delay));
@@ -58,6 +65,7 @@ class DeepLinkHandler {
   }
 
   static void _onLink(Object? event) {
+    if (kIsWeb) return;
     final decodedUri = Uri.parse(Uri.decodeFull(event.toString()));
     if (decodedUri.toString().startsWith('wc:')) {
       return;
@@ -71,6 +79,7 @@ class DeepLinkHandler {
   }
 
   static void _onError(Object error) {
+    if (kIsWeb) return;
     waiting.value = false;
     debugPrint('[WALLET] [DeepLinkHandler] _onError $error');
   }
@@ -80,6 +89,7 @@ class DeepLinkHandler {
     String? message,
     bool success = true,
   }) async {
+    if (kIsWeb) return;
     waiting.value = false;
     await GetIt.I<IBottomSheetService>().queueBottomSheet(
       closeAfter: success ? 3 : 0,

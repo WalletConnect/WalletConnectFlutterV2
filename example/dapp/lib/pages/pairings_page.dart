@@ -90,14 +90,11 @@ class PairingsPageState extends State<PairingsPage> {
 
     return Center(
       child: Container(
-        // color: StyleConstants.primaryColor,
-        padding: const EdgeInsets.all(
-          StyleConstants.linear8,
-        ),
         constraints: const BoxConstraints(
           maxWidth: StyleConstants.maxWidth,
         ),
         child: ListView(
+          padding: const EdgeInsets.all(0.0),
           children: pairingItems,
         ),
       ),
