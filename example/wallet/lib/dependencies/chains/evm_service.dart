@@ -27,18 +27,18 @@ class EVMService {
   late final Web3Client ethClient;
 
   Map<String, dynamic Function(String, dynamic)> get sessionRequestHandlers => {
-        'personal_sign': personalSign,
-      };
-
-  Map<String, dynamic Function(String, dynamic)> get methodRequestHandlers => {
-        'personal_sign': personalSign,
+        // 'personal_sign': personalSign,
         'eth_sign': ethSign,
         'eth_signTransaction': ethSignTransaction,
-        'eth_sendTransaction': ethSendTransaction,
         'eth_signTypedData': ethSignTypedData,
         'eth_signTypedData_v4': ethSignTypedDataV4,
         'wallet_switchEthereumChain': switchChain,
         'wallet_addEthereumChain': addChain,
+      };
+
+  Map<String, dynamic Function(String, dynamic)> get methodRequestHandlers => {
+        'personal_sign': personalSign,
+        'eth_sendTransaction': ethSendTransaction,
       };
 
   EVMService({required this.chainSupported}) {
@@ -55,6 +55,13 @@ class EVMService {
       );
     }
 
+    for (var handler in sessionRequestHandlers.entries) {
+      _web3Wallet.registerRequestHandler(
+        chainId: chainSupported.chainId,
+        method: handler.key,
+        handler: handler.value,
+      );
+    }
     for (var handler in methodRequestHandlers.entries) {
       _web3Wallet.registerRequestHandler(
         chainId: chainSupported.chainId,
@@ -67,8 +74,8 @@ class EVMService {
   }
 
   void _onSessionRequest(SessionRequestEvent? args) async {
-    debugPrint('[WALLET] _onSessionRequest ${args?.toString()}');
     if (args != null && args.chainId == chainSupported.chainId) {
+      debugPrint('[WALLET] _onSessionRequest ${args.toString()}');
       final handler = sessionRequestHandlers[args.method];
       if (handler != null) {
         await handler(args.topic, args.params);
@@ -79,7 +86,6 @@ class EVMService {
   // personal_sign is handled using onSessionRequest event for demo purposes
   Future<void> personalSign(String topic, dynamic parameters) async {
     debugPrint('[WALLET] personalSign request: $parameters');
-    DeepLinkHandler.waiting.value = true;
     final pRequest = _web3Wallet.pendingRequests.getAll().last;
     final data = EthUtils.getDataFromParamsList(parameters);
     final message = EthUtils.getUtf8Message(data.toString());
@@ -123,7 +129,6 @@ class EVMService {
 
   Future<void> ethSign(String topic, dynamic parameters) async {
     debugPrint('[WALLET] ethSign request: $parameters');
-    DeepLinkHandler.waiting.value = true;
     final pRequest = _web3Wallet.pendingRequests.getAll().last;
     final data = EthUtils.getDataFromParamsList(parameters);
     final message = EthUtils.getUtf8Message(data.toString());
@@ -167,7 +172,6 @@ class EVMService {
 
   Future<void> ethSignTypedData(String topic, dynamic parameters) async {
     debugPrint('[WALLET] ethSignTypedData request: $parameters');
-    DeepLinkHandler.waiting.value = true;
     final pRequest = _web3Wallet.pendingRequests.getAll().last;
     final data = EthUtils.getDataFromParamsList(parameters);
     var response = JsonRpcResponse(
@@ -209,7 +213,6 @@ class EVMService {
 
   Future<void> ethSignTypedDataV4(String topic, dynamic parameters) async {
     debugPrint('[WALLET] ethSignTypedDataV4 request: $parameters');
-    DeepLinkHandler.waiting.value = true;
     final pRequest = _web3Wallet.pendingRequests.getAll().last;
     final data = EthUtils.getDataFromParamsList(parameters);
     var response = JsonRpcResponse(
@@ -251,7 +254,6 @@ class EVMService {
 
   Future<void> ethSignTransaction(String topic, dynamic parameters) async {
     debugPrint('[WALLET] ethSignTransaction request: $parameters');
-    DeepLinkHandler.waiting.value = true;
     final pRequest = _web3Wallet.pendingRequests.getAll().last;
     final data = EthUtils.getTransactionFromParams(parameters);
     if (data == null) return;
@@ -305,7 +307,6 @@ class EVMService {
 
   Future<void> ethSendTransaction(String topic, dynamic parameters) async {
     debugPrint('[WALLET] ethSendTransaction request: $parameters');
-    DeepLinkHandler.waiting.value = true;
     final pRequest = _web3Wallet.pendingRequests.getAll().last;
     final data = EthUtils.getTransactionFromParams(parameters);
     if (data == null) return;

@@ -32,28 +32,48 @@ class AppsPageState extends State<AppsPage> with GetItStateMixin {
     _web3Wallet = _web3walletService.web3wallet;
     _pairings = _web3Wallet.pairings.getAll();
     _pairings = _pairings.where((p) => p.active).toList();
-    _web3Wallet.core.relayClient.onRelayClientMessage.subscribe(_updateState);
-    _web3Wallet.onSessionProposal.subscribe(_updateState);
-    _web3Wallet.onSessionProposalError.subscribe(_updateState);
-    _web3Wallet.onSessionDelete.subscribe(_updateState);
+    //
+    _registerListeners();
     // TODO web3Wallet.core.echo.register(firebaseAccessToken);
     DeepLinkHandler.onLink.listen(_onFoundUri);
     DeepLinkHandler.checkInitialLink();
   }
 
+  void _registerListeners() {
+    _web3Wallet.core.relayClient.onRelayClientMessage.subscribe(
+      _refreshState,
+    );
+    _web3Wallet.pairings.onSync.subscribe(_refreshState);
+    _web3Wallet.pairings.onUpdate.subscribe(_refreshState);
+    _web3Wallet.onSessionConnect.subscribe(_refreshState);
+    _web3Wallet.onSessionDelete.subscribe(_refreshState);
+  }
+
+  void _unregisterListeners() {
+    _web3Wallet.onSessionDelete.unsubscribe(_refreshState);
+    _web3Wallet.onSessionConnect.unsubscribe(_refreshState);
+    _web3Wallet.pairings.onSync.unsubscribe(_refreshState);
+    _web3Wallet.pairings.onUpdate.unsubscribe(_refreshState);
+    _web3Wallet.core.relayClient.onRelayClientMessage.unsubscribe(
+      _refreshState,
+    );
+  }
+
   @override
   void dispose() {
-    _web3Wallet.onSessionProposal.unsubscribe(_updateState);
-    _web3Wallet.onSessionProposalError.unsubscribe(_updateState);
-    _web3Wallet.onSessionDelete.unsubscribe(_updateState);
-    _web3Wallet.core.relayClient.onRelayClientMessage.unsubscribe(_updateState);
+    _unregisterListeners();
     super.dispose();
+  }
+
+  void _refreshState(dynamic event) {
+    debugPrint('[WALLET] [$runtimeType] $event');
+    setState(() {});
   }
 
   @override
   Widget build(BuildContext context) {
-    // _pairings = (watch(target: GetIt.I<IWeb3WalletService>().pairings));
-    // _pairings = _pairings.where((p) => p.active).toList();
+    _pairings = _web3Wallet.pairings.getAll();
+    _pairings = _pairings.where((p) => p.active).toList();
     return Stack(
       children: [
         _pairings.isEmpty ? _buildNoPairingMessage() : _buildPairingList(),
@@ -190,16 +210,6 @@ class AppsPageState extends State<AppsPage> with GetItStateMixin {
         context: context,
       );
     }
-  }
-
-  void _updateState(dynamic event) {
-    setState(() {
-      if (event is SessionProposalEvent) {
-        DeepLinkHandler.waiting.value = true;
-      }
-      _pairings = _web3Wallet.pairings.getAll();
-      _pairings = _pairings.where((p) => p.active).toList();
-    });
   }
 
   void _onListItemTap(PairingInfo pairing) {

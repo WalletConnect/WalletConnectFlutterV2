@@ -44,18 +44,17 @@ class DeepLinkHandler {
     waiting.value = false;
     if (scheme.isEmpty) return;
     await Future.delayed(Duration(milliseconds: delay));
-    launchUrlString(scheme, mode: LaunchMode.externalApplication).catchError(
-      (e) {
-        debugPrint(
-            '[WALLET] [DeepLinkHandler] error re-opening dapp ($scheme). $e');
-        _goBackModal(
-          title: modalTitle,
-          message: modalMessage,
-          success: success,
-        );
-        return true;
-      },
-    );
+    try {
+      await launchUrlString(scheme, mode: LaunchMode.externalApplication);
+    } catch (e) {
+      debugPrint(
+          '[WALLET] [DeepLinkHandler] error re-opening dapp ($scheme). $e');
+      _goBackModal(
+        title: modalTitle,
+        message: modalMessage,
+        success: success,
+      );
+    }
   }
 
   static void _onLink(Object? event) {

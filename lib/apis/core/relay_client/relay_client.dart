@@ -1,7 +1,6 @@
 import 'dart:async';
 
 import 'package:event/event.dart';
-// import 'package:walletconnect_flutter_v2/apis/core/crypto/crypto_models.dart';
 import 'package:walletconnect_flutter_v2/apis/core/i_core.dart';
 import 'package:walletconnect_flutter_v2/apis/core/pairing/utils/json_rpc_utils.dart';
 import 'package:walletconnect_flutter_v2/apis/core/relay_client/i_message_tracker.dart';
@@ -372,21 +371,11 @@ class RelayClient implements IRelayClient {
     // Record a message event
     await messageTracker.recordMessageEvent(topic, message);
 
-    // final pairing = core.pairing.getPairing(topic: topic);
-    // Decode the message
-    // final payloadString = await core.crypto.decode(
-    //   topic,
-    //   message,
-    //   options: DecodeOptions(
-    //     receiverPublicKey: receiverPublicKey?.publicKey,
-    //   ),
-    // );
-
     // Broadcast the message
     onRelayClientMessage.broadcast(
       MessageEvent(
         topic,
-        message, // TODO parse message
+        message,
       ),
     );
     return true;
