@@ -42,17 +42,6 @@ dev_dependencies:
   json_serializable: ^6.7.0
   mockito: ^5.4.3
 
-# flutter:
-#   plugin:
-#     platforms:
-#       android:
-#         pluginClass: WalletconnectFlutterV2
-#         package: com.example.walletconnectflutterv2
-#       ios:
-#         pluginClass: WalletconnectFlutterV2
-#       web:
-#         pluginClass: WalletconnectFlutterV2
-#         fileName: walletconnect_flutter_v2_web.dart
 platforms:
   android:
   ios:

@@ -89,10 +89,6 @@ class _MyHomePageState extends State<MyHomePage> {
     _web3App!.onSessionConnect.subscribe(_onSessionConnect);
     _web3App!.onSessionPing.subscribe(_onSessionPing);
     _web3App!.onSessionEvent.subscribe(_onSessionEvent);
-    _web3App!.core.relayClient.onRelayClientConnect
-        .subscribe(_onRelayClientStatus);
-    _web3App!.core.relayClient.onRelayClientDisconnect
-        .subscribe(_onRelayClientStatus);
     _web3App!.onSessionUpdate.subscribe(_onSessionUpdate);
 
     _web3App!.core.relayClient.onRelayClientConnect.subscribe(_setState);
@@ -133,10 +129,6 @@ class _MyHomePageState extends State<MyHomePage> {
     // }
   }
 
-  void _onRelayClientStatus(dynamic args) {
-    setState(() {});
-  }
-
   void _setState(dynamic args) => setState(() {});
 
   @override
@@ -145,10 +137,6 @@ class _MyHomePageState extends State<MyHomePage> {
     _web3App!.onSessionConnect.unsubscribe(_onSessionConnect);
     _web3App!.onSessionPing.unsubscribe(_onSessionPing);
     _web3App!.onSessionEvent.unsubscribe(_onSessionEvent);
-    _web3App!.core.relayClient.onRelayClientConnect
-        .unsubscribe(_onRelayClientStatus);
-    _web3App!.core.relayClient.onRelayClientDisconnect
-        .unsubscribe(_onRelayClientStatus);
     _web3App!.onSessionUpdate.unsubscribe(_onSessionUpdate);
 
     _web3App!.core.relayClient.onRelayClientConnect.unsubscribe(_setState);
