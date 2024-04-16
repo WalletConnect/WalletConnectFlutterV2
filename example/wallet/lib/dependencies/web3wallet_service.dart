@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:eth_sig_util/eth_sig_util.dart';
@@ -14,6 +13,7 @@ import 'package:walletconnect_flutter_v2_wallet/dependencies/key_service/i_key_s
 import 'package:walletconnect_flutter_v2_wallet/models/chain_metadata.dart';
 import 'package:walletconnect_flutter_v2_wallet/utils/constants.dart';
 import 'package:walletconnect_flutter_v2_wallet/utils/dart_defines.dart';
+import 'package:walletconnect_flutter_v2_wallet/utils/eth_utils.dart';
 import 'package:walletconnect_flutter_v2_wallet/widgets/wc_connection_request/wc_auth_request_model.dart';
 import 'package:walletconnect_flutter_v2_wallet/widgets/wc_connection_request/wc_connection_request_widget.dart';
 import 'package:walletconnect_flutter_v2_wallet/widgets/wc_connection_request/wc_session_request_model.dart';
@@ -220,36 +220,26 @@ class Web3WalletService extends IWeb3WalletService {
     }
   }
 
-  void _onRelayClientMessage(MessageEvent? args) async {
-    debugPrint('[$runtimeType] [WALLET] _onRelayClientMessage $args');
-    if (args != null) {
-      final payloadString = await _web3Wallet!.core.crypto.decode(
-        args.topic,
-        args.message,
-      );
-      if (payloadString == null) return;
-
-      final data = jsonDecode(payloadString);
-      if (data.containsKey('method')) {
-        final request = JsonRpcRequest.fromJson(data);
-        debugPrint('[$runtimeType] [WALLET] _onRelayClientMessage $request');
-        if (request.method != 'wc_sessionDelete' &&
-            request.method != 'wc_pairingDelete') {
+  void _onRelayClientMessage(MessageEvent? event) async {
+    debugPrint('[$runtimeType] [WALLET] _onRelayClientMessage $event');
+    if (event != null) {
+      final jsonRpcObject = EthUtils.decodeMessageEvent(event);
+      if (jsonRpcObject is JsonRpcRequest) {
+        if (jsonRpcObject.method != 'wc_sessionDelete' &&
+            jsonRpcObject.method != 'wc_pairingDelete' &&
+            jsonRpcObject.method != 'wc_sessionPing') {
           DeepLinkHandler.waiting.value = true;
         }
       } else {
-        final response = JsonRpcResponse.fromJson(data);
-        debugPrint('[$runtimeType] [WALLET] _onRelayClientMessage $response');
-        // REDIRECT BACK TO DAPP
-        final session = _web3Wallet!.sessions.get(args.topic);
+        final session = _web3Wallet!.sessions.get(event.topic);
         final scheme = session?.peer.metadata.redirect?.native ?? '';
         DeepLinkHandler.goTo(
           scheme,
-          modalTitle: response.result != null ? null : 'Error',
-          modalMessage: response.result != null
+          modalTitle: jsonRpcObject.result != null ? null : 'Error',
+          modalMessage: jsonRpcObject.result != null
               ? null
-              : response.error?.message ?? 'Error',
-          success: response.result != null,
+              : jsonRpcObject.error?.message ?? 'Error',
+          success: jsonRpcObject.result != null,
         );
       }
     }

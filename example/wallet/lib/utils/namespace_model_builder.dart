@@ -79,7 +79,7 @@ class ConnectionWidgetBuilder {
                 chainId: chainId,
                 event: SessionEventParams(
                   name: event,
-                  data: 'Event: $event',
+                  data: int.tryParse(chainId.split(':').last),
                 ),
               );
           showPlatformToast(

@@ -10,6 +10,7 @@ import 'package:walletconnect_flutter_v2_wallet/utils/constants.dart';
 
 class DeepLinkHandler {
   //
+  static final waiting = ValueNotifier<bool>(false);
   static final _linksController = StreamController<String>.broadcast();
   static const _methodChannel =
       MethodChannel('com.walletconnect.flutterwallet/methods');
@@ -23,8 +24,6 @@ class DeepLinkHandler {
           onError: _onError,
         );
   }
-
-  static final ValueNotifier<bool> waiting = ValueNotifier(false);
 
   static void checkInitialLink() {
     if (kIsWeb) return;
@@ -47,8 +46,8 @@ class DeepLinkHandler {
     String? modalMessage,
     bool success = true,
   }) async {
-    if (kIsWeb) return;
     waiting.value = false;
+    if (kIsWeb) return;
     if (scheme.isEmpty) return;
     await Future.delayed(Duration(milliseconds: delay));
     try {
@@ -65,7 +64,6 @@ class DeepLinkHandler {
   }
 
   static void _onLink(Object? event) {
-    if (kIsWeb) return;
     final decodedUri = Uri.parse(Uri.decodeFull(event.toString()));
     if (decodedUri.toString().startsWith('wc:')) {
       return;
@@ -79,7 +77,6 @@ class DeepLinkHandler {
   }
 
   static void _onError(Object error) {
-    if (kIsWeb) return;
     waiting.value = false;
     debugPrint('[WALLET] [DeepLinkHandler] _onError $error');
   }
@@ -89,7 +86,6 @@ class DeepLinkHandler {
     String? message,
     bool success = true,
   }) async {
-    if (kIsWeb) return;
     waiting.value = false;
     await GetIt.I<IBottomSheetService>().queueBottomSheet(
       closeAfter: success ? 3 : 0,
