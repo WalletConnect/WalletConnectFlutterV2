@@ -10,7 +10,7 @@ import 'package:walletconnect_flutter_v2_wallet/dependencies/key_service/i_key_s
 import 'package:walletconnect_flutter_v2_wallet/utils/constants.dart';
 import 'package:walletconnect_flutter_v2_wallet/widgets/custom_button.dart';
 import 'package:walletconnect_flutter_v2_wallet/widgets/recover_from_seed.dart';
-// ignore: depend_on_referenced_packages
+
 import 'package:package_info_plus/package_info_plus.dart';
 
 class SettingsPage extends StatefulWidget {

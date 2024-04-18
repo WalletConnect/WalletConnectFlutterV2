@@ -18,7 +18,7 @@ dependencies:
   http: ^1.2.0
   json_annotation: ^4.8.1
   logger: ^2.2.0
-  package_info_plus: ^6.0.0
+  package_info_plus: ^7.0.0
   pointycastle: ^3.7.4
   shared_preferences: ^2.2.2
   stack_trace: ^1.10.0
@@ -40,11 +40,3 @@ dev_dependencies:
   freezed: ^2.4.5
   json_serializable: ^6.7.0
   mockito: ^5.4.3
-
-platforms:
-  android:
-  ios:
-  # web:
-  # linux:
-  # macos:
-  # windows:
