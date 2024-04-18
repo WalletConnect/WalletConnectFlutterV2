@@ -19,7 +19,7 @@ jobs:
       - name: Install and set Flutter version
         uses: subosito/flutter-action@v2
         with:
-          channel: 'stable'
+          flutter-version: '3.19.5'
       
       # Setup Dart SDK
       - uses: dart-lang/setup-dart@v1
