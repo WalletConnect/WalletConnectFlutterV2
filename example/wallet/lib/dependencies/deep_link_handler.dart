@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
@@ -9,6 +10,7 @@ import 'package:walletconnect_flutter_v2_wallet/utils/constants.dart';
 
 class DeepLinkHandler {
   //
+  static final waiting = ValueNotifier<bool>(false);
   static final _linksController = StreamController<String>.broadcast();
   static const _methodChannel =
       MethodChannel('com.walletconnect.flutterwallet/methods');
@@ -16,12 +18,15 @@ class DeepLinkHandler {
       EventChannel('com.walletconnect.flutterwallet/events');
 
   static void initListener() {
-    _eventChannel.receiveBroadcastStream().listen(_onLink, onError: _onError);
+    if (kIsWeb) return;
+    _eventChannel.receiveBroadcastStream().listen(
+          _onLink,
+          onError: _onError,
+        );
   }
 
-  static final ValueNotifier<bool> waiting = ValueNotifier(false);
-
   static void checkInitialLink() {
+    if (kIsWeb) return;
     try {
       _methodChannel.invokeMethod('initialLink').then(
             _onLink,
@@ -42,6 +47,7 @@ class DeepLinkHandler {
     bool success = true,
   }) async {
     waiting.value = false;
+    if (kIsWeb) return;
     if (scheme.isEmpty) return;
     await Future.delayed(Duration(milliseconds: delay));
     try {

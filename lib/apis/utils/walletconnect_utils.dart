@@ -1,7 +1,7 @@
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:universal_io/io.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:walletconnect_flutter_v2/apis/core/relay_client/relay_client_models.dart';
 import 'package:walletconnect_flutter_v2/apis/models/basic_models.dart';
@@ -31,8 +31,13 @@ class WalletConnectUtils {
   }
 
   static String getOS() {
-    return <String>[Platform.operatingSystem, Platform.operatingSystemVersion]
-        .join('-');
+    if (kIsWeb) {
+      // TODO change this into an actual value
+      return 'web-browser';
+    } else {
+      return <String>[Platform.operatingSystem, Platform.operatingSystemVersion]
+          .join('-');
+    }
   }
 
   static Future<String> getPackageName() async {
@@ -41,20 +46,22 @@ class WalletConnectUtils {
   }
 
   static String getId() {
-    if (Platform.isAndroid) {
-      return 'android';
-    } else if (Platform.isIOS) {
-      return 'ios';
-    } else if (Platform.isLinux) {
-      return 'linux';
-    } else if (Platform.isMacOS) {
-      return 'macos';
-    } else if (Platform.isWindows) {
-      return 'windows';
-    } else if (kIsWeb) {
+    if (kIsWeb) {
       return 'web';
     } else {
-      return 'unknown';
+      if (Platform.isAndroid) {
+        return 'android';
+      } else if (Platform.isIOS) {
+        return 'ios';
+      } else if (Platform.isLinux) {
+        return 'linux';
+      } else if (Platform.isMacOS) {
+        return 'macos';
+      } else if (Platform.isWindows) {
+        return 'windows';
+      } else {
+        return 'unknown';
+      }
     }
   }
 

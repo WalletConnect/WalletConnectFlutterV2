@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
@@ -218,6 +219,7 @@ class SessionWidgetState extends State<SessionWidget> {
   }
 
   void _launchWallet() {
+    if (kIsWeb) return;
     final walletUrl = widget.session.peer.metadata.redirect?.native;
     if ((walletUrl ?? '').isNotEmpty) {
       launchUrlString(

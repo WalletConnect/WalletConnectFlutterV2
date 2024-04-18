@@ -23,6 +23,7 @@ class StringConstants {
   static const String connect = 'Connect';
   static const String connectionEstablished = 'Session established';
   static const String connectionFailed = 'Session setup failed';
+  static const String connectionRejected = 'Connection rejected by user';
   static const String authSucceeded = 'Authentication Successful';
   static const String authFailed = 'Authentication Failed';
 

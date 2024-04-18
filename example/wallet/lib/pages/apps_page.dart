@@ -8,6 +8,7 @@ import 'package:walletconnect_flutter_v2_wallet/dependencies/deep_link_handler.d
 import 'package:walletconnect_flutter_v2_wallet/dependencies/i_web3wallet_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/pages/app_detail_page.dart';
 import 'package:walletconnect_flutter_v2_wallet/utils/constants.dart';
+import 'package:walletconnect_flutter_v2_wallet/utils/eth_utils.dart';
 import 'package:walletconnect_flutter_v2_wallet/utils/string_constants.dart';
 import 'package:walletconnect_flutter_v2_wallet/widgets/pairing_item.dart';
 import 'package:walletconnect_flutter_v2_wallet/widgets/qr_scan_sheet.dart';
@@ -65,8 +66,21 @@ class AppsPageState extends State<AppsPage> with GetItStateMixin {
     super.dispose();
   }
 
-  void _refreshState(dynamic event) {
+  void _refreshState(dynamic event) async {
     debugPrint('[WALLET] [$runtimeType] $event');
+    if (event is MessageEvent) {
+      final jsonRpcObject = await EthUtils.decodeMessageEvent(event);
+      if (jsonRpcObject != null) {
+        showPlatformToast(
+          child: Text(jsonRpcObject.toString()),
+          // ignore: use_build_context_synchronously
+          context: context,
+        );
+      }
+    }
+    if (event is SessionConnect) {
+      DeepLinkHandler.waiting.value = false;
+    }
     setState(() {});
   }
 
@@ -80,6 +94,7 @@ class AppsPageState extends State<AppsPage> with GetItStateMixin {
         Positioned(
           bottom: StyleConstants.magic20,
           right: StyleConstants.magic20,
+          left: StyleConstants.magic20,
           child: Row(
             children: [
               const SizedBox(width: StyleConstants.magic20),
@@ -184,12 +199,14 @@ class AppsPageState extends State<AppsPage> with GetItStateMixin {
   }
 
   Future<void> _onFoundUri(String? uri) async {
+    if ((uri ?? '').isEmpty) return;
     try {
       DeepLinkHandler.waiting.value = true;
       final Uri uriData = Uri.parse(uri!);
       await _web3Wallet.pair(uri: uriData);
     } catch (e) {
-      showToast(
+      DeepLinkHandler.waiting.value = false;
+      showPlatformToast(
         child: Container(
           padding: const EdgeInsets.all(StyleConstants.linear8),
           margin: const EdgeInsets.only(

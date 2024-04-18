@@ -52,8 +52,8 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   void initState() {
-    initialize();
     super.initState();
+    initialize();
   }
 
   Future<void> initialize() async {
@@ -108,12 +108,12 @@ class _MyHomePageState extends State<MyHomePage> {
         PageData(
           page: PairingsPage(web3App: _web3App!),
           title: StringConstants.pairingsPageTitle,
-          icon: Icons.connect_without_contact_sharp,
+          icon: Icons.vertical_align_center_rounded,
         ),
         PageData(
           page: SessionsPage(web3App: _web3App!),
           title: StringConstants.sessionsPageTitle,
-          icon: Icons.confirmation_number_outlined,
+          icon: Icons.workspaces_filled,
         ),
         PageData(
           page: AuthPage(web3App: _web3App!),
@@ -189,6 +189,8 @@ class _MyHomePageState extends State<MyHomePage> {
       currentIndex: _selectedIndex,
       unselectedItemColor: Colors.grey,
       selectedItemColor: Colors.indigoAccent,
+      showUnselectedLabels: true,
+      type: BottomNavigationBarType.fixed,
       // called when one tab is selected
       onTap: (int index) {
         setState(() {

@@ -40,35 +40,45 @@ class SessionsPageState extends State<SessionsPage> {
   Widget build(BuildContext context) {
     final List<SessionData> sessions = _activeSessions.values.toList();
 
-    return SingleChildScrollView(
-      child: ExpansionPanelList(
-        elevation: 0.0,
-        materialGapSize: 0.0,
-        expansionCallback: (int index, bool isExpanded) {
-          setState(() {
-            _selectedSession = !isExpanded ? '' : sessions[index].topic;
-          });
-        },
-        children: sessions
-            .map(
-              (session) => ExpansionPanel(
-                canTapOnHeader: true,
-                isExpanded: _selectedSession == session.topic,
-                backgroundColor: Colors.black12,
-                headerBuilder: (context, isExpanded) {
-                  return SessionItem(
-                    key: ValueKey(session.topic),
-                    session: session,
-                  );
-                },
-                body: Container(
-                  height: MediaQuery.of(context).size.height - 300.0,
-                  padding: const EdgeInsets.symmetric(horizontal: 12.0),
-                  child: _buildSessionView(),
-                ),
-              ),
-            )
-            .toList(),
+    return Center(
+      child: Container(
+        constraints: const BoxConstraints(
+          maxWidth: StyleConstants.maxWidth,
+        ),
+        child: Align(
+          alignment: Alignment.topCenter,
+          child: SingleChildScrollView(
+            child: ExpansionPanelList(
+              elevation: 0.0,
+              materialGapSize: 0.0,
+              expansionCallback: (int index, bool isExpanded) {
+                setState(() {
+                  _selectedSession = !isExpanded ? '' : sessions[index].topic;
+                });
+              },
+              children: sessions
+                  .map(
+                    (session) => ExpansionPanel(
+                      canTapOnHeader: true,
+                      isExpanded: _selectedSession == session.topic,
+                      backgroundColor: Colors.black12,
+                      headerBuilder: (context, isExpanded) {
+                        return SessionItem(
+                          key: ValueKey(session.topic),
+                          session: session,
+                        );
+                      },
+                      body: Container(
+                        height: MediaQuery.of(context).size.height - 300.0,
+                        padding: const EdgeInsets.symmetric(horizontal: 12.0),
+                        child: _buildSessionView(),
+                      ),
+                    ),
+                  )
+                  .toList(),
+            ),
+          ),
+        ),
       ),
     );
   }

@@ -1,7 +1,9 @@
 import 'dart:convert';
 
 import 'package:convert/convert.dart';
+import 'package:get_it/get_it.dart';
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
+import 'package:walletconnect_flutter_v2_wallet/dependencies/i_web3wallet_service.dart';
 
 class EthUtils {
   static final addressRegEx = RegExp(
@@ -50,5 +52,21 @@ class EthUtils {
       orElse: () => null,
     );
     return param as Map<String, dynamic>?;
+  }
+
+  static Future<dynamic> decodeMessageEvent(MessageEvent event) async {
+    final w3Wallet = GetIt.I<IWeb3WalletService>().web3wallet;
+    final payloadString = await w3Wallet.core.crypto.decode(
+      event.topic,
+      event.message,
+    );
+    if (payloadString == null) return null;
+
+    final data = jsonDecode(payloadString) as Map<String, dynamic>;
+    if (data.containsKey('method')) {
+      return JsonRpcRequest.fromJson(data);
+    } else {
+      return JsonRpcResponse.fromJson(data);
+    }
   }
 }

@@ -31,7 +31,7 @@ class StyleConstants {
   static const double magic64 = 64;
 
   // Width
-  static const double maxWidth = 400;
+  static const double maxWidth = 500;
 
   // Text styles
   static const TextStyle titleText = TextStyle(

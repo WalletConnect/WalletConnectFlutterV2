@@ -1,3 +1,7 @@
+## 2.2.3-beta01
+
+- Web Support is here!
+
 ## 2.2.2
 
 - Fix on requestReadContract. Fixes issues https://github.com/WalletConnect/WalletConnectFlutterV2/issues/278 and https://github.com/WalletConnect/Web3ModalFlutter/issues/99

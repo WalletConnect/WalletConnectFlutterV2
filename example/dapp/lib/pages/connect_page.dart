@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:fl_toast/fl_toast.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:qr_flutter/qr_flutter.dart';
@@ -29,6 +30,13 @@ class ConnectPageState extends State<ConnectPage> {
   bool _testnetOnly = false;
   final List<ChainMetadata> _selectedChains = [];
   bool _shouldDismissQrCode = true;
+
+  void setTestnet(bool value) {
+    if (value != _testnetOnly) {
+      _selectedChains.clear();
+    }
+    _testnetOnly = value;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -66,6 +74,8 @@ class ConnectPageState extends State<ConnectPage> {
             ? null
             : () => _onConnect(showToast: (m) async {
                   await showPlatformToast(child: Text(m), context: context);
+                }, closeModal: () {
+                  Navigator.of(context).pop();
                 }),
         style: ButtonStyle(
           backgroundColor: MaterialStateProperty.resolveWith<Color>(
@@ -153,11 +163,21 @@ class ConnectPageState extends State<ConnectPage> {
     );
   }
 
-  Future<void> _onConnect({Function(String message)? showToast}) async {
+  Future<void> _onConnect({
+    Function(String message)? showToast,
+    VoidCallback? closeModal,
+  }) async {
     debugPrint('Creating connection and session');
     // It is currently safer to send chains approvals on optionalNamespaces
     // but depending on Wallet implementation you may need to send some (for innstance eip155:1) as required
     final ConnectResponse res = await widget.web3App.connect(
+      // requiredNamespaces: {
+      //   'eip155': const RequiredNamespace(
+      //     chains: [],
+      //     methods: MethodsConstants.requiredMethods,
+      //     events: EventsConstants.requiredEvents,
+      //   ),
+      // },
       optionalNamespaces: {
         'eip155': RequiredNamespace(
           chains: _selectedChains.map((c) => c.chainId).toList(),
@@ -225,6 +245,7 @@ class ConnectPageState extends State<ConnectPage> {
         showToast?.call(StringConstants.authFailed);
       } else {
         showToast?.call(StringConstants.authSucceeded);
+        closeModal?.call();
       }
 
       // ignore: use_build_context_synchronously
@@ -239,61 +260,106 @@ class ConnectPageState extends State<ConnectPage> {
         Navigator.pop(context);
       }
       showToast?.call(StringConstants.connectionFailed);
+      closeModal?.call();
     }
   }
 
   Future<void> _showQrCode(ConnectResponse response) async {
     // Show the QR code
     debugPrint('Showing QR Code: ${response.uri}');
-
     _shouldDismissQrCode = true;
-    await showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text(
-            StringConstants.scanQrCode,
-            style: StyleConstants.titleText,
-            textAlign: TextAlign.center,
-          ),
-          content: SizedBox(
-            width: 300,
-            height: 350,
-            child: Center(
-              child: Column(
-                children: [
-                  QrImageView(
-                    data: response.uri!.toString(),
+    if (kIsWeb) {
+      await showDialog(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            insetPadding: const EdgeInsets.all(0.0),
+            contentPadding: const EdgeInsets.all(0.0),
+            backgroundColor: Colors.white,
+            content: SizedBox(
+              width: 400.0,
+              child: AspectRatio(
+                aspectRatio: 0.8,
+                child: Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: _QRCodeView(
+                    uri: response.uri.toString(),
                   ),
-                  const SizedBox(
-                    height: StyleConstants.linear16,
-                  ),
-                  ElevatedButton(
-                    onPressed: () {
-                      Clipboard.setData(
-                        ClipboardData(
-                          text: response.uri!.toString(),
-                        ),
-                      ).then(
-                        (_) => showPlatformToast(
-                          child: const Text(
-                            StringConstants.copiedToClipboard,
-                          ),
-                          context: context,
-                        ),
-                      );
-                    },
-                    child: const Text(
-                      'Copy URL to Clipboard',
-                    ),
-                  ),
-                ],
+                ),
               ),
             ),
-          ),
-        );
-      },
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context),
+                child: const Text('Cancel'),
+              )
+            ],
+          );
+        },
+      );
+      _shouldDismissQrCode = false;
+      return;
+    }
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        fullscreenDialog: true,
+        builder: (context) => QRCodeScreen(response: response),
+      ),
     );
-    _shouldDismissQrCode = false;
+  }
+}
+
+class QRCodeScreen extends StatefulWidget {
+  const QRCodeScreen({super.key, required this.response});
+  final ConnectResponse response;
+
+  @override
+  State<QRCodeScreen> createState() => _QRCodeScreenState();
+}
+
+class _QRCodeScreenState extends State<QRCodeScreen> {
+  @override
+  Widget build(BuildContext context) {
+    return Material(
+      child: Scaffold(
+        appBar: AppBar(title: const Text(StringConstants.scanQrCode)),
+        body: _QRCodeView(
+          uri: widget.response.uri!.toString(),
+        ),
+      ),
+    );
+  }
+}
+
+class _QRCodeView extends StatelessWidget {
+  const _QRCodeView({required this.uri});
+  final String uri;
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      mainAxisAlignment: MainAxisAlignment.center,
+      children: [
+        QrImageView(data: uri),
+        const SizedBox(
+          height: StyleConstants.linear16,
+        ),
+        ElevatedButton(
+          onPressed: () {
+            Clipboard.setData(
+              ClipboardData(text: uri.toString()),
+            ).then(
+              (_) => showPlatformToast(
+                child: const Text(StringConstants.copiedToClipboard),
+                context: context,
+              ),
+            );
+          },
+          child: const Text('Copy URL to Clipboard'),
+        ),
+      ],
+    );
   }
 }
