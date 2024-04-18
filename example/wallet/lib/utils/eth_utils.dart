@@ -54,7 +54,7 @@ class EthUtils {
     return param as Map<String, dynamic>?;
   }
 
-  static dynamic decodeMessageEvent(MessageEvent event) async {
+  static Future<dynamic> decodeMessageEvent(MessageEvent event) async {
     final w3Wallet = GetIt.I<IWeb3WalletService>().web3wallet;
     final payloadString = await w3Wallet.core.crypto.decode(
       event.topic,

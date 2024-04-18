@@ -223,7 +223,7 @@ class Web3WalletService extends IWeb3WalletService {
   void _onRelayClientMessage(MessageEvent? event) async {
     debugPrint('[$runtimeType] [WALLET] _onRelayClientMessage $event');
     if (event != null) {
-      final jsonRpcObject = EthUtils.decodeMessageEvent(event);
+      final jsonRpcObject = await EthUtils.decodeMessageEvent(event);
       if (jsonRpcObject is JsonRpcRequest) {
         if (jsonRpcObject.method != 'wc_sessionDelete' &&
             jsonRpcObject.method != 'wc_pairingDelete' &&
@@ -304,6 +304,7 @@ class Web3WalletService extends IWeb3WalletService {
           error: Errors.getSdkError(Errors.USER_REJECTED_AUTH),
         );
       }
+      DeepLinkHandler.waiting.value = false;
     }
   }
 }

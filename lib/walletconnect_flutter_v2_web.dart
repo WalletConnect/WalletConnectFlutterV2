@@ -4,7 +4,6 @@
 // ignore: avoid_web_libraries_in_flutter
 import 'dart:html' as html show window;
 
-// ignore: depend_on_referenced_packages
 import 'package:flutter_web_plugins/flutter_web_plugins.dart';
 
 import 'walletconnect_flutter_v2_platform_interface.dart';
