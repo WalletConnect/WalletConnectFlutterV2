@@ -8,7 +8,8 @@ abstract class WalletconnectFlutterV2Platform extends PlatformInterface {
 
   static final Object _token = Object();
 
-  static WalletconnectFlutterV2Platform _instance = MethodChannelWalletconnectFlutterV2();
+  static WalletconnectFlutterV2Platform _instance =
+      MethodChannelWalletconnectFlutterV2();
 
   /// The default instance of [WalletconnectFlutterV2Platform] to use.
   ///
