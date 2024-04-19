@@ -1,4 +1,4 @@
-## 2.2.3-beta01
+## 2.2.3-beta02
 
 - Web Support is here!
 
