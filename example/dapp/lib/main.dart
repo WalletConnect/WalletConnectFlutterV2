@@ -86,7 +86,6 @@ class _MyHomePageState extends State<MyHomePage> {
     }
 
     // Register event handlers
-    _web3App!.onSessionConnect.subscribe(_onSessionConnect);
     _web3App!.onSessionPing.subscribe(_onSessionPing);
     _web3App!.onSessionEvent.subscribe(_onSessionEvent);
     _web3App!.onSessionUpdate.subscribe(_onSessionUpdate);
@@ -134,7 +133,6 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void dispose() {
     // Unregister event handlers
-    _web3App!.onSessionConnect.unsubscribe(_onSessionConnect);
     _web3App!.onSessionPing.unsubscribe(_onSessionPing);
     _web3App!.onSessionEvent.unsubscribe(_onSessionEvent);
     _web3App!.onSessionUpdate.unsubscribe(_onSessionUpdate);
@@ -254,10 +252,6 @@ class _MyHomePageState extends State<MyHomePage> {
         );
       },
     );
-  }
-
-  void _onSessionConnect(SessionConnect? event) {
-    debugPrint(jsonEncode(event?.session.toJson()));
   }
 
   void _onSessionUpdate(SessionUpdate? args) {

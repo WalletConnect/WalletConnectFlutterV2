@@ -86,6 +86,7 @@ class Web3WalletService extends IWeb3WalletService {
     _web3Wallet!.core.pairing.onPairingInvalid.subscribe(_onPairingInvalid);
     _web3Wallet!.core.pairing.onPairingCreate.subscribe(_onPairingCreate);
     _web3Wallet!.onSessionProposal.subscribe(_onSessionProposal);
+    _web3Wallet!.onSessionConnect.subscribe(_onSessionConnect);
     _web3Wallet!.onSessionProposalError.subscribe(_onSessionProposalError);
     _web3Wallet!.onAuthRequest.subscribe(_onAuthRequest);
     _web3Wallet!.core.relayClient.onRelayClientError.subscribe(
@@ -109,6 +110,7 @@ class Web3WalletService extends IWeb3WalletService {
     _web3Wallet!.core.pairing.onPairingInvalid.unsubscribe(_onPairingInvalid);
     _web3Wallet!.core.pairing.onPairingCreate.unsubscribe(_onPairingCreate);
     _web3Wallet!.onSessionProposal.unsubscribe(_onSessionProposal);
+    _web3Wallet!.onSessionConnect.unsubscribe(_onSessionConnect);
     _web3Wallet!.onSessionProposalError.unsubscribe(_onSessionProposalError);
     _web3Wallet!.onAuthRequest.unsubscribe(_onAuthRequest);
     _web3Wallet!.core.relayClient.onRelayClientError.unsubscribe(
@@ -221,27 +223,36 @@ class Web3WalletService extends IWeb3WalletService {
   }
 
   void _onRelayClientMessage(MessageEvent? event) async {
-    debugPrint('[$runtimeType] [WALLET] _onRelayClientMessage $event');
     if (event != null) {
-      final jsonRpcObject = await EthUtils.decodeMessageEvent(event);
-      if (jsonRpcObject is JsonRpcRequest) {
-        if (jsonRpcObject.method != 'wc_sessionDelete' &&
-            jsonRpcObject.method != 'wc_pairingDelete' &&
-            jsonRpcObject.method != 'wc_sessionPing') {
+      final jsonObject = await EthUtils.decodeMessageEvent(event);
+      debugPrint('[$runtimeType] [WALLET] _onRelayClientMessage $jsonObject');
+      if (jsonObject is JsonRpcRequest) {
+        if (jsonObject.method != 'wc_sessionDelete' &&
+            jsonObject.method != 'wc_pairingDelete' &&
+            jsonObject.method != 'wc_sessionPing') {
           DeepLinkHandler.waiting.value = true;
         }
       } else {
         final session = _web3Wallet!.sessions.get(event.topic);
         final scheme = session?.peer.metadata.redirect?.native ?? '';
+        final isSuccess = jsonObject.result != null;
+        final title = isSuccess ? null : 'Error';
+        final message = isSuccess ? null : jsonObject.error?.message ?? '';
         DeepLinkHandler.goTo(
           scheme,
-          modalTitle: jsonRpcObject.result != null ? null : 'Error',
-          modalMessage: jsonRpcObject.result != null
-              ? null
-              : jsonRpcObject.error?.message ?? 'Error',
-          success: jsonRpcObject.result != null,
+          modalTitle: title,
+          modalMessage: message,
+          success: isSuccess,
         );
       }
+    }
+  }
+
+  void _onSessionConnect(SessionConnect? args) {
+    debugPrint('[$runtimeType] [WALLET] _onSessionConnect $args');
+    if (args != null) {
+      final scheme = args.session.peer.metadata.redirect?.native ?? '';
+      DeepLinkHandler.goTo(scheme);
     }
   }
 
@@ -297,14 +308,23 @@ class Web3WalletService extends IWeb3WalletService {
             s: sig,
           ),
         );
+        final scheme = args.requester.metadata.redirect?.native ?? '';
+        DeepLinkHandler.goTo(scheme);
       } else {
         await _web3Wallet!.respondAuthRequest(
           id: args.id,
           iss: iss,
           error: Errors.getSdkError(Errors.USER_REJECTED_AUTH),
         );
+        // TODO this should be triggered on _onRelayClientMessage
+        final scheme = args.requester.metadata.redirect?.native ?? '';
+        DeepLinkHandler.goTo(
+          scheme,
+          modalTitle: 'Error',
+          modalMessage: 'User rejected',
+          success: false,
+        );
       }
-      DeepLinkHandler.waiting.value = false;
     }
   }
 }

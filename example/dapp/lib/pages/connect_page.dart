@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:async';
 
 import 'package:fl_toast/fl_toast.dart';
@@ -30,6 +32,18 @@ class ConnectPageState extends State<ConnectPage> {
   bool _testnetOnly = false;
   final List<ChainMetadata> _selectedChains = [];
   bool _shouldDismissQrCode = true;
+
+  @override
+  void initState() {
+    super.initState();
+    widget.web3App.onSessionConnect.subscribe(_onSessionConnect);
+  }
+
+  @override
+  void dispose() {
+    widget.web3App.onSessionConnect.unsubscribe(_onSessionConnect);
+    super.dispose();
+  }
 
   void setTestnet(bool value) {
     if (value != _testnetOnly) {
@@ -75,7 +89,9 @@ class ConnectPageState extends State<ConnectPage> {
             : () => _onConnect(showToast: (m) async {
                   await showPlatformToast(child: Text(m), context: context);
                 }, closeModal: () {
-                  Navigator.of(context).pop();
+                  if (Navigator.canPop(context)) {
+                    Navigator.of(context).pop();
+                  }
                 }),
         style: ButtonStyle(
           backgroundColor: MaterialStateProperty.resolveWith<Color>(
@@ -192,7 +208,6 @@ class ConnectPageState extends State<ConnectPage> {
     // final uri = 'metamask://wc?uri=$encodedUri';
     if (await canLaunchUrlString(uri)) {
       final openApp = await showDialog(
-        // ignore: use_build_context_synchronously
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
@@ -219,49 +234,10 @@ class ConnectPageState extends State<ConnectPage> {
       _showQrCode(res);
     }
 
-    try {
-      debugPrint('Awaiting session proposal settlement');
-      final _ = await res.session.future;
+    debugPrint('Awaiting session proposal settlement');
+    final _ = await res.session.future;
 
-      showToast?.call(StringConstants.connectionEstablished);
-
-      // Send off an auth request now that the pairing/session is established
-      debugPrint('Requesting authentication');
-      final AuthRequestResponse authRes = await widget.web3App.requestAuth(
-        pairingTopic: res.pairingTopic,
-        params: AuthRequestParams(
-          chainId: _selectedChains[0].chainId,
-          domain: Constants.domain,
-          aud: Constants.aud,
-          // statement: 'Welcome to example flutter app',
-        ),
-      );
-
-      debugPrint('Awaiting authentication response');
-      final authResponse = await authRes.completer.future;
-
-      if (authResponse.error != null) {
-        debugPrint('Authentication failed: ${authResponse.error}');
-        showToast?.call(StringConstants.authFailed);
-      } else {
-        showToast?.call(StringConstants.authSucceeded);
-        closeModal?.call();
-      }
-
-      // ignore: use_build_context_synchronously
-      if (_shouldDismissQrCode && Navigator.canPop(context)) {
-        // ignore: use_build_context_synchronously
-        Navigator.pop(context);
-      }
-    } catch (e) {
-      // ignore: use_build_context_synchronously
-      if (_shouldDismissQrCode && Navigator.canPop(context)) {
-        // ignore: use_build_context_synchronously
-        Navigator.pop(context);
-      }
-      showToast?.call(StringConstants.connectionFailed);
-      closeModal?.call();
-    }
+    showToast?.call(StringConstants.connectionEstablished);
   }
 
   Future<void> _showQrCode(ConnectResponse response) async {
@@ -308,6 +284,80 @@ class ConnectPageState extends State<ConnectPage> {
         builder: (context) => QRCodeScreen(response: response),
       ),
     );
+  }
+
+  void _onSessionConnect(SessionConnect? event) async {
+    if (event == null) return;
+
+    if (_shouldDismissQrCode && Navigator.canPop(context)) {
+      _shouldDismissQrCode = false;
+      Navigator.pop(context);
+    }
+
+    final shouldAuth = await showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          insetPadding: const EdgeInsets.all(0.0),
+          contentPadding: const EdgeInsets.all(0.0),
+          backgroundColor: Colors.white,
+          title: const Text('Request Auth?'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context, false),
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context, true);
+              },
+              child: const Text('Yes!'),
+            ),
+          ],
+        );
+      },
+    );
+    if (!shouldAuth) return;
+
+    try {
+      final scheme = event.session.peer.metadata.redirect?.native ?? '';
+      launchUrlString(scheme, mode: LaunchMode.externalApplication);
+
+      final pairingTopic = event.session.pairingTopic;
+      // Send off an auth request now that the pairing/session is established
+      debugPrint('Requesting authentication');
+      final authRes = await widget.web3App.requestAuth(
+        pairingTopic: pairingTopic,
+        params: AuthRequestParams(
+          chainId: _selectedChains[0].chainId,
+          domain: Constants.domain,
+          aud: Constants.aud,
+          // statement: 'Welcome to example flutter app',
+        ),
+      );
+
+      debugPrint('Awaiting authentication response');
+      final authResponse = await authRes.completer.future;
+
+      if (authResponse.error != null) {
+        debugPrint('Authentication failed: ${authResponse.error}');
+        showPlatformToast(
+          child: const Text(StringConstants.authFailed),
+          context: context,
+        );
+      } else {
+        showPlatformToast(
+          child: const Text(StringConstants.authSucceeded),
+          context: context,
+        );
+      }
+    } catch (e) {
+      showPlatformToast(
+        child: const Text(StringConstants.connectionFailed),
+        context: context,
+      );
+    }
   }
 }
 
