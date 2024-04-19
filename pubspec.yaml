@@ -1,6 +1,6 @@
 name: walletconnect_flutter_v2
 description: This repository contains oficial implementation of WalletConnect v2 protocols for Flutter applications. The communications protocol for web3.
-version: 2.2.3-beta01
+version: 2.2.3-beta02
 repository: https://github.com/WalletConnect/WalletConnectFlutterV2
 
 environment:
@@ -14,14 +14,11 @@ dependencies:
   event: ^2.1.2
   flutter:
     sdk: flutter
-  flutter_web_plugins:
-    sdk: flutter
   freezed_annotation: ^2.2.0
   http: ^1.2.0
   json_annotation: ^4.8.1
   logger: ^2.2.0
   package_info_plus: ^7.0.0
-  plugin_platform_interface: ^2.1.8
   pointycastle: ^3.7.4
   shared_preferences: ^2.2.2
   stack_trace: ^1.10.0
@@ -42,16 +39,10 @@ dev_dependencies:
   json_serializable: ^6.7.0
   mockito: ^5.4.3
 
-# flutter:
-#   plugin:
-#     platforms:
-#       android:
-#         package: com.walletconnect.walletconnectflutterv2
-#         pluginClass: WalletconnectFlutterV2
-#         fileName: lib/walletconnect_flutter_v2.dart
-#       ios:
-#         pluginClass: WalletconnectFlutterV2
-#         fileName: lib/walletconnect_flutter_v2.dart
-#       web:
-#         pluginClass: WalletconnectFlutterV2Web
-#         fileName: lib/walletconnect_flutter_v2_web.dart
+platforms:
+  android:
+  ios:
+  web:
+  macos:
+  linux:
+  windows:
