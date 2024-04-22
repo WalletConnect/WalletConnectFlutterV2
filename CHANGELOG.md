@@ -1,6 +1,6 @@
 ## 2.2.3-beta03
 
-- Web Support is here!
+- Full web support
 
 ## 2.2.2
 

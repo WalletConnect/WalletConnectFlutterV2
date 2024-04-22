@@ -503,6 +503,9 @@ class SignEngine implements ISignEngine {
     String? method,
     List<dynamic> parameters = const [],
   }) async {
+    if ((transaction.from?.toString() ?? '').isEmpty) {
+      throw Exception('Transaction must include `from` value');
+    }
     final credentials = CustomCredentials(
       signEngine: this,
       topic: topic,
@@ -514,11 +517,13 @@ class SignEngine implements ISignEngine {
       contract: deployedContract,
       function: deployedContract.function(functionName),
       from: credentials.address,
-      parameters: [
-        if (transaction.to != null) transaction.to,
-        if (transaction.value != null) transaction.value!.getInWei,
-        ...parameters,
-      ],
+      value: transaction.value,
+      maxGas: transaction.maxGas,
+      gasPrice: transaction.gasPrice,
+      nonce: transaction.nonce,
+      maxFeePerGas: transaction.maxFeePerGas,
+      maxPriorityFeePerGas: transaction.maxPriorityFeePerGas,
+      parameters: parameters,
     );
 
     if (chainId.contains(':')) {
