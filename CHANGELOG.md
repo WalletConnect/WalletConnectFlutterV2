@@ -1,7 +1,7 @@
 ## 2.2.3-beta03
 
 - Full web support
-- Fix on requestWriteContract() function where parameters were not parsed properly
+- Fix on `requestWriteContract()` function where parameters were not parsed properly
 
 ## 2.2.2
 

@@ -503,7 +503,7 @@ class SignEngine implements ISignEngine {
     String? method,
     List<dynamic> parameters = const [],
   }) async {
-    if ((transaction.from?.toString() ?? '').isEmpty) {
+    if (transaction.from == null) {
       throw Exception('Transaction must include `from` value');
     }
     final credentials = CustomCredentials(
