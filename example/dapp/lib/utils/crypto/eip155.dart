@@ -2,8 +2,6 @@ import 'dart:convert';
 // ignore: depend_on_referenced_packages
 import 'package:convert/convert.dart';
 
-import 'package:flutter/foundation.dart';
-
 import 'package:intl/intl.dart';
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 import 'package:walletconnect_flutter_v2_dapp/models/chain_metadata.dart';
@@ -96,7 +94,8 @@ class EIP155 {
           transaction: Transaction(
             from: EthereumAddress.fromHex(address),
             to: EthereumAddress.fromHex(
-                '0x59e2f66C0E96803206B6486cDb39029abAE834c0'),
+              '0x59e2f66C0E96803206B6486cDb39029abAE834c0',
+            ),
             value: EtherAmount.fromInt(EtherUnit.finney, 12), // == 0.012
           ),
         );
@@ -108,7 +107,8 @@ class EIP155 {
           transaction: Transaction(
             from: EthereumAddress.fromHex(address),
             to: EthereumAddress.fromHex(
-                '0x59e2f66C0E96803206B6486cDb39029abAE834c0'),
+              '0x59e2f66C0E96803206B6486cDb39029abAE834c0',
+            ),
             value: EtherAmount.fromInt(EtherUnit.finney, 11), // == 0.011
           ),
         );
@@ -139,19 +139,23 @@ class EIP155 {
           address: address,
         );
       case 'write':
-        return writeToSmartContract(
-          web3App: web3App,
-          rpcUrl: ChainData.testChains.first.rpc.first,
-          address: address,
+        return web3App.requestWriteContract(
           topic: topic,
           chainId: ChainData.testChains.first.chainId,
-          contract: deployedContract,
+          rpcUrl: ChainData.testChains.first.rpc.first,
+          deployedContract: deployedContract,
+          functionName: 'transfer',
           transaction: Transaction(
             from: EthereumAddress.fromHex(address),
-            to: EthereumAddress.fromHex(
-                '0x59e2f66C0E96803206B6486cDb39029abAE834c0'),
-            value: EtherAmount.fromInt(EtherUnit.finney, 10), // == 0.010
           ),
+          parameters: [
+            // Recipient
+            EthereumAddress.fromHex(
+              '0x59e2f66C0E96803206B6486cDb39029abAE834c0',
+            ),
+            // Amount to Transfer
+            EtherAmount.fromInt(EtherUnit.finney, 10).getInWei, // == 0.010
+          ],
         );
       default:
         return Future.value();
@@ -167,7 +171,6 @@ class EIP155 {
   }) async {
     final bytes = utf8.encode(message);
     final encoded = '0x${hex.encode(bytes)}';
-    debugPrint('personalSign $encoded');
 
     return await web3App.request(
       topic: topic,
@@ -285,24 +288,5 @@ class EIP155 {
       'totalSupply': oCcy.format(total),
       'balance': oCcy.format(balance),
     };
-  }
-
-  static Future<dynamic> writeToSmartContract({
-    required Web3App web3App,
-    required String rpcUrl,
-    required String topic,
-    required String chainId,
-    required String address,
-    required DeployedContract contract,
-    required Transaction transaction,
-  }) async {
-    return await web3App.requestWriteContract(
-      topic: topic,
-      chainId: chainId,
-      rpcUrl: rpcUrl,
-      deployedContract: contract,
-      functionName: 'transfer',
-      transaction: transaction,
-    );
   }
 }

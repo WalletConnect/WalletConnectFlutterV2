@@ -1,6 +1,6 @@
 {
-    "name": "dapp",
-    "short_name": "dapp",
+    "name": "Web3Dapp Flutter",
+    "short_name": "Web3Dapp Flutter",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

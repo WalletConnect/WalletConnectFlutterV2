@@ -8,7 +8,6 @@ import 'package:walletconnect_flutter_v2_wallet/dependencies/deep_link_handler.d
 import 'package:walletconnect_flutter_v2_wallet/dependencies/i_web3wallet_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/pages/app_detail_page.dart';
 import 'package:walletconnect_flutter_v2_wallet/utils/constants.dart';
-import 'package:walletconnect_flutter_v2_wallet/utils/eth_utils.dart';
 import 'package:walletconnect_flutter_v2_wallet/utils/string_constants.dart';
 import 'package:walletconnect_flutter_v2_wallet/widgets/pairing_item.dart';
 import 'package:walletconnect_flutter_v2_wallet/widgets/qr_scan_sheet.dart';
@@ -67,20 +66,6 @@ class AppsPageState extends State<AppsPage> with GetItStateMixin {
   }
 
   void _refreshState(dynamic event) async {
-    debugPrint('[WALLET] [$runtimeType] $event');
-    if (event is MessageEvent) {
-      final jsonRpcObject = await EthUtils.decodeMessageEvent(event);
-      if (jsonRpcObject != null) {
-        showPlatformToast(
-          child: Text(jsonRpcObject.toString()),
-          // ignore: use_build_context_synchronously
-          context: context,
-        );
-      }
-    }
-    if (event is SessionConnect) {
-      DeepLinkHandler.waiting.value = false;
-    }
     setState(() {});
   }
 

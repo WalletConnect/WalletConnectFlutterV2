@@ -50,6 +50,7 @@ class DeepLinkHandler {
     if (kIsWeb) return;
     if (scheme.isEmpty) return;
     await Future.delayed(Duration(milliseconds: delay));
+    debugPrint('[WALLET] [DeepLinkHandler] redirecting to $scheme');
     try {
       await launchUrlString(scheme, mode: LaunchMode.externalApplication);
     } catch (e) {
