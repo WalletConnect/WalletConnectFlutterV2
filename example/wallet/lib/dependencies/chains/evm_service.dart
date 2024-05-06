@@ -372,6 +372,10 @@ class EVMService {
     );
   }
 
+  Future<void> addChain(String topic, dynamic parameters) async {
+    debugPrint('[WALLET] addChain request: $topic $parameters');
+  }
+
   void _goBackToDapp(String topic, dynamic result) {
     try {
       final session = _web3Wallet.sessions.get(topic);
@@ -389,10 +393,6 @@ class EVMService {
     } catch (e) {
       debugPrint('[WALLET] ${e.toString()}');
     }
-  }
-
-  Future<void> addChain(String topic, dynamic parameters) async {
-    debugPrint('[WALLET] addChain request: $topic $parameters');
   }
 
   Future<bool> requestApproval(String text) async {

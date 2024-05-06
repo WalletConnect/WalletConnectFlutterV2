@@ -129,12 +129,16 @@ class Web3WalletService extends IWeb3WalletService {
     ChainType chainType,
   ) {
     final constructedNS = Map<String, Namespace>.from(approvedNamespaces ?? {});
-    constructedNS[chainType.name] = constructedNS[chainType.name]!.copyWith(
-      methods: [
-        ...constructedNS[chainType.name]!.methods,
-        ...supportedMethods,
-      ],
-    );
+    try {
+      constructedNS[chainType.name] = constructedNS[chainType.name]!.copyWith(
+        methods: [
+          ...constructedNS[chainType.name]!.methods,
+          ...supportedMethods,
+        ],
+      );
+    } catch (e) {
+      debugPrint('[$runtimeType] _generateNamespaces $e');
+    }
     return constructedNS;
   }
 

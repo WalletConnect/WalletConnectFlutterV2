@@ -77,6 +77,46 @@ class ChainData {
     ),
   ];
 
+  static final List<ChainMetadata> solanaChains = [
+    const ChainMetadata(
+      type: ChainType.solana,
+      chainId: 'solana:4sGjMW1sUnHzSxGspuhpqLDx6wiyjNtZ',
+      name: 'Solana Mainnet',
+      logo: '/chain-logos/solana.png',
+      color: Colors.black,
+      rpc: [
+        'https://api.tatum.io/v3/blockchain/node/solana-mainnet',
+        'https://rpc.ankr.com/solana',
+      ],
+    ),
+    const ChainMetadata(
+      type: ChainType.solana,
+      chainId: 'solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp',
+      name: 'Solana Mainnet',
+      logo: '/chain-logos/solana.png',
+      color: Colors.black,
+      rpc: [
+        'https://api.tatum.io/v3/blockchain/node/solana-mainnet',
+        'https://rpc.ankr.com/solana',
+      ],
+    ),
+  ];
+
+  static final List<ChainMetadata> cosmosChains = [
+    const ChainMetadata(
+      type: ChainType.cosmos,
+      chainId: 'cosmos:cosmoshub-4',
+      name: 'Cosmos Mainnet',
+      logo: '/chain-logos/cosmos.png',
+      color: Colors.purple,
+      rpc: [
+        'https://cosmos-rpc.polkachu.com:443',
+        'https://rpc-cosmoshub-ia.cosmosia.notional.ventures:443',
+        'https://rpc.cosmos.network:443',
+      ],
+    ),
+  ];
+
   static final List<ChainMetadata> testChains = [
     ChainMetadata(
       type: ChainType.eip155,
@@ -96,17 +136,22 @@ class ChainData {
       isTestnet: true,
       rpc: ['https://matic-mumbai.chainstacklabs.com'],
     ),
-    // ChainMetadata(
-    //   type: ChainType.kadena,
-    //   chainId: 'kadena:testnet04',
-    //   name: 'Kadena',
-    //   logo: 'TODO',
-    //   color: Colors.purple.shade600,
-    //   rpc: [
-    //     'https://api.testnet.chainweb.com',
-    //   ],
-    // ),
+    const ChainMetadata(
+      type: ChainType.solana,
+      chainId: 'solana:8E9rvCKLFQia2Y35HXjjpWzj8weVo44K',
+      name: 'Solana Devnet',
+      logo: '/chain-logos/solana.png',
+      color: Colors.black,
+      rpc: [
+        'https://api.tatum.io/v3/blockchain/node/solana-devnet',
+      ],
+    ),
   ];
 
-  static final List<ChainMetadata> allChains = [...mainChains, ...testChains];
+  static final List<ChainMetadata> allChains = [
+    ...mainChains,
+    ...solanaChains,
+    ...cosmosChains,
+    ...testChains,
+  ];
 }

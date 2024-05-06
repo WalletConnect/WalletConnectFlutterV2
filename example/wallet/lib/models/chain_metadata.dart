@@ -5,6 +5,7 @@ enum ChainType {
   eip155,
   solana,
   kadena,
+  cosmos,
 }
 
 class ChainMetadata {
