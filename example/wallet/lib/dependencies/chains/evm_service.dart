@@ -7,7 +7,7 @@ import 'package:eth_sig_util/eth_sig_util.dart';
 import 'package:get_it/get_it.dart';
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/bottom_sheet/i_bottom_sheet_service.dart';
-import 'package:walletconnect_flutter_v2_wallet/dependencies/deep_link_handler.dart';
+import 'package:walletconnect_flutter_v2_wallet/dependencies/chains/common.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/i_web3wallet_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/key_service/i_key_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/models/chain_data.dart';
@@ -27,13 +27,12 @@ class EVMService {
   late final Web3Client ethClient;
 
   Map<String, dynamic Function(String, dynamic)> get sessionRequestHandlers => {
-        // 'personal_sign': personalSign,
         'eth_sign': ethSign,
         'eth_signTransaction': ethSignTransaction,
         'eth_signTypedData': ethSignTypedData,
         'eth_signTypedData_v4': ethSignTypedDataV4,
         'wallet_switchEthereumChain': switchChain,
-        'wallet_addEthereumChain': addChain,
+        // 'wallet_addEthereumChain': addChain,
       };
 
   Map<String, dynamic Function(String, dynamic)> get methodRequestHandlers => {
@@ -55,14 +54,14 @@ class EVMService {
       );
     }
 
-    for (var handler in sessionRequestHandlers.entries) {
+    for (var handler in methodRequestHandlers.entries) {
       _web3Wallet.registerRequestHandler(
         chainId: chainSupported.chainId,
         method: handler.key,
         handler: handler.value,
       );
     }
-    for (var handler in methodRequestHandlers.entries) {
+    for (var handler in sessionRequestHandlers.entries) {
       _web3Wallet.registerRequestHandler(
         chainId: chainSupported.chainId,
         method: handler.key,
@@ -71,16 +70,6 @@ class EVMService {
     }
 
     _web3Wallet.onSessionRequest.subscribe(_onSessionRequest);
-  }
-
-  void _onSessionRequest(SessionRequestEvent? args) async {
-    if (args != null && args.chainId == chainSupported.chainId) {
-      debugPrint('[WALLET] _onSessionRequest ${args.toString()}');
-      final handler = sessionRequestHandlers[args.method];
-      if (handler != null) {
-        await handler(args.topic, args.params);
-      }
-    }
   }
 
   // personal_sign is handled using onSessionRequest event for demo purposes
@@ -94,7 +83,7 @@ class EVMService {
       jsonrpc: '2.0',
     );
 
-    if (await requestApproval(message)) {
+    if (await CommonMethods.requestApproval(message)) {
       try {
         // Load the private key
         final keys = GetIt.I<IKeyService>().getKeysForChain(
@@ -124,7 +113,7 @@ class EVMService {
       response: response,
     );
 
-    _goBackToDapp(topic, response.result ?? response.error);
+    CommonMethods.goBackToDapp(topic, response.result ?? response.error);
   }
 
   Future<void> ethSign(String topic, dynamic parameters) async {
@@ -137,7 +126,7 @@ class EVMService {
       jsonrpc: '2.0',
     );
 
-    if (await requestApproval(message)) {
+    if (await CommonMethods.requestApproval(message)) {
       try {
         // Load the private key
         final keys = GetIt.I<IKeyService>().getKeysForChain(
@@ -167,7 +156,7 @@ class EVMService {
       response: response,
     );
 
-    _goBackToDapp(topic, response.result ?? response.error);
+    CommonMethods.goBackToDapp(topic, response.result ?? response.error);
   }
 
   Future<void> ethSignTypedData(String topic, dynamic parameters) async {
@@ -179,7 +168,7 @@ class EVMService {
       jsonrpc: '2.0',
     );
 
-    if (await requestApproval(data)) {
+    if (await CommonMethods.requestApproval(data)) {
       try {
         final keys = GetIt.I<IKeyService>().getKeysForChain(
           chainSupported.chainId,
@@ -208,7 +197,7 @@ class EVMService {
       response: response,
     );
 
-    _goBackToDapp(topic, response.result ?? response.error);
+    CommonMethods.goBackToDapp(topic, response.result ?? response.error);
   }
 
   Future<void> ethSignTypedDataV4(String topic, dynamic parameters) async {
@@ -220,7 +209,7 @@ class EVMService {
       jsonrpc: '2.0',
     );
 
-    if (await requestApproval(data)) {
+    if (await CommonMethods.requestApproval(data)) {
       try {
         final keys = GetIt.I<IKeyService>().getKeysForChain(
           chainSupported.chainId,
@@ -249,7 +238,7 @@ class EVMService {
       response: response,
     );
 
-    _goBackToDapp(topic, response.result ?? response.error);
+    CommonMethods.goBackToDapp(topic, response.result ?? response.error);
   }
 
   Future<void> ethSignTransaction(String topic, dynamic parameters) async {
@@ -262,7 +251,7 @@ class EVMService {
       jsonrpc: '2.0',
     );
 
-    final result = await approveTransaction(data);
+    final result = await _approveTransaction(data);
     if (result is Transaction) {
       try {
         // Load the private key
@@ -302,7 +291,7 @@ class EVMService {
       response: response,
     );
 
-    _goBackToDapp(topic, response.result ?? response.error);
+    CommonMethods.goBackToDapp(topic, response.result ?? response.error);
   }
 
   Future<void> ethSendTransaction(String topic, dynamic parameters) async {
@@ -315,7 +304,7 @@ class EVMService {
       jsonrpc: '2.0',
     );
 
-    final result = await approveTransaction(data);
+    final result = await _approveTransaction(data);
     if (result is Transaction) {
       try {
         // Load the private key
@@ -353,7 +342,7 @@ class EVMService {
       response: response,
     );
 
-    _goBackToDapp(topic, response.result ?? response.error);
+    CommonMethods.goBackToDapp(topic, response.result ?? response.error);
   }
 
   Future<void> switchChain(String topic, dynamic parameters) async {
@@ -376,41 +365,7 @@ class EVMService {
     debugPrint('[WALLET] addChain request: $topic $parameters');
   }
 
-  void _goBackToDapp(String topic, dynamic result) {
-    try {
-      final session = _web3Wallet.sessions.get(topic);
-      final scheme = session?.peer.metadata.redirect?.native ?? '';
-      if (result is String) {
-        DeepLinkHandler.goTo(scheme, modalTitle: 'Success');
-      } else {
-        DeepLinkHandler.goTo(
-          scheme,
-          modalTitle: 'Error',
-          modalMessage: result.toString(),
-          success: false,
-        );
-      }
-    } catch (e) {
-      debugPrint('[WALLET] ${e.toString()}');
-    }
-  }
-
-  Future<bool> requestApproval(String text) async {
-    final approved = await _bottomSheetService.queueBottomSheet(
-      widget: WCRequestWidget(
-        child: WCConnectionWidget(
-          title: 'Approve Request',
-          info: [
-            WCConnectionModel(text: text),
-          ],
-        ),
-      ),
-    );
-
-    return approved ?? false;
-  }
-
-  Future<dynamic> approveTransaction(Map<String, dynamic> tJson) async {
+  Future<dynamic> _approveTransaction(Map<String, dynamic> tJson) async {
     Transaction transaction = tJson.toTransaction();
 
     final gasPrice = await ethClient.getGasPrice();
@@ -480,5 +435,15 @@ class EVMService {
     }
 
     return const JsonRpcError(code: 5001, message: 'User rejected method');
+  }
+
+  void _onSessionRequest(SessionRequestEvent? args) async {
+    if (args != null && args.chainId == chainSupported.chainId) {
+      debugPrint('[WALLET] _onSessionRequest ${args.toString()}');
+      final handler = sessionRequestHandlers[args.method];
+      if (handler != null) {
+        await handler(args.topic, args.params);
+      }
+    }
   }
 }

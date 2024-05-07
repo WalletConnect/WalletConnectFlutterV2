@@ -10,7 +10,6 @@ import 'package:walletconnect_flutter_v2_wallet/dependencies/deep_link_handler.d
 import 'package:walletconnect_flutter_v2_wallet/dependencies/i_web3wallet_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/key_service/chain_key.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/key_service/i_key_service.dart';
-import 'package:walletconnect_flutter_v2_wallet/models/chain_metadata.dart';
 import 'package:walletconnect_flutter_v2_wallet/utils/constants.dart';
 import 'package:walletconnect_flutter_v2_wallet/utils/dart_defines.dart';
 import 'package:walletconnect_flutter_v2_wallet/utils/eth_utils.dart';
@@ -22,20 +21,6 @@ import 'package:walletconnect_flutter_v2_wallet/widgets/wc_request_widget.dart/w
 class Web3WalletService extends IWeb3WalletService {
   final _bottomSheetHandler = GetIt.I<IBottomSheetService>();
   Web3Wallet? _web3Wallet;
-
-  static final supportedMethods = {
-    'eth_sign',
-    'eth_signTransaction',
-    'eth_signTypedData',
-    'eth_signTypedData_v4',
-    'wallet_switchEthereumChain',
-    'wallet_addEthereumChain',
-  };
-
-  static final requiredMethods = {
-    'personal_sign',
-    'eth_sendTransaction',
-  };
 
   @override
   void create() async {
@@ -78,6 +63,7 @@ class Web3WalletService extends IWeb3WalletService {
             accountAddress: chainKey.address,
           );
         }
+        debugPrint('registerAccount: $chainId - ${chainKey.address}');
       }
     }
 
@@ -124,43 +110,40 @@ class Web3WalletService extends IWeb3WalletService {
   @override
   Web3Wallet get web3wallet => _web3Wallet!;
 
-  Map<String, Namespace> _generateNamespaces(
-    Map<String, Namespace>? approvedNamespaces,
-    ChainType chainType,
-  ) {
-    final constructedNS = Map<String, Namespace>.from(approvedNamespaces ?? {});
-    try {
-      constructedNS[chainType.name] = constructedNS[chainType.name]!.copyWith(
-        methods: [
-          ...constructedNS[chainType.name]!.methods,
-          ...supportedMethods,
-        ],
-      );
-    } catch (e) {
-      debugPrint('[$runtimeType] _generateNamespaces $e');
+  void _onRelayClientMessage(MessageEvent? event) async {
+    if (event != null) {
+      final jsonObject = await EthUtils.decodeMessageEvent(event);
+      debugPrint('[$runtimeType] [WALLET] _onRelayClientMessage $jsonObject');
+      if (jsonObject is JsonRpcRequest) {
+        if (jsonObject.method == 'wc_sessionPropose' ||
+            jsonObject.method == 'wc_sessionRequest') {
+          DeepLinkHandler.waiting.value = true;
+        }
+      } else {
+        final session = _web3Wallet!.sessions.get(event.topic);
+        final scheme = session?.peer.metadata.redirect?.native ?? '';
+        final isSuccess = jsonObject.result != null;
+        final title = isSuccess ? null : 'Error';
+        final message = isSuccess ? null : jsonObject.error?.message ?? '';
+        DeepLinkHandler.goTo(
+          scheme,
+          modalTitle: title,
+          modalMessage: message,
+          success: isSuccess,
+        );
+      }
     }
-    return constructedNS;
   }
 
   void _onSessionProposal(SessionProposalEvent? args) async {
     debugPrint('[$runtimeType] [WALLET] _onSessionProposal $args');
     if (args != null) {
-      // generatedNamespaces is constructed based on registered methods handlers
-      // so if you want to handle requests using onSessionRequest event then you would need to manually add that method in the approved namespaces
-      final approvedNS = _generateNamespaces(
-        args.params.generatedNamespaces!,
-        ChainType.eip155,
-      );
-      final proposalData = args.params.copyWith(
-        generatedNamespaces: approvedNS,
-      );
-      debugPrint('[WALLET] proposalData $proposalData');
       final approved = await _bottomSheetHandler.queueBottomSheet(
         widget: WCRequestWidget(
           child: WCConnectionRequestWidget(
             wallet: _web3Wallet!,
             sessionProposal: WCSessionRequestModel(
-              request: proposalData,
+              request: args.params,
               verifyContext: args.verifyContext,
             ),
           ),
@@ -168,7 +151,12 @@ class Web3WalletService extends IWeb3WalletService {
       );
 
       if (approved == true) {
-        await _web3Wallet!.approveSession(id: args.id, namespaces: approvedNS);
+        // generatedNamespaces is constructed based on registered methods handlers
+        // so if you want to handle requests using onSessionRequest event then you would need to manually add that method in the approved namespaces
+        await _web3Wallet!.approveSession(
+          id: args.id,
+          namespaces: args.params.generatedNamespaces!,
+        );
       } else {
         final error = Errors.getSdkError(Errors.USER_REJECTED);
         await _web3Wallet!.rejectSession(id: args.id, reason: error);
@@ -223,32 +211,6 @@ class Web3WalletService extends IWeb3WalletService {
           ),
         ),
       );
-    }
-  }
-
-  void _onRelayClientMessage(MessageEvent? event) async {
-    if (event != null) {
-      final jsonObject = await EthUtils.decodeMessageEvent(event);
-      debugPrint('[$runtimeType] [WALLET] _onRelayClientMessage $jsonObject');
-      if (jsonObject is JsonRpcRequest) {
-        if (jsonObject.method != 'wc_sessionDelete' &&
-            jsonObject.method != 'wc_pairingDelete' &&
-            jsonObject.method != 'wc_sessionPing') {
-          DeepLinkHandler.waiting.value = true;
-        }
-      } else {
-        final session = _web3Wallet!.sessions.get(event.topic);
-        final scheme = session?.peer.metadata.redirect?.native ?? '';
-        final isSuccess = jsonObject.result != null;
-        final title = isSuccess ? null : 'Error';
-        final message = isSuccess ? null : jsonObject.error?.message ?? '';
-        DeepLinkHandler.goTo(
-          scheme,
-          modalTitle: title,
-          modalMessage: message,
-          success: isSuccess,
-        );
-      }
     }
   }
 
