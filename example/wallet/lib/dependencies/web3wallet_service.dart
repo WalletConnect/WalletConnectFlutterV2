@@ -23,7 +23,7 @@ class Web3WalletService extends IWeb3WalletService {
   Web3Wallet? _web3Wallet;
 
   @override
-  void create() async {
+  Future<void> create() async {
     // Create the web3wallet
     _web3Wallet = Web3Wallet(
       core: Core(
@@ -47,23 +47,26 @@ class Web3WalletService extends IWeb3WalletService {
     // Setup our accounts
     List<ChainKey> chainKeys = await GetIt.I<IKeyService>().setKeys();
     if (chainKeys.isEmpty) {
-      await GetIt.I<IKeyService>().createWallet();
+      await GetIt.I<IKeyService>().loadDefaultWallet();
       chainKeys = await GetIt.I<IKeyService>().setKeys();
     }
     for (final chainKey in chainKeys) {
       for (final chainId in chainKey.chains) {
         if (chainId.startsWith('kadena')) {
+          final account = '$chainId:k**${chainKey.address}';
+          debugPrint('[$runtimeType] registerAccount $account');
           _web3Wallet!.registerAccount(
             chainId: chainId,
             accountAddress: 'k**${chainKey.address}',
           );
         } else {
+          final account = '$chainId:${chainKey.address}';
+          debugPrint('[$runtimeType] registerAccount $account');
           _web3Wallet!.registerAccount(
             chainId: chainId,
             accountAddress: chainKey.address,
           );
         }
-        debugPrint('registerAccount: $chainId - ${chainKey.address}');
       }
     }
 

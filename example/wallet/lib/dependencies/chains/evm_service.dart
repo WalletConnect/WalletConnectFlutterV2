@@ -10,7 +10,6 @@ import 'package:walletconnect_flutter_v2_wallet/dependencies/bottom_sheet/i_bott
 import 'package:walletconnect_flutter_v2_wallet/dependencies/chains/common.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/i_web3wallet_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/key_service/i_key_service.dart';
-import 'package:walletconnect_flutter_v2_wallet/models/chain_data.dart';
 import 'package:walletconnect_flutter_v2_wallet/models/chain_metadata.dart';
 import 'package:walletconnect_flutter_v2_wallet/utils/constants.dart';
 import 'package:walletconnect_flutter_v2_wallet/utils/eth_utils.dart';
@@ -20,7 +19,6 @@ import 'package:walletconnect_flutter_v2_wallet/widgets/wc_request_widget.dart/w
 
 class EVMService {
   final _bottomSheetService = GetIt.I<IBottomSheetService>();
-  final _web3WalletService = GetIt.I<IWeb3WalletService>();
   final _web3Wallet = GetIt.I<IWeb3WalletService>().web3wallet;
 
   final ChainMetadata chainSupported;
@@ -41,13 +39,9 @@ class EVMService {
       };
 
   EVMService({required this.chainSupported}) {
-    final supportedId = chainSupported.chainId;
-    final chainMetadata = ChainData.allChains.firstWhere(
-      (c) => c.chainId == supportedId,
-    );
-    ethClient = Web3Client(chainMetadata.rpc.first, http.Client());
+    ethClient = Web3Client(chainSupported.rpc.first, http.Client());
 
-    for (final event in EventsConstants.requiredEvents) {
+    for (final event in EventsConstants.allEvents) {
       _web3Wallet.registerEventEmitter(
         chainId: chainSupported.chainId,
         event: event,
@@ -350,8 +344,7 @@ class EVMService {
     final params = (parameters as List).first as Map<String, dynamic>;
     final hexChainId = params['chainId'].toString().replaceFirst('0x', '');
     final chainId = int.parse(hexChainId, radix: 16);
-    final web3wallet = _web3WalletService.web3wallet;
-    await web3wallet.emitSessionEvent(
+    await _web3Wallet.emitSessionEvent(
       topic: topic,
       chainId: 'eip155:$chainId',
       event: SessionEventParams(

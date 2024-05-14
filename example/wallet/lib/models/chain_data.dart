@@ -85,8 +85,8 @@ class ChainData {
       logo: '/chain-logos/solana.png',
       color: Colors.black,
       rpc: [
-        'https://api.tatum.io/v3/blockchain/node/solana-mainnet',
         'https://rpc.ankr.com/solana',
+        'https://api.tatum.io/v3/blockchain/node/solana-mainnet',
       ],
     ),
     const ChainMetadata(
@@ -96,8 +96,8 @@ class ChainData {
       logo: '/chain-logos/solana.png',
       color: Colors.black,
       rpc: [
-        'https://api.tatum.io/v3/blockchain/node/solana-mainnet',
         'https://rpc.ankr.com/solana',
+        'https://api.tatum.io/v3/blockchain/node/solana-mainnet',
       ],
     ),
   ];
@@ -113,6 +113,33 @@ class ChainData {
         'https://cosmos-rpc.polkachu.com:443',
         'https://rpc-cosmoshub-ia.cosmosia.notional.ventures:443',
         'https://rpc.cosmos.network:443',
+      ],
+    ),
+  ];
+
+  static final List<ChainMetadata> kadenaChains = [
+    const ChainMetadata(
+      type: ChainType.kadena,
+      chainId: 'kadena:mainnet01',
+      name: 'Kadena Mainnet',
+      logo: '/chain-logos/kadena.png',
+      color: Colors.green,
+      rpc: [
+        'https://api.chainweb.com',
+      ],
+    ),
+  ];
+
+  static final List<ChainMetadata> polkadotChains = [
+    const ChainMetadata(
+      type: ChainType.polkadot,
+      chainId: 'polkadot:91b171bb158e2d3848fa23a9f1c25182',
+      name: 'Polkadot Mainnet',
+      logo: '/chain-logos/polkadot.png',
+      color: Color.fromARGB(255, 174, 57, 220),
+      rpc: [
+        'wss://rpc.polkadot.io',
+        // 'wss://rpc.matrix.canary.enjin.io'
       ],
     ),
   ];
@@ -138,18 +165,40 @@ class ChainData {
     ),
     const ChainMetadata(
       type: ChainType.solana,
-      chainId: 'solana:8E9rvCKLFQia2Y35HXjjpWzj8weVo44K',
-      name: 'Solana Devnet',
+      chainId: 'solana:4uhcVJyU9pJkvQyS88uRDiswHXSCkY3z',
+      name: 'Solana Testnet',
       logo: '/chain-logos/solana.png',
       color: Colors.black,
       rpc: [
-        'https://api.tatum.io/v3/blockchain/node/solana-devnet',
+        'https://api.testnet.solana.com',
+      ],
+    ),
+    const ChainMetadata(
+      type: ChainType.kadena,
+      chainId: 'kadena:testnet04',
+      name: 'Kadena Mainnet',
+      logo: '/chain-logos/kadena.png',
+      color: Colors.green,
+      rpc: [
+        'https://api.chainweb.com',
+      ],
+    ),
+    const ChainMetadata(
+      type: ChainType.polkadot,
+      chainId: 'polkadot:e143f23803ac50e8f6f8e62695d1ce9e',
+      name: 'Polkadot Testnet (Westend)',
+      logo: '/chain-logos/polkadot.png',
+      color: Color.fromARGB(255, 174, 57, 220),
+      rpc: [
+        'wss://westend-rpc.polkadot.io',
       ],
     ),
   ];
 
   static final List<ChainMetadata> allChains = [
     ...mainChains,
+    ...kadenaChains,
+    ...polkadotChains,
     ...solanaChains,
     ...cosmosChains,
     ...testChains,

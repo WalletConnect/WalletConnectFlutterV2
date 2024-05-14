@@ -7,7 +7,6 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:qr_flutter/qr_flutter.dart';
-// ignore: unused_import
 import 'package:url_launcher/url_launcher_string.dart';
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 import 'package:walletconnect_flutter_v2_dapp/models/chain_metadata.dart';
@@ -179,6 +178,20 @@ class ConnectPageState extends State<ConnectPage> {
     );
   }
 
+  // Future<void> _onConnectWeb() async {
+  //   // `Ethereum.isSupported` is the same as `ethereum != null`
+  //   if (ethereum != null) {
+  //     try {
+  //       // Prompt user to connect to the provider, i.e. confirm the connection modal
+  //       final accounts = await ethereum!.requestAccount();
+  //       // Get all accounts in node disposal
+  //       debugPrint('accounts ${accounts.join(', ')}');
+  //     } on EthereumUserRejected {
+  //       debugPrint('User rejected the modal');
+  //     }
+  //   }
+  // }
+
   Future<void> _onConnect({
     Function(String message)? showToast,
     VoidCallback? closeModal,
@@ -187,13 +200,6 @@ class ConnectPageState extends State<ConnectPage> {
     // It is currently safer to send chains approvals on optionalNamespaces
     // but depending on Wallet implementation you may need to send some (for innstance eip155:1) as required
     final ConnectResponse res = await widget.web3App.connect(
-      // requiredNamespaces: {
-      //   'eip155': const RequiredNamespace(
-      //     chains: [],
-      //     methods: MethodsConstants.requiredMethods,
-      //     events: EventsConstants.requiredEvents,
-      //   ),
-      // },
       optionalNamespaces: {
         'eip155': RequiredNamespace(
           chains: _selectedChains.map((c) => c.chainId).toList(),

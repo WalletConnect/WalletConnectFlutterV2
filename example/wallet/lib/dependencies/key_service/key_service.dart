@@ -5,11 +5,12 @@ import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/key_service/chain_key.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/key_service/i_key_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/models/chain_data.dart';
-import 'package:walletconnect_flutter_v2_wallet/utils/dart_defines.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/bip39/bip39_base.dart'
     as bip39;
 import 'package:walletconnect_flutter_v2_wallet/dependencies/bip32/bip32_base.dart'
     as bip32;
+import 'package:walletconnect_flutter_v2_wallet/models/chain_metadata.dart';
+import 'package:walletconnect_flutter_v2_wallet/utils/dart_defines.dart';
 
 class KeyService extends IKeyService {
   final List<ChainKey> keys = [];
@@ -23,29 +24,16 @@ class KeyService extends IKeyService {
       return [];
     }
     final publicKey = prefs.getString('publicKey') ?? '';
-    final address = getAddressFromPrivateKey(privateKey);
-    final evmChainKey = ChainKey(
-      chains: ChainData.allChains.map((e) => e.chainId).toList(),
-      privateKey: privateKey,
-      publicKey: publicKey,
-      address: address,
-    );
-    debugPrint('[WALLET] ${evmChainKey.toString()}');
-    final kadenaChainKey = ChainKey(
-      chains: [
-        'kadena:mainnet01',
-        'kadena:testnet04',
-        'kadena:development',
-      ],
-      privateKey: DartDefines.kadenaPrivateKey,
-      publicKey: '',
-      address: DartDefines.kadenaAddress,
-    );
+
+    final keyPair = CryptoKeyPair(privateKey, publicKey);
+    final eip155KeyPair = _eip155KeyPair(keyPair);
     keys
       ..clear()
-      ..addAll(
-        [kadenaChainKey, evmChainKey],
-      );
+      ..add(eip155KeyPair);
+
+    final extraKeys = await _extraKeyPairs();
+    keys.addAll(extraKeys);
+
     return keys;
   }
 
@@ -74,11 +62,42 @@ class KeyService extends IKeyService {
     return accounts;
   }
 
-  @override
-  String generateMnemonic() => bip39.generateMnemonic();
+  // ** bip39/bip32 - EIP155 **
 
   @override
-  CryptoKeyPair keyPairFromMnemonic(String mnemonic) {
+  Future<void> createNewWallet() async {
+    final mnemonic = bip39.generateMnemonic();
+    await restoreWallet(mnemonic: mnemonic);
+  }
+
+  @override
+  Future<void> restoreWallet({required String mnemonic}) async {
+    final keyPair = _keyPairFromMnemonic(mnemonic);
+
+    // WARNING: SharedPreferences is not the best way to store your keys!
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('privateKey', keyPair.privateKey);
+    await prefs.setString('publicKey', keyPair.publicKey);
+    await prefs.setString('mnemonic', mnemonic);
+
+    await setKeys();
+  }
+
+  @override
+  Future<void> loadDefaultWallet() async {
+    const mnemonic =
+        'spoil video deputy round immense setup wasp secret maze slight bag what';
+    await restoreWallet(mnemonic: mnemonic);
+  }
+
+  @override
+  Future<void> deleteWallet() async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.clear();
+    keys.clear();
+  }
+
+  CryptoKeyPair _keyPairFromMnemonic(String mnemonic) {
     final isValidMnemonic = bip39.validateMnemonic(mnemonic);
     if (!isValidMnemonic) {
       throw 'Invalid mnemonic';
@@ -93,59 +112,83 @@ class KeyService extends IKeyService {
     return CryptoKeyPair(private, public);
   }
 
-  @override
-  String getAddressFromPrivateKey(String privateKey) {
-    final private = EthPrivateKey.fromHex(privateKey);
-    return private.address.hex;
-  }
-
-  @override
-  Future<void> createWallet() async {
-    final mnemonic = generateMnemonic();
-    return await restoreWallet(mnemonic: mnemonic);
-  }
-
-  @override
-  Future<void> restoreWallet({required String mnemonic}) async {
-    final keyPair = keyPairFromMnemonic(mnemonic);
-    final address = getAddressFromPrivateKey(keyPair.privateKey);
+  ChainKey _eip155KeyPair(CryptoKeyPair keyPair) {
+    final private = EthPrivateKey.fromHex(keyPair.privateKey);
+    final address = private.address.hex;
     final evmChainKey = ChainKey(
-      chains: ChainData.allChains.map((e) => e.chainId).toList(),
+      chains: ChainData.allChains
+          .where((c) => c.type == ChainType.eip155)
+          .map((e) => e.chainId)
+          .toList(),
       privateKey: keyPair.privateKey,
       publicKey: keyPair.publicKey,
       address: address,
     );
-    debugPrint('[WALLET] ${evmChainKey.toString()}');
-    final kadenaChainKey = ChainKey(
-      chains: [
-        'kadena:mainnet01',
-        'kadena:testnet04',
-        'kadena:development',
-      ],
-      privateKey: DartDefines.kadenaPrivateKey,
-      publicKey: '',
-      address: DartDefines.kadenaAddress,
-    );
-
-    keys
-      ..clear()
-      ..addAll(
-        [kadenaChainKey, evmChainKey],
-      );
-
-    // WARNING: SharedPreferences is not the best way to store your keys!
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setString('privateKey', keyPair.privateKey);
-    await prefs.setString('publicKey', keyPair.publicKey);
-    await prefs.setString('mnemonic', mnemonic);
-    return;
+    debugPrint('[WALLET] evmChainKey ${evmChainKey.toString()}');
+    return evmChainKey;
   }
 
-  @override
-  Future<void> deleteWallet() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.clear();
-    keys.clear();
-    return;
+  // ** extra derivations **
+
+  Future<List<ChainKey>> _extraKeyPairs() async {
+    // HARDCODED VALUES
+    final kadenaChainKey = _kadenaKeyPair();
+    debugPrint('[WALLET] kadenaChainKey ${kadenaChainKey.toString()}');
+    final polkadotChainKey = _polkadotKeyPair();
+    debugPrint('[WALLET] polkadotChainKey ${polkadotChainKey.toString()}');
+    final solanaChainKeys = _solanaKeyPair();
+    debugPrint('[WALLET] solanaChainKey $solanaChainKeys');
+    //
+    return [
+      kadenaChainKey,
+      polkadotChainKey,
+      solanaChainKeys,
+    ];
+  }
+
+  ChainKey _kadenaKeyPair() {
+    return ChainKey(
+      chains: ChainData.allChains
+          .where((c) => c.type == ChainType.kadena)
+          .map((e) => e.chainId)
+          .toList(),
+      privateKey: DartDefines.kadenaSecretKey,
+      publicKey: DartDefines.kadenaAddress,
+      address: DartDefines.kadenaAddress,
+    );
+  }
+
+  ChainKey _polkadotKeyPair() {
+    // final keyring = Keyring();
+    // final keyPair1 = await KeyPair.sr25519.fromMnemonic(
+    //   DartDefines.polkadotMnemonic1,
+    // );
+    // keyPair1.ss58Format = 1;
+    // keyring.add(keyPair1);
+
+    // final publicKey = keyPair1.publicKey.bytes;
+    // final encodedPublicKey = hex.encode(publicKey);
+
+    return ChainKey(
+      chains: ChainData.allChains
+          .where((c) => c.type == ChainType.polkadot)
+          .map((e) => e.chainId)
+          .toList(),
+      privateKey: DartDefines.polkadotMnemonic,
+      publicKey: '',
+      address: DartDefines.polkadotAddress,
+    );
+  }
+
+  ChainKey _solanaKeyPair() {
+    return ChainKey(
+      chains: ChainData.allChains
+          .where((c) => c.type == ChainType.solana)
+          .map((e) => e.chainId)
+          .toList(),
+      privateKey: DartDefines.solanaSecretKey,
+      publicKey: DartDefines.solanaAddress,
+      address: DartDefines.solanaAddress,
+    );
   }
 }

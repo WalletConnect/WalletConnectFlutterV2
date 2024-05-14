@@ -5,7 +5,7 @@ import 'package:walletconnect_flutter_v2_wallet/dependencies/chains/common.dart'
 import 'package:walletconnect_flutter_v2_wallet/dependencies/i_web3wallet_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/models/chain_metadata.dart';
 
-class COSMOSService {
+class CosmosService {
   final _web3Wallet = GetIt.I<IWeb3WalletService>().web3wallet;
 
   final ChainMetadata chainSupported;
@@ -15,7 +15,7 @@ class COSMOSService {
         'cosmos_signAmino': cosmosSignAmino,
       };
 
-  COSMOSService({required this.chainSupported}) {
+  CosmosService({required this.chainSupported}) {
     for (var handler in cosmosRequestHandlers.entries) {
       _web3Wallet.registerRequestHandler(
         chainId: chainSupported.chainId,
