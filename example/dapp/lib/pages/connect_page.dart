@@ -55,7 +55,7 @@ class ConnectPageState extends State<ConnectPage> {
   Widget build(BuildContext context) {
     // Build the list of chain buttons, clear if the textnet changed
     final List<ChainMetadata> chains =
-        _testnetOnly ? ChainData.testChains : ChainData.mainChains;
+        _testnetOnly ? ChainData.testChains : ChainData.allChains;
 
     List<Widget> children = [];
 
@@ -119,6 +119,8 @@ class ConnectPageState extends State<ConnectPage> {
         ),
       ),
     );
+
+    children.add(const SizedBox.square(dimension: 12.0));
 
     return Center(
       child: Container(

@@ -159,6 +159,7 @@ class Web3WalletService extends IWeb3WalletService {
         await _web3Wallet!.approveSession(
           id: args.id,
           namespaces: args.params.generatedNamespaces!,
+          sessionProperties: args.params.sessionProperties,
         );
       } else {
         final error = Errors.getSdkError(Errors.USER_REJECTED);

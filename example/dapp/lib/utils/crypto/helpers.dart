@@ -31,9 +31,11 @@ List<String> getChainMethods(ChainType value) {
   if (value == ChainType.solana) {
     return SolanaData.methods.values.toList();
   } else if (value == ChainType.kadena) {
-    return EIP155.methods.values.toList(); //Kadena.methods.values.toList();
-  } else {
+    return []; //Kadena.methods.values.toList();
+  } else if (value == ChainType.eip155) {
     return EIP155.methods.values.toList();
+  } else {
+    return [];
   }
 }
 
@@ -41,8 +43,10 @@ List<String> getChainEvents(ChainType value) {
   if (value == ChainType.solana) {
     return SolanaData.events.values.toList();
   } else if (value == ChainType.kadena) {
-    return EIP155.events.values.toList(); //Kadena.events.values.toList();
-  } else {
+    return []; // Kadena.events.values.toList();
+  } else if (value == ChainType.eip155) {
     return EIP155.events.values.toList();
+  } else {
+    return [];
   }
 }
