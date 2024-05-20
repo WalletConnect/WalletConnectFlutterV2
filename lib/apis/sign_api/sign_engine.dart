@@ -478,14 +478,12 @@ class SignEngine implements ISignEngine {
     List<dynamic> parameters = const [],
   }) async {
     try {
-      core.logger.i('readContractCall: with function $functionName');
       final results = await Web3Client(rpcUrl, http.Client()).call(
         contract: deployedContract,
         function: deployedContract.function(functionName),
         params: parameters,
       );
 
-      core.logger.i('readContractCall: $functionName - results: $results');
       return results;
     } catch (e) {
       rethrow;

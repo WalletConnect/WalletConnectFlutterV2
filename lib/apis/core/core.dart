@@ -73,6 +73,16 @@ class Core implements ICore {
   Logger get logger => _logger;
 
   @override
+  void addLogListener(LogCallback callback) {
+    Logger.addLogListener(callback);
+  }
+
+  @override
+  bool removeLogListener(LogCallback callback) {
+    return Logger.removeLogListener(callback);
+  }
+
+  @override
   late IStore<Map<String, dynamic>> storage;
 
   Core({
@@ -86,7 +96,7 @@ class Core implements ICore {
   }) {
     _logger = Logger(
       level: logLevel.toLevel(),
-      printer: PrettyPrinter(),
+      printer: PrettyPrinter(methodCount: null),
     );
     heartbeat = HeartBeat();
     storage = SharedPrefsStores(
