@@ -443,6 +443,7 @@ class Web3Wallet implements IWeb3Wallet {
     }
   }
 
+  /// format payload to message string before signing
   @override
   String formatAuthMessage({
     required String iss,

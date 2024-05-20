@@ -22,7 +22,7 @@ import 'package:walletconnect_flutter_v2/apis/utils/errors.dart';
 import 'package:walletconnect_flutter_v2/apis/utils/method_constants.dart';
 
 class AuthEngine implements IAuthEngine {
-  static const List<List<String>> defaultMethods = [
+  static const List<List<String>> DEFAULT_METHODS = [
     [
       MethodConstants.WC_AUTH_REQUEST,
     ]
@@ -80,7 +80,7 @@ class AuthEngine implements IAuthEngine {
   Future<AuthRequestResponse> requestAuth({
     required AuthRequestParams params,
     String? pairingTopic,
-    List<List<String>>? methods = defaultMethods,
+    List<List<String>>? methods = DEFAULT_METHODS,
   }) async {
     _checkInitialized();
 
@@ -343,6 +343,8 @@ class AuthEngine implements IAuthEngine {
     return completedRequests;
   }
 
+  // kind of a core method to move to sign
+  // Formats the message that is coming from requestAuth()
   @override
   String formatAuthMessage({
     required String iss,

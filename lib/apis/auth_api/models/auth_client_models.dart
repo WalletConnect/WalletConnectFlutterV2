@@ -68,6 +68,20 @@ class AuthRequestParams {
     this.resources,
     this.expiry,
   }) : nonce = nonce ?? AuthUtils.generateNonce();
+
+  Map<String, dynamic> toJson() => {
+        'chainId': chainId,
+        'aud': aud,
+        'domain': domain,
+        'nonce': nonce,
+        if (type != null) 'type': type,
+        if (nbf != null) 'nbf': nbf,
+        if (exp != null) 'exp': exp,
+        if (statement != null) 'statement': statement,
+        if (requestId != null) 'requestId': requestId,
+        if (resources != null) 'resources': resources,
+        if (expiry != null) 'expiry': expiry,
+      };
 }
 
 @freezed

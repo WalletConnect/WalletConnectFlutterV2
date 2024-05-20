@@ -294,6 +294,10 @@ class ConnectPageState extends State<ConnectPage> {
       Navigator.pop(context);
     }
 
+    _requestAuth(event);
+  }
+
+  void _requestAuth(SessionConnect? event) async {
     final shouldAuth = await showDialog(
       context: context,
       barrierDismissible: false,
@@ -321,10 +325,11 @@ class ConnectPageState extends State<ConnectPage> {
     if (!shouldAuth) return;
 
     try {
-      final scheme = event.session.peer.metadata.redirect?.native ?? '';
+      final scheme =
+          event?.session.peer.metadata.redirect?.native ?? 'wcflutterwallet://';
       launchUrlString(scheme, mode: LaunchMode.externalApplication);
 
-      final pairingTopic = event.session.pairingTopic;
+      final pairingTopic = event?.session.pairingTopic;
       // Send off an auth request now that the pairing/session is established
       debugPrint('Requesting authentication');
       final authRes = await widget.web3App.requestAuth(

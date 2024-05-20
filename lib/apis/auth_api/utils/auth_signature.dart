@@ -158,6 +158,8 @@ class AuthSignature {
     }
   }
 
+  // verifies CACAO signature
+  // Used by the wallet after formatting the message
   static Future<bool> verifySignature(
     String address,
     String reconstructedMessage,
