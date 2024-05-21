@@ -10,9 +10,8 @@ import 'package:walletconnect_flutter_v2_wallet/dependencies/i_web3wallet_servic
 import 'package:walletconnect_flutter_v2_wallet/dependencies/key_service/i_key_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/models/chain_metadata.dart';
 
-import 'package:solana_web3/solana_web3.dart' as solana;
-// ignore: implementation_imports
-import 'package:solana_web3/src/crypto/nacl.dart' as nacl;
+import 'package:solana/solana.dart';
+import 'package:solana/encoder.dart';
 // ignore: depend_on_referenced_packages
 import 'package:bs58/bs58.dart';
 
@@ -37,6 +36,7 @@ class SolanaService {
 
   Future<void> solanaSignMessage(String topic, dynamic parameters) async {
     debugPrint('[WALLET] solanaSignMessage request: $parameters');
+    const method = 'solana_signMessage';
     final pRequest = _web3Wallet.pendingRequests.getAll().last;
     var response = JsonRpcResponse(id: pRequest.id, jsonrpc: '2.0');
 
@@ -47,27 +47,21 @@ class SolanaService {
       final keys = GetIt.I<IKeyService>().getKeysForChain(
         chainSupported.chainId,
       );
-      final secKeyBytes = keys[0].privateKey.parseBytes();
+      final secKeyBytes = keys[0].privateKey.parse32Bytes();
+
+      final keyPair = await Ed25519HDKeyPair.fromPrivateKeyBytes(
+        privateKey: secKeyBytes,
+      );
 
       // it's being sent encoded from dapp
       final base58Decoded = base58.decode(message);
       final decodedMessage = utf8.decode(base58Decoded);
-      if (await CommonMethods.requestApproval(
-        decodedMessage,
-        title: 'solana_signMessage',
-      )) {
-        final encodedMessage = utf8.encode(decodedMessage);
-        final signature = await nacl.sign.detached(
-          encodedMessage,
-          secKeyBytes,
-        );
+      if (await CommonMethods.requestApproval(decodedMessage, title: method)) {
+        final signature = await keyPair.sign(base58Decoded.toList());
 
-        // verify here
-
-        final bs58Signature = base58.encode(signature);
         response = response.copyWith(
           result: {
-            'signature': bs58Signature,
+            'signature': signature.toBase58(),
           },
         );
       } else {
@@ -75,6 +69,7 @@ class SolanaService {
           error: const JsonRpcError(code: 5001, message: 'User rejected'),
         );
       }
+      //
     } catch (e) {
       debugPrint('[WALLET] polkadotSignMessage error $e');
       response = response.copyWith(
@@ -91,41 +86,49 @@ class SolanaService {
   }
 
   Future<void> solanaSignTransaction(String topic, dynamic parameters) async {
-    debugPrint(
-        '[WALLET] solanaSignTransaction request: ${jsonEncode(parameters)}');
+    debugPrint('[WALLET] solanaSignTransaction: ${jsonEncode(parameters)}');
+    const method = 'solana_signTransaction';
     final pRequest = _web3Wallet.pendingRequests.getAll().last;
     var response = JsonRpcResponse(id: pRequest.id, jsonrpc: '2.0');
 
     try {
+      final params = parameters as Map<String, dynamic>;
+      final feePayer = params['feePayer'].toString();
+      final recentBlockHash = params['recentBlockhash'].toString();
+      final instructionsList = params['instructions'] as List<dynamic>;
+
       final keys = GetIt.I<IKeyService>().getKeysForChain(
         chainSupported.chainId,
       );
-      final secKeyBytes = keys[0].privateKey.parseBytes();
-      final keyPair = solana.Keypair.fromSeckeySync(secKeyBytes);
-      // final keyP = nacl.sign.keypair.fromSeckeySync(secKeyBytes);
+      final secKeyBytes = keys[0].privateKey.parse32Bytes();
 
-      final transaction =
-          (parameters as Map<String, dynamic>).toSolanaTransaction();
+      final keyPair = await Ed25519HDKeyPair.fromPrivateKeyBytes(
+        privateKey: secKeyBytes,
+      );
 
-      if (keys[0].publicKey != '${keyPair.pubkey}') {
+      if (keyPair.address != feePayer) {
         throw Exception('Error');
       }
 
       const encoder = JsonEncoder.withIndent('  ');
-      if (await CommonMethods.requestApproval(
-        encoder.convert(parameters),
-        title: 'solana_signTransaction',
-      )) {
+      final transaction = encoder.convert(params);
+      if (await CommonMethods.requestApproval(transaction, title: method)) {
         // Sign the transaction.
-        transaction.sign([keyPair]);
+        final instructions = instructionsList.map((json) {
+          return (json as Map<String, dynamic>).toInstruction();
+        }).toList();
 
-        // The first signature is considered "primary" and is used identify and confirm transactions.
-        final primarySigPubkeyPair = transaction.signatures.first;
-        final bs58Signature = base58.encode(primarySigPubkeyPair);
+        final message = Message(instructions: instructions);
+        final compiledMessage = message.compile(
+          recentBlockhash: recentBlockHash,
+          feePayer: Ed25519HDPublicKey.fromBase58(feePayer),
+        );
+
+        final signature = await keyPair.sign(compiledMessage.toByteArray());
 
         response = response.copyWith(
           result: {
-            'signature': bs58Signature,
+            'signature': signature.toBase58(),
           },
         );
       } else {
@@ -150,10 +153,11 @@ class SolanaService {
 }
 
 extension on String {
-  Uint8List parseBytes() {
+  // SigningKey used by solana package requires a 32 bytes key
+  Uint8List parse32Bytes() {
     try {
       final List<int> secBytes = split(',').map((e) => int.parse(e)).toList();
-      return Uint8List.fromList(secBytes);
+      return Uint8List.fromList(secBytes.sublist(0, 32));
     } catch (e) {
       rethrow;
     }
@@ -161,31 +165,26 @@ extension on String {
 }
 
 extension on Map<String, dynamic> {
-  solana.Transaction toSolanaTransaction() {
-    final instructions = this['instructions'] as List<dynamic>;
-    return solana.Transaction.v0(
-      payer: solana.Pubkey.fromJson(this['feePayer']),
-      recentBlockhash: this['recentBlockhash'],
-      instructions: instructions.map((i) {
-        return (i as Map<String, dynamic>).toInstruction();
-      }).toList(),
-    );
-  }
-
-  solana.TransactionInstruction toInstruction() {
+  Instruction toInstruction() {
     final programId = this['programId'] as String;
+    final programKey = Ed25519HDPublicKey(base58.decode(programId).toList());
+
     final data = (this['data'] as List).map((e) => e as int).toList();
+    final data58 = base58.encode(Uint8List.fromList(data));
+    final dataBytes = ByteArray.fromBase58(data58);
+
     final keys = this['keys'] as List;
-    return solana.TransactionInstruction(
-      programId: solana.Pubkey.fromJson(programId),
-      data: Uint8List.fromList(data),
-      keys: keys.map((k) {
-        return (k as Map<String, dynamic>).toAccountMeta();
+    return Instruction(
+      programId: programKey,
+      data: dataBytes,
+      accounts: keys.map((k) {
+        final kParams = (k as Map<String, dynamic>);
+        return AccountMeta(
+          pubKey: Ed25519HDPublicKey.fromBase58(kParams['pubkey']),
+          isWriteable: kParams['isWritable'] as bool,
+          isSigner: kParams['isSigner'] as bool,
+        );
       }).toList(),
     );
-  }
-
-  solana.AccountMeta toAccountMeta() {
-    return solana.AccountMeta.fromJson(this);
   }
 }

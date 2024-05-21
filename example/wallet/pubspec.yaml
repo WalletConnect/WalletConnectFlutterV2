@@ -24,8 +24,9 @@ dependencies:
   convert: ^3.0.1
   url_launcher: ^6.2.2
   kadena_dart_sdk: ^2.3.2
-  solana_web3: ^0.1.3
+  solana: ^0.30.4
   polkadart_keyring: ^0.4.3
+  polkadart: ^0.4.3
   walletconnect_flutter_v2:
     path: ../..
 

@@ -1,14 +1,17 @@
 import 'dart:convert';
-
 import 'package:convert/convert.dart';
+
 import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
+import 'package:polkadart/scale_codec.dart';
+
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/chains/common.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/i_web3wallet_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/key_service/i_key_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/models/chain_metadata.dart';
 
+import 'package:polkadart/polkadart.dart';
 import 'package:polkadart_keyring/polkadart_keyring.dart';
 
 class PolkadotService {
@@ -16,8 +19,8 @@ class PolkadotService {
   final _web3Wallet = GetIt.I<IWeb3WalletService>().web3wallet;
 
   final ChainMetadata chainSupported;
-  // late final Provider polkadotProvider;
   late final Keyring keyring;
+  late final Provider provider;
 
   Map<String, dynamic Function(String, dynamic)> get polkadotRequestHandlers =>
       {
@@ -27,7 +30,7 @@ class PolkadotService {
 
   PolkadotService({required this.chainSupported}) {
     keyring = Keyring();
-    // polkadotProvider = Provider.fromUri(Uri.parse(chainSupported.rpc.first));
+    provider = Provider.fromUri(Uri.parse(chainSupported.rpc.first));
 
     for (var handler in polkadotRequestHandlers.entries) {
       _web3Wallet.registerRequestHandler(
@@ -42,6 +45,7 @@ class PolkadotService {
 
   Future<void> polkadotSignMessage(String topic, dynamic parameters) async {
     debugPrint('[WALLET] polkadotSignMessage: $parameters');
+    const method = 'polkadot_signMessage';
     final pRequest = _web3Wallet.pendingRequests.getAll().last;
     var response = JsonRpcResponse(
       id: pRequest.id,
@@ -57,23 +61,23 @@ class PolkadotService {
       final keys = GetIt.I<IKeyService>().getKeysForChain(
         chainSupported.chainId,
       );
-      final keyPair = await KeyPair.sr25519.fromMnemonic(keys[0].privateKey);
-      keyPair.ss58Format = 1;
+      final keyPair = await keyring.fromUri(keys[0].privateKey);
+      // adjust the default ss58Format for Polkadot
+      keyPair.ss58Format = 0;
+      // adjust the default ss58Format for Kusama
+      // keyPair.ss58Format = 2;
 
-      if (await CommonMethods.requestApproval(message)) {
+      if (await CommonMethods.requestApproval(message, title: method)) {
         final encodedMessage = utf8.encode(message);
-        // final hex_ = hex.encode(utf8_);
-        // debugPrint('[$runtimeType] encoded 0x$hex_');
-        // final decoded = hex_.hexToUint8List();
-        // debugPrint('[$runtimeType] decoded $decoded');
         final signature = keyPair.sign(encodedMessage);
+
         final isVerified = keyPair.verify(encodedMessage, signature);
         debugPrint('[$runtimeType] isVerified $isVerified');
 
         final hexSignature = hex.encode(signature);
         response = response.copyWith(
           result: {
-            'signature': hexSignature,
+            'signature': '0x$hexSignature',
           },
         );
       } else {
@@ -98,79 +102,58 @@ class PolkadotService {
 
   Future<void> polkadotSignTransaction(String topic, dynamic parameters) async {
     debugPrint('[WALLET] polkadotSignTransaction: ${jsonEncode(parameters)}');
+    const method = 'polkadot_signTransaction';
     final pRequest = _web3Wallet.pendingRequests.getAll().last;
     var response = JsonRpcResponse(
       id: pRequest.id,
       jsonrpc: '2.0',
     );
 
-    // code
-    //     String transferCall(String toAddress, BigInt value) {
-    //   var pubkey = Address.decode(toAddress).pubkey;
-    //   final dest = const $MultiAddress().id(pubkey);
-    //   final runtimeCall =
-    //       api.tx.balances.transferKeepAlive(dest: dest, value: value);
-    //   return runtimeCall.encode().toHex().split0x();
-    // }
-    // code
     final keys = GetIt.I<IKeyService>().getKeysForChain(
       chainSupported.chainId,
     );
-    final pair = await KeyPair.sr25519.fromMnemonic(keys[0].privateKey);
-    pair.ss58Format = 1;
+    final trxPayload = parameters['transactionPayload'] as Map<String, dynamic>;
 
-    // var toAddress = pair.address;
-    // var pair = await keyring.createKeyPairFromMnemonic(mnemonic5);
-    // debugPrint(
-    //     'addr mnemonic: ${keyring.encodeAddress(pair.publicKey.bytes, 137)}');
-    // debugPrint(
-    //     'signer pub: ${Uint8List.fromList(pair.publicKey.bytes).toHex()}');
-    // var balance = await method.getBalance(
-    //   keyring.encodeAddress(pair.publicKey.bytes, 137),
-    // );
-    // debugPrint('balance:$balance');
-    // var runtimeVersion = await method.getRuntimeVersion();
-    // var blockNumber = await method.getBlockNumber();
-    // var genesisHash = await method.getGenesisHash();
-    // var blockHash = await method.getBlockHash();
-    // debugPrint('blockHash: $blockHash');
-    // debugPrint('genesisHash: $blockHash');
-    // debugPrint('blockNumber: $blockNumber');
-    // final methodCall = method.transferCall(toAddress, BigInt.from(1));
-    // debugPrint('method call: $methodCall');
-    // var nonce = await method.getNonce(pair.address);
-    // debugPrint('nonce:$nonce');
+    const encoder = JsonEncoder.withIndent('  ');
+    final message = encoder.convert(trxPayload);
+    if (await CommonMethods.requestApproval(message, title: method)) {
+      try {
+        final keyPair = await keyring.fromUri(keys[0].privateKey);
+        // adjust the default ss58Format for Polkadot
+        keyPair.ss58Format = 0;
+        // adjust the default ss58Format for Kusama
+        // keyPair.ss58Format = 2;
 
-    // SigningPayload payloadSign = SigningPayload(
-    //   method: methodCall,
-    //   specVersion: runtimeVersion.specVersion,
-    //   transactionVersion: runtimeVersion.transactionVersion,
-    //   genesisHash: genesisHash,
-    //   blockHash: blockHash,
-    //   blockNumber: blockNumber,
-    //   eraPeriod: 64,
-    //   nonce: nonce,
-    //   tip: 0,
-    // );
+        // Get info necessary to build an extrinsic
+        final provider = Provider.fromUri(Uri.parse(chainSupported.rpc.first));
+        final stateApi = StateApi(provider);
+        final customMetadata = await stateApi.getMetadata();
+        final registry = customMetadata.chainInfo.scaleCodec.registry;
 
-    // var payload = payloadSign.encode(method.getRegistry());
-    // var signature = pair.sign(payload);
-    // debugPrint('signature: ${signature.toHex()}');
-    // var extrinsic = Extrinsic(
-    //   signer: Uint8List.fromList(pair.publicKey.bytes).toHex().split0x(),
-    //   method: methodCall,
-    //   signature: signature.toHex().split0x(),
-    //   eraPeriod: 64,
-    //   blockNumber: blockNumber,
-    //   nonce: nonce,
-    //   tip: 0,
-    // );
+        final payload = trxPayload.toSigningPayload(registry);
+        final payloadBytes = payload.encode(registry);
+        final signature = keyPair.sign(payloadBytes);
 
-    // var raw = extrinsic.encode(method.getRegistry());
-    // debugPrint('txRaw: ${raw.toHex()}');
+        final isVerified = keyPair.verify(payloadBytes, signature);
+        debugPrint('[$runtimeType] isVerified $isVerified');
 
-    // var res = await method.sendTransaction(raw);
-    // debugPrint('res is:$res');
+        final hexSignature = hex.encode(signature);
+        response = response.copyWith(
+          result: {
+            'signature': '0x$hexSignature',
+          },
+        );
+      } catch (e) {
+        debugPrint('[WALLET] polkadotSignTransaction error $e');
+        response = response.copyWith(
+          error: JsonRpcError(code: 0, message: e.toString()),
+        );
+      }
+    } else {
+      response = response.copyWith(
+        error: const JsonRpcError(code: 5001, message: 'User rejected'),
+      );
+    }
 
     await _web3Wallet.respondSessionRequest(
       topic: topic,
@@ -188,5 +171,31 @@ class PolkadotService {
         await handler(args.topic, args.params);
       }
     }
+  }
+}
+
+extension on Map<String, dynamic> {
+  SigningPayload toSigningPayload(Registry registry) {
+    final signedExtensions = registry.getSignedExtensionTypes();
+    final requestSignedExtensions = this['signedExtensions'] as List;
+    final mapEntries = requestSignedExtensions.map((e) {
+      return MapEntry<String, dynamic>(e, signedExtensions[e]);
+    }).toList();
+
+    final method = this['method'].toString();
+    final decoded = hex.decode(method.substring(2));
+    final decodedMethod = utf8.decode(decoded);
+    return SigningPayload(
+      method: utf8.encode(decodedMethod),
+      specVersion: int.parse(this['specVersion']),
+      transactionVersion: int.parse(this['transactionVersion']),
+      genesisHash: this['genesisHash'].toString(),
+      blockHash: this['blockHash'].toString(),
+      blockNumber: int.parse(this['blockNumber']),
+      eraPeriod: int.parse(this['era']),
+      nonce: int.parse(this['nonce']),
+      tip: int.parse(this['tip']),
+      customSignedExtensions: Map.fromEntries(mapEntries),
+    );
   }
 }

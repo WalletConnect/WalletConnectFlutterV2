@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:walletconnect_flutter_v2_dapp/models/chain_metadata.dart';
 import 'package:walletconnect_flutter_v2_dapp/utils/crypto/chain_data.dart';
 import 'package:walletconnect_flutter_v2_dapp/utils/crypto/eip155.dart';
-import 'package:walletconnect_flutter_v2_dapp/utils/crypto/solana_data.dart';
+import 'package:walletconnect_flutter_v2_dapp/utils/crypto/polkadot.dart';
+import 'package:walletconnect_flutter_v2_dapp/utils/crypto/solana.dart';
 
 String getChainName(String chain) {
   try {
@@ -24,29 +25,31 @@ ChainMetadata getChainMetadataFromChain(String chain) {
   } catch (e) {
     debugPrint('Invalid chain');
   }
-  return ChainData.mainChains[0];
+  return ChainData.eip155Chains[0];
 }
 
 List<String> getChainMethods(ChainType value) {
-  if (value == ChainType.solana) {
-    return SolanaData.methods.values.toList();
-  } else if (value == ChainType.kadena) {
-    return []; //Kadena.methods.values.toList();
-  } else if (value == ChainType.eip155) {
-    return EIP155.methods.values.toList();
-  } else {
-    return [];
+  switch (value) {
+    case ChainType.eip155:
+      return EIP155.methods.values.toList();
+    case ChainType.solana:
+      return Solana.methods.values.toList();
+    case ChainType.polkadot:
+      return Polkadot.methods.values.toList();
+    default:
+      return [];
   }
 }
 
 List<String> getChainEvents(ChainType value) {
-  if (value == ChainType.solana) {
-    return SolanaData.events.values.toList();
-  } else if (value == ChainType.kadena) {
-    return []; // Kadena.events.values.toList();
-  } else if (value == ChainType.eip155) {
-    return EIP155.events.values.toList();
-  } else {
-    return [];
+  switch (value) {
+    case ChainType.eip155:
+      return EIP155.events.values.toList();
+    case ChainType.solana:
+      return Solana.events.values.toList();
+    case ChainType.polkadot:
+      return Polkadot.events.values.toList();
+    default:
+      return [];
   }
 }
