@@ -29,12 +29,14 @@ class ConnectionWidgetBuilder {
           elements: namespaces.methods,
         ),
       );
-      models.add(
-        WCConnectionModel(
-          title: StringConstants.events,
-          elements: namespaces.events,
-        ),
-      );
+      if (namespaces.events.isNotEmpty) {
+        models.add(
+          WCConnectionModel(
+            title: StringConstants.events,
+            elements: namespaces.events,
+          ),
+        );
+      }
 
       views.add(
         WCConnectionWidget(
@@ -89,13 +91,15 @@ class ConnectionWidgetBuilder {
           );
         };
       }
-      models.add(
-        WCConnectionModel(
-          title: '${StringConstants.events} (Tap to send)',
-          elements: ns.events,
-          elementActions: actions,
-        ),
-      );
+      if (ns.events.isNotEmpty) {
+        models.add(
+          WCConnectionModel(
+            title: '${StringConstants.events} (Tap to send)',
+            elements: ns.events,
+            elementActions: actions,
+          ),
+        );
+      }
 
       views.add(
         WCConnectionWidget(

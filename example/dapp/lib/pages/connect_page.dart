@@ -7,12 +7,14 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:qr_flutter/qr_flutter.dart';
-// ignore: unused_import
 import 'package:url_launcher/url_launcher_string.dart';
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 import 'package:walletconnect_flutter_v2_dapp/models/chain_metadata.dart';
 import 'package:walletconnect_flutter_v2_dapp/utils/constants.dart';
 import 'package:walletconnect_flutter_v2_dapp/utils/crypto/chain_data.dart';
+import 'package:walletconnect_flutter_v2_dapp/utils/crypto/eip155.dart';
+import 'package:walletconnect_flutter_v2_dapp/utils/crypto/polkadot.dart';
+import 'package:walletconnect_flutter_v2_dapp/utils/crypto/solana.dart';
 import 'package:walletconnect_flutter_v2_dapp/utils/string_constants.dart';
 import 'package:walletconnect_flutter_v2_dapp/widgets/chain_button.dart';
 
@@ -52,11 +54,61 @@ class ConnectPageState extends State<ConnectPage> {
     _testnetOnly = value;
   }
 
+  void _selectChain(ChainMetadata chain) {
+    setState(() {
+      if (_selectedChains.contains(chain)) {
+        _selectedChains.remove(chain);
+      } else {
+        _selectedChains.add(chain);
+      }
+      _updateNamespaces();
+
+      debugPrint('$optionalNamespaces');
+    });
+  }
+
+  Map<String, RequiredNamespace> optionalNamespaces = {};
+
+  void _updateNamespaces() {
+    optionalNamespaces = {};
+
+    final evmChains =
+        _selectedChains.where((e) => e.type == ChainType.eip155).toList();
+    if (evmChains.isNotEmpty) {
+      optionalNamespaces['eip155'] = RequiredNamespace(
+        chains: evmChains.map((c) => c.chainId).toList(),
+        methods: EIP155.methods.values.toList(),
+        events: EIP155.events.values.toList(),
+      );
+    }
+
+    final solanaChains =
+        _selectedChains.where((e) => e.type == ChainType.solana).toList();
+    if (solanaChains.isNotEmpty) {
+      optionalNamespaces['solana'] = RequiredNamespace(
+        chains: solanaChains.map((c) => c.chainId).toList(),
+        methods: Solana.methods.values.toList(),
+        events: Solana.events.values.toList(),
+      );
+    }
+
+    final polkadotChains =
+        _selectedChains.where((e) => e.type == ChainType.polkadot).toList();
+    if (polkadotChains.isNotEmpty) {
+      optionalNamespaces['polkadot'] = RequiredNamespace(
+        chains: polkadotChains.map((c) => c.chainId).toList(),
+        methods: Polkadot.methods.values.toList(),
+        events: Polkadot.events.values.toList(),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     // Build the list of chain buttons, clear if the textnet changed
-    final List<ChainMetadata> chains =
-        _testnetOnly ? ChainData.testChains : ChainData.mainChains;
+    final testChains = ChainData.allChains.where((e) => e.isTestnet).toList();
+    final mainChains = ChainData.allChains.where((e) => !e.isTestnet).toList();
+    final List<ChainMetadata> chains = _testnetOnly ? testChains : mainChains;
 
     List<Widget> children = [];
 
@@ -65,15 +117,7 @@ class ConnectPageState extends State<ConnectPage> {
       children.add(
         ChainButton(
           chain: chain,
-          onPressed: () {
-            setState(() {
-              if (_selectedChains.contains(chain)) {
-                _selectedChains.remove(chain);
-              } else {
-                _selectedChains.add(chain);
-              }
-            });
-          },
+          onPressed: () => _selectChain(chain),
           selected: _selectedChains.contains(chain),
         ),
       );
@@ -120,6 +164,8 @@ class ConnectPageState extends State<ConnectPage> {
         ),
       ),
     );
+
+    children.add(const SizedBox.square(dimension: 12.0));
 
     return Center(
       child: Container(
@@ -179,6 +225,20 @@ class ConnectPageState extends State<ConnectPage> {
     );
   }
 
+  // Future<void> _onConnectWeb() async {
+  //   // `Ethereum.isSupported` is the same as `ethereum != null`
+  //   if (ethereum != null) {
+  //     try {
+  //       // Prompt user to connect to the provider, i.e. confirm the connection modal
+  //       final accounts = await ethereum!.requestAccount();
+  //       // Get all accounts in node disposal
+  //       debugPrint('accounts ${accounts.join(', ')}');
+  //     } on EthereumUserRejected {
+  //       debugPrint('User rejected the modal');
+  //     }
+  //   }
+  // }
+
   Future<void> _onConnect({
     Function(String message)? showToast,
     VoidCallback? closeModal,
@@ -186,24 +246,11 @@ class ConnectPageState extends State<ConnectPage> {
     debugPrint('Creating connection and session');
     // It is currently safer to send chains approvals on optionalNamespaces
     // but depending on Wallet implementation you may need to send some (for innstance eip155:1) as required
-    final ConnectResponse res = await widget.web3App.connect(
-      // requiredNamespaces: {
-      //   'eip155': const RequiredNamespace(
-      //     chains: [],
-      //     methods: MethodsConstants.requiredMethods,
-      //     events: EventsConstants.requiredEvents,
-      //   ),
-      // },
-      optionalNamespaces: {
-        'eip155': RequiredNamespace(
-          chains: _selectedChains.map((c) => c.chainId).toList(),
-          methods: MethodsConstants.allMethods,
-          events: EventsConstants.allEvents,
-        ),
-      },
+    final connectResponse = await widget.web3App.connect(
+      optionalNamespaces: optionalNamespaces,
     );
 
-    final encodedUri = Uri.encodeComponent(res.uri.toString());
+    final encodedUri = Uri.encodeComponent(connectResponse.uri.toString());
     final uri = 'wcflutterwallet://wc?uri=$encodedUri';
     // final uri = 'metamask://wc?uri=$encodedUri';
     if (await canLaunchUrlString(uri)) {
@@ -228,14 +275,14 @@ class ConnectPageState extends State<ConnectPage> {
       if (openApp) {
         launchUrlString(uri, mode: LaunchMode.externalApplication);
       } else {
-        _showQrCode(res);
+        _showQrCode(connectResponse);
       }
     } else {
-      _showQrCode(res);
+      _showQrCode(connectResponse);
     }
 
     debugPrint('Awaiting session proposal settlement');
-    final _ = await res.session.future;
+    final _ = await connectResponse.session.future;
 
     showToast?.call(StringConstants.connectionEstablished);
   }

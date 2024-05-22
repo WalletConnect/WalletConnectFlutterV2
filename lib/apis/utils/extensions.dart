@@ -35,7 +35,7 @@ extension TransactionExtension2 on Map<String, dynamic> {
       maxPriorityFeePerGas:
           (this['maxPriorityFeePerGas'] as String?).toEthereAmount(),
       maxGas: (this['maxGas'] as String?).toIntFromHex(),
-      nonce: (this['nonce'] as String?).toInt(),
+      nonce: this['nonce']?.toInt(),
       data: _parseTransactionData(this['data']),
     );
   }

@@ -3,13 +3,18 @@ import 'package:get_it_mixin/get_it_mixin.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/bottom_sheet/bottom_sheet_listener.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/bottom_sheet/bottom_sheet_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/bottom_sheet/i_bottom_sheet_service.dart';
+import 'package:walletconnect_flutter_v2_wallet/dependencies/chains/cosmos_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/chains/evm_service.dart';
+import 'package:walletconnect_flutter_v2_wallet/dependencies/chains/kadena_service.dart';
+import 'package:walletconnect_flutter_v2_wallet/dependencies/chains/polkadot_service.dart';
+import 'package:walletconnect_flutter_v2_wallet/dependencies/chains/solana_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/deep_link_handler.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/i_web3wallet_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/key_service/i_key_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/key_service/key_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/web3wallet_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/models/chain_data.dart';
+import 'package:walletconnect_flutter_v2_wallet/models/chain_metadata.dart';
 import 'package:walletconnect_flutter_v2_wallet/models/page_data.dart';
 import 'package:walletconnect_flutter_v2_wallet/pages/apps_page.dart';
 import 'package:walletconnect_flutter_v2_wallet/pages/settings_page.dart';
@@ -60,12 +65,55 @@ class _MyHomePageState extends State<MyHomePage> with GetItStateMixin {
     GetIt.I.registerSingleton<IKeyService>(KeyService());
 
     final IWeb3WalletService web3WalletService = Web3WalletService();
-    web3WalletService.create();
+    await web3WalletService.create();
     GetIt.I.registerSingleton<IWeb3WalletService>(web3WalletService);
 
-    for (final chainData in ChainData.allChains) {
+    // Support EVM Chains
+    final evmChains =
+        ChainData.allChains.where((c) => c.type == ChainType.eip155).toList();
+    for (final chainData in evmChains) {
       GetIt.I.registerSingleton<EVMService>(
         EVMService(chainSupported: chainData),
+        instanceName: chainData.chainId,
+      );
+    }
+
+    // Support Kadena Chains
+    final kadenaChains =
+        ChainData.allChains.where((c) => c.type == ChainType.kadena).toList();
+    for (final chainData in kadenaChains) {
+      GetIt.I.registerSingleton<KadenaService>(
+        KadenaService(chainSupported: chainData),
+        instanceName: chainData.chainId,
+      );
+    }
+
+    // Support Polkadot Chains
+    final polkadotChains =
+        ChainData.allChains.where((c) => c.type == ChainType.polkadot).toList();
+    for (final chainData in polkadotChains) {
+      GetIt.I.registerSingleton<PolkadotService>(
+        PolkadotService(chainSupported: chainData),
+        instanceName: chainData.chainId,
+      );
+    }
+
+    // Support Solana Chains
+    final solanaChains =
+        ChainData.allChains.where((c) => c.type == ChainType.solana).toList();
+    for (final chainData in solanaChains) {
+      GetIt.I.registerSingleton<SolanaService>(
+        SolanaService(chainSupported: chainData),
+        instanceName: chainData.chainId,
+      );
+    }
+
+    // Support Cosmos Chains
+    final cosmosChains =
+        ChainData.allChains.where((c) => c.type == ChainType.cosmos).toList();
+    for (final chainData in cosmosChains) {
+      GetIt.I.registerSingleton<CosmosService>(
+        CosmosService(chainSupported: chainData),
         instanceName: chainData.chainId,
       );
     }

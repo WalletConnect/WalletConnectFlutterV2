@@ -8,7 +8,7 @@ class UpdateEvent extends EventArgs {
 }
 
 abstract class IWeb3WalletService extends Disposable {
-  void create();
+  Future<void> create();
   Future<void> init();
 
   Web3Wallet get web3wallet;
