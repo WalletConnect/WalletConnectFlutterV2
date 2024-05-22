@@ -1230,7 +1230,6 @@ class SignEngine implements ISignEngine {
         true,
       );
       await _deleteSession(topic);
-      // await _deletePendingRequest(payload.id, expirerHasDeleted: true);
     } on WalletConnectError catch (err) {
       await core.pairing.sendError(
         payload.id,
