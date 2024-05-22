@@ -8,6 +8,7 @@ import 'package:walletconnect_flutter_v2_wallet/dependencies/deep_link_handler.d
 import 'package:walletconnect_flutter_v2_wallet/dependencies/i_web3wallet_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/pages/app_detail_page.dart';
 import 'package:walletconnect_flutter_v2_wallet/utils/constants.dart';
+import 'package:walletconnect_flutter_v2_wallet/utils/eth_utils.dart';
 import 'package:walletconnect_flutter_v2_wallet/utils/string_constants.dart';
 import 'package:walletconnect_flutter_v2_wallet/widgets/pairing_item.dart';
 import 'package:walletconnect_flutter_v2_wallet/widgets/qr_scan_sheet.dart';
@@ -41,7 +42,7 @@ class AppsPageState extends State<AppsPage> with GetItStateMixin {
 
   void _registerListeners() {
     _web3Wallet.core.relayClient.onRelayClientMessage.subscribe(
-      _refreshState,
+      _onRelayClientMessage,
     );
     _web3Wallet.pairings.onSync.subscribe(_refreshState);
     _web3Wallet.pairings.onUpdate.subscribe(_refreshState);
@@ -55,7 +56,7 @@ class AppsPageState extends State<AppsPage> with GetItStateMixin {
     _web3Wallet.pairings.onSync.unsubscribe(_refreshState);
     _web3Wallet.pairings.onUpdate.unsubscribe(_refreshState);
     _web3Wallet.core.relayClient.onRelayClientMessage.unsubscribe(
-      _refreshState,
+      _onRelayClientMessage,
     );
   }
 
@@ -67,6 +68,30 @@ class AppsPageState extends State<AppsPage> with GetItStateMixin {
 
   void _refreshState(dynamic event) async {
     setState(() {});
+  }
+
+  void _onRelayClientMessage(MessageEvent? event) async {
+    _refreshState(event);
+    if (event != null) {
+      final jsonObject = await EthUtils.decodeMessageEvent(event);
+      if (!mounted) return;
+      if (jsonObject is JsonRpcRequest &&
+          jsonObject.method == 'wc_sessionPing') {
+        showPlatformToast(
+          duration: const Duration(seconds: 1),
+          child: Container(
+            padding: const EdgeInsets.all(StyleConstants.linear8),
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(
+                StyleConstants.linear16,
+              ),
+            ),
+            child: Text(jsonObject.method, maxLines: 1),
+          ),
+          context: context,
+        );
+      }
+    }
   }
 
   @override

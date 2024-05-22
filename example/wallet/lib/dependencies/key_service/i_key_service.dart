@@ -1,4 +1,3 @@
-import 'package:walletconnect_flutter_v2/apis/core/crypto/crypto_models.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/key_service/chain_key.dart';
 
 abstract class IKeyService {
@@ -16,13 +15,9 @@ abstract class IKeyService {
   /// Returns a list of all the accounts in namespace:chainId:address format.
   List<String> getAllAccounts();
 
-  String generateMnemonic();
+  Future<void> createNewWallet();
 
-  CryptoKeyPair keyPairFromMnemonic(String mnemonic);
-
-  String getAddressFromPrivateKey(String privateKey);
-
-  Future<void> createWallet();
+  Future<void> loadDefaultWallet();
 
   Future<void> restoreWallet({required String mnemonic});
 

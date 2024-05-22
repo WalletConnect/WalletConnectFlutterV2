@@ -81,7 +81,10 @@ class _MyHomePageState extends State<MyHomePage> {
       // Loop through the events for that chain
       for (final event in getChainEvents(chain.type)) {
         debugPrint('registerEventHandler $event for chain ${chain.chainId}');
-        _web3App!.registerEventHandler(chainId: chain.chainId, event: event);
+        _web3App!.registerEventHandler(
+          chainId: chain.chainId,
+          event: event,
+        );
       }
     }
 

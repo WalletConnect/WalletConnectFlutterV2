@@ -22,24 +22,6 @@ enum EIP155Events {
   accountsChanged,
 }
 
-extension EIP155MethodsStringX on String {
-  EIP155Methods? toEip155Method() {
-    final entries = EIP155.methods.entries.where(
-      (element) => element.value == this,
-    );
-    return (entries.isNotEmpty) ? entries.first.key : null;
-  }
-}
-
-extension EIP155EventsStringX on String {
-  EIP155Events? toEip155Event() {
-    final entries = EIP155.events.entries.where(
-      (element) => element.value == this,
-    );
-    return (entries.isNotEmpty) ? entries.first.key : null;
-  }
-}
-
 class EIP155 {
   static final Map<EIP155Methods, String> methods = {
     EIP155Methods.personalSign: 'personal_sign',
@@ -57,12 +39,12 @@ class EIP155 {
   static Future<dynamic> callMethod({
     required Web3App web3App,
     required String topic,
-    required EIP155Methods method,
+    required String method,
     required ChainMetadata chainData,
     required String address,
   }) {
     switch (method) {
-      case EIP155Methods.personalSign:
+      case 'personal_sign':
         return personalSign(
           web3App: web3App,
           topic: topic,
@@ -70,7 +52,7 @@ class EIP155 {
           address: address,
           message: testSignData,
         );
-      case EIP155Methods.ethSign:
+      case 'eth_sign':
         return ethSign(
           web3App: web3App,
           topic: topic,
@@ -78,7 +60,7 @@ class EIP155 {
           address: address,
           message: testSignData,
         );
-      case EIP155Methods.ethSignTypedData:
+      case 'eth_signTypedData':
         return ethSignTypedData(
           web3App: web3App,
           topic: topic,
@@ -86,7 +68,7 @@ class EIP155 {
           address: address,
           data: typedData,
         );
-      case EIP155Methods.ethSignTransaction:
+      case 'eth_signTransaction':
         return ethSignTransaction(
           web3App: web3App,
           topic: topic,
@@ -99,7 +81,7 @@ class EIP155 {
             value: EtherAmount.fromInt(EtherUnit.finney, 12), // == 0.012
           ),
         );
-      case EIP155Methods.ethSendTransaction:
+      case 'eth_sendTransaction':
         return ethSendTransaction(
           web3App: web3App,
           topic: topic,
@@ -112,6 +94,8 @@ class EIP155 {
             value: EtherAmount.fromInt(EtherUnit.finney, 11), // == 0.011
           ),
         );
+      default:
+        throw 'Method unimplemented';
     }
   }
 
@@ -130,19 +114,22 @@ class EIP155 {
       EthereumAddress.fromHex(SepoliaTestContract.contractAddress),
     );
 
+    final sepolia =
+        ChainData.allChains.firstWhere((e) => e.chainId == 'eip155:11155111');
+
     switch (action) {
       case 'read':
         return readSmartContract(
           web3App: web3App,
-          rpcUrl: ChainData.testChains.first.rpc.first,
+          rpcUrl: sepolia.rpc.first,
           contract: deployedContract,
           address: address,
         );
       case 'write':
         return web3App.requestWriteContract(
           topic: topic,
-          chainId: ChainData.testChains.first.chainId,
-          rpcUrl: ChainData.testChains.first.rpc.first,
+          chainId: sepolia.chainId,
+          rpcUrl: sepolia.rpc.first,
           deployedContract: deployedContract,
           functionName: 'transfer',
           transaction: Transaction(

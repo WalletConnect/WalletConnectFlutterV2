@@ -4,9 +4,10 @@ import 'package:url_launcher/url_launcher_string.dart';
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 import 'package:walletconnect_flutter_v2_dapp/models/chain_metadata.dart';
 import 'package:walletconnect_flutter_v2_dapp/utils/constants.dart';
-import 'package:walletconnect_flutter_v2_dapp/utils/crypto/chain_data.dart';
 import 'package:walletconnect_flutter_v2_dapp/utils/crypto/eip155.dart';
 import 'package:walletconnect_flutter_v2_dapp/utils/crypto/helpers.dart';
+import 'package:walletconnect_flutter_v2_dapp/utils/crypto/polkadot.dart';
+import 'package:walletconnect_flutter_v2_dapp/utils/crypto/solana.dart';
 import 'package:walletconnect_flutter_v2_dapp/utils/string_constants.dart';
 import 'package:walletconnect_flutter_v2_dapp/widgets/method_dialog.dart';
 
@@ -115,7 +116,8 @@ class SessionWidgetState extends State<SessionWidget> {
     children.addAll(_buildChainMethodButtons(chainMetadata, account));
 
     children.add(const Divider());
-    if (chainId != ChainData.testChains.first.chainId) {
+
+    if (chainId != 'eip155:11155111') {
       children.add(const Text('Connect to Sepolia to Test'));
     }
     children.addAll(_buildSepoliaButtons(account, chainId));
@@ -180,12 +182,10 @@ class SessionWidgetState extends State<SessionWidget> {
           child: ElevatedButton(
             onPressed: supported
                 ? () async {
-                    final future = EIP155.callMethod(
-                      web3App: widget.web3App,
-                      topic: widget.session.topic,
-                      method: method.toEip155Method()!,
-                      chainData: chainMetadata,
-                      address: address.toLowerCase(),
+                    final future = callChainMethod(
+                      method,
+                      chainMetadata,
+                      address,
                     );
                     MethodDialog.show(context, method, future);
                     _launchWallet();
@@ -218,6 +218,49 @@ class SessionWidgetState extends State<SessionWidget> {
     return buttons;
   }
 
+  Future<dynamic> callChainMethod(
+    String method,
+    ChainMetadata chainMetadata,
+    String address,
+  ) {
+    switch (chainMetadata.type) {
+      case ChainType.eip155:
+        return EIP155.callMethod(
+          web3App: widget.web3App,
+          topic: widget.session.topic,
+          method: method,
+          chainData: chainMetadata,
+          address: address,
+        );
+      case ChainType.polkadot:
+        return Polkadot.callMethod(
+          web3App: widget.web3App,
+          topic: widget.session.topic,
+          method: method,
+          chainId: chainMetadata.chainId,
+          address: address,
+        );
+      case ChainType.solana:
+        return Solana.callMethod(
+          web3App: widget.web3App,
+          topic: widget.session.topic,
+          method: method,
+          chainData: chainMetadata,
+          address: address,
+        );
+      // case ChainType.kadena:
+      //   return Kadena.callMethod(
+      //     web3App: widget.web3App,
+      //     topic: widget.session.topic,
+      //     method: method.toKadenaMethod()!,
+      //     chainId: chainMetadata.chainId,
+      //     address: address.toLowerCase(),
+      //   );
+      default:
+        throw 'Unimplemented';
+    }
+  }
+
   void _launchWallet() {
     if (kIsWeb) return;
     final walletUrl = widget.session.peer.metadata.redirect?.native;
@@ -231,7 +274,7 @@ class SessionWidgetState extends State<SessionWidget> {
 
   List<Widget> _buildSepoliaButtons(String address, String chainId) {
     final List<Widget> buttons = [];
-    final enabled = chainId == ChainData.testChains.first.chainId;
+    final enabled = chainId == 'eip155:11155111';
     buttons.add(
       Container(
         width: double.infinity,

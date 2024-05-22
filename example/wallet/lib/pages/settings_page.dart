@@ -131,12 +131,12 @@ class _SettingsPageState extends State<SettingsPage> {
               CustomButton(
                 type: CustomButtonType.invalid,
                 onTap: () async {
-                  await keysService.createWallet();
+                  await keysService.loadDefaultWallet();
                   setState(() {});
                 },
                 child: const Center(
                   child: Text(
-                    'Delete and create new',
+                    'Restore default',
                     style: TextStyle(
                       color: Colors.white,
                       fontWeight: FontWeight.bold,

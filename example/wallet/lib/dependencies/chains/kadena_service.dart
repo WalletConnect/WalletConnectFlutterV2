@@ -1,265 +1,268 @@
-// import 'dart:convert';
+import 'dart:convert';
 
-// import 'package:get_it/get_it.dart';
-// import 'package:kadena_dart_sdk/kadena_dart_sdk.dart';
-// import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
-// import 'package:walletconnect_flutter_v2_wallet/dependencies/chains/i_chain.dart';
-// import 'package:walletconnect_flutter_v2_wallet/dependencies/bottom_sheet/i_bottom_sheet_service.dart';
-// import 'package:walletconnect_flutter_v2_wallet/dependencies/i_web3wallet_service.dart';
-// import 'package:walletconnect_flutter_v2_wallet/dependencies/key_service/chain_key.dart';
-// import 'package:walletconnect_flutter_v2_wallet/dependencies/key_service/i_key_service.dart';
-// import 'package:walletconnect_flutter_v2_wallet/widgets/kadena_widgets/kadena_sign_widget.dart';
+import 'package:flutter/foundation.dart';
+import 'package:get_it/get_it.dart';
 
-// enum KadenaChainId {
-//   testnet04,
-//   mainnet01,
-//   development,
-// }
+import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
+import 'package:walletconnect_flutter_v2_wallet/dependencies/bottom_sheet/i_bottom_sheet_service.dart';
+import 'package:walletconnect_flutter_v2_wallet/dependencies/chains/common.dart';
+import 'package:walletconnect_flutter_v2_wallet/dependencies/i_web3wallet_service.dart';
+import 'package:walletconnect_flutter_v2_wallet/dependencies/key_service/i_key_service.dart';
+import 'package:walletconnect_flutter_v2_wallet/models/chain_data.dart';
+import 'package:walletconnect_flutter_v2_wallet/models/chain_metadata.dart';
+import 'package:walletconnect_flutter_v2_wallet/widgets/kadena_request_widget/kadena_request_widget.dart';
 
-// extension KadenaChainIdX on KadenaChainId {
-//   String get chain => '${KadenaService.namespace}:$name';
-// }
+import 'package:kadena_dart_sdk/kadena_dart_sdk.dart';
 
-// class KadenaService extends IChain {
-//   static const namespace = 'kadena';
-//   static const kadenaSign = 'kadena_sign';
-//   static const kadenaQuicksign = 'kadena_quicksign';
-//   static const kadenaSignV1 = 'kadena_sign_v1';
-//   static const kadenaQuicksignV1 = 'kadena_quicksign_v1';
-//   static const kadenaGetAccountsV1 = 'kadena_getAccounts_v1';
+class KadenaService {
+  final _bottomSheetService = GetIt.I<IBottomSheetService>();
+  final _web3Wallet = GetIt.I<IWeb3WalletService>().web3wallet;
 
-//   final ISigningApi _signingApi = SigningApi();
-//   final IBottomSheetService _bottomSheetService =
-//       GetIt.I<IBottomSheetService>();
-//   final IWeb3WalletService _web3WalletService = GetIt.I<IWeb3WalletService>();
+  final ChainMetadata chainSupported;
+  late final SigningApi kadenaClient;
 
-//   final KadenaChainId reference;
+  Map<String, dynamic Function(String, dynamic)> get kadenaRequestHandlers => {
+        'kadena_getAccounts_v1': kadenaGetAccountsV1,
+        'kadena_sign_v1': kadenaSignV1,
+        'kadena_quicksign_v1': kadenaQuicksignV1,
+      };
 
-//   KadenaService({
-//     required this.reference,
-//   }) {
-//     final Web3Wallet wallet = _web3WalletService.getWeb3Wallet();
-//     for (final String event in getEvents()) {
-//       wallet.registerEventEmitter(chainId: getChainId(), event: event);
-//     }
-//     wallet.registerRequestHandler(
-//       chainId: getChainId(),
-//       method: kadenaSign,
-//       handler: signV1,
-//     );
-//     wallet.registerRequestHandler(
-//       chainId: getChainId(),
-//       method: kadenaSignV1,
-//       handler: signV1,
-//     );
-//     wallet.registerRequestHandler(
-//       chainId: getChainId(),
-//       method: kadenaQuicksign,
-//       handler: quicksignV1,
-//     );
-//     wallet.registerRequestHandler(
-//       chainId: getChainId(),
-//       method: kadenaQuicksignV1,
-//       handler: quicksignV1,
-//     );
-//     wallet.registerRequestHandler(
-//       chainId: getChainId(),
-//       method: kadenaGetAccountsV1,
-//       handler: getAccountsV1,
-//     );
-//   }
+  KadenaService({required this.chainSupported}) {
+    kadenaClient = SigningApi();
 
-//   @override
-//   String getNamespace() {
-//     return namespace;
-//   }
+    _web3Wallet.registerEventEmitter(
+      chainId: chainSupported.chainId,
+      event: 'kadena_transaction_updated',
+    );
 
-//   @override
-//   String getChainId() {
-//     return reference.chain;
-//   }
+    for (var handler in kadenaRequestHandlers.entries) {
+      _web3Wallet.registerRequestHandler(
+        chainId: chainSupported.chainId,
+        method: handler.key,
+        handler: handler.value,
+      );
+    }
 
-//   @override
-//   List<String> getEvents() {
-//     return ['kadena_transaction_updated'];
-//   }
+    _web3Wallet.onSessionRequest.subscribe(_onSessionRequest);
+  }
 
-//   Future<SignResult> signV1(String topic, dynamic parameters) async {
-//     // print('received kadena sign request: $parameters');
-//     // Parse the request
-//     late SignRequest signRequest;
-//     try {
-//       signRequest = _signingApi.parseSignRequest(
-//         request: parameters,
-//       );
-//     } catch (e) {
-//       print(e);
-//       rethrow;
-//     }
+  Future<void> kadenaGetAccountsV1(String topic, dynamic parameters) async {
+    debugPrint('[WALLET] kadenaGetAccountsV1 request: $parameters');
+    final pRequest = _web3Wallet.pendingRequests.getAll().last;
+    var response = JsonRpcResponse(
+      id: pRequest.id,
+      jsonrpc: '2.0',
+    );
 
-//     // Get the keys for the kadena chain
-//     final List<ChainKey> keys = GetIt.I<IKeyService>().getKeysForChain(
-//       getChainId(),
-//     );
+    try {
+      final accountRequest = AccountRequest.fromJson(parameters);
+      final getAccountsRequest = GetAccountsRequest(accounts: [accountRequest]);
+      // Get the keys for the kadena chain
+      final keys = GetIt.I<IKeyService>().getKeysForChain(
+        chainSupported.chainId,
+      );
 
-//     final PactCommandPayload payload = _signingApi.constructPactCommandPayload(
-//       request: signRequest,
-//       signingPubKey: keys[0].publicKey,
-//     );
+      final kadenaAccounts = <KadenaAccount>[];
 
-//     // Show the sign widget
-//     final List<bool>? approved = await _bottomSheetService.queueBottomSheet(
-//       widget: KadenaSignWidget(payloads: [payload]),
-//     );
+      // Loop through the contracts of the request if it exists and add all accounts
+      for (var account in getAccountsRequest.accounts) {
+        for (var contract in (account.contracts ?? [])) {
+          kadenaAccounts.add(
+            KadenaAccount(
+              name: 'k:${keys[0].publicKey}',
+              contract: contract,
+              chains: ['1'],
+            ),
+          );
+        }
+      }
 
-//     // If the user approved, sign the request
-//     if (approved != null && approved[0]) {
-//       final SignResult signature = _signingApi.sign(
-//         payload: payload,
-//         keyPair: KadenaSignKeyPair(
-//           privateKey: keys[0].privateKey,
-//           publicKey: keys[0].publicKey,
-//         ),
-//       );
+      response = response.copyWith(
+        result: GetAccountsResponse(
+          accounts: [
+            AccountResponse(
+              account: '${chainSupported.chainId}${keys[0].publicKey}',
+              publicKey: keys[0].publicKey,
+              kadenaAccounts: kadenaAccounts,
+            ),
+          ],
+        ).toJson(),
+      );
+    } catch (e) {
+      debugPrint('[WALLET] kadenaGetAccountsV1 error: $e');
+      response = response.copyWith(
+        error: JsonRpcError(code: 0, message: e.toString()),
+      );
+    }
 
-//       // Return the signature
-//       // print(jsonEncode(signature));
-//       return signature;
-//     } else {
-//       throw Errors.getSdkError(Errors.USER_REJECTED_SIGN);
-//     }
-//   }
+    await _web3Wallet.respondSessionRequest(
+      topic: topic,
+      response: response,
+    );
 
-//   Future<QuicksignResult> quicksignV1(String topic, dynamic parameters) async {
-//     // print('received kadena quicksign request: $parameters');
-//     // Parse the request
-//     late QuicksignRequest quicksignRequest;
-//     try {
-//       quicksignRequest = _signingApi.parseQuicksignRequest(
-//         request: parameters,
-//       );
-//     } catch (e) {
-//       print(e);
-//       rethrow;
-//     }
+    CommonMethods.goBackToDapp(topic, response.result ?? response.error);
+  }
 
-//     // Show the sign widget
-//     final List<bool>? approved = await _bottomSheetService.queueBottomSheet(
-//       widget: KadenaSignWidget(
-//         payloads: quicksignRequest.commandSigDatas
-//             .map(
-//               (e) => PactCommandPayload.fromJson(
-//                 jsonDecode(e.cmd),
-//               ),
-//             )
-//             .toList(),
-//       ),
-//     );
+  Future<void> kadenaSignV1(String topic, dynamic parameters) async {
+    debugPrint('[WALLET] kadenaSignV1 request: ${jsonEncode(parameters)}');
+    final pRequest = _web3Wallet.pendingRequests.getAll().last;
+    var response = JsonRpcResponse(
+      id: pRequest.id,
+      jsonrpc: '2.0',
+    );
 
-//     // If the user approved, sign the request
-//     // print('approved: $approved');
-//     if (approved != null) {
-//       // Get the keys for the kadena chain
-//       final List<ChainKey> keys = GetIt.I<IKeyService>().getKeysForChain(
-//         getChainId(),
-//       );
+    try {
+      final chain = ChainData.allChains.firstWhere(
+        (c) => c.chainId == chainSupported.chainId,
+      );
+      final uri = Uri.parse(chain.rpc.first);
+      final params = parameters as Map<String, dynamic>;
+      params.putIfAbsent('networkId', () => uri.host);
 
-//       final List<QuicksignResponse> signatures = [];
+      final signRequest = kadenaClient.parseSignRequest(request: params);
 
-//       // Loop through the requests and sign each one that is true
-//       for (int i = 0; i < approved.length; i++) {
-//         final bool isApproved = approved[i];
-//         final CommandSigData request = quicksignRequest.commandSigDatas[i];
-//         late QuicksignResponse signature;
-//         if (isApproved) {
-//           signature = _signingApi.quicksignSingleCommand(
-//             commandSigData: request,
-//             keyPairs: [
-//               KadenaSignKeyPair(
-//                 privateKey: keys[0].privateKey,
-//                 publicKey: keys[0].publicKey,
-//               )
-//             ],
-//           );
-//         } else {
-//           signature = QuicksignResponse(
-//             commandSigData: request,
-//             outcome: QuicksignOutcome(
-//               result: QuicksignOutcome.failure,
-//               msg: 'User rejected sign',
-//             ),
-//           );
-//         }
+      // Get the keys for the kadena chain
+      final keys = GetIt.I<IKeyService>().getKeysForChain(
+        chainSupported.chainId,
+      );
 
-//         signatures.add(signature);
-//       }
+      final payload = kadenaClient.constructPactCommandPayload(
+        request: signRequest,
+        signingPubKey: keys[0].publicKey,
+      );
 
-//       final QuicksignResult result = QuicksignResult(
-//         responses: signatures,
-//       );
+      // Show the sign widget
+      final List<bool>? approved = await _bottomSheetService.queueBottomSheet(
+        widget: KadenaRequestWidget(payloads: [payload]),
+      );
 
-//       // Return the signature
-//       // print('responding with: $result');
-//       return result;
-//     } else {
-//       throw Errors.getSdkError(Errors.USER_REJECTED_SIGN);
-//     }
-//   }
+      // If the user approved, sign the request
+      if ((approved ?? []).isNotEmpty) {
+        final signature = kadenaClient.sign(
+          payload: payload,
+          keyPair: KadenaSignKeyPair(
+            privateKey: keys[0].privateKey,
+            publicKey: keys[0].publicKey,
+          ),
+        );
 
-//   Future<GetAccountsResponse> getAccountsV1(
-//       String topic, dynamic parameters) async {
-//     // print('received kadena getAccounts request: $parameters');
-//     // Parse the request
-//     late GetAccountsRequest getAccountsRequest;
-//     try {
-//       getAccountsRequest = GetAccountsRequest.fromJson(parameters);
-//     } catch (e) {
-//       print(e);
-//       return GetAccountsResponse(accounts: []);
-//     }
+        response = response.copyWith(
+          result: signature.toJson(),
+        );
+      } else {
+        // throw Errors.getSdkError(Errors.USER_REJECTED_SIGN);
+        response = response.copyWith(
+          error: const JsonRpcError(code: 5001, message: 'User rejected'),
+        );
+      }
+    } catch (e) {
+      debugPrint('[WALLET] kadenaSignV1 error: $e');
+      response = response.copyWith(
+        error: JsonRpcError(code: 0, message: e.toString()),
+      );
+    }
 
-//     // Get the keys for the kadena chain
-//     final List<ChainKey> keys = GetIt.I<IKeyService>().getKeysForChain(
-//       getChainId(),
-//     );
+    await _web3Wallet.respondSessionRequest(
+      topic: topic,
+      response: response,
+    );
 
-//     final List<KadenaAccount> kadenaAccounts = [];
+    CommonMethods.goBackToDapp(topic, response.result ?? response.error);
+  }
 
-//     kadenaAccounts.add(
-//       KadenaAccount(
-//         name: 'k:${keys[0].publicKey}',
-//         contract: 'coin',
-//         chains: ['1'],
-//       ),
-//     );
+  Future<void> kadenaQuicksignV1(String topic, dynamic parameters) async {
+    debugPrint('[WALLET] kadenaQuicksignV1 request: ${jsonEncode(parameters)}');
+    final pRequest = _web3Wallet.pendingRequests.getAll().last;
+    var response = JsonRpcResponse(
+      id: pRequest.id,
+      jsonrpc: '2.0',
+    );
 
-//     // Loop through the contracts of the request if it exists and add all accounts
-//     if (getAccountsRequest.accounts.first.contracts != null) {
-//       for (final String contract
-//           in getAccountsRequest.accounts.first.contracts!) {
-//         if (contract == 'coin') {
-//           continue;
-//         }
+    try {
+      final quicksignRequest = kadenaClient.parseQuicksignRequest(
+        request: parameters,
+      );
 
-//         kadenaAccounts.add(
-//           KadenaAccount(
-//             name: 'k:${keys[0].publicKey}',
-//             contract: contract,
-//             chains: ['1'],
-//           ),
-//         );
-//       }
-//     }
+      // Get the keys for the kadena chain
+      final keys = GetIt.I<IKeyService>().getKeysForChain(
+        chainSupported.chainId,
+      );
 
-//     // Return the accounts
-//     return GetAccountsResponse(
-//       accounts: [
-//         AccountResponse(
-//           account: '${getChainId()}${keys[0].publicKey}',
-//           publicKey: keys[0].publicKey,
-//           kadenaAccounts: kadenaAccounts,
-//         ),
-//       ],
-//     );
-//   }
-// }
+      // Show the sign widget
+      final List<bool>? approved = await _bottomSheetService.queueBottomSheet(
+        widget: KadenaRequestWidget(
+          payloads: [
+            ...(quicksignRequest.commandSigDatas
+                .map((e) => PactCommandPayload.fromJson(jsonDecode(e.cmd)))
+                .toList()),
+          ],
+        ),
+      );
+
+      if ((approved ?? <bool>[]).isNotEmpty) {
+        final List<QuicksignResponse> signatures = [];
+
+        // Loop through the requests and sign each one that is true
+        for (int i = 0; i < approved!.length; i++) {
+          final bool isApproved = approved[i];
+          final CommandSigData request = quicksignRequest.commandSigDatas[i];
+          late QuicksignResponse signature;
+          if (isApproved) {
+            signature = kadenaClient.quicksignSingleCommand(
+              commandSigData: request,
+              keyPairs: [
+                KadenaSignKeyPair(
+                  privateKey: keys[0].privateKey,
+                  publicKey: keys[0].publicKey,
+                )
+              ],
+            );
+          } else {
+            signature = QuicksignResponse(
+              commandSigData: request,
+              outcome: QuicksignOutcome(
+                result: QuicksignOutcome.failure,
+                msg: 'User rejected sign',
+              ),
+            );
+          }
+
+          signatures.add(signature);
+        }
+
+        final result = QuicksignResult(responses: signatures);
+
+        response = response.copyWith(
+          result: result.toJson(),
+        );
+      } else {
+        // throw Errors.getSdkError(Errors.USER_REJECTED_SIGN);
+        response = response.copyWith(
+          error: const JsonRpcError(code: 5001, message: 'User rejected'),
+        );
+      }
+    } catch (e) {
+      debugPrint('[WALLET] kadenaSignV1 error: $e');
+      response = response.copyWith(
+        error: JsonRpcError(code: 0, message: e.toString()),
+      );
+    }
+
+    await _web3Wallet.respondSessionRequest(
+      topic: topic,
+      response: response,
+    );
+
+    CommonMethods.goBackToDapp(topic, response.result ?? response.error);
+  }
+
+  void _onSessionRequest(SessionRequestEvent? args) async {
+    if (args != null && args.chainId == chainSupported.chainId) {
+      debugPrint('[WALLET] _onSessionRequest ${args.toString()}');
+      final handler = kadenaRequestHandlers[args.method];
+      if (handler != null) {
+        await handler(args.topic, args.params);
+      }
+    }
+  }
+}

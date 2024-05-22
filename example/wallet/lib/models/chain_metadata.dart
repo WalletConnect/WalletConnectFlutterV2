@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 enum ChainType {
   eip155,
   solana,
+  cosmos,
   kadena,
+  polkadot,
 }
 
 class ChainMetadata {
