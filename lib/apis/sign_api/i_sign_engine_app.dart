@@ -5,6 +5,8 @@ abstract class ISignEngineApp extends ISignEngineCommon {
   abstract final Event<SessionUpdate> onSessionUpdate;
   abstract final Event<SessionExtend> onSessionExtend;
   abstract final Event<SessionEvent> onSessionEvent;
+  // FORMER AUTH ENGINE PROPERTY
+  abstract final Event<AuthResponse> onAuthResponse;
 
   Future<ConnectResponse> connect({
     Map<String, RequiredNamespace>? requiredNamespaces,
@@ -43,5 +45,13 @@ abstract class ISignEngineApp extends ISignEngineCommon {
   });
   Future<void> ping({
     required String topic,
+  });
+
+  // FORMER AUTH ENGINE PROPERTY
+  // to be transformed into authenticate({});
+  Future<AuthRequestResponse> requestAuth({
+    required AuthRequestParams params,
+    String? pairingTopic,
+    List<List<String>>? methods,
   });
 }

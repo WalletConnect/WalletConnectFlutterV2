@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:developer';
 import 'dart:typed_data';
 
 import 'package:eth_sig_util/eth_sig_util.dart';
@@ -148,8 +150,8 @@ class Web3WalletService extends IWeb3WalletService {
   }
 
   void _onSessionProposal(SessionProposalEvent? args) async {
-    debugPrint('[$runtimeType] [WALLET] _onSessionProposal $args');
     if (args != null) {
+      log('[$runtimeType] [WALLET] _onSessionProposal ${jsonEncode(args.params)}');
       final approved = await _bottomSheetHandler.queueBottomSheet(
         widget: WCRequestWidget(
           child: WCConnectionRequestWidget(
@@ -228,8 +230,8 @@ class Web3WalletService extends IWeb3WalletService {
   }
 
   void _onSessionConnect(SessionConnect? args) {
-    debugPrint('[$runtimeType] [WALLET] _onSessionConnect $args');
     if (args != null) {
+      log('[$runtimeType] [WALLET] _onSessionConnect ${jsonEncode(args.session)}');
       final scheme = args.session.peer.metadata.redirect?.native ?? '';
       DeepLinkHandler.goTo(scheme);
     }

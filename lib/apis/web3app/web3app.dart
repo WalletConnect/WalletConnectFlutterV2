@@ -1,4 +1,3 @@
-import 'package:walletconnect_flutter_v2/apis/auth_api/auth_engine.dart';
 import 'package:walletconnect_flutter_v2/apis/core/relay_client/websocket/http_client.dart';
 import 'package:walletconnect_flutter_v2/apis/core/store/generic_store.dart';
 import 'package:walletconnect_flutter_v2/apis/core/store/i_generic_store.dart';
@@ -85,11 +84,6 @@ class Web3App implements IWeb3App {
           return SessionRequest.fromJson(value);
         },
       ),
-    );
-
-    authEngine = AuthEngine(
-      core: core,
-      metadata: metadata,
       authKeys: GenericStore(
         storage: core.storage,
         context: StoreVersions.CONTEXT_AUTH_KEYS,
@@ -133,7 +127,6 @@ class Web3App implements IWeb3App {
 
     await core.start();
     await signEngine.init();
-    await authEngine.init();
 
     _initialized = true;
   }
@@ -335,18 +328,15 @@ class Web3App implements IWeb3App {
 
   ///---------- AUTH ENGINE ----------///
   @override
-  Event<AuthResponse> get onAuthResponse => authEngine.onAuthResponse;
+  Event<AuthResponse> get onAuthResponse => signEngine.onAuthResponse;
 
   @override
-  IGenericStore<AuthPublicKey> get authKeys => authEngine.authKeys;
+  IGenericStore<AuthPublicKey> get authKeys => signEngine.authKeys;
   @override
-  IGenericStore<String> get pairingTopics => authEngine.pairingTopics;
+  IGenericStore<String> get pairingTopics => signEngine.pairingTopics;
   @override
   IGenericStore<StoredCacao> get completeRequests =>
-      authEngine.completeRequests;
-
-  @override
-  late IAuthEngine authEngine;
+      signEngine.completeRequests;
 
   @override
   Future<AuthRequestResponse> requestAuth({
@@ -355,7 +345,7 @@ class Web3App implements IWeb3App {
     List<List<String>>? methods = DEFAULT_METHODS,
   }) async {
     try {
-      return authEngine.requestAuth(
+      return signEngine.requestAuth(
         params: params,
         pairingTopic: pairingTopic,
         methods: methods,
@@ -370,7 +360,7 @@ class Web3App implements IWeb3App {
     required String pairingTopic,
   }) {
     try {
-      return authEngine.getCompletedRequestsForPairing(
+      return signEngine.getCompletedRequestsForPairing(
         pairingTopic: pairingTopic,
       );
     } catch (e) {
@@ -384,7 +374,7 @@ class Web3App implements IWeb3App {
     required CacaoRequestPayload cacaoPayload,
   }) {
     try {
-      return authEngine.formatAuthMessage(
+      return signEngine.formatAuthMessage(
         iss: iss,
         cacaoPayload: cacaoPayload,
       );
