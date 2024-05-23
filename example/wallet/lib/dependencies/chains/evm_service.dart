@@ -29,7 +29,7 @@ class EVMService {
         'eth_signTransaction': ethSignTransaction,
         'eth_signTypedData': ethSignTypedData,
         'eth_signTypedData_v4': ethSignTypedDataV4,
-        // 'wallet_switchEthereumChain': switchChain,
+        'wallet_switchEthereumChain': switchChain,
         // 'wallet_addEthereumChain': addChain,
       };
 
@@ -339,21 +339,42 @@ class EVMService {
     CommonMethods.goBackToDapp(topic, response.result ?? response.error);
   }
 
-  // Future<void> switchChain(String topic, dynamic parameters) async {
-  //   debugPrint('[WALLET] switchChain request: $topic $parameters');
-  //   final params = (parameters as List).first as Map<String, dynamic>;
-  //   final hexChainId = params['chainId'].toString().replaceFirst('0x', '');
-  //   final chainId = int.parse(hexChainId, radix: 16);
-  //   await _web3Wallet.emitSessionEvent(
-  //     topic: topic,
-  //     chainId: 'eip155:$chainId',
-  //     event: SessionEventParams(
-  //       name: 'chainChanged',
-  //       data: chainId,
-  //     ),
-  //   );
-  //   CommonMethods.goBackToDapp(topic, true);
-  // }
+  Future<void> switchChain(String topic, dynamic parameters) async {
+    debugPrint('[WALLET] switchChain request: $topic $parameters');
+    final pRequest = _web3Wallet.pendingRequests.getAll().last;
+    var response = JsonRpcResponse(id: pRequest.id, jsonrpc: '2.0');
+    try {
+      final params = (parameters as List).first as Map<String, dynamic>;
+      final hexChainId = params['chainId'].toString().replaceFirst('0x', '');
+      final chainId = int.parse(hexChainId, radix: 16);
+      await _web3Wallet.emitSessionEvent(
+        topic: topic,
+        chainId: 'eip155:$chainId',
+        event: SessionEventParams(
+          name: 'chainChanged',
+          data: chainId,
+        ),
+      );
+      response = response.copyWith(result: true);
+    } on WalletConnectError catch (e) {
+      debugPrint('[WALLET] switchChain error $e');
+      response = response.copyWith(
+        error: JsonRpcError(code: e.code, message: e.message),
+      );
+    } catch (e) {
+      debugPrint('[WALLET] switchChain error $e');
+      response = response.copyWith(
+        error: JsonRpcError(code: 0, message: e.toString()),
+      );
+    }
+
+    await _web3Wallet.respondSessionRequest(
+      topic: topic,
+      response: response,
+    );
+
+    CommonMethods.goBackToDapp(topic, true);
+  }
 
   // Future<void> addChain(String topic, dynamic parameters) async {
   //   debugPrint('[WALLET] addChain request: $topic $parameters');
