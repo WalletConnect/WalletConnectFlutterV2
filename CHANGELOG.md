@@ -1,7 +1,3 @@
-## 2.2.4
-
-- Minor changes to reflect WalletConnect specs for session_settle
-
 ## 2.2.3
 
 - Full web support
