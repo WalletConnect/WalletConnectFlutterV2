@@ -20,7 +20,7 @@ Namespace _$NamespaceFromJson(Map<String, dynamic> json) {
 
 /// @nodoc
 mixin _$Namespace {
-  dynamic get chains => throw _privateConstructorUsedError;
+  List<String>? get chains => throw _privateConstructorUsedError;
   List<String> get accounts => throw _privateConstructorUsedError;
   List<String> get methods => throw _privateConstructorUsedError;
   List<String> get events => throw _privateConstructorUsedError;
@@ -37,7 +37,7 @@ abstract class $NamespaceCopyWith<$Res> {
       _$NamespaceCopyWithImpl<$Res, Namespace>;
   @useResult
   $Res call(
-      {dynamic chains,
+      {List<String>? chains,
       List<String> accounts,
       List<String> methods,
       List<String> events});
@@ -65,7 +65,7 @@ class _$NamespaceCopyWithImpl<$Res, $Val extends Namespace>
       chains: freezed == chains
           ? _value.chains
           : chains // ignore: cast_nullable_to_non_nullable
-              as dynamic,
+              as List<String>?,
       accounts: null == accounts
           ? _value.accounts
           : accounts // ignore: cast_nullable_to_non_nullable
@@ -91,7 +91,7 @@ abstract class _$$NamespaceImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {dynamic chains,
+      {List<String>? chains,
       List<String> accounts,
       List<String> methods,
       List<String> events});
@@ -114,7 +114,10 @@ class __$$NamespaceImplCopyWithImpl<$Res>
     Object? events = null,
   }) {
     return _then(_$NamespaceImpl(
-      chains: freezed == chains ? _value.chains! : chains,
+      chains: freezed == chains
+          ? _value._chains
+          : chains // ignore: cast_nullable_to_non_nullable
+              as List<String>?,
       accounts: null == accounts
           ? _value._accounts
           : accounts // ignore: cast_nullable_to_non_nullable
@@ -136,20 +139,28 @@ class __$$NamespaceImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$NamespaceImpl implements _Namespace {
   const _$NamespaceImpl(
-      {this.chains = const <String>[],
+      {final List<String>? chains,
       required final List<String> accounts,
       required final List<String> methods,
       required final List<String> events})
-      : _accounts = accounts,
+      : _chains = chains,
+        _accounts = accounts,
         _methods = methods,
         _events = events;
 
   factory _$NamespaceImpl.fromJson(Map<String, dynamic> json) =>
       _$$NamespaceImplFromJson(json);
 
+  final List<String>? _chains;
   @override
-  @JsonKey()
-  final dynamic chains;
+  List<String>? get chains {
+    final value = _chains;
+    if (value == null) return null;
+    if (_chains is EqualUnmodifiableListView) return _chains;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(value);
+  }
+
   final List<String> _accounts;
   @override
   List<String> get accounts {
@@ -184,7 +195,7 @@ class _$NamespaceImpl implements _Namespace {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$NamespaceImpl &&
-            const DeepCollectionEquality().equals(other.chains, chains) &&
+            const DeepCollectionEquality().equals(other._chains, _chains) &&
             const DeepCollectionEquality().equals(other._accounts, _accounts) &&
             const DeepCollectionEquality().equals(other._methods, _methods) &&
             const DeepCollectionEquality().equals(other._events, _events));
@@ -194,7 +205,7 @@ class _$NamespaceImpl implements _Namespace {
   @override
   int get hashCode => Object.hash(
       runtimeType,
-      const DeepCollectionEquality().hash(chains),
+      const DeepCollectionEquality().hash(_chains),
       const DeepCollectionEquality().hash(_accounts),
       const DeepCollectionEquality().hash(_methods),
       const DeepCollectionEquality().hash(_events));
@@ -215,7 +226,7 @@ class _$NamespaceImpl implements _Namespace {
 
 abstract class _Namespace implements Namespace {
   const factory _Namespace(
-      {final dynamic chains,
+      {final List<String>? chains,
       required final List<String> accounts,
       required final List<String> methods,
       required final List<String> events}) = _$NamespaceImpl;
@@ -224,7 +235,7 @@ abstract class _Namespace implements Namespace {
       _$NamespaceImpl.fromJson;
 
   @override
-  dynamic get chains;
+  List<String>? get chains;
   @override
   List<String> get accounts;
   @override

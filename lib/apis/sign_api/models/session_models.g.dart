@@ -8,7 +8,8 @@ part of 'session_models.dart';
 
 _$NamespaceImpl _$$NamespaceImplFromJson(Map<String, dynamic> json) =>
     _$NamespaceImpl(
-      chains: json['chains'] ?? const <String>[],
+      chains:
+          (json['chains'] as List<dynamic>?)?.map((e) => e as String).toList(),
       accounts:
           (json['accounts'] as List<dynamic>).map((e) => e as String).toList(),
       methods:
