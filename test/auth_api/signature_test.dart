@@ -2,8 +2,7 @@ import 'dart:convert';
 
 import 'package:convert/convert.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:walletconnect_flutter_v2/apis/sign_api/models/auth/auth_client_models.dart';
-import 'package:walletconnect_flutter_v2/apis/sign_api/utils/auth/auth_signature.dart';
+import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 
 import '../shared/shared_test_values.dart';
 import 'utils/signature_constants.dart';

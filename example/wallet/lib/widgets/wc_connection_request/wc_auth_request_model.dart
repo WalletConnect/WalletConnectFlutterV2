@@ -1,4 +1,4 @@
-import 'package:walletconnect_flutter_v2/apis/sign_api/models/auth/auth_client_events.dart';
+import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 
 class WCAuthRequestModel {
   final String iss;
