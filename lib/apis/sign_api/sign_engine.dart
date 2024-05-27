@@ -18,7 +18,7 @@ class SignEngine implements ISignEngine {
     [
       MethodConstants.WC_SESSION_PROPOSE,
       MethodConstants.WC_SESSION_REQUEST,
-      MethodConstants.WC_AUTH_REQUEST,
+      // MethodConstants.WC_AUTH_REQUEST,
     ],
   ];
 
