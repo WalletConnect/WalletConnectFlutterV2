@@ -302,8 +302,6 @@ class SignEngine implements ISignEngine {
       acknowledged: false,
       controller: selfPubKey,
       namespaces: namespaces,
-      requiredNamespaces: proposal.requiredNamespaces,
-      optionalNamespaces: proposal.optionalNamespaces,
       self: ConnectionMetadata(
         publicKey: selfPubKey,
         metadata: metadata,
@@ -326,8 +324,6 @@ class SignEngine implements ISignEngine {
           WcSessionSettleRequest(
             relay: relay,
             namespaces: namespaces,
-            requiredNamespaces: proposal.requiredNamespaces,
-            optionalNamespaces: proposal.optionalNamespaces,
             sessionProperties: sessionProperties,
             expiry: expiry,
             controller: ConnectionMetadata(
@@ -1061,8 +1057,6 @@ class SignEngine implements ISignEngine {
         acknowledged: true,
         controller: request.controller.publicKey,
         namespaces: request.namespaces,
-        requiredNamespaces: request.requiredNamespaces,
-        optionalNamespaces: request.optionalNamespaces,
         sessionProperties: request.sessionProperties,
         self: ConnectionMetadata(
           publicKey: sProposalCompleter.selfPublicKey,

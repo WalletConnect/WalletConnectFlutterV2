@@ -1,7 +1,8 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:developer';
 import 'dart:typed_data';
 
-import 'package:eth_sig_util/eth_sig_util.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
@@ -139,8 +140,8 @@ class Web3WalletService extends IWeb3WalletService {
   }
 
   void _onSessionProposal(SessionProposalEvent? args) async {
-    debugPrint('[$runtimeType] [WALLET] _onSessionProposal $args');
     if (args != null) {
+      log('[$runtimeType] [WALLET] _onSessionProposal ${jsonEncode(args.params)}');
       final approved = await _bottomSheetHandler.queueBottomSheet(
         widget: WCRequestWidget(
           child: WCConnectionRequestWidget(
@@ -219,8 +220,8 @@ class Web3WalletService extends IWeb3WalletService {
   }
 
   void _onSessionConnect(SessionConnect? args) {
-    debugPrint('[$runtimeType] [WALLET] _onSessionConnect $args');
     if (args != null) {
+      log('[$runtimeType] [WALLET] _onSessionConnect ${jsonEncode(args.session)}');
       final scheme = args.session.peer.metadata.redirect?.native ?? '';
       DeepLinkHandler.goTo(scheme);
     }
@@ -265,17 +266,19 @@ class Web3WalletService extends IWeb3WalletService {
           ),
         );
 
-        final String sig = EthSigUtil.signPersonalMessage(
-          message: Uint8List.fromList(message.codeUnits),
-          privateKey: chainKeys.first.privateKey,
+        final pk = '0x${chainKeys.first.privateKey}';
+        final credentials = EthPrivateKey.fromHex(pk);
+        final signature = credentials.signPersonalMessageToUint8List(
+          Uint8List.fromList(message.codeUnits),
         );
+        final hexSignature = bytesToHex(signature, include0x: true);
 
         await _web3Wallet!.respondAuthRequest(
           id: args.id,
           iss: iss,
           signature: CacaoSignature(
             t: CacaoSignature.EIP191,
-            s: sig,
+            s: hexSignature,
           ),
         );
         final scheme = args.requester.metadata.redirect?.native ?? '';

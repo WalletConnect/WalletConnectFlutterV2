@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 // ignore: depend_on_referenced_packages
 import 'package:http/http.dart' as http;
-import 'package:convert/convert.dart';
 import 'package:eth_sig_util/eth_sig_util.dart';
 import 'package:get_it/get_it.dart';
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
@@ -29,7 +28,7 @@ class EVMService {
         'eth_signTransaction': ethSignTransaction,
         'eth_signTypedData': ethSignTypedData,
         'eth_signTypedData_v4': ethSignTypedDataV4,
-        // 'wallet_switchEthereumChain': switchChain,
+        'wallet_switchEthereumChain': switchChain,
         // 'wallet_addEthereumChain': addChain,
       };
 
@@ -84,12 +83,16 @@ class EVMService {
           chainSupported.chainId,
         );
 
-        final signature = EthSigUtil.signPersonalMessage(
-          privateKey: keys[0].privateKey,
-          message: utf8.encode(message),
+        final pk = '0x${keys[0].privateKey}';
+        final credentials = EthPrivateKey.fromHex(pk);
+        final signature = credentials.signPersonalMessageToUint8List(
+          utf8.encode(message),
         );
+        final signedTx = bytesToHex(signature, include0x: true);
 
-        response = response.copyWith(result: signature);
+        isValidSignature(signedTx, message, credentials.address.hex);
+
+        response = response.copyWith(result: signedTx);
       } catch (e) {
         debugPrint('[WALLET] personalSign error $e');
         response = response.copyWith(
@@ -127,12 +130,16 @@ class EVMService {
           chainSupported.chainId,
         );
 
-        final signature = EthSigUtil.signPersonalMessage(
-          privateKey: keys[0].privateKey,
-          message: utf8.encode(message),
+        final pk = '0x${keys[0].privateKey}';
+        final credentials = EthPrivateKey.fromHex(pk);
+        final signature = credentials.signPersonalMessageToUint8List(
+          utf8.encode(message),
         );
+        final signedTx = bytesToHex(signature, include0x: true);
 
-        response = response.copyWith(result: signature);
+        isValidSignature(signedTx, message, credentials.address.hex);
+
+        response = response.copyWith(result: signedTx);
       } catch (e) {
         debugPrint('[WALLET] ethSign error $e');
         response = response.copyWith(
@@ -173,6 +180,7 @@ class EVMService {
           jsonData: data,
           version: TypedDataVersion.V4,
         );
+
         response = response.copyWith(result: signature);
       } catch (e) {
         debugPrint('[WALLET] ethSignTypedData error $e');
@@ -214,6 +222,7 @@ class EVMService {
           jsonData: data,
           version: TypedDataVersion.V4,
         );
+
         response = response.copyWith(result: signature);
       } catch (e) {
         debugPrint('[WALLET] ethSignTypedDataV4 error $e');
@@ -245,26 +254,27 @@ class EVMService {
       jsonrpc: '2.0',
     );
 
-    final result = await _approveTransaction(data);
-    if (result is Transaction) {
+    final transaction = await _approveTransaction(data);
+    if (transaction is Transaction) {
       try {
         // Load the private key
         final keys = GetIt.I<IKeyService>().getKeysForChain(
           chainSupported.chainId,
         );
-        final credentials = EthPrivateKey.fromHex('0x${keys[0].privateKey}');
+
+        final pk = '0x${keys[0].privateKey}';
+        final credentials = EthPrivateKey.fromHex(pk);
         final chainId = chainSupported.chainId.split(':').last;
-        debugPrint('[WALLET] ethSignTransaction chainId: $chainId');
 
         final signature = await ethClient.signTransaction(
           credentials,
-          result,
+          transaction,
           chainId: int.parse(chainId),
         );
         // Sign the transaction
-        final signedTx = hex.encode(signature);
+        final signedTx = bytesToHex(signature, include0x: true);
 
-        response = response.copyWith(result: '0x$signedTx');
+        response = response.copyWith(result: signedTx);
       } on RPCError catch (e) {
         debugPrint('[WALLET] ethSignTransaction error $e');
         response = response.copyWith(
@@ -277,7 +287,7 @@ class EVMService {
         );
       }
     } else {
-      response = response.copyWith(error: result as JsonRpcError);
+      response = response.copyWith(error: transaction as JsonRpcError);
     }
 
     await _web3Wallet.respondSessionRequest(
@@ -298,24 +308,25 @@ class EVMService {
       jsonrpc: '2.0',
     );
 
-    final result = await _approveTransaction(data);
-    if (result is Transaction) {
+    final transaction = await _approveTransaction(data);
+    if (transaction is Transaction) {
       try {
         // Load the private key
         final keys = GetIt.I<IKeyService>().getKeysForChain(
           chainSupported.chainId,
         );
-        final credentials = EthPrivateKey.fromHex('0x${keys[0].privateKey}');
+
+        final pk = '0x${keys[0].privateKey}';
+        final credentials = EthPrivateKey.fromHex(pk);
         final chainId = chainSupported.chainId.split(':').last;
-        debugPrint('[WALLET] ethSendTransaction chainId: $chainId');
 
         final signedTx = await ethClient.sendTransaction(
           credentials,
-          result,
+          transaction,
           chainId: int.parse(chainId),
         );
 
-        response = response.copyWith(result: '0x$signedTx');
+        response = response.copyWith(result: signedTx);
       } on RPCError catch (e) {
         debugPrint('[WALLET] ethSendTransaction error $e');
         response = response.copyWith(
@@ -328,7 +339,7 @@ class EVMService {
         );
       }
     } else {
-      response = response.copyWith(error: result as JsonRpcError);
+      response = response.copyWith(error: transaction as JsonRpcError);
     }
 
     await _web3Wallet.respondSessionRequest(
@@ -339,21 +350,42 @@ class EVMService {
     CommonMethods.goBackToDapp(topic, response.result ?? response.error);
   }
 
-  // Future<void> switchChain(String topic, dynamic parameters) async {
-  //   debugPrint('[WALLET] switchChain request: $topic $parameters');
-  //   final params = (parameters as List).first as Map<String, dynamic>;
-  //   final hexChainId = params['chainId'].toString().replaceFirst('0x', '');
-  //   final chainId = int.parse(hexChainId, radix: 16);
-  //   await _web3Wallet.emitSessionEvent(
-  //     topic: topic,
-  //     chainId: 'eip155:$chainId',
-  //     event: SessionEventParams(
-  //       name: 'chainChanged',
-  //       data: chainId,
-  //     ),
-  //   );
-  //   CommonMethods.goBackToDapp(topic, true);
-  // }
+  Future<void> switchChain(String topic, dynamic parameters) async {
+    debugPrint('[WALLET] switchChain request: $topic $parameters');
+    final pRequest = _web3Wallet.pendingRequests.getAll().last;
+    var response = JsonRpcResponse(id: pRequest.id, jsonrpc: '2.0');
+    try {
+      final params = (parameters as List).first as Map<String, dynamic>;
+      final hexChainId = params['chainId'].toString().replaceFirst('0x', '');
+      final chainId = int.parse(hexChainId, radix: 16);
+      await _web3Wallet.emitSessionEvent(
+        topic: topic,
+        chainId: 'eip155:$chainId',
+        event: SessionEventParams(
+          name: 'chainChanged',
+          data: chainId,
+        ),
+      );
+      response = response.copyWith(result: true);
+    } on WalletConnectError catch (e) {
+      debugPrint('[WALLET] switchChain error $e');
+      response = response.copyWith(
+        error: JsonRpcError(code: e.code, message: e.message),
+      );
+    } catch (e) {
+      debugPrint('[WALLET] switchChain error $e');
+      response = response.copyWith(
+        error: JsonRpcError(code: 0, message: e.toString()),
+      );
+    }
+
+    await _web3Wallet.respondSessionRequest(
+      topic: topic,
+      response: response,
+    );
+
+    CommonMethods.goBackToDapp(topic, true);
+  }
 
   // Future<void> addChain(String topic, dynamic parameters) async {
   //   debugPrint('[WALLET] addChain request: $topic $parameters');
@@ -448,6 +480,34 @@ class EVMService {
       if (handler != null) {
         await handler(args.topic, args.params);
       }
+    }
+  }
+
+  bool isValidSignature(
+    String hexSignature,
+    String message,
+    String hexAddress,
+  ) {
+    try {
+      debugPrint('isValidSignature(): $hexSignature, $message, $hexAddress');
+      final recoveredAddress = EthSigUtil.recoverPersonalSignature(
+        signature: hexSignature,
+        message: utf8.encode(message),
+      );
+      debugPrint('recoveredAddress: $recoveredAddress');
+
+      final recoveredAddress2 = EthSigUtil.recoverSignature(
+        signature: hexSignature,
+        message: utf8.encode(message),
+      );
+      debugPrint('recoveredAddress2: $recoveredAddress2');
+
+      final isValid = recoveredAddress == hexAddress;
+      debugPrint('isValidSignature: $isValid');
+      return isValid;
+    } catch (e) {
+      debugPrint('isValidSignature() error, $e');
+      return false;
     }
   }
 }
