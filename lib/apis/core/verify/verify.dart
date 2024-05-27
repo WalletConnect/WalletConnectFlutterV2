@@ -30,7 +30,8 @@ class Verify implements IVerify {
     AttestationResponse? response;
     try {
       response = await _fetchAttestation(attestationId, _verifyUrl);
-    } on AttestationNotFound catch (_) {
+    } on AttestationNotFound catch (e) {
+      _core.logger.i(e.message);
       response = await _fetchAttestation(
         attestationId,
         WalletConnectConstants.VERIFY_FALLBACK_SERVER,
@@ -74,7 +75,7 @@ class Verify implements IVerify {
     String url = verifyUrl ?? WalletConnectConstants.VERIFY_SERVER;
 
     if (!WalletConnectConstants.TRUSTED_VERIFY_URLS.contains(url)) {
-      _core.logger.t(
+      _core.logger.i(
         '[$runtimeType] verifyUrl $url not included in trusted list, '
         'assigning default: ${WalletConnectConstants.VERIFY_SERVER}',
       );

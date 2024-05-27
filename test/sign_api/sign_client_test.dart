@@ -1,9 +1,9 @@
 @Timeout(Duration(seconds: 45))
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:logger/logger.dart';
+
 import 'package:package_info_plus/package_info_plus.dart';
-import 'package:walletconnect_flutter_v2/apis/core/pairing/utils/pairing_models.dart';
+import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 
 import '../shared/shared_test_utils.dart';
 import '../shared/shared_test_values.dart';
