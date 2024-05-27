@@ -72,9 +72,9 @@ class SignEngine implements ISignEngine {
   @override
   IGenericStore<StoredCacao> completeRequests;
   @override
-  final Event<AuthRequest> onAuthRequest = Event();
+  final Event<AuthRequest> onAuthRequest = Event<AuthRequest>();
   @override
-  final Event<AuthResponse> onAuthResponse = Event();
+  final Event<AuthResponse> onAuthResponse = Event<AuthResponse>();
   @override
   late IGenericStore<String> pairingTopics;
 

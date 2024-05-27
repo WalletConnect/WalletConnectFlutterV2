@@ -23,9 +23,9 @@ export 'apis/utils/log_level.dart';
 export 'apis/utils/extensions.dart';
 
 // Sign API
-// export 'apis/sign_api/i_sign_client.dart';
+export 'apis/sign_api/i_sign_client.dart';
+export 'apis/sign_api/sign_client.dart';
 export 'apis/sign_api/i_sign_engine.dart';
-// export 'apis/sign_api/sign_client.dart';
 export 'apis/sign_api/sessions.dart';
 export 'apis/sign_api/models/proposal_models.dart';
 export 'apis/sign_api/models/session_models.dart';
