@@ -41,6 +41,9 @@ abstract class ISignClient {
   // FORMER AUTH ENGINE PROPERTY
   abstract final Event<AuthResponse> onAuthResponse;
 
+  // NEW 1-CLICK AUTH METHOD
+  abstract final Event<OCAResponse> onOCAResponse;
+
   Future<void> init();
   Future<ConnectResponse> connect({
     Map<String, RequiredNamespace>? requiredNamespaces,
@@ -169,10 +172,21 @@ abstract class ISignClient {
   Map<int, PendingAuthRequest> getPendingAuthRequests();
 
   // FORMER AUTH ENGINE PROPERTY
-  // to be transformed into authenticate({});
   Future<AuthRequestResponse> requestAuth({
     required AuthRequestParams params,
     String? pairingTopic,
     List<List<String>>? methods,
+  });
+
+  // NEW ONE-CLICK AUTH METHOD FOR DAPPS
+  Future<OCARequestResponse> authenticate({
+    required OCARequestParams params,
+    String? pairingTopic,
+    List<List<String>>? methods,
+  });
+
+  Future<bool> validateSignedCacao({
+    required Cacao cacao,
+    required String projectId,
   });
 }

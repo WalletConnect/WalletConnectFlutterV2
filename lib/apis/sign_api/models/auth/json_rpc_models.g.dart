@@ -33,3 +33,38 @@ Map<String, dynamic> _$$WcAuthRequestResultImplToJson(
     <String, dynamic>{
       'cacao': instance.cacao.toJson(),
     };
+
+_$WcOCARequestRequestImpl _$$WcOCARequestRequestImplFromJson(
+        Map<String, dynamic> json) =>
+    _$WcOCARequestRequestImpl(
+      authPayload: OCAPayloadParams.fromJson(
+          json['authPayload'] as Map<String, dynamic>),
+      requester: ConnectionMetadata.fromJson(
+          json['requester'] as Map<String, dynamic>),
+      expiryTimestamp: json['expiryTimestamp'] as int,
+    );
+
+Map<String, dynamic> _$$WcOCARequestRequestImplToJson(
+        _$WcOCARequestRequestImpl instance) =>
+    <String, dynamic>{
+      'authPayload': instance.authPayload.toJson(),
+      'requester': instance.requester.toJson(),
+      'expiryTimestamp': instance.expiryTimestamp,
+    };
+
+_$WcOCARequestResultImpl _$$WcOCARequestResultImplFromJson(
+        Map<String, dynamic> json) =>
+    _$WcOCARequestResultImpl(
+      cacaos: (json['cacaos'] as List<dynamic>)
+          .map((e) => Cacao.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      responder: ConnectionMetadata.fromJson(
+          json['responder'] as Map<String, dynamic>),
+    );
+
+Map<String, dynamic> _$$WcOCARequestResultImplToJson(
+        _$WcOCARequestResultImpl instance) =>
+    <String, dynamic>{
+      'cacaos': instance.cacaos.map((e) => e.toJson()).toList(),
+      'responder': instance.responder.toJson(),
+    };

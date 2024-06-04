@@ -18,7 +18,7 @@ class AuthItem extends StatelessWidget {
       onTap: onTap,
       child: Container(
         padding: const EdgeInsets.all(12.0),
-        color: Colors.green.withOpacity(0.2),
+        color: Colors.blue.withOpacity(0.2),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [

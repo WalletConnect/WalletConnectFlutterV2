@@ -504,14 +504,36 @@ class SignClient implements ISignClient {
   @override
   Event<AuthResponse> get onAuthResponse => engine.onAuthResponse;
 
+  // NEW 1-CLICK AUTH METHOD
+  @override
+  Event<OCAResponse> get onOCAResponse => engine.onOCAResponse;
+
   @override
   Future<AuthRequestResponse> requestAuth({
     required AuthRequestParams params,
     String? pairingTopic,
-    List<List<String>>? methods,
+    List<List<String>>? methods = SignEngine.DEFAULT_METHODS_AUTH,
   }) {
     try {
       return engine.requestAuth(
+        params: params,
+        pairingTopic: pairingTopic,
+        methods: methods,
+      );
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // NEW ONE-CLICK AUTH METHOD FOR DAPPS
+  @override
+  Future<OCARequestResponse> authenticate({
+    required OCARequestParams params,
+    String? pairingTopic,
+    List<List<String>>? methods,
+  }) {
+    try {
+      return engine.authenticate(
         params: params,
         pairingTopic: pairingTopic,
         methods: methods,
@@ -545,6 +567,21 @@ class SignClient implements ISignClient {
 
   @override
   IGenericStore<StoredCacao> get completeRequests => engine.completeRequests;
+
+  @override
+  Future<bool> validateSignedCacao({
+    required Cacao cacao,
+    required String projectId,
+  }) {
+    try {
+      return engine.validateSignedCacao(
+        cacao: cacao,
+        projectId: projectId,
+      );
+    } catch (e) {
+      rethrow;
+    }
+  }
 
   @override
   String formatAuthMessage({

@@ -42,6 +42,7 @@
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
 		<string>wcflutterwallet</string>
+		<string>walletapp</string>
 	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>

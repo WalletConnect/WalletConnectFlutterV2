@@ -8,6 +8,9 @@ abstract class ISignEngineApp extends ISignEngineCommon {
   // FORMER AUTH ENGINE PROPERTY
   abstract final Event<AuthResponse> onAuthResponse;
 
+  // NEW 1-CLICK AUTH METHOD
+  abstract final Event<OCAResponse> onOCAResponse;
+
   Future<ConnectResponse> connect({
     Map<String, RequiredNamespace>? requiredNamespaces,
     Map<String, RequiredNamespace>? optionalNamespaces,
@@ -48,9 +51,15 @@ abstract class ISignEngineApp extends ISignEngineCommon {
   });
 
   // FORMER AUTH ENGINE PROPERTY
-  // to be transformed into authenticate({});
   Future<AuthRequestResponse> requestAuth({
     required AuthRequestParams params,
+    String? pairingTopic,
+    List<List<String>>? methods,
+  });
+
+  // NEW ONE-CLICK AUTH METHOD FOR DAPPS
+  Future<OCARequestResponse> authenticate({
+    required OCARequestParams params,
     String? pairingTopic,
     List<List<String>>? methods,
   });

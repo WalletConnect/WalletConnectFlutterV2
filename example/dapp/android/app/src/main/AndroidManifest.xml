@@ -4,7 +4,7 @@
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
         <activity
-            android:name=".MainActivity"
+            android:name="com.example.dapp.MainActivity"
             android:exported="true"
             android:launchMode="singleTask"
             android:taskAffinity="com.walletconnect.flutterdapp.activity"

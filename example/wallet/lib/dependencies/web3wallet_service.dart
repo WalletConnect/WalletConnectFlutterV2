@@ -96,7 +96,7 @@ class Web3WalletService extends IWeb3WalletService {
   }
 
   void _logListener(LogEvent event) {
-    debugPrint('${event.time} LogEvent ${event.level.name}: ${event.message}');
+    debugPrint('[WALLET] ${event.level.name}: ${event.message}');
     if (event.level == Level.error) {
       // TODO send to mixpanel
     }

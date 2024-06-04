@@ -1,18 +1,19 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'auth_client_models.dart';
+part of 'one_click_auth_models.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$AuthPayloadParamsImpl _$$AuthPayloadParamsImplFromJson(
+_$OCAPayloadParamsImpl _$$OCAPayloadParamsImplFromJson(
         Map<String, dynamic> json) =>
-    _$AuthPayloadParamsImpl(
-      chainId: json['chainId'] as String,
-      aud: json['aud'] as String,
+    _$OCAPayloadParamsImpl(
+      chains:
+          (json['chains'] as List<dynamic>).map((e) => e as String).toList(),
       domain: json['domain'] as String,
       nonce: json['nonce'] as String,
+      aud: json['aud'] as String,
       type: json['type'] as String,
       version: json['version'] as String,
       iat: json['iat'] as String,
@@ -25,13 +26,13 @@ _$AuthPayloadParamsImpl _$$AuthPayloadParamsImplFromJson(
           .toList(),
     );
 
-Map<String, dynamic> _$$AuthPayloadParamsImplToJson(
-    _$AuthPayloadParamsImpl instance) {
+Map<String, dynamic> _$$OCAPayloadParamsImplToJson(
+    _$OCAPayloadParamsImpl instance) {
   final val = <String, dynamic>{
-    'chainId': instance.chainId,
-    'aud': instance.aud,
+    'chains': instance.chains,
     'domain': instance.domain,
     'nonce': instance.nonce,
+    'aud': instance.aud,
     'type': instance.type,
     'version': instance.version,
     'iat': instance.iat,
@@ -50,23 +51,3 @@ Map<String, dynamic> _$$AuthPayloadParamsImplToJson(
   writeNotNull('resources', instance.resources);
   return val;
 }
-
-_$PendingAuthRequestImpl _$$PendingAuthRequestImplFromJson(
-        Map<String, dynamic> json) =>
-    _$PendingAuthRequestImpl(
-      id: json['id'] as int,
-      pairingTopic: json['pairingTopic'] as String,
-      metadata:
-          ConnectionMetadata.fromJson(json['metadata'] as Map<String, dynamic>),
-      cacaoPayload: CacaoRequestPayload.fromJson(
-          json['cacaoPayload'] as Map<String, dynamic>),
-    );
-
-Map<String, dynamic> _$$PendingAuthRequestImplToJson(
-        _$PendingAuthRequestImpl instance) =>
-    <String, dynamic>{
-      'id': instance.id,
-      'pairingTopic': instance.pairingTopic,
-      'metadata': instance.metadata.toJson(),
-      'cacaoPayload': instance.cacaoPayload.toJson(),
-    };

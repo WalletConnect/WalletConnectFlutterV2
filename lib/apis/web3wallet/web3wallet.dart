@@ -433,6 +433,21 @@ class Web3Wallet implements IWeb3Wallet {
     }
   }
 
+  @override
+  Future<bool> validateSignedCacao({
+    required Cacao cacao,
+    required String projectId,
+  }) {
+    try {
+      return signEngine.validateSignedCacao(
+        cacao: cacao,
+        projectId: projectId,
+      );
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   /// format payload to message string before signing
   @override
   String formatAuthMessage({

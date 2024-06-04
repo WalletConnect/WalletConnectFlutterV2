@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 import 'package:walletconnect_flutter_v2_dapp/utils/constants.dart';
 
@@ -12,6 +13,12 @@ class SessionItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final expiryTimestamp = DateTime.fromMillisecondsSinceEpoch(
+      session.expiry * 1000,
+    );
+    final dateFormat = DateFormat.yMd().add_jm();
+    final expiryDate = dateFormat.format(expiryTimestamp);
+    final inDays = expiryTimestamp.difference(DateTime.now()).inDays + 1;
     return Container(
       padding: const EdgeInsets.all(12.0),
       child: Column(
@@ -21,9 +28,7 @@ class SessionItem extends StatelessWidget {
             session.peer.metadata.name,
             style: StyleConstants.paragraph,
           ),
-          Text(
-            session.peer.metadata.url,
-          ),
+          Text('Expiry: $expiryDate ($inDays days)'),
         ],
       ),
     );

@@ -11,6 +11,7 @@ import 'package:walletconnect_flutter_v2/apis/sign_api/models/sign_client_models
 import 'package:walletconnect_flutter_v2/apis/core/store/i_generic_store.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/models/auth/auth_client_events.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/models/auth/auth_client_models.dart';
+import 'package:walletconnect_flutter_v2/apis/sign_api/models/auth/auth_common_models.dart';
 
 abstract class ISignEngineWallet extends ISignEngineCommon {
   abstract final Event<SessionProposalEvent> onSessionProposal;

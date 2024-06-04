@@ -1,5 +1,6 @@
 import 'package:walletconnect_flutter_v2/apis/sign_api/models/proposal_models.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/models/session_models.dart';
+import 'package:walletconnect_flutter_v2/apis/utils/constants.dart';
 
 class NamespaceUtils {
   /// Checks if the string is a chain
@@ -75,18 +76,34 @@ class NamespaceUtils {
 
   /// Gets all unique namespaces from the provided list of accounts
   /// This function assumes that all accounts are valid
-  // static List<String> getNamespacesFromAccounts(List<String> accounts) {
-  //   Set<String> namespaces = {};
-  //   accounts.forEach((account) {
-  //     chains.add(
-  //       getChainFromAccount(
-  //         account,
-  //       ),
-  //     );
-  //   });
+  static Map<String, Namespace> getNamespacesFromAccounts(
+    List<String> accounts,
+  ) {
+    Map<String, Namespace> namespaces = {};
+    for (var account in accounts) {
+      final ns = account.split(':')[0];
+      final cid = account.split(':')[1];
+      if (namespaces[ns] == null) {
+        namespaces[ns] = Namespace(
+          accounts: [],
+          methods: [],
+          events: [],
+        );
+      }
+      namespaces[ns] = namespaces[ns]!.copyWith(
+        accounts: [
+          ...namespaces[ns]!.accounts,
+          account,
+        ],
+        chains: [
+          ...(namespaces[ns]?.chains ?? []),
+          '$ns:$cid',
+        ],
+      );
+    }
 
-  //   return chains.toList();
-  // }
+    return namespaces;
+  }
 
   /// Gets the chains from the namespace.
   /// If the namespace is a chain, then it returns the chain.
@@ -269,6 +286,29 @@ class NamespaceUtils {
       ...namespaces,
       ...optionals,
     };
+  }
+
+  static Map<String, Namespace> buildNamespacesFromAuth({
+    required Set<String> methods,
+    required Set<String> accounts,
+  }) {
+    final parsedAccounts = accounts.map(
+      (account) => account.replaceAll('did:pkh:', ''),
+    );
+
+    final namespaces = getNamespacesFromAccounts(parsedAccounts.toList());
+
+    final entries = namespaces.entries.map((e) {
+      return MapEntry(
+        e.key,
+        Namespace.fromJson(e.value.toJson()).copyWith(
+          methods: methods.toList(),
+          events: EventsConstants.allEvents,
+        ),
+      );
+    });
+
+    return Map<String, Namespace>.fromEntries(entries);
   }
 
   /// Gets the matching items from the available items using the chainId

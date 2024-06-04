@@ -75,4 +75,65 @@ class AuthApiValidators {
 
     return true;
   }
+
+  static bool isValidAuthenticate(OCARequestParams params) {
+    if (params.chains.isEmpty) {
+      throw Errors.getInternalError(
+        Errors.MISSING_OR_INVALID,
+        context: 'authenticate() invalid chains: Must not be emtpy.',
+      );
+    }
+
+    if (!NamespaceUtils.isValidUrl(params.uri)) {
+      throw Errors.getInternalError(
+        Errors.MISSING_OR_INVALID,
+        context:
+            'authenticate() invalid uri: ${params.uri}. Must be a valid url.',
+      );
+    }
+
+    if (!params.uri.contains(params.domain)) {
+      throw Errors.getInternalError(
+        Errors.MISSING_OR_INVALID,
+        context:
+            'authenticate() invalid domain: ${params.domain}. aud must contain domain.',
+      );
+    }
+
+    if (params.nonce.isEmpty) {
+      throw Errors.getInternalError(
+        Errors.MISSING_OR_INVALID,
+        context: 'authenticate() nonce must be nonempty.',
+      );
+    }
+
+    if (params.type != null && params.type!.t != CacaoHeader.EIP4361) {
+      throw Errors.getInternalError(
+        Errors.MISSING_OR_INVALID,
+        context: 'authenticate() type must null or ${CacaoHeader.EIP4361}.',
+      );
+    }
+
+    final uniqueNamespaces = params.chains.map((chain) {
+      return NamespaceUtils.getNamespaceFromChain(chain);
+    }).toSet();
+    if (uniqueNamespaces.length > 1) {
+      throw Errors.getInternalError(
+        Errors.NON_CONFORMING_NAMESPACES,
+        context:
+            'authenticate() Multi-namespace requests are not supported. Please request single namespace only.',
+      );
+    }
+
+    final namespace = NamespaceUtils.getNamespaceFromChain(params.chains.first);
+    if (namespace != 'eip155') {
+      throw Errors.getInternalError(
+        Errors.NON_CONFORMING_NAMESPACES,
+        context:
+            'authenticate() Only eip155 namespace is supported for authenticated sessions. Please use .connect() for non-eip155 chains.',
+      );
+    }
+
+    return true;
+  }
 }

@@ -1,6 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:fl_toast/fl_toast.dart';
 import 'package:flutter/foundation.dart';
@@ -165,6 +166,47 @@ class ConnectPageState extends State<ConnectPage> {
       ),
     );
 
+    children.add(const SizedBox(height: 16.0));
+
+    children.add(
+      ElevatedButton(
+        onPressed: _selectedChains.isEmpty
+            ? null
+            : () => _oneClickAuth(showToast: (m) async {
+                  await showPlatformToast(child: Text(m), context: context);
+                }, closeModal: () {
+                  if (Navigator.canPop(context)) {
+                    Navigator.of(context).pop();
+                  }
+                }),
+        style: ButtonStyle(
+          backgroundColor: MaterialStateProperty.resolveWith<Color>(
+            (states) {
+              if (states.contains(MaterialState.disabled)) {
+                return StyleConstants.grayColor;
+              }
+              return StyleConstants.primaryColor;
+            },
+          ),
+          minimumSize: MaterialStateProperty.all<Size>(const Size(
+            1000.0,
+            StyleConstants.linear48,
+          )),
+          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+            RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(
+                StyleConstants.linear8,
+              ),
+            ),
+          ),
+        ),
+        child: const Text(
+          '1-Click Auth',
+          style: StyleConstants.buttonText,
+        ),
+      ),
+    );
+
     children.add(const SizedBox.square(dimension: 12.0));
 
     return Center(
@@ -275,21 +317,22 @@ class ConnectPageState extends State<ConnectPage> {
       if (openApp) {
         launchUrlString(uri, mode: LaunchMode.externalApplication);
       } else {
-        _showQrCode(connectResponse);
+        _showQrCode(connectResponse.uri.toString());
       }
     } else {
-      _showQrCode(connectResponse);
+      _showQrCode(connectResponse.uri.toString());
     }
 
     debugPrint('Awaiting session proposal settlement');
     final _ = await connectResponse.session.future;
 
     showToast?.call(StringConstants.connectionEstablished);
+    closeModal?.call();
   }
 
-  Future<void> _showQrCode(ConnectResponse response) async {
+  Future<void> _showQrCode(String uri) async {
     // Show the QR code
-    debugPrint('Showing QR Code: ${response.uri}');
+    debugPrint('Showing QR Code: $uri');
     _shouldDismissQrCode = true;
     if (kIsWeb) {
       await showDialog(
@@ -307,7 +350,7 @@ class ConnectPageState extends State<ConnectPage> {
                 child: Padding(
                   padding: const EdgeInsets.all(20.0),
                   child: _QRCodeView(
-                    uri: response.uri.toString(),
+                    uri: uri,
                   ),
                 ),
               ),
@@ -328,20 +371,9 @@ class ConnectPageState extends State<ConnectPage> {
       context,
       MaterialPageRoute(
         fullscreenDialog: true,
-        builder: (context) => QRCodeScreen(response: response),
+        builder: (context) => QRCodeScreen(uri: uri),
       ),
     );
-  }
-
-  void _onSessionConnect(SessionConnect? event) async {
-    if (event == null) return;
-
-    if (_shouldDismissQrCode && Navigator.canPop(context)) {
-      _shouldDismissQrCode = false;
-      Navigator.pop(context);
-    }
-
-    _requestAuth(event);
   }
 
   void _requestAuth(SessionConnect? event) async {
@@ -411,11 +443,87 @@ class ConnectPageState extends State<ConnectPage> {
       );
     }
   }
+
+  void _oneClickAuth({
+    Function(String message)? showToast,
+    VoidCallback? closeModal,
+  }) async {
+    final methods = optionalNamespaces['eip155']?.methods ?? [];
+    final authResponse = await widget.web3App.authenticate(
+      params: OCARequestParams(
+        chains: _selectedChains.map((e) => e.chainId).toList(),
+        domain: Constants.domain,
+        nonce: AuthUtils.generateNonce(),
+        uri: Constants.aud,
+        statement: 'Welcome to example flutter app',
+        methods: methods,
+      ),
+    );
+    // Legacy Auth Request
+    // final authResponse = await widget.web3App.requestAuth(
+    //   params: AuthRequestParams(
+    //     chainId: 'eip155:1',
+    //     domain: Constants.domain,
+    //     nonce: AuthUtils.generateNonce(),
+    //     aud: Constants.aud,
+    //     statement: 'Welcome to example flutter app',
+    //   ),
+    // );
+
+    final encodedUri = Uri.encodeComponent(authResponse.uri.toString());
+    final uri = 'walletapp://wc?uri=$encodedUri';
+
+    if (await canLaunchUrlString(uri)) {
+      final openApp = await showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            content: const Text('Do you want to open with Web3Wallet Flutter'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text('Show QR'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: const Text('Open'),
+              ),
+            ],
+          );
+        },
+      );
+      if (openApp) {
+        launchUrlString(uri, mode: LaunchMode.externalApplication);
+      } else {
+        _showQrCode(authResponse.uri.toString());
+      }
+    } else {
+      _showQrCode(authResponse.uri.toString());
+    }
+
+    debugPrint('Awaiting session proposal settlement');
+    final response = await authResponse.completer.future;
+    debugPrint('[SampleDapp] session ${jsonEncode(response.toJson())}');
+
+    showToast?.call(StringConstants.connectionEstablished);
+    closeModal?.call();
+  }
+
+  void _onSessionConnect(SessionConnect? event) async {
+    if (event == null) return;
+
+    if (_shouldDismissQrCode && Navigator.canPop(context)) {
+      _shouldDismissQrCode = false;
+      Navigator.pop(context);
+    }
+
+    _requestAuth(event);
+  }
 }
 
 class QRCodeScreen extends StatefulWidget {
-  const QRCodeScreen({super.key, required this.response});
-  final ConnectResponse response;
+  const QRCodeScreen({super.key, required this.uri});
+  final String uri;
 
   @override
   State<QRCodeScreen> createState() => _QRCodeScreenState();
@@ -428,7 +536,7 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
       child: Scaffold(
         appBar: AppBar(title: const Text(StringConstants.scanQrCode)),
         body: _QRCodeView(
-          uri: widget.response.uri!.toString(),
+          uri: widget.uri,
         ),
       ),
     );

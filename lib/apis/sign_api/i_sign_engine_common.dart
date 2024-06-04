@@ -8,7 +8,7 @@ import 'package:walletconnect_flutter_v2/apis/sign_api/i_sessions.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/models/proposal_models.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/models/session_models.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/models/sign_client_events.dart';
-import 'package:walletconnect_flutter_v2/apis/sign_api/models/auth/auth_client_models.dart';
+import 'package:walletconnect_flutter_v2/apis/sign_api/models/auth/auth_common_models.dart';
 
 abstract class ISignEngineCommon {
   abstract final Event<SessionConnect> onSessionConnect;
@@ -48,5 +48,10 @@ abstract class ISignEngineCommon {
   // FORMER AUTH ENGINE PROPERTY
   Map<int, StoredCacao> getCompletedRequestsForPairing({
     required String pairingTopic,
+  });
+
+  Future<bool> validateSignedCacao({
+    required Cacao cacao,
+    required String projectId,
   });
 }

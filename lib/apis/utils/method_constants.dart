@@ -14,9 +14,10 @@ class MethodConstants {
   static const WC_SESSION_EVENT = 'wc_sessionEvent';
   static const WC_SESSION_DELETE = 'wc_sessionDelete';
   static const WC_SESSION_PING = 'wc_sessionPing';
-  // static const WC_SESSION_AUTHENTICATE = 'wc_sessionAuthenticate'; TODO
 
   static const WC_AUTH_REQUEST = 'wc_authRequest';
+
+  static const WC_SESSION_AUTHENTICATE = 'wc_sessionAuthenticate';
 
   static const Map<String, Map<String, RpcOptions>> RPC_OPTS = {
     WC_PAIRING_PING: {
@@ -151,18 +152,28 @@ class MethodConstants {
         tag: 1115,
       ),
     },
-    // WC_SESSION_AUTHENTICATE: { TODO
-    //   'req': RpcOptions(
-    //     ttl: WalletConnectConstants.ONE_HOUR,
-    //     prompt: false,
-    //     tag: 1116,
-    //   ),
-    //   'res': RpcOptions(
-    //     ttl: WalletConnectConstants.ONE_HOUR,
-    //     prompt: false,
-    //     tag: 1117,
-    //   ),
-    // },
+    WC_SESSION_AUTHENTICATE: {
+      'req': RpcOptions(
+        ttl: WalletConnectConstants.ONE_HOUR,
+        prompt: false,
+        tag: 1116,
+      ),
+      'res': RpcOptions(
+        ttl: WalletConnectConstants.ONE_HOUR,
+        prompt: false,
+        tag: 1117,
+      ),
+      'reject': RpcOptions(
+        ttl: WalletConnectConstants.FIVE_MINUTES,
+        prompt: false,
+        tag: 1118,
+      ),
+      'autoReject': RpcOptions(
+        ttl: WalletConnectConstants.FIVE_MINUTES,
+        prompt: false,
+        tag: 1119,
+      ),
+    },
     WC_AUTH_REQUEST: {
       'req': RpcOptions(
         ttl: WalletConnectConstants.ONE_DAY,

@@ -3,39 +3,26 @@ import 'dart:convert';
 import 'package:event/event.dart';
 import 'package:walletconnect_flutter_v2/apis/models/basic_models.dart';
 import 'package:walletconnect_flutter_v2/apis/models/json_rpc_error.dart';
-import 'package:walletconnect_flutter_v2/apis/sign_api/models/auth/auth_client_models.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/models/auth/auth_common_models.dart';
+import 'package:walletconnect_flutter_v2/apis/sign_api/models/session_models.dart';
 
-class AuthRequest extends EventArgs {
-  final int id;
-  final String topic;
-  final AuthPayloadParams payloadParams;
-  final ConnectionMetadata requester;
-
-  AuthRequest({
-    required this.id,
-    required this.topic,
-    required this.payloadParams,
-    required this.requester,
-  });
-
-  @override
-  String toString() {
-    return 'AuthRequest(id: $id, topic: $topic, payloadParams: $payloadParams, requester: $requester)';
-  }
+class OCARequest extends EventArgs {
+  // TODO to be implemented for wallet usage
 }
 
-class AuthResponse extends EventArgs {
+class OCAResponse extends EventArgs {
   final int id;
   final String topic;
-  final Cacao? result;
+  final List<Cacao>? auths;
+  final SessionData? session;
   final WalletConnectError? error;
   final JsonRpcError? jsonRpcError;
 
-  AuthResponse({
+  OCAResponse({
     required this.id,
     required this.topic,
-    this.result,
+    this.auths,
+    this.session,
     this.error,
     this.jsonRpcError,
   });
@@ -43,13 +30,14 @@ class AuthResponse extends EventArgs {
   Map<String, dynamic> toJson() => {
         'id': id,
         'topic': topic,
-        if (result != null) 'result': result?.toJson(),
+        if (auths != null) 'auths': auths,
+        if (session != null) 'session': session!.toJson(),
         if (error != null) 'error': error!.toJson(),
         if (jsonRpcError != null) 'jsonRpcError': jsonRpcError!.toJson(),
       };
 
   @override
   String toString() {
-    return 'AuthResponse(${jsonEncode(toJson())})';
+    return 'OCAResponse(${jsonEncode(toJson())})';
   }
 }

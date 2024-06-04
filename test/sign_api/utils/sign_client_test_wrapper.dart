@@ -440,6 +440,21 @@ class SignClientTestWrapper implements ISignEngine {
   IGenericStore<StoredCacao> get completeRequests => client.completeRequests;
 
   @override
+  Future<bool> validateSignedCacao({
+    required Cacao cacao,
+    required String projectId,
+  }) {
+    try {
+      return client.validateSignedCacao(
+        cacao: cacao,
+        projectId: projectId,
+      );
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
   String formatAuthMessage({
     required String iss,
     required CacaoRequestPayload cacaoPayload,
@@ -483,6 +498,9 @@ class SignClientTestWrapper implements ISignEngine {
   Event<AuthResponse> get onAuthResponse => client.onAuthResponse;
 
   @override
+  Event<OCAResponse> get onOCAResponse => client.onOCAResponse;
+
+  @override
   IGenericStore<String> get pairingTopics => client.pairingTopics;
 
   @override
@@ -493,6 +511,24 @@ class SignClientTestWrapper implements ISignEngine {
   }) async {
     try {
       return await client.requestAuth(
+        params: params,
+        pairingTopic: pairingTopic,
+        methods: methods,
+      );
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // NEW ONE-CLICK AUTH METHOD FOR DAPPS
+  @override
+  Future<OCARequestResponse> authenticate({
+    required OCARequestParams params,
+    String? pairingTopic,
+    List<List<String>>? methods,
+  }) async {
+    try {
+      return await client.authenticate(
         params: params,
         pairingTopic: pairingTopic,
         methods: methods,

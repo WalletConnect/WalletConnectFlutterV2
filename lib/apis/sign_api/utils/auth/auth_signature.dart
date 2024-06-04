@@ -5,7 +5,7 @@ import 'package:http/http.dart' as http;
 
 import 'package:pointycastle/digests/keccak.dart';
 import 'package:walletconnect_flutter_v2/apis/core/pairing/utils/json_rpc_utils.dart';
-import 'package:walletconnect_flutter_v2/apis/sign_api/models/auth/auth_client_models.dart';
+import 'package:walletconnect_flutter_v2/apis/sign_api/models/auth/auth_common_models.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/utils/auth/auth_constants.dart';
 import 'package:web3dart/crypto.dart' as crypto;
 

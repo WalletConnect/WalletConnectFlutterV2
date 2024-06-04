@@ -13,6 +13,7 @@ class Web3App implements IWeb3App {
     ],
     [
       MethodConstants.WC_AUTH_REQUEST,
+      MethodConstants.WC_SESSION_AUTHENTICATE,
     ]
   ];
 
@@ -330,6 +331,10 @@ class Web3App implements IWeb3App {
   @override
   Event<AuthResponse> get onAuthResponse => signEngine.onAuthResponse;
 
+  // NEW 1-CLICK AUTH METHOD
+  @override
+  Event<OCAResponse> get onOCAResponse => signEngine.onOCAResponse;
+
   @override
   IGenericStore<AuthPublicKey> get authKeys => signEngine.authKeys;
   @override
@@ -355,6 +360,24 @@ class Web3App implements IWeb3App {
     }
   }
 
+  // NEW ONE-CLICK AUTH METHOD FOR DAPPS
+  @override
+  Future<OCARequestResponse> authenticate({
+    required OCARequestParams params,
+    String? pairingTopic,
+    List<List<String>>? methods = DEFAULT_METHODS,
+  }) async {
+    try {
+      return signEngine.authenticate(
+        params: params,
+        pairingTopic: pairingTopic,
+        methods: methods,
+      );
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   @override
   Map<int, StoredCacao> getCompletedRequestsForPairing({
     required String pairingTopic,
@@ -362,6 +385,21 @@ class Web3App implements IWeb3App {
     try {
       return signEngine.getCompletedRequestsForPairing(
         pairingTopic: pairingTopic,
+      );
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<bool> validateSignedCacao({
+    required Cacao cacao,
+    required String projectId,
+  }) {
+    try {
+      return signEngine.validateSignedCacao(
+        cacao: cacao,
+        projectId: projectId,
       );
     } catch (e) {
       rethrow;
