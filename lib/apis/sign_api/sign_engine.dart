@@ -1999,21 +1999,19 @@ class SignEngine implements ISignEngine {
     required int expiry,
     required Completer<AuthResponse> completer,
   }) async {
-    //
-
     // Subscribe to the responseTopic because we expect the response to use this topic
     await core.relayClient.subscribe(topic: responseTopic);
 
     late WcAuthRequestResult result;
     try {
-      final response = await core.pairing.sendRequest(
+      final Map<String, dynamic> response = await core.pairing.sendRequest(
         pairingTopic,
         MethodConstants.WC_AUTH_REQUEST,
         request.toJson(),
         id: id,
         ttl: expiry,
       );
-      result = WcAuthRequestResult.fromJson(response);
+      result = WcAuthRequestResult.fromJson({'cacao': response});
     } on JsonRpcError catch (e) {
       final response = AuthResponse(
         id: id,
@@ -2209,7 +2207,7 @@ class SignEngine implements ISignEngine {
     //
     late WcOCARequestResult result;
     try {
-      final response = await core.pairing.sendRequest(
+      final Map<String, dynamic> response = await core.pairing.sendRequest(
         pairingTopic,
         MethodConstants.WC_SESSION_AUTHENTICATE,
         requestParams.toJson(),
