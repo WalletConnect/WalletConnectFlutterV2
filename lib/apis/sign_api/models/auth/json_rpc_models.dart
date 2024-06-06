@@ -31,17 +31,16 @@ class WcAuthRequestResult with _$WcAuthRequestResult {
 }
 
 @freezed
-// TODO should be renamed to WcOCARequestParams
-class WcOCARequestRequest with _$WcOCARequestRequest {
+class WcOCARequestParams with _$WcOCARequestParams {
   @JsonSerializable()
-  const factory WcOCARequestRequest({
+  const factory WcOCARequestParams({
     required OCAPayloadParams authPayload,
     required ConnectionMetadata requester,
     required int expiryTimestamp,
-  }) = _WcOCARequestRequest;
+  }) = _WcOCARequestParams;
 
-  factory WcOCARequestRequest.fromJson(Map<String, dynamic> json) =>
-      _$WcOCARequestRequestFromJson(json);
+  factory WcOCARequestParams.fromJson(Map<String, dynamic> json) =>
+      _$WcOCARequestParamsFromJson(json);
 }
 
 @freezed

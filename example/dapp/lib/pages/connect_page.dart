@@ -459,19 +459,9 @@ class ConnectPageState extends State<ConnectPage> {
         methods: methods,
       ),
     );
-    // Legacy Auth Request
-    // final authResponse = await widget.web3App.requestAuth(
-    //   params: AuthRequestParams(
-    //     chainId: 'eip155:1',
-    //     domain: Constants.domain,
-    //     nonce: AuthUtils.generateNonce(),
-    //     aud: Constants.aud,
-    //     statement: 'Welcome to example flutter app',
-    //   ),
-    // );
 
     final encodedUri = Uri.encodeComponent(authResponse.uri.toString());
-    final uri = 'walletapp://wc?uri=$encodedUri';
+    final uri = 'wcflutterwallet://wc?uri=$encodedUri';
 
     if (await canLaunchUrlString(uri)) {
       final openApp = await showDialog(
@@ -505,7 +495,12 @@ class ConnectPageState extends State<ConnectPage> {
     final response = await authResponse.completer.future;
     debugPrint('[SampleDapp] session ${jsonEncode(response.toJson())}');
 
-    showToast?.call(StringConstants.connectionEstablished);
+    if (response.session != null) {
+      showToast?.call(StringConstants.connectionEstablished);
+    } else {
+      final error = response.error ?? response.jsonRpcError;
+      showToast?.call(error.toString());
+    }
     closeModal?.call();
   }
 

@@ -352,27 +352,27 @@ abstract class _WcAuthRequestResult implements WcAuthRequestResult {
       throw _privateConstructorUsedError;
 }
 
-WcOCARequestRequest _$WcOCARequestRequestFromJson(Map<String, dynamic> json) {
-  return _WcOCARequestRequest.fromJson(json);
+WcOCARequestParams _$WcOCARequestParamsFromJson(Map<String, dynamic> json) {
+  return _WcOCARequestParams.fromJson(json);
 }
 
 /// @nodoc
-mixin _$WcOCARequestRequest {
+mixin _$WcOCARequestParams {
   OCAPayloadParams get authPayload => throw _privateConstructorUsedError;
   ConnectionMetadata get requester => throw _privateConstructorUsedError;
   int get expiryTimestamp => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
-  $WcOCARequestRequestCopyWith<WcOCARequestRequest> get copyWith =>
+  $WcOCARequestParamsCopyWith<WcOCARequestParams> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class $WcOCARequestRequestCopyWith<$Res> {
-  factory $WcOCARequestRequestCopyWith(
-          WcOCARequestRequest value, $Res Function(WcOCARequestRequest) then) =
-      _$WcOCARequestRequestCopyWithImpl<$Res, WcOCARequestRequest>;
+abstract class $WcOCARequestParamsCopyWith<$Res> {
+  factory $WcOCARequestParamsCopyWith(
+          WcOCARequestParams value, $Res Function(WcOCARequestParams) then) =
+      _$WcOCARequestParamsCopyWithImpl<$Res, WcOCARequestParams>;
   @useResult
   $Res call(
       {OCAPayloadParams authPayload,
@@ -384,9 +384,9 @@ abstract class $WcOCARequestRequestCopyWith<$Res> {
 }
 
 /// @nodoc
-class _$WcOCARequestRequestCopyWithImpl<$Res, $Val extends WcOCARequestRequest>
-    implements $WcOCARequestRequestCopyWith<$Res> {
-  _$WcOCARequestRequestCopyWithImpl(this._value, this._then);
+class _$WcOCARequestParamsCopyWithImpl<$Res, $Val extends WcOCARequestParams>
+    implements $WcOCARequestParamsCopyWith<$Res> {
+  _$WcOCARequestParamsCopyWithImpl(this._value, this._then);
 
   // ignore: unused_field
   final $Val _value;
@@ -434,11 +434,11 @@ class _$WcOCARequestRequestCopyWithImpl<$Res, $Val extends WcOCARequestRequest>
 }
 
 /// @nodoc
-abstract class _$$WcOCARequestRequestImplCopyWith<$Res>
-    implements $WcOCARequestRequestCopyWith<$Res> {
-  factory _$$WcOCARequestRequestImplCopyWith(_$WcOCARequestRequestImpl value,
-          $Res Function(_$WcOCARequestRequestImpl) then) =
-      __$$WcOCARequestRequestImplCopyWithImpl<$Res>;
+abstract class _$$WcOCARequestParamsImplCopyWith<$Res>
+    implements $WcOCARequestParamsCopyWith<$Res> {
+  factory _$$WcOCARequestParamsImplCopyWith(_$WcOCARequestParamsImpl value,
+          $Res Function(_$WcOCARequestParamsImpl) then) =
+      __$$WcOCARequestParamsImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -453,11 +453,11 @@ abstract class _$$WcOCARequestRequestImplCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$WcOCARequestRequestImplCopyWithImpl<$Res>
-    extends _$WcOCARequestRequestCopyWithImpl<$Res, _$WcOCARequestRequestImpl>
-    implements _$$WcOCARequestRequestImplCopyWith<$Res> {
-  __$$WcOCARequestRequestImplCopyWithImpl(_$WcOCARequestRequestImpl _value,
-      $Res Function(_$WcOCARequestRequestImpl) _then)
+class __$$WcOCARequestParamsImplCopyWithImpl<$Res>
+    extends _$WcOCARequestParamsCopyWithImpl<$Res, _$WcOCARequestParamsImpl>
+    implements _$$WcOCARequestParamsImplCopyWith<$Res> {
+  __$$WcOCARequestParamsImplCopyWithImpl(_$WcOCARequestParamsImpl _value,
+      $Res Function(_$WcOCARequestParamsImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -467,7 +467,7 @@ class __$$WcOCARequestRequestImplCopyWithImpl<$Res>
     Object? requester = null,
     Object? expiryTimestamp = null,
   }) {
-    return _then(_$WcOCARequestRequestImpl(
+    return _then(_$WcOCARequestParamsImpl(
       authPayload: null == authPayload
           ? _value.authPayload
           : authPayload // ignore: cast_nullable_to_non_nullable
@@ -487,14 +487,14 @@ class __$$WcOCARequestRequestImplCopyWithImpl<$Res>
 /// @nodoc
 
 @JsonSerializable()
-class _$WcOCARequestRequestImpl implements _WcOCARequestRequest {
-  const _$WcOCARequestRequestImpl(
+class _$WcOCARequestParamsImpl implements _WcOCARequestParams {
+  const _$WcOCARequestParamsImpl(
       {required this.authPayload,
       required this.requester,
       required this.expiryTimestamp});
 
-  factory _$WcOCARequestRequestImpl.fromJson(Map<String, dynamic> json) =>
-      _$$WcOCARequestRequestImplFromJson(json);
+  factory _$WcOCARequestParamsImpl.fromJson(Map<String, dynamic> json) =>
+      _$$WcOCARequestParamsImplFromJson(json);
 
   @override
   final OCAPayloadParams authPayload;
@@ -505,14 +505,14 @@ class _$WcOCARequestRequestImpl implements _WcOCARequestRequest {
 
   @override
   String toString() {
-    return 'WcOCARequestRequest(authPayload: $authPayload, requester: $requester, expiryTimestamp: $expiryTimestamp)';
+    return 'WcOCARequestParams(authPayload: $authPayload, requester: $requester, expiryTimestamp: $expiryTimestamp)';
   }
 
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$WcOCARequestRequestImpl &&
+            other is _$WcOCARequestParamsImpl &&
             (identical(other.authPayload, authPayload) ||
                 other.authPayload == authPayload) &&
             (identical(other.requester, requester) ||
@@ -529,26 +529,26 @@ class _$WcOCARequestRequestImpl implements _WcOCARequestRequest {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$WcOCARequestRequestImplCopyWith<_$WcOCARequestRequestImpl> get copyWith =>
-      __$$WcOCARequestRequestImplCopyWithImpl<_$WcOCARequestRequestImpl>(
+  _$$WcOCARequestParamsImplCopyWith<_$WcOCARequestParamsImpl> get copyWith =>
+      __$$WcOCARequestParamsImplCopyWithImpl<_$WcOCARequestParamsImpl>(
           this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$WcOCARequestRequestImplToJson(
+    return _$$WcOCARequestParamsImplToJson(
       this,
     );
   }
 }
 
-abstract class _WcOCARequestRequest implements WcOCARequestRequest {
-  const factory _WcOCARequestRequest(
+abstract class _WcOCARequestParams implements WcOCARequestParams {
+  const factory _WcOCARequestParams(
       {required final OCAPayloadParams authPayload,
       required final ConnectionMetadata requester,
-      required final int expiryTimestamp}) = _$WcOCARequestRequestImpl;
+      required final int expiryTimestamp}) = _$WcOCARequestParamsImpl;
 
-  factory _WcOCARequestRequest.fromJson(Map<String, dynamic> json) =
-      _$WcOCARequestRequestImpl.fromJson;
+  factory _WcOCARequestParams.fromJson(Map<String, dynamic> json) =
+      _$WcOCARequestParamsImpl.fromJson;
 
   @override
   OCAPayloadParams get authPayload;
@@ -558,7 +558,7 @@ abstract class _WcOCARequestRequest implements WcOCARequestRequest {
   int get expiryTimestamp;
   @override
   @JsonKey(ignore: true)
-  _$$WcOCARequestRequestImplCopyWith<_$WcOCARequestRequestImpl> get copyWith =>
+  _$$WcOCARequestParamsImplCopyWith<_$WcOCARequestParamsImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
 

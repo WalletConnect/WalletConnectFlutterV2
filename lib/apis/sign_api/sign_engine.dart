@@ -21,13 +21,6 @@ class SignEngine implements ISignEngine {
     ],
   ];
 
-  static const List<List<String>> DEFAULT_METHODS_AUTH = [
-    [
-      MethodConstants.WC_AUTH_REQUEST,
-      MethodConstants.WC_SESSION_AUTHENTICATE,
-    ],
-  ];
-
   bool _initialized = false;
 
   @override
@@ -974,11 +967,12 @@ class SignEngine implements ISignEngine {
       function: _onAuthRequest,
       type: ProtocolType.auth,
     );
-    core.pairing.register(
-      method: MethodConstants.WC_SESSION_AUTHENTICATE,
-      function: _onOCARequest,
-      type: ProtocolType.auth,
-    );
+    // TODO on following PR to be used by Wallet
+    // core.pairing.register(
+    //   method: MethodConstants.WC_SESSION_AUTHENTICATE,
+    //   function: _onOCARequest,
+    //   type: ProtocolType.auth,
+    // );
   }
 
   Future<void> _onSessionProposeRequest(
@@ -1919,7 +1913,9 @@ class SignEngine implements ISignEngine {
   Future<AuthRequestResponse> requestAuth({
     required AuthRequestParams params,
     String? pairingTopic,
-    List<List<String>>? methods = DEFAULT_METHODS_AUTH,
+    List<List<String>>? methods = const [
+      [MethodConstants.WC_AUTH_REQUEST],
+    ],
   }) async {
     _checkInitialized();
 
@@ -2012,11 +2008,17 @@ class SignEngine implements ISignEngine {
         ttl: expiry,
       );
       result = WcAuthRequestResult.fromJson({'cacao': response});
-    } on JsonRpcError catch (e) {
+    } catch (error) {
       final response = AuthResponse(
         id: id,
         topic: responseTopic,
-        jsonRpcError: e,
+        jsonRpcError: (error is JsonRpcError) ? error : null,
+        error: (error is! JsonRpcError)
+            ? WalletConnectError(
+                code: -1,
+                message: error.toString(),
+              )
+            : null,
       );
       onAuthResponse.broadcast(response);
       completer.complete(response);
@@ -2067,7 +2069,9 @@ class SignEngine implements ISignEngine {
   Future<OCARequestResponse> authenticate({
     required OCARequestParams params,
     String? pairingTopic,
-    List<List<String>>? methods = DEFAULT_METHODS_AUTH,
+    List<List<String>>? methods = const [
+      [MethodConstants.WC_SESSION_AUTHENTICATE],
+    ],
   }) async {
     _checkInitialized();
 
@@ -2131,7 +2135,7 @@ class SignEngine implements ISignEngine {
       Duration(seconds: authRequestExpiry),
     );
 
-    final request = WcOCARequestRequest(
+    final request = WcOCARequestParams(
       authPayload: OCAPayloadParams.fromRequestParams(params).copyWith(
         resources: resources,
       ),
@@ -2200,7 +2204,7 @@ class SignEngine implements ISignEngine {
     required String publicKey,
     required String pairingTopic,
     required String responseTopic,
-    required WcOCARequestRequest requestParams,
+    required WcOCARequestParams requestParams,
     required int expiry,
     required Completer<OCAResponse> completer,
   }) async {
@@ -2215,12 +2219,18 @@ class SignEngine implements ISignEngine {
         ttl: expiry,
       );
       result = WcOCARequestResult.fromJson(response);
-    } on JsonRpcError catch (error) {
+    } catch (error) {
       core.relayClient.unsubscribe(topic: responseTopic);
       final response = OCAResponse(
         id: id,
         topic: responseTopic,
-        jsonRpcError: error,
+        jsonRpcError: (error is JsonRpcError) ? error : null,
+        error: (error is! JsonRpcError)
+            ? WalletConnectError(
+                code: -1,
+                message: error.toString(),
+              )
+            : null,
       );
       onOCAResponse.broadcast(response);
       completer.complete(response);

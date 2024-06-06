@@ -512,7 +512,9 @@ class SignClient implements ISignClient {
   Future<AuthRequestResponse> requestAuth({
     required AuthRequestParams params,
     String? pairingTopic,
-    List<List<String>>? methods = SignEngine.DEFAULT_METHODS_AUTH,
+    List<List<String>>? methods = const [
+      [MethodConstants.WC_AUTH_REQUEST],
+    ],
   }) {
     try {
       return engine.requestAuth(
@@ -530,7 +532,9 @@ class SignClient implements ISignClient {
   Future<OCARequestResponse> authenticate({
     required OCARequestParams params,
     String? pairingTopic,
-    List<List<String>>? methods,
+    List<List<String>>? methods = const [
+      [MethodConstants.WC_SESSION_AUTHENTICATE],
+    ],
   }) {
     try {
       return engine.authenticate(

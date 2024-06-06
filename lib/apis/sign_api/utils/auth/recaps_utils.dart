@@ -1,6 +1,5 @@
 import 'dart:convert';
 
-import 'package:flutter/foundation.dart';
 import 'package:walletconnect_flutter_v2/apis/utils/errors.dart';
 
 class ReCapsUtils {
@@ -104,7 +103,6 @@ class ReCapsUtils {
       //
       for (var ability in resourceAbilities) {
         final limits = abilities[ability];
-        debugPrint('limits $limits');
         if (limits is! List) {
           throw Errors.getInternalError(
             Errors.MISSING_OR_INVALID,
