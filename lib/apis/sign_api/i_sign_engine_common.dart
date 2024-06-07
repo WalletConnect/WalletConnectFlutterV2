@@ -50,6 +50,7 @@ abstract class ISignEngineCommon {
     required String pairingTopic,
   });
 
+  // NEW 1-CA METHOD
   Future<bool> validateSignedCacao({
     required Cacao cacao,
     required String projectId,

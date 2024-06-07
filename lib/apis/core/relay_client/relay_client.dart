@@ -170,7 +170,7 @@ class RelayClient implements IRelayClient {
   Future<void> connect({String? relayUrl}) async {
     _checkInitialized();
 
-    core.logger.t('RelayClient: Connecting to relay');
+    core.logger.i('RelayClient: Connecting to relay');
 
     await _connect(relayUrl: relayUrl);
   }
@@ -179,7 +179,7 @@ class RelayClient implements IRelayClient {
   Future<void> disconnect() async {
     _checkInitialized();
 
-    core.logger.t('RelayClient: Disconnecting from relay');
+    core.logger.i('RelayClient: Disconnecting from relay');
 
     await _disconnect();
   }
@@ -302,12 +302,12 @@ class RelayClient implements IRelayClient {
 
   Future<void> _handleRelayClose(int? code, String? reason) async {
     if (_handledClose) {
-      core.logger.t('Relay close already handled');
+      core.logger.i('Relay close already handled');
       return;
     }
     _handledClose = true;
 
-    core.logger.t('Handling relay close, code: $code, reason: $reason');
+    core.logger.i('Handling relay close, code: $code, reason: $reason');
     // If the relay isn't active (Disconnected manually), don't do anything
     if (!_active) {
       return;
@@ -364,7 +364,7 @@ class RelayClient implements IRelayClient {
     core.logger.t('Handling Publish Message: $topic, $message');
     // If we want to ignore the message, stop
     if (await _shouldIgnoreMessageEvent(topic, message)) {
-      core.logger.e('Ignoring Message: $topic, $message');
+      core.logger.w('Ignoring Message: $topic, $message');
       return false;
     }
 
@@ -392,7 +392,7 @@ class RelayClient implements IRelayClient {
   }
 
   void _handleUnsubscribe(Parameters params) {
-    core.logger.t('[$runtimeType] _handleUnsubscribe $params');
+    core.logger.i('[$runtimeType] _handleUnsubscribe $params');
   }
 
   /// MESSAGE HANDLING
@@ -441,7 +441,7 @@ class RelayClient implements IRelayClient {
         JsonRpcUtils.payloadId(entropy: 6),
       );
     } catch (e) {
-      core.logger.e('RelayClient, onSubscribe error. Topic: $topic, Error: $e');
+      core.logger.w('RelayClient, onSubscribe error. Topic: $topic, Error: $e');
       onRelayClientError.broadcast(ErrorEvent(e));
     }
 

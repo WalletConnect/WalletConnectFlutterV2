@@ -21,7 +21,7 @@ abstract class ISignClient {
   abstract final ISessions sessions;
   abstract final IGenericStore<SessionRequest> pendingRequests;
 
-  // FORMER AUTH ENGINE COMMON
+  // FORMER AUTH ENGINE PROPERTY
   abstract final IGenericStore<AuthPublicKey> authKeys;
   abstract final IGenericStore<String> pairingTopics;
   abstract final IGenericStore<StoredCacao> completeRequests;
@@ -40,8 +40,7 @@ abstract class ISignClient {
   abstract final Event<SessionEvent> onSessionEvent;
   // FORMER AUTH ENGINE PROPERTY
   abstract final Event<AuthResponse> onAuthResponse;
-
-  // NEW 1-CLICK AUTH METHOD
+  // NEW 1-CA PROPERTY
   abstract final Event<OCAResponse> onOCAResponse;
 
   Future<void> init();
@@ -147,7 +146,7 @@ abstract class ISignClient {
     required String accountAddress,
   });
 
-  // FORMER AUTH ENGINE COMMON
+  // FORMER AUTH ENGINE PROPERTY COMMON
   /// format payload to message string
   String formatAuthMessage({
     required String iss,
@@ -158,33 +157,34 @@ abstract class ISignClient {
     required String pairingTopic,
   });
 
-  // FORMER AUTH ENGINE WALLET
-  // to be transformed into approveSessionAuthenticate({})
-  // to be transformed into rejectSessionAuthenticate({})
+  // FORMER AUTH ENGINE PROPERTY WALLET
+  // TODO to be transformed into approveSessionAuthenticate({}) and rejectSessionAuthenticate({})
   Future<void> respondAuthRequest({
     required int id,
     required String iss,
     CacaoSignature? signature,
     WalletConnectError? error,
   });
-  // FORMER AUTH ENGINE DAPP
+
+  // FORMER AUTH ENGINE METHOD DAPP
   // query all pending requests
   Map<int, PendingAuthRequest> getPendingAuthRequests();
 
-  // FORMER AUTH ENGINE PROPERTY
+  // FORMER AUTH ENGINE METHOD DAPP
   Future<AuthRequestResponse> requestAuth({
     required AuthRequestParams params,
     String? pairingTopic,
     List<List<String>>? methods,
   });
 
-  // NEW ONE-CLICK AUTH METHOD FOR DAPPS
+  // NEW 1-CA METHOD FOR DAPP
   Future<OCARequestResponse> authenticate({
     required OCARequestParams params,
     String? pairingTopic,
     List<List<String>>? methods,
   });
 
+  // NEW 1-CA METHOD FOR DAPP
   Future<bool> validateSignedCacao({
     required Cacao cacao,
     required String projectId,

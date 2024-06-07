@@ -649,7 +649,7 @@ class Pairing implements IPairing {
     // print(payloadString);
 
     Map<String, dynamic> data = jsonDecode(payloadString);
-    core.logger.t('Pairing _onMessageEvent, Received data: $data');
+    core.logger.i('Pairing _onMessageEvent, Received data: $data');
 
     // If it's an rpc request, handle it
     // print('Pairing: Received data: $data');

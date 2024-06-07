@@ -172,13 +172,13 @@ class ConnectPageState extends State<ConnectPage> {
       ElevatedButton(
         onPressed: _selectedChains.isEmpty
             ? null
-            : () => _oneClickAuth(showToast: (m) async {
-                  await showPlatformToast(child: Text(m), context: context);
-                }, closeModal: () {
-                  if (Navigator.canPop(context)) {
-                    Navigator.of(context).pop();
-                  }
-                }),
+            : () => _oneClickAuth(
+                  closeModal: () {
+                    if (Navigator.canPop(context)) {
+                      Navigator.of(context).pop();
+                    }
+                  },
+                ),
         style: ButtonStyle(
           backgroundColor: MaterialStateProperty.resolveWith<Color>(
             (states) {
@@ -404,39 +404,42 @@ class ConnectPageState extends State<ConnectPage> {
     if (!shouldAuth) return;
 
     try {
-      final scheme =
-          event?.session.peer.metadata.redirect?.native ?? 'wcflutterwallet://';
-      launchUrlString(scheme, mode: LaunchMode.externalApplication);
-
       final pairingTopic = event?.session.pairingTopic;
       // Send off an auth request now that the pairing/session is established
-      debugPrint('Requesting authentication');
-      final authRes = await widget.web3App.requestAuth(
+      final authResponse = await widget.web3App.requestAuth(
         pairingTopic: pairingTopic,
         params: AuthRequestParams(
           chainId: _selectedChains[0].chainId,
           domain: Constants.domain,
           aud: Constants.aud,
-          // statement: 'Welcome to example flutter app',
+          statement: 'Welcome to example flutter app',
         ),
       );
 
-      debugPrint('Awaiting authentication response');
-      final authResponse = await authRes.completer.future;
+      final scheme = event?.session.peer.metadata.redirect?.native;
+      launchUrlString(
+        scheme ?? 'wcflutterwallet://',
+        mode: LaunchMode.externalApplication,
+      );
 
-      if (authResponse.error != null) {
-        debugPrint('Authentication failed: ${authResponse.error}');
-        showPlatformToast(
-          child: const Text(StringConstants.authFailed),
-          context: context,
-        );
-      } else {
+      debugPrint('[SampleDapp] Awaiting authentication response');
+      final response = await authResponse.completer.future;
+      debugPrint('[SampleDapp] response ${jsonEncode(response.toJson())}');
+
+      if (response.result != null) {
         showPlatformToast(
           child: const Text(StringConstants.authSucceeded),
           context: context,
         );
+      } else {
+        final error = response.error ?? response.jsonRpcError;
+        showPlatformToast(
+          child: Text(error.toString()),
+          context: context,
+        );
       }
     } catch (e) {
+      debugPrint('[SampleDapp] auth $e');
       showPlatformToast(
         child: const Text(StringConstants.connectionFailed),
         context: context,
@@ -444,10 +447,7 @@ class ConnectPageState extends State<ConnectPage> {
     }
   }
 
-  void _oneClickAuth({
-    Function(String message)? showToast,
-    VoidCallback? closeModal,
-  }) async {
+  void _oneClickAuth({VoidCallback? closeModal}) async {
     final methods = optionalNamespaces['eip155']?.methods ?? [];
     final authResponse = await widget.web3App.authenticate(
       params: OCARequestParams(
@@ -491,15 +491,32 @@ class ConnectPageState extends State<ConnectPage> {
       _showQrCode(authResponse.uri.toString());
     }
 
-    debugPrint('Awaiting session proposal settlement');
-    final response = await authResponse.completer.future;
-    debugPrint('[SampleDapp] session ${jsonEncode(response.toJson())}');
+    try {
+      debugPrint('[SampleDapp] Awaiting 1-CA session');
+      final response = await authResponse.completer.future;
+      debugPrint('[SampleDapp] response ${jsonEncode(response.toJson())}');
 
-    if (response.session != null) {
-      showToast?.call(StringConstants.connectionEstablished);
-    } else {
-      final error = response.error ?? response.jsonRpcError;
-      showToast?.call(error.toString());
+      if (response.session != null) {
+        showPlatformToast(
+          child: const Text(
+            '${StringConstants.authSucceeded} and '
+            '${StringConstants.connectionEstablished}',
+          ),
+          context: context,
+        );
+      } else {
+        final error = response.error ?? response.jsonRpcError;
+        showPlatformToast(
+          child: Text(error.toString()),
+          context: context,
+        );
+      }
+    } catch (e) {
+      debugPrint('[SampleDapp] 1-CA $e');
+      showPlatformToast(
+        child: const Text(StringConstants.connectionFailed),
+        context: context,
+      );
     }
     closeModal?.call();
   }

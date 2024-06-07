@@ -86,8 +86,7 @@ abstract class ISignEngineWallet extends ISignEngineCommon {
   // });
 
   // FORMER AUTH ENGINE PROPERTY
-  // to be transformed into approveSessionAuthenticate({})
-  // to be transformed into rejectSessionAuthenticate({})
+  // TODO to be transformed into approveSessionAuthenticate({}) and rejectSessionAuthenticate({})
   Future<void> respondAuthRequest({
     required int id,
     required String iss,

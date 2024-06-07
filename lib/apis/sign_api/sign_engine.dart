@@ -77,11 +77,11 @@ class SignEngine implements ISignEngine {
   @override
   late IGenericStore<String> pairingTopics;
 
-  // NEW 1-CLICK AUTH METHOD
+  // NEW 1-CA METHOD
   @override
   final Event<OCAResponse> onOCAResponse = Event<OCAResponse>();
 
-  // // FORMER AUTH ENGINE PROPERTY
+  // FORMER AUTH ENGINE PROPERTY (apparently not used befor and not used now)
   // List<AuthRequestCompleter> pendingAuthRequests = [];
 
   SignEngine({
@@ -90,7 +90,7 @@ class SignEngine implements ISignEngine {
     required this.proposals,
     required this.sessions,
     required this.pendingRequests,
-    // FORMER AUTH ENGINE PROPERTY
+    // FORMER AUTH ENGINE PROPERTIES
     required this.authKeys,
     required this.pairingTopics,
     required this.authRequests,
@@ -109,7 +109,7 @@ class SignEngine implements ISignEngine {
     await sessions.init();
     await pendingRequests.init();
 
-    // FORMER AUTH ENGINE PROPERTY
+    // FORMER AUTH ENGINE PROPERTIES
     await authKeys.init();
     await pairingTopics.init();
     await authRequests.init();
@@ -1817,6 +1817,7 @@ class SignEngine implements ISignEngine {
     }
   }
 
+  // NEW 1-CA METHOD (Should this be private?)
   @override
   Future<bool> validateSignedCacao({
     required Cacao cacao,
@@ -1930,6 +1931,8 @@ class SignEngine implements ISignEngine {
       pTopic = newTopicAndUri.topic;
       uri = newTopicAndUri.uri;
     } else {
+      // TODO this should be used when pairingTopic is passed (existent pairing topic case)
+      // but it does not seems right
       core.pairing.isValidPairingTopic(topic: pTopic);
     }
 
@@ -2146,7 +2149,7 @@ class SignEngine implements ISignEngine {
       expiryTimestamp: expiryTimestamp.millisecondsSinceEpoch,
     );
 
-    // ----- build namespaces for fallback session proposal ----- // TODO
+    // TODO fallback to session proposal to be implemented in following PR
     // const namespaces = {
     //   eip155: {
     //     chains,
@@ -2168,7 +2171,6 @@ class SignEngine implements ISignEngine {
     // };
 
     // Set the one time use receiver public key for decoding the Type 1 envelope
-    // TODO check this
     await core.pairing.setReceiverPublicKey(
       topic: responseTopic,
       publicKey: publicKey,
@@ -2258,7 +2260,7 @@ class SignEngine implements ISignEngine {
           );
         }
 
-        // TODO CHECK THIS
+        // This is used on Auth request, would it be needed on 1-CA?
         // await completeRequests.set(
         //   id.toString(),
         //   StoredCacao.fromCacao(
@@ -2456,7 +2458,7 @@ class SignEngine implements ISignEngine {
 
   // TODO
   void _onOCARequest(String topic, JsonRpcRequest payload) async {
-    // TODO to be implemented for Wallet usage
+    // TODO to be implemented for Wallet usage on following PR
     // try {
     //   final request = WcOCARequestRequest.fromJson(payload.params);
 
