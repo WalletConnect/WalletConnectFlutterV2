@@ -13,7 +13,6 @@ class Web3App implements IWeb3App {
     ],
     [
       MethodConstants.WC_AUTH_REQUEST,
-      MethodConstants.WC_SESSION_AUTHENTICATE,
     ]
   ];
 
@@ -365,7 +364,9 @@ class Web3App implements IWeb3App {
   Future<OCARequestResponse> authenticate({
     required OCARequestParams params,
     String? pairingTopic,
-    List<List<String>>? methods = DEFAULT_METHODS,
+    List<List<String>>? methods = const [
+      [MethodConstants.WC_SESSION_AUTHENTICATE]
+    ],
   }) async {
     try {
       return signEngine.authenticate(

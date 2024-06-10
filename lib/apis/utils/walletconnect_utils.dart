@@ -184,21 +184,18 @@ class WalletConnectUtils {
     required String symKey,
     required Relay relay,
     required List<List<String>>? methods,
+    int? expiry,
   }) {
     Map<String, String> params = formatRelayParams(relay);
     params['symKey'] = symKey;
     if (methods != null) {
-      params['methods'] = methods
-          .map((e) => jsonEncode(e))
-          .join(
-            ',',
-          )
-          .replaceAll(
-            '"',
-            '',
-          );
-    } else {
-      params['methods'] = '[]';
+      final uriMethods = methods.expand((e) => e).toList();
+      params['methods'] =
+          uriMethods.map((e) => jsonEncode(e)).join(',').replaceAll('"', '');
+    }
+
+    if (expiry != null) {
+      params['expiryTimestamp'] = expiry.toString();
     }
 
     return Uri(

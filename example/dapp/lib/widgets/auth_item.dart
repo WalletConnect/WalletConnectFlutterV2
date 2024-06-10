@@ -26,9 +26,8 @@ class AuthItem extends StatelessWidget {
               auth.p.domain,
               style: StyleConstants.paragraph,
             ),
-            Text(
-              auth.p.iss,
-            ),
+            Text(auth.p.iss),
+            Text('iat: ${auth.p.iat}'),
           ],
         ),
       ),

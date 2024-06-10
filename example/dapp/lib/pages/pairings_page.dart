@@ -75,7 +75,7 @@ class PairingsPageState extends State<PairingsPage> {
                             );
                             Navigator.of(context).pop();
                           } catch (e) {
-                            debugPrint(e.toString());
+                            debugPrint('[SampleDapp] ${e.toString()}');
                           }
                         },
                       ),

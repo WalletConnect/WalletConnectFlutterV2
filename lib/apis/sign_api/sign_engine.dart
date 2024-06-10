@@ -21,6 +21,12 @@ class SignEngine implements ISignEngine {
     ],
   ];
 
+  static const List<List<String>> DEFAULT_METHODS_AUTH = [
+    [
+      MethodConstants.WC_AUTH_REQUEST,
+    ]
+  ];
+
   bool _initialized = false;
 
   @override
@@ -232,13 +238,13 @@ class SignEngine implements ISignEngine {
     // print("sending proposal for $topic");
     // print('connectResponseHandler requestId: $requestId');
     try {
-      final Map<String, dynamic> resp = await core.pairing.sendRequest(
+      final Map<String, dynamic> response = await core.pairing.sendRequest(
         topic,
         MethodConstants.WC_SESSION_PROPOSE,
         request,
         id: requestId,
       );
-      final String peerPublicKey = resp['responderPublicKey'];
+      final String peerPublicKey = response['responderPublicKey'];
 
       final ProposalData proposal = proposals.get(
         requestId.toString(),
@@ -968,11 +974,11 @@ class SignEngine implements ISignEngine {
       type: ProtocolType.auth,
     );
     // TODO on following PR to be used by Wallet
-    // core.pairing.register(
-    //   method: MethodConstants.WC_SESSION_AUTHENTICATE,
-    //   function: _onOCARequest,
-    //   type: ProtocolType.auth,
-    // );
+    core.pairing.register(
+      method: MethodConstants.WC_SESSION_AUTHENTICATE,
+      function: _onOCARequest,
+      type: ProtocolType.auth,
+    );
   }
 
   Future<void> _onSessionProposeRequest(
@@ -1914,9 +1920,7 @@ class SignEngine implements ISignEngine {
   Future<AuthRequestResponse> requestAuth({
     required AuthRequestParams params,
     String? pairingTopic,
-    List<List<String>>? methods = const [
-      [MethodConstants.WC_AUTH_REQUEST],
-    ],
+    List<List<String>>? methods = DEFAULT_METHODS_AUTH,
   }) async {
     _checkInitialized();
 
@@ -2073,7 +2077,7 @@ class SignEngine implements ISignEngine {
     required OCARequestParams params,
     String? pairingTopic,
     List<List<String>>? methods = const [
-      [MethodConstants.WC_SESSION_AUTHENTICATE],
+      [MethodConstants.WC_SESSION_AUTHENTICATE]
     ],
   }) async {
     _checkInitialized();
@@ -2094,7 +2098,6 @@ class SignEngine implements ISignEngine {
       pTopic = pairing.topic;
       connectionUri = pairing.uri;
     } else {
-      // TODO this doesn't look correct
       core.pairing.isValidPairingTopic(topic: pTopic);
     }
 
@@ -2108,9 +2111,6 @@ class SignEngine implements ISignEngine {
       ),
       pairingTopics.set(responseTopic, pTopic),
     ]);
-
-    // Subscribe to the responseTopic because we expect the response to use this topic
-    await core.relayClient.subscribe(topic: responseTopic);
 
     if (requestMethods.isNotEmpty) {
       final namespace = NamespaceUtils.getNamespaceFromChain(chains.first);
@@ -2129,6 +2129,12 @@ class SignEngine implements ISignEngine {
       }
       resources.add(recap);
     }
+
+    // Subscribe to the responseTopic because we expect the response to use this topic
+    await core.relayClient.subscribe(topic: responseTopic);
+
+    final id = JsonRpcUtils.payloadId();
+    final proposalId = JsonRpcUtils.payloadId();
 
     // Ensure the expiry is greater than the minimum required for the request - currently 1h
     final method = MethodConstants.WC_SESSION_AUTHENTICATE;
@@ -2149,27 +2155,6 @@ class SignEngine implements ISignEngine {
       expiryTimestamp: expiryTimestamp.millisecondsSinceEpoch,
     );
 
-    // TODO fallback to session proposal to be implemented in following PR
-    // const namespaces = {
-    //   eip155: {
-    //     chains,
-    //     // request `personal_sign` method by default to allow for fallback siwe
-    //     methods: [...new Set(["personal_sign", ...methods])],
-    //     events: ["chainChanged", "accountsChanged"],
-    //   },
-    // };
-
-    // const proposal = {
-    //   requiredNamespaces: {},
-    //   optionalNamespaces: namespaces,
-    //   relays: [{ protocol: "irn" }],
-    //   proposer: {
-    //     publicKey,
-    //     metadata: this.client.metadata,
-    //   },
-    //   expiryTimestamp: calcExpiry(ENGINE_RPC_OPTS.wc_sessionPropose.req.ttl),
-    // };
-
     // Set the one time use receiver public key for decoding the Type 1 envelope
     await core.pairing.setReceiverPublicKey(
       topic: responseTopic,
@@ -2177,19 +2162,69 @@ class SignEngine implements ISignEngine {
       expiry: authRequestExpiry,
     );
 
-    final id = JsonRpcUtils.payloadId();
-    final fallbackId = JsonRpcUtils.payloadId();
-    Completer<OCAResponse> completer = Completer();
+    // ----- build fallback session proposal request ----- //
 
+    final fallbackMethod = MethodConstants.WC_SESSION_PROPOSE;
+    final fallbackOpts = MethodConstants.RPC_OPTS[fallbackMethod]!['req']!;
+    final fallbackExpiryTimestamp = DateTime.now().add(
+      Duration(seconds: fallbackOpts.ttl),
+    );
+    final proposalData = ProposalData(
+      id: proposalId,
+      requiredNamespaces: {},
+      optionalNamespaces: {
+        'eip155': RequiredNamespace(
+          chains: chains,
+          methods: {'personal_sign', ...requestMethods}.toList(),
+          events: EventsConstants.requiredEvents,
+        ),
+      },
+      relays: [Relay(WalletConnectConstants.RELAYER_DEFAULT_PROTOCOL)],
+      expiry: fallbackExpiryTimestamp.millisecondsSinceEpoch,
+      proposer: ConnectionMetadata(
+        publicKey: publicKey,
+        metadata: metadata,
+      ),
+      pairingTopic: pTopic,
+    );
+    final proposeRequest = WcSessionProposeRequest(
+      relays: proposalData.relays,
+      requiredNamespaces: proposalData.requiredNamespaces,
+      optionalNamespaces: proposalData.optionalNamespaces,
+      proposer: proposalData.proposer,
+    );
+    await _setProposal(proposalData.id, proposalData);
+
+    // ------------------------------------------------------- //
+
+    // Send One-Click Auth request
+    Completer<OCAResponse> completer = Completer();
     _requestOCAResponseHandler(
       id: id,
-      fallbackId: fallbackId,
       publicKey: publicKey,
       pairingTopic: pTopic,
       responseTopic: responseTopic,
-      requestParams: request,
+      request: request,
       expiry: authRequestExpiry,
       completer: completer,
+    );
+
+    // Send Session Proposal request
+    Completer<SessionData> completerFallback = Completer();
+    pendingProposals.add(
+      SessionProposalCompleter(
+        id: proposalData.id,
+        selfPublicKey: proposalData.proposer.publicKey,
+        pairingTopic: proposalData.pairingTopic,
+        requiredNamespaces: proposalData.requiredNamespaces,
+        optionalNamespaces: proposalData.optionalNamespaces,
+        completer: completerFallback,
+      ),
+    );
+    _connectResponseHandler(
+      pTopic,
+      proposeRequest,
+      proposalData.id,
     );
 
     return OCARequestResponse(
@@ -2202,12 +2237,11 @@ class SignEngine implements ISignEngine {
 
   Future<void> _requestOCAResponseHandler({
     required int id,
-    required int fallbackId,
     required String publicKey,
     required String pairingTopic,
     required String responseTopic,
-    required WcOCARequestParams requestParams,
     required int expiry,
+    required WcOCARequestParams request,
     required Completer<OCAResponse> completer,
   }) async {
     //
@@ -2216,13 +2250,12 @@ class SignEngine implements ISignEngine {
       final Map<String, dynamic> response = await core.pairing.sendRequest(
         pairingTopic,
         MethodConstants.WC_SESSION_AUTHENTICATE,
-        requestParams.toJson(),
+        request.toJson(),
         id: id,
         ttl: expiry,
       );
       result = WcOCARequestResult.fromJson(response);
     } catch (error) {
-      core.relayClient.unsubscribe(topic: responseTopic);
       final response = OCAResponse(
         id: id,
         topic: responseTopic,

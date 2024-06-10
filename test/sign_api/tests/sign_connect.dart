@@ -47,14 +47,10 @@ void signConnect({
       expect(parsed.topic, response.pairingTopic);
       expect(parsed.v2Data!.relay.protocol, 'irn');
       if (clientA is IWeb3App) {
-        expect(parsed.v2Data!.methods.length, 4);
+        expect(parsed.v2Data!.methods.length, 3);
         expect(parsed.v2Data!.methods[0], MethodConstants.WC_SESSION_PROPOSE);
         expect(parsed.v2Data!.methods[1], MethodConstants.WC_SESSION_REQUEST);
         expect(parsed.v2Data!.methods[2], MethodConstants.WC_AUTH_REQUEST);
-        expect(
-          parsed.v2Data!.methods[3],
-          MethodConstants.WC_SESSION_AUTHENTICATE,
-        );
       } else {
         expect(parsed.v2Data!.methods.length, 2);
         expect(parsed.v2Data!.methods[0], MethodConstants.WC_SESSION_PROPOSE);

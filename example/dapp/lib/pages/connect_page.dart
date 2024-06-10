@@ -64,7 +64,7 @@ class ConnectPageState extends State<ConnectPage> {
       }
       _updateNamespaces();
 
-      debugPrint('$optionalNamespaces');
+      debugPrint('[SampleDapp] ${jsonEncode(optionalNamespaces)}');
     });
   }
 
@@ -285,7 +285,7 @@ class ConnectPageState extends State<ConnectPage> {
     Function(String message)? showToast,
     VoidCallback? closeModal,
   }) async {
-    debugPrint('Creating connection and session');
+    debugPrint('[SampleDapp] Creating connection and session');
     // It is currently safer to send chains approvals on optionalNamespaces
     // but depending on Wallet implementation you may need to send some (for innstance eip155:1) as required
     final connectResponse = await widget.web3App.connect(
@@ -323,7 +323,7 @@ class ConnectPageState extends State<ConnectPage> {
       _showQrCode(connectResponse.uri.toString());
     }
 
-    debugPrint('Awaiting session proposal settlement');
+    debugPrint('[SampleDapp] Awaiting session proposal settlement');
     final _ = await connectResponse.session.future;
 
     showToast?.call(StringConstants.connectionEstablished);
@@ -332,7 +332,7 @@ class ConnectPageState extends State<ConnectPage> {
 
   Future<void> _showQrCode(String uri) async {
     // Show the QR code
-    debugPrint('Showing QR Code: $uri');
+    debugPrint('[SampleDapp] Showing QR Code: $uri');
     _shouldDismissQrCode = true;
     if (kIsWeb) {
       await showDialog(
@@ -401,7 +401,7 @@ class ConnectPageState extends State<ConnectPage> {
         );
       },
     );
-    if (!shouldAuth) return;
+    if (shouldAuth != true) return;
 
     try {
       final pairingTopic = event?.session.pairingTopic;
