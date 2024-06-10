@@ -429,4 +429,131 @@ class SignClientTestWrapper implements ISignEngine {
       await core.expirer.checkAndExpire(session.topic);
     }
   }
+
+  @override
+  IGenericStore<AuthPublicKey> get authKeys => client.authKeys;
+
+  @override
+  IGenericStore<PendingAuthRequest> get authRequests => client.authRequests;
+
+  @override
+  IGenericStore<StoredCacao> get completeRequests => client.completeRequests;
+
+  @override
+  Future<bool> validateSignedCacao({
+    required Cacao cacao,
+    required String projectId,
+  }) {
+    try {
+      return client.validateSignedCacao(
+        cacao: cacao,
+        projectId: projectId,
+      );
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  String formatAuthMessage({
+    required String iss,
+    required CacaoRequestPayload cacaoPayload,
+  }) {
+    try {
+      return client.formatAuthMessage(
+        iss: iss,
+        cacaoPayload: cacaoPayload,
+      );
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Map<int, StoredCacao> getCompletedRequestsForPairing({
+    required String pairingTopic,
+  }) {
+    try {
+      return client.getCompletedRequestsForPairing(
+        pairingTopic: pairingTopic,
+      );
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Map<int, PendingAuthRequest> getPendingAuthRequests() {
+    try {
+      return client.getPendingAuthRequests();
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Event<AuthRequest> get onAuthRequest => client.onAuthRequest;
+
+  @override
+  Event<AuthResponse> get onAuthResponse => client.onAuthResponse;
+
+  @override
+  Event<OCAResponse> get onOCAResponse => client.onOCAResponse;
+
+  @override
+  IGenericStore<String> get pairingTopics => client.pairingTopics;
+
+  @override
+  Future<AuthRequestResponse> requestAuth({
+    required AuthRequestParams params,
+    String? pairingTopic,
+    List<List<String>>? methods,
+  }) async {
+    try {
+      return await client.requestAuth(
+        params: params,
+        pairingTopic: pairingTopic,
+        methods: methods,
+      );
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // NEW ONE-CLICK AUTH METHOD FOR DAPPS
+  @override
+  Future<OCARequestResponse> authenticate({
+    required OCARequestParams params,
+    String? pairingTopic,
+    List<List<String>>? methods,
+  }) async {
+    try {
+      return await client.authenticate(
+        params: params,
+        pairingTopic: pairingTopic,
+        methods: methods,
+      );
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> respondAuthRequest({
+    required int id,
+    required String iss,
+    CacaoSignature? signature,
+    WalletConnectError? error,
+  }) async {
+    try {
+      return await client.respondAuthRequest(
+        id: id,
+        iss: iss,
+        signature: signature,
+        error: error,
+      );
+    } catch (e) {
+      rethrow;
+    }
+  }
 }

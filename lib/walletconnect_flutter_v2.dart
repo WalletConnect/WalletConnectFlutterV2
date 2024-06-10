@@ -9,6 +9,7 @@ export 'apis/core/relay_client/relay_client_models.dart';
 export 'apis/core/pairing/i_pairing_store.dart';
 export 'apis/core/pairing/utils/pairing_models.dart';
 export 'apis/core/store/store_models.dart';
+export 'apis/core/verify/models/verify_context.dart';
 export 'apis/models/basic_models.dart';
 export 'apis/utils/errors.dart';
 export 'apis/utils/walletconnect_utils.dart';
@@ -34,16 +35,20 @@ export 'apis/sign_api/models/sign_client_models.dart';
 export 'apis/sign_api/models/sign_client_events.dart';
 
 // Auth API
-export 'apis/auth_api/models/auth_client_models.dart';
-export 'apis/auth_api/models/auth_client_events.dart';
-export 'apis/auth_api/models/json_rpc_models.dart';
-export 'apis/auth_api/utils/auth_utils.dart';
-export 'apis/auth_api/utils/address_utils.dart';
-export 'apis/auth_api/utils/auth_signature.dart';
-export 'apis/auth_api/utils/auth_api_validators.dart';
-export 'apis/auth_api/i_auth_engine.dart';
-export 'apis/auth_api/i_auth_client.dart';
-export 'apis/auth_api/auth_client.dart';
+export 'apis/sign_api/models/auth/auth_client_events.dart';
+export 'apis/sign_api/models/auth/auth_client_models.dart';
+export 'apis/sign_api/models/auth/auth_common_models.dart';
+export 'apis/sign_api/models/auth/json_rpc_models.dart';
+export 'apis/sign_api/models/auth/one_click_auth_events.dart';
+export 'apis/sign_api/models/auth/one_click_auth_models.dart';
+export 'apis/sign_api/utils/auth/auth_utils.dart';
+export 'apis/sign_api/utils/auth/address_utils.dart';
+export 'apis/sign_api/utils/auth/auth_signature.dart';
+export 'apis/sign_api/utils/auth/auth_api_validators.dart';
+// export 'apis/auth_api/i_auth_engine.dart';
+// export 'apis/auth_api/auth_engine.dart';
+// export 'apis/auth_api/i_auth_client.dart';
+// export 'apis/auth_api/auth_client.dart';
 
 // Web3Wallet
 export 'apis/web3wallet/i_web3wallet.dart';

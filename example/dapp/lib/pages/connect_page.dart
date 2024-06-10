@@ -1,6 +1,7 @@
 // ignore_for_file: use_build_context_synchronously
 
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:fl_toast/fl_toast.dart';
 import 'package:flutter/foundation.dart';
@@ -165,6 +166,47 @@ class ConnectPageState extends State<ConnectPage> {
       ),
     );
 
+    children.add(const SizedBox(height: 16.0));
+
+    children.add(
+      ElevatedButton(
+        onPressed: _selectedChains.isEmpty
+            ? null
+            : () => _oneClickAuth(
+                  closeModal: () {
+                    if (Navigator.canPop(context)) {
+                      Navigator.of(context).pop();
+                    }
+                  },
+                ),
+        style: ButtonStyle(
+          backgroundColor: MaterialStateProperty.resolveWith<Color>(
+            (states) {
+              if (states.contains(MaterialState.disabled)) {
+                return StyleConstants.grayColor;
+              }
+              return StyleConstants.primaryColor;
+            },
+          ),
+          minimumSize: MaterialStateProperty.all<Size>(const Size(
+            1000.0,
+            StyleConstants.linear48,
+          )),
+          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+            RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(
+                StyleConstants.linear8,
+              ),
+            ),
+          ),
+        ),
+        child: const Text(
+          '1-Click Auth',
+          style: StyleConstants.buttonText,
+        ),
+      ),
+    );
+
     children.add(const SizedBox.square(dimension: 12.0));
 
     return Center(
@@ -275,21 +317,22 @@ class ConnectPageState extends State<ConnectPage> {
       if (openApp) {
         launchUrlString(uri, mode: LaunchMode.externalApplication);
       } else {
-        _showQrCode(connectResponse);
+        _showQrCode(connectResponse.uri.toString());
       }
     } else {
-      _showQrCode(connectResponse);
+      _showQrCode(connectResponse.uri.toString());
     }
 
     debugPrint('Awaiting session proposal settlement');
     final _ = await connectResponse.session.future;
 
     showToast?.call(StringConstants.connectionEstablished);
+    closeModal?.call();
   }
 
-  Future<void> _showQrCode(ConnectResponse response) async {
+  Future<void> _showQrCode(String uri) async {
     // Show the QR code
-    debugPrint('Showing QR Code: ${response.uri}');
+    debugPrint('Showing QR Code: $uri');
     _shouldDismissQrCode = true;
     if (kIsWeb) {
       await showDialog(
@@ -307,7 +350,7 @@ class ConnectPageState extends State<ConnectPage> {
                 child: Padding(
                   padding: const EdgeInsets.all(20.0),
                   child: _QRCodeView(
-                    uri: response.uri.toString(),
+                    uri: uri,
                   ),
                 ),
               ),
@@ -328,19 +371,12 @@ class ConnectPageState extends State<ConnectPage> {
       context,
       MaterialPageRoute(
         fullscreenDialog: true,
-        builder: (context) => QRCodeScreen(response: response),
+        builder: (context) => QRCodeScreen(uri: uri),
       ),
     );
   }
 
-  void _onSessionConnect(SessionConnect? event) async {
-    if (event == null) return;
-
-    if (_shouldDismissQrCode && Navigator.canPop(context)) {
-      _shouldDismissQrCode = false;
-      Navigator.pop(context);
-    }
-
+  void _requestAuth(SessionConnect? event) async {
     final shouldAuth = await showDialog(
       context: context,
       barrierDismissible: false,
@@ -368,49 +404,138 @@ class ConnectPageState extends State<ConnectPage> {
     if (!shouldAuth) return;
 
     try {
-      final scheme = event.session.peer.metadata.redirect?.native ?? '';
-      launchUrlString(scheme, mode: LaunchMode.externalApplication);
-
-      final pairingTopic = event.session.pairingTopic;
+      final pairingTopic = event?.session.pairingTopic;
       // Send off an auth request now that the pairing/session is established
-      debugPrint('Requesting authentication');
-      final authRes = await widget.web3App.requestAuth(
+      final authResponse = await widget.web3App.requestAuth(
         pairingTopic: pairingTopic,
         params: AuthRequestParams(
           chainId: _selectedChains[0].chainId,
           domain: Constants.domain,
           aud: Constants.aud,
-          // statement: 'Welcome to example flutter app',
+          statement: 'Welcome to example flutter app',
         ),
       );
 
-      debugPrint('Awaiting authentication response');
-      final authResponse = await authRes.completer.future;
+      final scheme = event?.session.peer.metadata.redirect?.native;
+      launchUrlString(
+        scheme ?? 'wcflutterwallet://',
+        mode: LaunchMode.externalApplication,
+      );
 
-      if (authResponse.error != null) {
-        debugPrint('Authentication failed: ${authResponse.error}');
-        showPlatformToast(
-          child: const Text(StringConstants.authFailed),
-          context: context,
-        );
-      } else {
+      debugPrint('[SampleDapp] Awaiting authentication response');
+      final response = await authResponse.completer.future;
+      debugPrint('[SampleDapp] response ${jsonEncode(response.toJson())}');
+
+      if (response.result != null) {
         showPlatformToast(
           child: const Text(StringConstants.authSucceeded),
           context: context,
         );
+      } else {
+        final error = response.error ?? response.jsonRpcError;
+        showPlatformToast(
+          child: Text(error.toString()),
+          context: context,
+        );
       }
     } catch (e) {
+      debugPrint('[SampleDapp] auth $e');
       showPlatformToast(
         child: const Text(StringConstants.connectionFailed),
         context: context,
       );
     }
   }
+
+  void _oneClickAuth({VoidCallback? closeModal}) async {
+    final methods = optionalNamespaces['eip155']?.methods ?? [];
+    final authResponse = await widget.web3App.authenticate(
+      params: OCARequestParams(
+        chains: _selectedChains.map((e) => e.chainId).toList(),
+        domain: Constants.domain,
+        nonce: AuthUtils.generateNonce(),
+        uri: Constants.aud,
+        statement: 'Welcome to example flutter app',
+        methods: methods,
+      ),
+    );
+
+    final encodedUri = Uri.encodeComponent(authResponse.uri.toString());
+    final uri = 'wcflutterwallet://wc?uri=$encodedUri';
+
+    if (await canLaunchUrlString(uri)) {
+      final openApp = await showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            content: const Text('Do you want to open with Web3Wallet Flutter'),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(false),
+                child: const Text('Show QR'),
+              ),
+              TextButton(
+                onPressed: () => Navigator.of(context).pop(true),
+                child: const Text('Open'),
+              ),
+            ],
+          );
+        },
+      );
+      if (openApp) {
+        launchUrlString(uri, mode: LaunchMode.externalApplication);
+      } else {
+        _showQrCode(authResponse.uri.toString());
+      }
+    } else {
+      _showQrCode(authResponse.uri.toString());
+    }
+
+    try {
+      debugPrint('[SampleDapp] Awaiting 1-CA session');
+      final response = await authResponse.completer.future;
+      debugPrint('[SampleDapp] response ${jsonEncode(response.toJson())}');
+
+      if (response.session != null) {
+        showPlatformToast(
+          child: const Text(
+            '${StringConstants.authSucceeded} and '
+            '${StringConstants.connectionEstablished}',
+          ),
+          context: context,
+        );
+      } else {
+        final error = response.error ?? response.jsonRpcError;
+        showPlatformToast(
+          child: Text(error.toString()),
+          context: context,
+        );
+      }
+    } catch (e) {
+      debugPrint('[SampleDapp] 1-CA $e');
+      showPlatformToast(
+        child: const Text(StringConstants.connectionFailed),
+        context: context,
+      );
+    }
+    closeModal?.call();
+  }
+
+  void _onSessionConnect(SessionConnect? event) async {
+    if (event == null) return;
+
+    if (_shouldDismissQrCode && Navigator.canPop(context)) {
+      _shouldDismissQrCode = false;
+      Navigator.pop(context);
+    }
+
+    _requestAuth(event);
+  }
 }
 
 class QRCodeScreen extends StatefulWidget {
-  const QRCodeScreen({super.key, required this.response});
-  final ConnectResponse response;
+  const QRCodeScreen({super.key, required this.uri});
+  final String uri;
 
   @override
   State<QRCodeScreen> createState() => _QRCodeScreenState();
@@ -423,7 +548,7 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
       child: Scaffold(
         appBar: AppBar(title: const Text(StringConstants.scanQrCode)),
         body: _QRCodeView(
-          uri: widget.response.uri!.toString(),
+          uri: widget.uri,
         ),
       ),
     );

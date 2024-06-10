@@ -61,7 +61,7 @@ class SessionsPageState extends State<SessionsPage> {
                     (session) => ExpansionPanel(
                       canTapOnHeader: true,
                       isExpanded: _selectedSession == session.topic,
-                      backgroundColor: Colors.black12,
+                      backgroundColor: Colors.blue.withOpacity(0.2),
                       headerBuilder: (context, isExpanded) {
                         return SessionItem(
                           key: ValueKey(session.topic),

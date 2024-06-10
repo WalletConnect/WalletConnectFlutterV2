@@ -44,6 +44,7 @@ class Web3WalletService extends IWeb3WalletService {
         ),
       ),
     );
+    _web3Wallet!.core.addLogListener(_logListener);
 
     // Setup our accounts
     List<ChainKey> chainKeys = await GetIt.I<IKeyService>().setKeys();
@@ -94,9 +95,17 @@ class Web3WalletService extends IWeb3WalletService {
     await _web3Wallet!.init();
   }
 
+  void _logListener(LogEvent event) {
+    debugPrint('[WALLET] ${event.level.name}: ${event.message}');
+    if (event.level == Level.error) {
+      // TODO send to mixpanel
+    }
+  }
+
   @override
   FutureOr onDispose() {
     debugPrint('[$runtimeType] [WALLET] dispose');
+    _web3Wallet!.core.removeLogListener(_logListener);
     _web3Wallet!.core.pairing.onPairingInvalid.unsubscribe(_onPairingInvalid);
     _web3Wallet!.core.pairing.onPairingCreate.unsubscribe(_onPairingCreate);
     _web3Wallet!.onSessionProposal.unsubscribe(_onSessionProposal);

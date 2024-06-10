@@ -93,6 +93,7 @@ class _MyHomePageState extends State<MyHomePage> {
     _web3App!.onSessionEvent.subscribe(_onSessionEvent);
     _web3App!.onSessionUpdate.subscribe(_onSessionUpdate);
 
+    _web3App!.core.addLogListener(_logListener);
     _web3App!.core.relayClient.onRelayClientConnect.subscribe(_setState);
     _web3App!.core.relayClient.onRelayClientDisconnect.subscribe(_setState);
     _web3App!.core.relayClient.onRelayClientMessage.subscribe(_onRelayMessage);
@@ -140,6 +141,7 @@ class _MyHomePageState extends State<MyHomePage> {
     _web3App!.onSessionEvent.unsubscribe(_onSessionEvent);
     _web3App!.onSessionUpdate.unsubscribe(_onSessionUpdate);
 
+    _web3App!.core.removeLogListener(_logListener);
     _web3App!.core.relayClient.onRelayClientConnect.unsubscribe(_setState);
     _web3App!.core.relayClient.onRelayClientDisconnect.unsubscribe(_setState);
     _web3App!.core.relayClient.onRelayClientMessage
@@ -148,6 +150,13 @@ class _MyHomePageState extends State<MyHomePage> {
     _web3App!.signEngine.onSessionEvent.unsubscribe(_onSessionEvent);
     _web3App!.signEngine.onSessionUpdate.unsubscribe(_onSessionUpdate);
     super.dispose();
+  }
+
+  void _logListener(LogEvent event) {
+    debugPrint('[SampleDapp] ${event.level.name}: ${event.message}');
+    if (event.level == Level.error) {
+      // TODO send to mixpanel
+    }
   }
 
   @override

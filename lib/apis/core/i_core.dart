@@ -27,5 +27,8 @@ abstract class ICore {
   abstract final Logger logger;
   abstract IVerify verify;
 
+  void addLogListener(LogCallback callback);
+  bool removeLogListener(LogCallback callback);
+
   Future<void> start();
 }

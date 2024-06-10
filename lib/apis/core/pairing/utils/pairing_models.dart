@@ -76,7 +76,7 @@ class CreateResponse {
 
   @override
   String toString() {
-    return 'CreateResponse(topic: $topic, uri: $uri)';
+    return 'CreateResponse(topic: $topic, uri: $uri, pairingInfo: ${pairingInfo.toJson()})';
   }
 }
 

@@ -21,15 +21,27 @@ abstract class ISignClient {
   abstract final ISessions sessions;
   abstract final IGenericStore<SessionRequest> pendingRequests;
 
+  // FORMER AUTH ENGINE PROPERTY
+  abstract final IGenericStore<AuthPublicKey> authKeys;
+  abstract final IGenericStore<String> pairingTopics;
+  abstract final IGenericStore<StoredCacao> completeRequests;
+
   // Wallet
   abstract final Event<SessionProposalEvent> onSessionProposal;
   abstract final Event<SessionProposalErrorEvent> onSessionProposalError;
   abstract final Event<SessionRequestEvent> onSessionRequest;
+  // FORMER AUTH ENGINE PROPERTY
+  abstract final Event<AuthRequest> onAuthRequest;
+  abstract final IGenericStore<PendingAuthRequest> authRequests;
 
   // App
   abstract final Event<SessionUpdate> onSessionUpdate;
   abstract final Event<SessionExtend> onSessionExtend;
   abstract final Event<SessionEvent> onSessionEvent;
+  // FORMER AUTH ENGINE PROPERTY
+  abstract final Event<AuthResponse> onAuthResponse;
+  // NEW 1-CA PROPERTY
+  abstract final Event<OCAResponse> onOCAResponse;
 
   Future<void> init();
   Future<ConnectResponse> connect({
@@ -132,5 +144,49 @@ abstract class ISignClient {
   void registerAccount({
     required String chainId,
     required String accountAddress,
+  });
+
+  // FORMER AUTH ENGINE PROPERTY COMMON
+  /// format payload to message string
+  String formatAuthMessage({
+    required String iss,
+    required CacaoRequestPayload cacaoPayload,
+  });
+
+  Map<int, StoredCacao> getCompletedRequestsForPairing({
+    required String pairingTopic,
+  });
+
+  // FORMER AUTH ENGINE PROPERTY WALLET
+  // TODO to be transformed into approveSessionAuthenticate({}) and rejectSessionAuthenticate({})
+  Future<void> respondAuthRequest({
+    required int id,
+    required String iss,
+    CacaoSignature? signature,
+    WalletConnectError? error,
+  });
+
+  // FORMER AUTH ENGINE METHOD DAPP
+  // query all pending requests
+  Map<int, PendingAuthRequest> getPendingAuthRequests();
+
+  // FORMER AUTH ENGINE METHOD DAPP
+  Future<AuthRequestResponse> requestAuth({
+    required AuthRequestParams params,
+    String? pairingTopic,
+    List<List<String>>? methods,
+  });
+
+  // NEW 1-CA METHOD FOR DAPP
+  Future<OCARequestResponse> authenticate({
+    required OCARequestParams params,
+    String? pairingTopic,
+    List<List<String>>? methods,
+  });
+
+  // NEW 1-CA METHOD FOR DAPP
+  Future<bool> validateSignedCacao({
+    required Cacao cacao,
+    required String projectId,
   });
 }

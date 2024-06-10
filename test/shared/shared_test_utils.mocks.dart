@@ -1338,6 +1338,24 @@ class MockCore extends _i1.Mock implements _i26.Core {
       ) as _i17.Logger);
 
   @override
+  void addLogListener(_i17.LogCallback? callback) => super.noSuchMethod(
+        Invocation.method(
+          #addLogListener,
+          [callback],
+        ),
+        returnValueForMissingStub: null,
+      );
+
+  @override
+  bool removeLogListener(_i17.LogCallback? callback) => (super.noSuchMethod(
+        Invocation.method(
+          #removeLogListener,
+          [callback],
+        ),
+        returnValue: false,
+      ) as bool);
+
+  @override
   _i21.Future<void> start() => (super.noSuchMethod(
         Invocation.method(
           #start,
