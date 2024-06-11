@@ -12,7 +12,7 @@ String getChainName(String chain) {
         .first
         .name;
   } catch (e) {
-    debugPrint('Invalid chain');
+    debugPrint('[SampleDapp] Invalid chain');
   }
   return 'Unknown';
 }
@@ -23,7 +23,7 @@ ChainMetadata getChainMetadataFromChain(String chain) {
         .where((element) => element.chainId == chain)
         .first;
   } catch (e) {
-    debugPrint('Invalid chain');
+    debugPrint('[SampleDapp] Invalid chain');
   }
   return ChainData.eip155Chains[0];
 }

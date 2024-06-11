@@ -8,10 +8,11 @@ import 'package:walletconnect_flutter_v2/apis/sign_api/models/auth/one_click_aut
 part 'one_click_auth_models.g.dart';
 part 'one_click_auth_models.freezed.dart';
 
+// TODO this should be under sign_client_models.dart probably
 class OCARequestResponse {
   final int id;
   final String pairingTopic;
-  final Completer<OCAResponse> completer;
+  final Completer<OCAuthResponse> completer;
   final Uri? uri;
 
   OCARequestResponse({

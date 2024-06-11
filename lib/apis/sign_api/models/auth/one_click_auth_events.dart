@@ -6,11 +6,11 @@ import 'package:walletconnect_flutter_v2/apis/models/json_rpc_error.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/models/auth/auth_common_models.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/models/session_models.dart';
 
-class OCARequest extends EventArgs {
+class OCAuthRequest extends EventArgs {
   // TODO to be implemented for wallet usage
 }
 
-class OCAResponse extends EventArgs {
+class OCAuthResponse extends EventArgs {
   final int id;
   final String topic;
   final List<Cacao>? auths;
@@ -18,7 +18,7 @@ class OCAResponse extends EventArgs {
   final WalletConnectError? error;
   final JsonRpcError? jsonRpcError;
 
-  OCAResponse({
+  OCAuthResponse({
     required this.id,
     required this.topic,
     this.auths,

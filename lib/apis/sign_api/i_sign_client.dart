@@ -41,7 +41,7 @@ abstract class ISignClient {
   // FORMER AUTH ENGINE PROPERTY
   abstract final Event<AuthResponse> onAuthResponse;
   // NEW 1-CA PROPERTY
-  abstract final Event<OCAResponse> onOCAResponse;
+  abstract final Event<OCAuthResponse> onOCAuthResponse;
 
   Future<void> init();
   Future<ConnectResponse> connect({
@@ -166,7 +166,7 @@ abstract class ISignClient {
     WalletConnectError? error,
   });
 
-  // FORMER AUTH ENGINE METHOD DAPP
+  // FORMER AUTH ENGINE METHOD WALLET
   // query all pending requests
   Map<int, PendingAuthRequest> getPendingAuthRequests();
 

@@ -13,7 +13,6 @@ class Web3App implements IWeb3App {
     ],
     [
       MethodConstants.WC_AUTH_REQUEST,
-      MethodConstants.WC_SESSION_AUTHENTICATE,
     ]
   ];
 
@@ -333,7 +332,7 @@ class Web3App implements IWeb3App {
 
   // NEW 1-CLICK AUTH METHOD
   @override
-  Event<OCAResponse> get onOCAResponse => signEngine.onOCAResponse;
+  Event<OCAuthResponse> get onOCAuthResponse => signEngine.onOCAuthResponse;
 
   @override
   IGenericStore<AuthPublicKey> get authKeys => signEngine.authKeys;
@@ -365,7 +364,9 @@ class Web3App implements IWeb3App {
   Future<OCARequestResponse> authenticate({
     required OCARequestParams params,
     String? pairingTopic,
-    List<List<String>>? methods = DEFAULT_METHODS,
+    List<List<String>>? methods = const [
+      [MethodConstants.WC_SESSION_AUTHENTICATE]
+    ],
   }) async {
     try {
       return signEngine.authenticate(

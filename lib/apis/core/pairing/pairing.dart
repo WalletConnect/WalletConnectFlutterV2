@@ -121,6 +121,7 @@ class Pairing implements IPairing {
       symKey: symKey,
       relay: relay,
       methods: methods,
+      expiry: expiry,
     );
 
     onPairingCreate.broadcast(
