@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:walletconnect_flutter_v2/apis/models/basic_models.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/models/auth/auth_client_events.dart';
-import 'package:walletconnect_flutter_v2/apis/sign_api/models/auth/auth_common_models.dart';
+import 'package:walletconnect_flutter_v2/apis/sign_api/models/auth/common_auth_models.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/utils/auth/auth_utils.dart';
 
 part 'auth_client_models.g.dart';
@@ -129,30 +129,30 @@ class PendingAuthRequest with _$PendingAuthRequest {
       _$PendingAuthRequestFromJson(json);
 }
 
-// class AuthRequestCompleter {
-//   final int id;
-//   final String pairingTopic;
-//   final String responseTopic;
-//   final PendingAuthRequest request;
-//   final Completer<Cacao> completer;
+class AuthRequestCompleter {
+  final int id;
+  final String pairingTopic;
+  final String responseTopic;
+  final PendingAuthRequest request;
+  final Completer<Cacao> completer;
 
-//   AuthRequestCompleter({
-//     required this.id,
-//     required this.pairingTopic,
-//     required this.responseTopic,
-//     required this.request,
-//     required this.completer,
-//   });
-// }
+  AuthRequestCompleter({
+    required this.id,
+    required this.pairingTopic,
+    required this.responseTopic,
+    required this.request,
+    required this.completer,
+  });
+}
 
-// class RespondParams {
-//   final int id;
-//   final CacaoSignature? signature;
-//   final WalletConnectError? error;
+class RespondParams {
+  final int id;
+  final CacaoSignature? signature;
+  final WalletConnectError? error;
 
-//   RespondParams({
-//     required this.id,
-//     this.signature,
-//     this.error,
-//   });
-// }
+  RespondParams({
+    required this.id,
+    this.signature,
+    this.error,
+  });
+}

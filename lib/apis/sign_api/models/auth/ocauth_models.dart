@@ -2,11 +2,11 @@ import 'dart:async';
 
 import 'package:freezed_annotation/freezed_annotation.dart';
 
-import 'package:walletconnect_flutter_v2/apis/sign_api/models/auth/auth_common_models.dart';
-import 'package:walletconnect_flutter_v2/apis/sign_api/models/auth/one_click_auth_events.dart';
+import 'package:walletconnect_flutter_v2/apis/sign_api/models/auth/common_auth_models.dart';
+import 'package:walletconnect_flutter_v2/apis/sign_api/models/auth/ocauth_events.dart';
 
-part 'one_click_auth_models.g.dart';
-part 'one_click_auth_models.freezed.dart';
+part 'ocauth_models.g.dart';
+part 'ocauth_models.freezed.dart';
 
 // TODO this should be under sign_client_models.dart probably
 class OCARequestResponse {

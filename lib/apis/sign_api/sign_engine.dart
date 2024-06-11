@@ -88,7 +88,7 @@ class SignEngine implements ISignEngine {
   final Event<OCAuthResponse> onOCAuthResponse = Event<OCAuthResponse>();
 
   // FORMER AUTH ENGINE PROPERTY (apparently not used befor and not used now)
-  // List<AuthRequestCompleter> pendingAuthRequests = [];
+  List<AuthRequestCompleter> pendingAuthRequests = [];
 
   SignEngine({
     required this.core,
@@ -971,13 +971,13 @@ class SignEngine implements ISignEngine {
     core.pairing.register(
       method: MethodConstants.WC_AUTH_REQUEST,
       function: _onAuthRequest,
-      type: ProtocolType.auth,
+      type: ProtocolType.sign,
     );
     // TODO on following PR to be used by Wallet
     core.pairing.register(
       method: MethodConstants.WC_SESSION_AUTHENTICATE,
       function: _onOCARequest,
-      type: ProtocolType.auth,
+      type: ProtocolType.sign,
     );
   }
 

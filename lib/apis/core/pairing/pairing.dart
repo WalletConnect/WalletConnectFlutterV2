@@ -240,10 +240,13 @@ class Pairing implements IPairing {
     required ProtocolType type,
   }) {
     if (routerMapRequest.containsKey(method)) {
-      throw const WalletConnectError(
-        code: -1,
-        message: 'Method already exists',
-      );
+      final registered = routerMapRequest[method];
+      if (registered!.type == type) {
+        throw const WalletConnectError(
+          code: -1,
+          message: 'Method already exists',
+        );
+      }
     }
 
     routerMapRequest[method] = RegisteredFunction(
