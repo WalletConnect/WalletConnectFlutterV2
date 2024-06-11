@@ -2162,6 +2162,8 @@ class SignEngine implements ISignEngine {
       expiry: authRequestExpiry,
     );
 
+    Completer<OCAuthResponse> completer = Completer();
+
     // ----- build fallback session proposal request ----- //
 
     final fallbackMethod = MethodConstants.WC_SESSION_PROPOSE;
@@ -2195,22 +2197,8 @@ class SignEngine implements ISignEngine {
     );
     await _setProposal(proposalData.id, proposalData);
 
-    // ------------------------------------------------------- //
-
-    // Send One-Click Auth request
-    Completer<OCAuthResponse> completer = Completer();
-    _requestOCAResponseHandler(
-      id: id,
-      publicKey: publicKey,
-      pairingTopic: pTopic,
-      responseTopic: responseTopic,
-      request: request,
-      expiry: authRequestExpiry,
-      completer: completer,
-    );
-
-    // Send Session Proposal request
     Completer<SessionData> completerFallback = Completer();
+
     pendingProposals.add(
       SessionProposalCompleter(
         id: proposalData.id,
@@ -2221,6 +2209,21 @@ class SignEngine implements ISignEngine {
         completer: completerFallback,
       ),
     );
+
+    // ------------------------------------------------------- //
+
+    // Send One-Click Auth request
+    _ocAuthResponseHandler(
+      id: id,
+      publicKey: publicKey,
+      pairingTopic: pTopic,
+      responseTopic: responseTopic,
+      request: request,
+      expiry: authRequestExpiry,
+      completer: completer,
+    );
+
+    // Send Session Proposal request
     _connectResponseHandler(
       pTopic,
       proposeRequest,
@@ -2235,7 +2238,7 @@ class SignEngine implements ISignEngine {
     );
   }
 
-  Future<void> _requestOCAResponseHandler({
+  Future<void> _ocAuthResponseHandler({
     required int id,
     required String publicKey,
     required String pairingTopic,

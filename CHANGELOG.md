@@ -1,3 +1,7 @@
+## 2.3.0-alpha01
+
+- One-Click Auth support (dApp side)
+
 ## 2.2.3
 
 - Full web support

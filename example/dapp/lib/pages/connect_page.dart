@@ -201,7 +201,7 @@ class ConnectPageState extends State<ConnectPage> {
           ),
         ),
         child: const Text(
-          '1-Click Auth',
+          'One-Click Auth',
           style: StyleConstants.buttonText,
         ),
       ),
