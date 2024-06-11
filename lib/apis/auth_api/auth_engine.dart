@@ -1,6 +1,5 @@
 import 'dart:async';
 
-import 'package:walletconnect_flutter_v2/apis/auth_api/i_auth_engine.dart';
 import 'package:walletconnect_flutter_v2/apis/core/store/i_generic_store.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/utils/auth/auth_constants.dart';
 import 'package:walletconnect_flutter_v2/apis/core/crypto/crypto_models.dart';

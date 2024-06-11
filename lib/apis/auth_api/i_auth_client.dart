@@ -1,4 +1,3 @@
-import 'package:walletconnect_flutter_v2/apis/auth_api/i_auth_engine.dart';
 import 'package:walletconnect_flutter_v2/apis/core/store/i_generic_store.dart';
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 

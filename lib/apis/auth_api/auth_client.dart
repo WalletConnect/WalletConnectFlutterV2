@@ -1,6 +1,4 @@
 import 'package:walletconnect_flutter_v2/apis/auth_api/auth_engine.dart';
-import 'package:walletconnect_flutter_v2/apis/auth_api/i_auth_client.dart';
-import 'package:walletconnect_flutter_v2/apis/auth_api/i_auth_engine.dart';
 import 'package:walletconnect_flutter_v2/apis/core/relay_client/websocket/http_client.dart';
 import 'package:walletconnect_flutter_v2/apis/core/relay_client/websocket/i_http_client.dart';
 import 'package:walletconnect_flutter_v2/apis/core/store/generic_store.dart';

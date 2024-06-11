@@ -34,8 +34,8 @@ export 'apis/sign_api/models/json_rpc_models.dart';
 export 'apis/sign_api/models/sign_client_models.dart';
 export 'apis/sign_api/models/sign_client_events.dart';
 // Former Auth API
-export 'apis/sign_api/models/auth/auth_client_events.dart';
 export 'apis/sign_api/models/auth/auth_client_models.dart';
+export 'apis/sign_api/models/auth/auth_client_events.dart';
 export 'apis/sign_api/models/auth/common_auth_models.dart';
 export 'apis/sign_api/models/auth/json_rpc_models.dart';
 export 'apis/sign_api/models/auth/ocauth_events.dart';
@@ -44,6 +44,18 @@ export 'apis/sign_api/utils/auth/auth_utils.dart';
 export 'apis/sign_api/utils/auth/address_utils.dart';
 export 'apis/sign_api/utils/auth/auth_signature.dart';
 export 'apis/sign_api/utils/auth/auth_api_validators.dart';
+
+// Auth API
+// export 'apis/auth_api/models/auth_client_models.dart';
+// export 'apis/auth_api/models/auth_client_events.dart';
+// export 'apis/auth_api/models/json_rpc_models.dart';
+// export 'apis/auth_api/utils/auth_utils.dart';
+// export 'apis/auth_api/utils/address_utils.dart';
+// export 'apis/auth_api/utils/auth_signature.dart';
+// export 'apis/auth_api/utils/auth_api_validators.dart';
+export 'apis/auth_api/i_auth_engine.dart';
+export 'apis/auth_api/i_auth_client.dart';
+export 'apis/auth_api/auth_client.dart';
 
 // Web3Wallet
 export 'apis/web3wallet/i_web3wallet.dart';

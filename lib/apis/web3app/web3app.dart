@@ -1,3 +1,4 @@
+import 'package:walletconnect_flutter_v2/apis/auth_api/auth_engine.dart';
 import 'package:walletconnect_flutter_v2/apis/core/relay_client/websocket/http_client.dart';
 import 'package:walletconnect_flutter_v2/apis/core/store/generic_store.dart';
 import 'package:walletconnect_flutter_v2/apis/core/store/i_generic_store.dart';
@@ -117,6 +118,15 @@ class Web3App implements IWeb3App {
         },
       ),
     );
+
+    authEngine = AuthEngine(
+      core: core,
+      metadata: metadata,
+      authKeys: signEngine.authKeys,
+      pairingTopics: signEngine.pairingTopics,
+      authRequests: signEngine.authRequests,
+      completeRequests: signEngine.completeRequests,
+    );
   }
 
   @override
@@ -127,6 +137,7 @@ class Web3App implements IWeb3App {
 
     await core.start();
     await signEngine.init();
+    await authEngine.init();
 
     _initialized = true;
   }
@@ -328,19 +339,24 @@ class Web3App implements IWeb3App {
 
   ///---------- AUTH ENGINE ----------///
   @override
-  Event<AuthResponse> get onAuthResponse => signEngine.onAuthResponse;
-
-  // NEW 1-CLICK AUTH METHOD
+  Event<AuthResponse> get onAuthResponse => authEngine.onAuthResponse;
   @override
   Event<OCAuthResponse> get onOCAuthResponse => signEngine.onOCAuthResponse;
 
   @override
-  IGenericStore<AuthPublicKey> get authKeys => signEngine.authKeys;
+  IGenericStore<AuthPublicKey> get authKeys => authEngine.authKeys;
   @override
-  IGenericStore<String> get pairingTopics => signEngine.pairingTopics;
+  IGenericStore<String> get pairingTopics => authEngine.pairingTopics;
   @override
   IGenericStore<StoredCacao> get completeRequests =>
-      signEngine.completeRequests;
+      authEngine.completeRequests;
+
+  @Deprecated(
+    'AuthEngine/AuthClient is deprecated and will be removed soon.\n'
+    'Please use authentication methods from SignEngine/SignClient instead',
+  )
+  @override
+  late IAuthEngine authEngine;
 
   @override
   Future<AuthRequestResponse> requestAuth({
@@ -349,7 +365,7 @@ class Web3App implements IWeb3App {
     List<List<String>>? methods = DEFAULT_METHODS,
   }) async {
     try {
-      return signEngine.requestAuth(
+      return authEngine.requestAuth(
         params: params,
         pairingTopic: pairingTopic,
         methods: methods,
@@ -384,7 +400,7 @@ class Web3App implements IWeb3App {
     required String pairingTopic,
   }) {
     try {
-      return signEngine.getCompletedRequestsForPairing(
+      return authEngine.getCompletedRequestsForPairing(
         pairingTopic: pairingTopic,
       );
     } catch (e) {
@@ -413,7 +429,7 @@ class Web3App implements IWeb3App {
     required CacaoRequestPayload cacaoPayload,
   }) {
     try {
-      return signEngine.formatAuthMessage(
+      return authEngine.formatAuthMessage(
         iss: iss,
         cacaoPayload: cacaoPayload,
       );

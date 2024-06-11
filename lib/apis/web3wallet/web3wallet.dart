@@ -1,3 +1,4 @@
+import 'package:walletconnect_flutter_v2/apis/auth_api/auth_engine.dart';
 import 'package:walletconnect_flutter_v2/apis/core/relay_client/websocket/http_client.dart';
 import 'package:walletconnect_flutter_v2/apis/core/relay_client/websocket/i_http_client.dart';
 import 'package:walletconnect_flutter_v2/apis/core/store/generic_store.dart';
@@ -110,6 +111,15 @@ class Web3Wallet implements IWeb3Wallet {
         },
       ),
     );
+
+    authEngine = AuthEngine(
+      core: core,
+      metadata: metadata,
+      authKeys: signEngine.authKeys,
+      pairingTopics: signEngine.pairingTopics,
+      authRequests: signEngine.authRequests,
+      completeRequests: signEngine.completeRequests,
+    );
   }
 
   @override
@@ -120,6 +130,7 @@ class Web3Wallet implements IWeb3Wallet {
 
     await core.start();
     await signEngine.init();
+    await authEngine.init();
 
     _initialized = true;
   }
@@ -380,17 +391,24 @@ class Web3Wallet implements IWeb3Wallet {
 
   ///---------- AUTH ENGINE ----------///
   @override
-  Event<AuthRequest> get onAuthRequest => signEngine.onAuthRequest;
+  Event<AuthRequest> get onAuthRequest => authEngine.onAuthRequest;
 
   @override
-  IGenericStore<AuthPublicKey> get authKeys => signEngine.authKeys;
+  IGenericStore<AuthPublicKey> get authKeys => authEngine.authKeys;
   @override
-  IGenericStore<String> get pairingTopics => signEngine.pairingTopics;
+  IGenericStore<String> get pairingTopics => authEngine.pairingTopics;
   @override
-  IGenericStore<PendingAuthRequest> get authRequests => signEngine.authRequests;
+  IGenericStore<PendingAuthRequest> get authRequests => authEngine.authRequests;
   @override
   IGenericStore<StoredCacao> get completeRequests =>
-      signEngine.completeRequests;
+      authEngine.completeRequests;
+
+  @Deprecated(
+    'AuthEngine/AuthClient is deprecated and will be removed soon.\n'
+    'Please use authentication methods from SignEngine/SignClient instead',
+  )
+  @override
+  late IAuthEngine authEngine;
 
   @override
   Future<void> respondAuthRequest({
@@ -400,7 +418,7 @@ class Web3Wallet implements IWeb3Wallet {
     WalletConnectError? error,
   }) async {
     try {
-      return signEngine.respondAuthRequest(
+      return authEngine.respondAuthRequest(
         id: id,
         iss: iss,
         signature: signature,
@@ -414,7 +432,7 @@ class Web3Wallet implements IWeb3Wallet {
   @override
   Map<int, PendingAuthRequest> getPendingAuthRequests() {
     try {
-      return signEngine.getPendingAuthRequests();
+      return authEngine.getPendingAuthRequests();
     } catch (e) {
       rethrow;
     }
@@ -425,8 +443,23 @@ class Web3Wallet implements IWeb3Wallet {
     required String pairingTopic,
   }) {
     try {
-      return signEngine.getCompletedRequestsForPairing(
+      return authEngine.getCompletedRequestsForPairing(
         pairingTopic: pairingTopic,
+      );
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  String formatAuthMessage({
+    required String iss,
+    required CacaoRequestPayload cacaoPayload,
+  }) {
+    try {
+      return authEngine.formatAuthMessage(
+        iss: iss,
+        cacaoPayload: cacaoPayload,
       );
     } catch (e) {
       rethrow;
@@ -442,22 +475,6 @@ class Web3Wallet implements IWeb3Wallet {
       return signEngine.validateSignedCacao(
         cacao: cacao,
         projectId: projectId,
-      );
-    } catch (e) {
-      rethrow;
-    }
-  }
-
-  /// format payload to message string before signing
-  @override
-  String formatAuthMessage({
-    required String iss,
-    required CacaoRequestPayload cacaoPayload,
-  }) {
-    try {
-      return signEngine.formatAuthMessage(
-        iss: iss,
-        cacaoPayload: cacaoPayload,
       );
     } catch (e) {
       rethrow;
