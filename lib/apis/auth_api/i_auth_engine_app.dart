@@ -6,10 +6,6 @@ import 'package:walletconnect_flutter_v2/apis/sign_api/models/auth/auth_client_m
 abstract class IAuthEngineApp extends IAuthEngineCommon {
   abstract final Event<AuthResponse> onAuthResponse;
 
-  @Deprecated(
-    'AuthEngine/AuthClient is deprecated and will be removed soon. '
-    'Please use authenticate() method from SignEngine/SignClient instead',
-  )
   Future<AuthRequestResponse> requestAuth({
     required AuthRequestParams params,
     String? pairingTopic,

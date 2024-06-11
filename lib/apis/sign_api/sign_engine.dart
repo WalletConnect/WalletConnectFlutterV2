@@ -968,16 +968,16 @@ class SignEngine implements ISignEngine {
       type: ProtocolType.sign,
     );
     // FORMER AUTH ENGINE PROPERTY
-    // core.pairing.register(
-    //   method: MethodConstants.WC_AUTH_REQUEST,
-    //   function: _onAuthRequest,
-    //   type: ProtocolType.auth,
-    // );
+    core.pairing.register(
+      method: MethodConstants.WC_AUTH_REQUEST,
+      function: _onAuthRequest,
+      type: ProtocolType.sign,
+    );
     // TODO on following PR to be used by Wallet
     core.pairing.register(
       method: MethodConstants.WC_SESSION_AUTHENTICATE,
       function: _onOCARequest,
-      type: ProtocolType.auth,
+      type: ProtocolType.sign,
     );
   }
 
@@ -2452,45 +2452,45 @@ class SignEngine implements ISignEngine {
     }
   }
 
-  // // FORMER AUTH ENGINE PROPERTY
-  // void _onAuthRequest(String topic, JsonRpcRequest payload) async {
-  //   try {
-  //     final request = WcAuthRequestRequest.fromJson(payload.params);
+  // FORMER AUTH ENGINE PROPERTY
+  void _onAuthRequest(String topic, JsonRpcRequest payload) async {
+    try {
+      final request = WcAuthRequestRequest.fromJson(payload.params);
 
-  //     final CacaoRequestPayload cacaoPayload =
-  //         CacaoRequestPayload.fromPayloadParams(
-  //       request.payloadParams,
-  //     );
+      final CacaoRequestPayload cacaoPayload =
+          CacaoRequestPayload.fromPayloadParams(
+        request.payloadParams,
+      );
 
-  //     authRequests.set(
-  //       payload.id.toString(),
-  //       PendingAuthRequest(
-  //         id: payload.id,
-  //         pairingTopic: topic,
-  //         metadata: request.requester,
-  //         cacaoPayload: cacaoPayload,
-  //       ),
-  //     );
+      authRequests.set(
+        payload.id.toString(),
+        PendingAuthRequest(
+          id: payload.id,
+          pairingTopic: topic,
+          metadata: request.requester,
+          cacaoPayload: cacaoPayload,
+        ),
+      );
 
-  //     onAuthRequest.broadcast(
-  //       AuthRequest(
-  //         id: payload.id,
-  //         topic: topic,
-  //         requester: request.requester,
-  //         payloadParams: request.payloadParams,
-  //       ),
-  //     );
-  //   } on WalletConnectError catch (err) {
-  //     await core.pairing.sendError(
-  //       payload.id,
-  //       topic,
-  //       payload.method,
-  //       JsonRpcError.invalidParams(
-  //         err.message,
-  //       ),
-  //     );
-  //   }
-  // }
+      onAuthRequest.broadcast(
+        AuthRequest(
+          id: payload.id,
+          topic: topic,
+          requester: request.requester,
+          payloadParams: request.payloadParams,
+        ),
+      );
+    } on WalletConnectError catch (err) {
+      await core.pairing.sendError(
+        payload.id,
+        topic,
+        payload.method,
+        JsonRpcError.invalidParams(
+          err.message,
+        ),
+      );
+    }
+  }
 
   // TODO
   void _onOCARequest(String topic, JsonRpcRequest payload) async {

@@ -86,13 +86,13 @@ abstract class ISignEngineWallet extends ISignEngineCommon {
   // });
 
   // FORMER AUTH ENGINE PROPERTY
-  // TODO to be transformed into approveSessionAuthenticate({}) and rejectSessionAuthenticate({})
   Future<void> respondAuthRequest({
     required int id,
     required String iss,
     CacaoSignature? signature,
     WalletConnectError? error,
   });
+
   // FORMER AUTH ENGINE PROPERTY
   // query all pending requests
   Map<int, PendingAuthRequest> getPendingAuthRequests();

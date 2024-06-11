@@ -49,14 +49,14 @@ abstract class ISignEngineApp extends ISignEngineCommon {
     required String topic,
   });
 
-  // FORMER AUTH ENGINE PROPERTY
+  // FORMER AUTH ENGINE METHOD
   Future<AuthRequestResponse> requestAuth({
     required AuthRequestParams params,
     String? pairingTopic,
     List<List<String>>? methods,
   });
 
-  // NEW 1-CA METHOD FOR DAPPS
+  // NEW 1-CA METHOD
   Future<OCARequestResponse> authenticate({
     required OCARequestParams params,
     String? pairingTopic,

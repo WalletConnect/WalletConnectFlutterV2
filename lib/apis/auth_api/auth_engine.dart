@@ -1,10 +1,26 @@
 import 'dart:async';
 
+import 'package:event/event.dart';
+import 'package:walletconnect_flutter_v2/apis/auth_api/i_auth_engine.dart';
+import 'package:walletconnect_flutter_v2/apis/sign_api/models/auth/auth_client_events.dart';
+import 'package:walletconnect_flutter_v2/apis/sign_api/models/auth/auth_client_models.dart';
+import 'package:walletconnect_flutter_v2/apis/sign_api/models/auth/common_auth_models.dart';
+import 'package:walletconnect_flutter_v2/apis/sign_api/models/auth/json_rpc_models.dart';
 import 'package:walletconnect_flutter_v2/apis/core/store/i_generic_store.dart';
+import 'package:walletconnect_flutter_v2/apis/sign_api/utils/auth/address_utils.dart';
+import 'package:walletconnect_flutter_v2/apis/sign_api/utils/auth/auth_api_validators.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/utils/auth/auth_constants.dart';
+import 'package:walletconnect_flutter_v2/apis/sign_api/utils/auth/auth_signature.dart';
 import 'package:walletconnect_flutter_v2/apis/core/crypto/crypto_models.dart';
+import 'package:walletconnect_flutter_v2/apis/core/i_core.dart';
+import 'package:walletconnect_flutter_v2/apis/core/pairing/utils/pairing_models.dart';
 import 'package:walletconnect_flutter_v2/apis/core/pairing/utils/json_rpc_utils.dart';
-import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
+import 'package:walletconnect_flutter_v2/apis/models/basic_models.dart';
+import 'package:walletconnect_flutter_v2/apis/models/json_rpc_error.dart';
+import 'package:walletconnect_flutter_v2/apis/models/json_rpc_request.dart';
+import 'package:walletconnect_flutter_v2/apis/utils/constants.dart';
+import 'package:walletconnect_flutter_v2/apis/utils/errors.dart';
+import 'package:walletconnect_flutter_v2/apis/utils/method_constants.dart';
 
 class AuthEngine implements IAuthEngine {
   static const List<List<String>> DEFAULT_METHODS = [

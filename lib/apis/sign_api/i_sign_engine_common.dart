@@ -40,12 +40,12 @@ abstract class ISignEngineCommon {
   });
   Map<String, ProposalData> getPendingSessionProposals();
 
-  // FORMER AUTH ENGINE PROPERTY
+  // FORMER AUTH ENGINE METHOD
   String formatAuthMessage({
     required String iss,
     required CacaoRequestPayload cacaoPayload,
   });
-  // FORMER AUTH ENGINE PROPERTY
+  // FORMER AUTH ENGINE METHOD
   Map<int, StoredCacao> getCompletedRequestsForPairing({
     required String pairingTopic,
   });

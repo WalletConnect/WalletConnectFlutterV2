@@ -157,8 +157,7 @@ abstract class ISignClient {
     required String pairingTopic,
   });
 
-  // FORMER AUTH ENGINE PROPERTY WALLET
-  // TODO to be transformed into approveSessionAuthenticate({}) and rejectSessionAuthenticate({})
+  // FORMER AUTH ENGINE PROPERTY FOR WALLET
   Future<void> respondAuthRequest({
     required int id,
     required String iss,
@@ -170,7 +169,7 @@ abstract class ISignClient {
   // query all pending requests
   Map<int, PendingAuthRequest> getPendingAuthRequests();
 
-  // FORMER AUTH ENGINE METHOD DAPP
+  // FORMER AUTH ENGINE METHOD FOR DAPP
   Future<AuthRequestResponse> requestAuth({
     required AuthRequestParams params,
     String? pairingTopic,
