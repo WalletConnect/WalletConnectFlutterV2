@@ -1,4 +1,4 @@
-import 'package:walletconnect_flutter_v2/apis/sign_api/models/auth/auth_common_models.dart';
+import 'package:walletconnect_flutter_v2/apis/sign_api/models/auth/common_auth_models.dart';
 
 import '../../shared/shared_test_values.dart';
 

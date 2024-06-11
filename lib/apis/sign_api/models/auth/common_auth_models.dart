@@ -1,10 +1,10 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import 'package:walletconnect_flutter_v2/apis/sign_api/models/auth/auth_client_models.dart';
-import 'package:walletconnect_flutter_v2/apis/sign_api/models/auth/one_click_auth_models.dart';
+import 'package:walletconnect_flutter_v2/apis/sign_api/models/auth/ocauth_models.dart';
 
-part 'auth_common_models.g.dart';
-part 'auth_common_models.freezed.dart';
+part 'common_auth_models.g.dart';
+part 'common_auth_models.freezed.dart';
 
 @freezed
 class AuthPublicKey with _$AuthPublicKey {

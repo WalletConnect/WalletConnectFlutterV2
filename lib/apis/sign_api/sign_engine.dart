@@ -88,7 +88,7 @@ class SignEngine implements ISignEngine {
   final Event<OCAuthResponse> onOCAuthResponse = Event<OCAuthResponse>();
 
   // FORMER AUTH ENGINE PROPERTY (apparently not used befor and not used now)
-  // List<AuthRequestCompleter> pendingAuthRequests = [];
+  List<AuthRequestCompleter> pendingAuthRequests = [];
 
   SignEngine({
     required this.core,

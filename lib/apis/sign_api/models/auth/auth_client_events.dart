@@ -4,7 +4,7 @@ import 'package:event/event.dart';
 import 'package:walletconnect_flutter_v2/apis/models/basic_models.dart';
 import 'package:walletconnect_flutter_v2/apis/models/json_rpc_error.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/models/auth/auth_client_models.dart';
-import 'package:walletconnect_flutter_v2/apis/sign_api/models/auth/auth_common_models.dart';
+import 'package:walletconnect_flutter_v2/apis/sign_api/models/auth/common_auth_models.dart';
 
 class AuthRequest extends EventArgs {
   final int id;

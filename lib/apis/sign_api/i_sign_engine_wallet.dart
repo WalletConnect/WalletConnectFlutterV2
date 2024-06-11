@@ -3,6 +3,7 @@ import 'package:walletconnect_flutter_v2/apis/core/pairing/utils/pairing_models.
 import 'package:walletconnect_flutter_v2/apis/models/basic_models.dart';
 import 'package:walletconnect_flutter_v2/apis/models/json_rpc_response.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/i_sign_engine_common.dart';
+import 'package:walletconnect_flutter_v2/apis/sign_api/models/auth/common_auth_models.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/models/json_rpc_models.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/models/proposal_models.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/models/session_models.dart';
@@ -11,7 +12,6 @@ import 'package:walletconnect_flutter_v2/apis/sign_api/models/sign_client_models
 import 'package:walletconnect_flutter_v2/apis/core/store/i_generic_store.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/models/auth/auth_client_events.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/models/auth/auth_client_models.dart';
-import 'package:walletconnect_flutter_v2/apis/sign_api/models/auth/auth_common_models.dart';
 
 abstract class ISignEngineWallet extends ISignEngineCommon {
   abstract final Event<SessionProposalEvent> onSessionProposal;
