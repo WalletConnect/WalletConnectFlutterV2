@@ -129,30 +129,30 @@ class PendingAuthRequest with _$PendingAuthRequest {
       _$PendingAuthRequestFromJson(json);
 }
 
-class AuthRequestCompleter {
-  final int id;
-  final String pairingTopic;
-  final String responseTopic;
-  final PendingAuthRequest request;
-  final Completer<Cacao> completer;
+// class AuthRequestCompleter {
+//   final int id;
+//   final String pairingTopic;
+//   final String responseTopic;
+//   final PendingAuthRequest request;
+//   final Completer<Cacao> completer;
 
-  AuthRequestCompleter({
-    required this.id,
-    required this.pairingTopic,
-    required this.responseTopic,
-    required this.request,
-    required this.completer,
-  });
-}
+//   AuthRequestCompleter({
+//     required this.id,
+//     required this.pairingTopic,
+//     required this.responseTopic,
+//     required this.request,
+//     required this.completer,
+//   });
+// }
 
-class RespondParams {
-  final int id;
-  final CacaoSignature? signature;
-  final WalletConnectError? error;
+// class RespondParams {
+//   final int id;
+//   final CacaoSignature? signature;
+//   final WalletConnectError? error;
 
-  RespondParams({
-    required this.id,
-    this.signature,
-    this.error,
-  });
-}
+//   RespondParams({
+//     required this.id,
+//     this.signature,
+//     this.error,
+//   });
+// }

@@ -8,7 +8,7 @@ abstract class ISignEngineApp extends ISignEngineCommon {
   // FORMER AUTH ENGINE PROPERTY
   abstract final Event<AuthResponse> onAuthResponse;
   // NEW 1-CA PROPERTY
-  abstract final Event<OCAResponse> onOCAResponse;
+  abstract final Event<OCAuthResponse> onOCAuthResponse;
 
   Future<ConnectResponse> connect({
     Map<String, RequiredNamespace>? requiredNamespaces,

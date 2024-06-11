@@ -498,7 +498,7 @@ class SignClientTestWrapper implements ISignEngine {
   Event<AuthResponse> get onAuthResponse => client.onAuthResponse;
 
   @override
-  Event<OCAResponse> get onOCAResponse => client.onOCAResponse;
+  Event<OCAuthResponse> get onOCAuthResponse => client.onOCAuthResponse;
 
   @override
   IGenericStore<String> get pairingTopics => client.pairingTopics;

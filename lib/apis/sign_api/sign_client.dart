@@ -506,7 +506,7 @@ class SignClient implements ISignClient {
 
   // NEW 1-CLICK AUTH METHOD
   @override
-  Event<OCAResponse> get onOCAResponse => engine.onOCAResponse;
+  Event<OCAuthResponse> get onOCAuthResponse => engine.onOCAuthResponse;
 
   @override
   Future<AuthRequestResponse> requestAuth({

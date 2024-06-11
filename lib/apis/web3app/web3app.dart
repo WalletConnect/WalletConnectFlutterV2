@@ -332,7 +332,7 @@ class Web3App implements IWeb3App {
 
   // NEW 1-CLICK AUTH METHOD
   @override
-  Event<OCAResponse> get onOCAResponse => signEngine.onOCAResponse;
+  Event<OCAuthResponse> get onOCAuthResponse => signEngine.onOCAuthResponse;
 
   @override
   IGenericStore<AuthPublicKey> get authKeys => signEngine.authKeys;

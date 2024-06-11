@@ -85,7 +85,7 @@ class SignEngine implements ISignEngine {
 
   // NEW 1-CA METHOD
   @override
-  final Event<OCAResponse> onOCAResponse = Event<OCAResponse>();
+  final Event<OCAuthResponse> onOCAuthResponse = Event<OCAuthResponse>();
 
   // FORMER AUTH ENGINE PROPERTY (apparently not used befor and not used now)
   // List<AuthRequestCompleter> pendingAuthRequests = [];
@@ -2198,7 +2198,7 @@ class SignEngine implements ISignEngine {
     // ------------------------------------------------------- //
 
     // Send One-Click Auth request
-    Completer<OCAResponse> completer = Completer();
+    Completer<OCAuthResponse> completer = Completer();
     _requestOCAResponseHandler(
       id: id,
       publicKey: publicKey,
@@ -2242,7 +2242,7 @@ class SignEngine implements ISignEngine {
     required String responseTopic,
     required int expiry,
     required WcOCARequestParams request,
-    required Completer<OCAResponse> completer,
+    required Completer<OCAuthResponse> completer,
   }) async {
     //
     late WcOCARequestResult result;
@@ -2256,7 +2256,7 @@ class SignEngine implements ISignEngine {
       );
       result = WcOCARequestResult.fromJson(response);
     } catch (error) {
-      final response = OCAResponse(
+      final response = OCAuthResponse(
         id: id,
         topic: responseTopic,
         jsonRpcError: (error is JsonRpcError) ? error : null,
@@ -2267,7 +2267,7 @@ class SignEngine implements ISignEngine {
               )
             : null,
       );
-      onOCAResponse.broadcast(response);
+      onOCAuthResponse.broadcast(response);
       completer.complete(response);
       return;
     }
@@ -2323,7 +2323,7 @@ class SignEngine implements ISignEngine {
         }
       }
     } on WalletConnectError catch (e) {
-      final resp = OCAResponse(
+      final resp = OCAuthResponse(
         id: id,
         topic: responseTopic,
         error: WalletConnectError(
@@ -2331,7 +2331,7 @@ class SignEngine implements ISignEngine {
           message: e.message,
         ),
       );
-      onOCAResponse.broadcast(resp);
+      onOCAuthResponse.broadcast(resp);
       completer.complete(resp);
       return;
     }
@@ -2369,13 +2369,13 @@ class SignEngine implements ISignEngine {
       session = sessions.get(sessionTopic);
     }
 
-    final resp = OCAResponse(
+    final resp = OCAuthResponse(
       id: id,
       topic: responseTopic,
       auths: cacaos,
       session: session,
     );
-    onOCAResponse.broadcast(resp);
+    onOCAuthResponse.broadcast(resp);
     completer.complete(resp);
   }
 
