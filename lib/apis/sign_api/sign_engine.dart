@@ -172,7 +172,7 @@ class SignEngine implements ISignEngine {
     final publicKey = await core.crypto.generateKeyPair();
     final int id = JsonRpcUtils.payloadId();
 
-    final WcSessionProposeRequest request = WcSessionProposeRequest(
+    final request = WcSessionProposeRequest(
       relays:
           relays ?? [Relay(WalletConnectConstants.RELAYER_DEFAULT_PROTOCOL)],
       requiredNamespaces: requiredNamespaces ?? {},
@@ -241,7 +241,7 @@ class SignEngine implements ISignEngine {
       final Map<String, dynamic> response = await core.pairing.sendRequest(
         topic,
         MethodConstants.WC_SESSION_PROPOSE,
-        request,
+        request.toJson(),
         id: requestId,
       );
       final String peerPublicKey = response['responderPublicKey'];
@@ -974,11 +974,11 @@ class SignEngine implements ISignEngine {
       type: ProtocolType.sign,
     );
     // TODO on following PR to be used by Wallet
-    core.pairing.register(
-      method: MethodConstants.WC_SESSION_AUTHENTICATE,
-      function: _onOCARequest,
-      type: ProtocolType.sign,
-    );
+    // core.pairing.register(
+    //   method: MethodConstants.WC_SESSION_AUTHENTICATE,
+    //   function: _onOCARequest,
+    //   type: ProtocolType.sign,
+    // );
   }
 
   Future<void> _onSessionProposeRequest(
@@ -1852,7 +1852,6 @@ class SignEngine implements ISignEngine {
   }
 
   // FORMER AUTH ENGINE PROPERTY
-  // Formats the message that is coming from requestAuth()
   @override
   String formatAuthMessage({
     required String iss,
@@ -2492,44 +2491,43 @@ class SignEngine implements ISignEngine {
     }
   }
 
-  // TODO
-  void _onOCARequest(String topic, JsonRpcRequest payload) async {
-    // TODO to be implemented for Wallet usage on following PR
-    // try {
-    //   final request = WcOCARequestRequest.fromJson(payload.params);
+  // // TODO to be implemented for Wallet usage on following PR
+  // void _onOCARequest(String topic, JsonRpcRequest payload) async {
+  //   try {
+  //     final request = WcOCARequestRequest.fromJson(payload.params);
 
-    //   final CacaoRequestPayload cacaoPayload =
-    //       CacaoRequestPayload.fromPayloadParams(
-    //     request.payloadParams,
-    //   );
+  //     final CacaoRequestPayload cacaoPayload =
+  //         CacaoRequestPayload.fromPayloadParams(
+  //       request.payloadParams,
+  //     );
 
-    //   authRequests.set(
-    //     payload.id.toString(),
-    //     PendingAuthRequest(
-    //       id: payload.id,
-    //       pairingTopic: topic,
-    //       metadata: request.requester,
-    //       cacaoPayload: cacaoPayload,
-    //     ),
-    //   );
+  //     authRequests.set(
+  //       payload.id.toString(),
+  //       PendingAuthRequest(
+  //         id: payload.id,
+  //         pairingTopic: topic,
+  //         metadata: request.requester,
+  //         cacaoPayload: cacaoPayload,
+  //       ),
+  //     );
 
-    //   onAuthRequest.broadcast(
-    //     AuthRequest(
-    //       id: payload.id,
-    //       topic: topic,
-    //       requester: request.requester,
-    //       payloadParams: request.payloadParams,
-    //     ),
-    //   );
-    // } on WalletConnectError catch (err) {
-    //   await core.pairing.sendError(
-    //     payload.id,
-    //     topic,
-    //     payload.method,
-    //     JsonRpcError.invalidParams(
-    //       err.message,
-    //     ),
-    //   );
-    // }
-  }
+  //     onAuthRequest.broadcast(
+  //       AuthRequest(
+  //         id: payload.id,
+  //         topic: topic,
+  //         requester: request.requester,
+  //         payloadParams: request.payloadParams,
+  //       ),
+  //     );
+  //   } on WalletConnectError catch (err) {
+  //     await core.pairing.sendError(
+  //       payload.id,
+  //       topic,
+  //       payload.method,
+  //       JsonRpcError.invalidParams(
+  //         err.message,
+  //       ),
+  //     );
+  //   }
+  // }
 }

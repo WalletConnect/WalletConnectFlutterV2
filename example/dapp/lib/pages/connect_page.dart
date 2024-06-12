@@ -2,6 +2,7 @@
 
 import 'dart:async';
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:fl_toast/fl_toast.dart';
 import 'package:flutter/foundation.dart';
@@ -424,7 +425,7 @@ class ConnectPageState extends State<ConnectPage> {
 
       debugPrint('[SampleDapp] Awaiting authentication response');
       final response = await authResponse.completer.future;
-      debugPrint('[SampleDapp] response ${jsonEncode(response.toJson())}');
+      log('[SampleDapp] response ${jsonEncode(response.toJson())}');
 
       if (response.result != null) {
         showPlatformToast(
@@ -494,7 +495,7 @@ class ConnectPageState extends State<ConnectPage> {
     try {
       debugPrint('[SampleDapp] Awaiting 1-CA session');
       final response = await authResponse.completer.future;
-      debugPrint('[SampleDapp] response ${jsonEncode(response.toJson())}');
+      log('[SampleDapp] response ${jsonEncode(response.toJson())}');
 
       if (response.session != null) {
         showPlatformToast(

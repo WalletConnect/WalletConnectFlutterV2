@@ -344,8 +344,6 @@ class AuthEngine implements IAuthEngine {
     return completedRequests;
   }
 
-  // kind of a core method to move to sign
-  // Formats the message that is coming from requestAuth()
   @override
   String formatAuthMessage({
     required String iss,
