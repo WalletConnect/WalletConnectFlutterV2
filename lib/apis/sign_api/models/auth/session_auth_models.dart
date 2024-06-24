@@ -71,11 +71,10 @@ class SessionAuthRequestParams {
       };
 }
 
-// TODO this should be called SessionAuthPayload
 @freezed
-class SessionAuthPayloadParams with _$SessionAuthPayloadParams {
+class SessionAuthPayload with _$SessionAuthPayload {
   @JsonSerializable(includeIfNull: false)
-  const factory SessionAuthPayloadParams({
+  const factory SessionAuthPayload({
     required List<String> chains,
     required String domain,
     required String nonce,
@@ -90,12 +89,12 @@ class SessionAuthPayloadParams with _$SessionAuthPayloadParams {
     String? statement,
     String? requestId,
     List<String>? resources,
-  }) = _SessionAuthPayloadParams;
+  }) = _SessionAuthPayload;
 
-  factory SessionAuthPayloadParams.fromRequestParams(
+  factory SessionAuthPayload.fromRequestParams(
     SessionAuthRequestParams params,
   ) {
-    return SessionAuthPayloadParams(
+    return SessionAuthPayload(
       chains: params.chains,
       domain: params.domain,
       nonce: params.nonce,
@@ -112,8 +111,8 @@ class SessionAuthPayloadParams with _$SessionAuthPayloadParams {
     );
   }
 
-  factory SessionAuthPayloadParams.fromJson(Map<String, dynamic> json) =>
-      _$SessionAuthPayloadParamsFromJson(json);
+  factory SessionAuthPayload.fromJson(Map<String, dynamic> json) =>
+      _$SessionAuthPayloadFromJson(json);
 }
 
 @freezed

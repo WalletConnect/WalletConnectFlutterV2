@@ -200,7 +200,7 @@ class WcAuthRequestResult with _$WcAuthRequestResult {
 class WcSessionAuthRequestParams with _$WcSessionAuthRequestParams {
   @JsonSerializable()
   const factory WcSessionAuthRequestParams({
-    required SessionAuthPayloadParams authPayload,
+    required SessionAuthPayload authPayload,
     required ConnectionMetadata requester,
     required int expiryTimestamp,
   }) = _WcSessionAuthRequestParams;

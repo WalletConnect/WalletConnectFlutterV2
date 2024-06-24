@@ -12,14 +12,14 @@ import 'package:walletconnect_flutter_v2/apis/sign_api/models/auth/session_auth_
 class SessionAuthRequest extends EventArgs {
   final int id;
   final String topic;
-  final SessionAuthPayloadParams payloadParams;
+  final SessionAuthPayload authPayload;
   final ConnectionMetadata requester;
   final VerifyContext? verifyContext;
 
   SessionAuthRequest({
     required this.id,
     required this.topic,
-    required this.payloadParams,
+    required this.authPayload,
     required this.requester,
     this.verifyContext,
   });
@@ -27,7 +27,7 @@ class SessionAuthRequest extends EventArgs {
   Map<String, dynamic> toJson() => {
         'id': id,
         'topic': topic,
-        'payloadParams': payloadParams.toJson(),
+        'authPayload': authPayload.toJson(),
         'requester': requester.toJson(),
         'verifyContext': verifyContext?.toJson(),
       };

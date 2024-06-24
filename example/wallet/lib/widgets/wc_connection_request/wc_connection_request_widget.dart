@@ -14,14 +14,14 @@ class WCConnectionRequestWidget extends StatelessWidget {
   const WCConnectionRequestWidget({
     Key? key,
     this.authPayloadParams,
-    this.sessionAuthPayloadParams,
+    this.sessionAuthPayload,
     this.proposalData,
     this.metadata,
     this.verifyContext,
   }) : super(key: key);
 
   final AuthPayloadParams? authPayloadParams;
-  final SessionAuthPayloadParams? sessionAuthPayloadParams;
+  final SessionAuthPayload? sessionAuthPayload;
   final ProposalData? proposalData;
   final ConnectionMetadata? metadata;
   final VerifyContext? verifyContext;
@@ -56,7 +56,7 @@ class WCConnectionRequestWidget extends StatelessWidget {
           const SizedBox(height: StyleConstants.linear8),
           (authPayloadParams != null)
               ? _buildAuthRequestView()
-              : (sessionAuthPayloadParams != null)
+              : (sessionAuthPayload != null)
                   ? _buildSessionAuthRequestView()
                   : _buildSessionProposalView(context),
         ],
@@ -93,12 +93,12 @@ class WCConnectionRequestWidget extends StatelessWidget {
   Widget _buildSessionAuthRequestView() {
     final web3Wallet = GetIt.I<IWeb3WalletService>().web3wallet;
     //
-    final cacaoPayload = CacaoRequestPayload.fromSessionAuthPayloadParams(
-      sessionAuthPayloadParams!,
+    final cacaoPayload = CacaoRequestPayload.fromSessionAuthPayload(
+      sessionAuthPayload!,
     );
     //
     final List<WCConnectionModel> messagesModels = [];
-    for (var chain in sessionAuthPayloadParams!.chains) {
+    for (var chain in sessionAuthPayload!.chains) {
       final chainKeys = GetIt.I<IKeyService>().getKeysForChain(chain);
       final iss = 'did:pkh:$chain:${chainKeys.first.address}';
       final message = web3Wallet.formatAuthMessage(

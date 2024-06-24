@@ -252,9 +252,9 @@ class Web3WalletService extends IWeb3WalletService {
   }
 
   Future<void> _onSessionAuthRequest(SessionAuthRequest? args) async {
-    log('[SampleWallet] _onSessionAuthRequest ${args?.payloadParams}');
+    log('[SampleWallet] _onSessionAuthRequest ${args?.authPayload}');
     if (args != null) {
-      final SessionAuthPayloadParams payloadParams = args.payloadParams;
+      final SessionAuthPayload payloadParams = args.authPayload;
       final supportedChains = ChainData.eip155Chains.map((e) => e.chainId);
       final supportedMethods = SupportedEVMMethods.values.map((e) => e.name);
       final newPayloadParams = AuthSignature.populateAuthPayload(
@@ -262,8 +262,7 @@ class Web3WalletService extends IWeb3WalletService {
         chains: supportedChains.toList(),
         methods: supportedMethods.toList(),
       );
-      final cacaoRequestPayload =
-          CacaoRequestPayload.fromSessionAuthPayloadParams(
+      final cacaoRequestPayload = CacaoRequestPayload.fromSessionAuthPayload(
         newPayloadParams,
       );
       final List<Map<String, dynamic>> formattedMessages = [];
@@ -281,7 +280,7 @@ class Web3WalletService extends IWeb3WalletService {
       final WCBottomSheetResult rs = await _bottomSheetHandler.queueBottomSheet(
         widget: WCSessionAuthRequestWidget(
           child: WCConnectionRequestWidget(
-            sessionAuthPayloadParams: newPayloadParams,
+            sessionAuthPayload: newPayloadParams,
             verifyContext: args.verifyContext,
             metadata: args.requester,
           ),

@@ -6,9 +6,9 @@ part of 'session_auth_models.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$SessionAuthPayloadParamsImpl _$$SessionAuthPayloadParamsImplFromJson(
+_$SessionAuthPayloadImpl _$$SessionAuthPayloadImplFromJson(
         Map<String, dynamic> json) =>
-    _$SessionAuthPayloadParamsImpl(
+    _$SessionAuthPayloadImpl(
       chains:
           (json['chains'] as List<dynamic>).map((e) => e as String).toList(),
       domain: json['domain'] as String,
@@ -26,8 +26,8 @@ _$SessionAuthPayloadParamsImpl _$$SessionAuthPayloadParamsImplFromJson(
           .toList(),
     );
 
-Map<String, dynamic> _$$SessionAuthPayloadParamsImplToJson(
-    _$SessionAuthPayloadParamsImpl instance) {
+Map<String, dynamic> _$$SessionAuthPayloadImplToJson(
+    _$SessionAuthPayloadImpl instance) {
   final val = <String, dynamic>{
     'chains': instance.chains,
     'domain': instance.domain,

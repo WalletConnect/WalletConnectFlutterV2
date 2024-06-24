@@ -48,8 +48,8 @@ class CacaoRequestPayload with _$CacaoRequestPayload {
     );
   }
 
-  factory CacaoRequestPayload.fromSessionAuthPayloadParams(
-    SessionAuthPayloadParams params,
+  factory CacaoRequestPayload.fromSessionAuthPayload(
+    SessionAuthPayload params,
   ) {
     return CacaoRequestPayload(
       domain: params.domain,

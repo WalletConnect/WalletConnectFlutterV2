@@ -2194,7 +2194,7 @@ class SignEngine implements ISignEngine {
     );
 
     final request = WcSessionAuthRequestParams(
-      authPayload: SessionAuthPayloadParams.fromRequestParams(params).copyWith(
+      authPayload: SessionAuthPayload.fromRequestParams(params).copyWith(
         resources: resources,
       ),
       requester: ConnectionMetadata(
@@ -2629,7 +2629,6 @@ class SignEngine implements ISignEngine {
       metadata: pendingRequest.requester.metadata,
     );
 
-    // return session; ? TODO check if should return session
     return ApproveResponse(
       topic: sessionTopic,
       session: session,
@@ -2726,9 +2725,7 @@ class SignEngine implements ISignEngine {
       payload.params,
     );
     try {
-      // AuthApiValidators.isValidAuthenticate(params); // TODO
-
-      final cacaoPayload = CacaoRequestPayload.fromSessionAuthPayloadParams(
+      final cacaoPayload = CacaoRequestPayload.fromSessionAuthPayload(
         sessionAuthRequest.authPayload,
       );
 
@@ -2750,8 +2747,8 @@ class SignEngine implements ISignEngine {
         SessionAuthRequest(
           id: payload.id,
           topic: topic,
-          requester: sessionAuthRequest.requester, // TODO is this needed?
-          payloadParams: sessionAuthRequest.authPayload,
+          requester: sessionAuthRequest.requester,
+          authPayload: sessionAuthRequest.authPayload,
           verifyContext: verifyContext,
         ),
       );

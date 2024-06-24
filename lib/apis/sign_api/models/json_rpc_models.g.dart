@@ -307,7 +307,7 @@ Map<String, dynamic> _$$WcAuthRequestResultImplToJson(
 _$WcSessionAuthRequestParamsImpl _$$WcSessionAuthRequestParamsImplFromJson(
         Map<String, dynamic> json) =>
     _$WcSessionAuthRequestParamsImpl(
-      authPayload: SessionAuthPayloadParams.fromJson(
+      authPayload: SessionAuthPayload.fromJson(
           json['authPayload'] as Map<String, dynamic>),
       requester: ConnectionMetadata.fromJson(
           json['requester'] as Map<String, dynamic>),

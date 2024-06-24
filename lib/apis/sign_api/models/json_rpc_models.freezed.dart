@@ -2759,8 +2759,7 @@ WcSessionAuthRequestParams _$WcSessionAuthRequestParamsFromJson(
 
 /// @nodoc
 mixin _$WcSessionAuthRequestParams {
-  SessionAuthPayloadParams get authPayload =>
-      throw _privateConstructorUsedError;
+  SessionAuthPayload get authPayload => throw _privateConstructorUsedError;
   ConnectionMetadata get requester => throw _privateConstructorUsedError;
   int get expiryTimestamp => throw _privateConstructorUsedError;
 
@@ -2778,11 +2777,11 @@ abstract class $WcSessionAuthRequestParamsCopyWith<$Res> {
           WcSessionAuthRequestParams>;
   @useResult
   $Res call(
-      {SessionAuthPayloadParams authPayload,
+      {SessionAuthPayload authPayload,
       ConnectionMetadata requester,
       int expiryTimestamp});
 
-  $SessionAuthPayloadParamsCopyWith<$Res> get authPayload;
+  $SessionAuthPayloadCopyWith<$Res> get authPayload;
   $ConnectionMetadataCopyWith<$Res> get requester;
 }
 
@@ -2808,7 +2807,7 @@ class _$WcSessionAuthRequestParamsCopyWithImpl<$Res,
       authPayload: null == authPayload
           ? _value.authPayload
           : authPayload // ignore: cast_nullable_to_non_nullable
-              as SessionAuthPayloadParams,
+              as SessionAuthPayload,
       requester: null == requester
           ? _value.requester
           : requester // ignore: cast_nullable_to_non_nullable
@@ -2822,8 +2821,8 @@ class _$WcSessionAuthRequestParamsCopyWithImpl<$Res,
 
   @override
   @pragma('vm:prefer-inline')
-  $SessionAuthPayloadParamsCopyWith<$Res> get authPayload {
-    return $SessionAuthPayloadParamsCopyWith<$Res>(_value.authPayload, (value) {
+  $SessionAuthPayloadCopyWith<$Res> get authPayload {
+    return $SessionAuthPayloadCopyWith<$Res>(_value.authPayload, (value) {
       return _then(_value.copyWith(authPayload: value) as $Val);
     });
   }
@@ -2847,12 +2846,12 @@ abstract class _$$WcSessionAuthRequestParamsImplCopyWith<$Res>
   @override
   @useResult
   $Res call(
-      {SessionAuthPayloadParams authPayload,
+      {SessionAuthPayload authPayload,
       ConnectionMetadata requester,
       int expiryTimestamp});
 
   @override
-  $SessionAuthPayloadParamsCopyWith<$Res> get authPayload;
+  $SessionAuthPayloadCopyWith<$Res> get authPayload;
   @override
   $ConnectionMetadataCopyWith<$Res> get requester;
 }
@@ -2878,7 +2877,7 @@ class __$$WcSessionAuthRequestParamsImplCopyWithImpl<$Res>
       authPayload: null == authPayload
           ? _value.authPayload
           : authPayload // ignore: cast_nullable_to_non_nullable
-              as SessionAuthPayloadParams,
+              as SessionAuthPayload,
       requester: null == requester
           ? _value.requester
           : requester // ignore: cast_nullable_to_non_nullable
@@ -2905,7 +2904,7 @@ class _$WcSessionAuthRequestParamsImpl implements _WcSessionAuthRequestParams {
       _$$WcSessionAuthRequestParamsImplFromJson(json);
 
   @override
-  final SessionAuthPayloadParams authPayload;
+  final SessionAuthPayload authPayload;
   @override
   final ConnectionMetadata requester;
   @override
@@ -2952,7 +2951,7 @@ class _$WcSessionAuthRequestParamsImpl implements _WcSessionAuthRequestParams {
 abstract class _WcSessionAuthRequestParams
     implements WcSessionAuthRequestParams {
   const factory _WcSessionAuthRequestParams(
-      {required final SessionAuthPayloadParams authPayload,
+      {required final SessionAuthPayload authPayload,
       required final ConnectionMetadata requester,
       required final int expiryTimestamp}) = _$WcSessionAuthRequestParamsImpl;
 
@@ -2960,7 +2959,7 @@ abstract class _WcSessionAuthRequestParams
       _$WcSessionAuthRequestParamsImpl.fromJson;
 
   @override
-  SessionAuthPayloadParams get authPayload;
+  SessionAuthPayload get authPayload;
   @override
   ConnectionMetadata get requester;
   @override

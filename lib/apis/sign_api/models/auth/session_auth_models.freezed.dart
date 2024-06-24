@@ -14,13 +14,12 @@ T _$identity<T>(T value) => value;
 final _privateConstructorUsedError = UnsupportedError(
     'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
 
-SessionAuthPayloadParams _$SessionAuthPayloadParamsFromJson(
-    Map<String, dynamic> json) {
-  return _SessionAuthPayloadParams.fromJson(json);
+SessionAuthPayload _$SessionAuthPayloadFromJson(Map<String, dynamic> json) {
+  return _SessionAuthPayload.fromJson(json);
 }
 
 /// @nodoc
-mixin _$SessionAuthPayloadParams {
+mixin _$SessionAuthPayload {
   List<String> get chains => throw _privateConstructorUsedError;
   String get domain => throw _privateConstructorUsedError;
   String get nonce => throw _privateConstructorUsedError;
@@ -36,15 +35,15 @@ mixin _$SessionAuthPayloadParams {
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
-  $SessionAuthPayloadParamsCopyWith<SessionAuthPayloadParams> get copyWith =>
+  $SessionAuthPayloadCopyWith<SessionAuthPayload> get copyWith =>
       throw _privateConstructorUsedError;
 }
 
 /// @nodoc
-abstract class $SessionAuthPayloadParamsCopyWith<$Res> {
-  factory $SessionAuthPayloadParamsCopyWith(SessionAuthPayloadParams value,
-          $Res Function(SessionAuthPayloadParams) then) =
-      _$SessionAuthPayloadParamsCopyWithImpl<$Res, SessionAuthPayloadParams>;
+abstract class $SessionAuthPayloadCopyWith<$Res> {
+  factory $SessionAuthPayloadCopyWith(
+          SessionAuthPayload value, $Res Function(SessionAuthPayload) then) =
+      _$SessionAuthPayloadCopyWithImpl<$Res, SessionAuthPayload>;
   @useResult
   $Res call(
       {List<String> chains,
@@ -62,10 +61,9 @@ abstract class $SessionAuthPayloadParamsCopyWith<$Res> {
 }
 
 /// @nodoc
-class _$SessionAuthPayloadParamsCopyWithImpl<$Res,
-        $Val extends SessionAuthPayloadParams>
-    implements $SessionAuthPayloadParamsCopyWith<$Res> {
-  _$SessionAuthPayloadParamsCopyWithImpl(this._value, this._then);
+class _$SessionAuthPayloadCopyWithImpl<$Res, $Val extends SessionAuthPayload>
+    implements $SessionAuthPayloadCopyWith<$Res> {
+  _$SessionAuthPayloadCopyWithImpl(this._value, this._then);
 
   // ignore: unused_field
   final $Val _value;
@@ -142,12 +140,11 @@ class _$SessionAuthPayloadParamsCopyWithImpl<$Res,
 }
 
 /// @nodoc
-abstract class _$$SessionAuthPayloadParamsImplCopyWith<$Res>
-    implements $SessionAuthPayloadParamsCopyWith<$Res> {
-  factory _$$SessionAuthPayloadParamsImplCopyWith(
-          _$SessionAuthPayloadParamsImpl value,
-          $Res Function(_$SessionAuthPayloadParamsImpl) then) =
-      __$$SessionAuthPayloadParamsImplCopyWithImpl<$Res>;
+abstract class _$$SessionAuthPayloadImplCopyWith<$Res>
+    implements $SessionAuthPayloadCopyWith<$Res> {
+  factory _$$SessionAuthPayloadImplCopyWith(_$SessionAuthPayloadImpl value,
+          $Res Function(_$SessionAuthPayloadImpl) then) =
+      __$$SessionAuthPayloadImplCopyWithImpl<$Res>;
   @override
   @useResult
   $Res call(
@@ -166,13 +163,11 @@ abstract class _$$SessionAuthPayloadParamsImplCopyWith<$Res>
 }
 
 /// @nodoc
-class __$$SessionAuthPayloadParamsImplCopyWithImpl<$Res>
-    extends _$SessionAuthPayloadParamsCopyWithImpl<$Res,
-        _$SessionAuthPayloadParamsImpl>
-    implements _$$SessionAuthPayloadParamsImplCopyWith<$Res> {
-  __$$SessionAuthPayloadParamsImplCopyWithImpl(
-      _$SessionAuthPayloadParamsImpl _value,
-      $Res Function(_$SessionAuthPayloadParamsImpl) _then)
+class __$$SessionAuthPayloadImplCopyWithImpl<$Res>
+    extends _$SessionAuthPayloadCopyWithImpl<$Res, _$SessionAuthPayloadImpl>
+    implements _$$SessionAuthPayloadImplCopyWith<$Res> {
+  __$$SessionAuthPayloadImplCopyWithImpl(_$SessionAuthPayloadImpl _value,
+      $Res Function(_$SessionAuthPayloadImpl) _then)
       : super(_value, _then);
 
   @pragma('vm:prefer-inline')
@@ -191,7 +186,7 @@ class __$$SessionAuthPayloadParamsImplCopyWithImpl<$Res>
     Object? requestId = freezed,
     Object? resources = freezed,
   }) {
-    return _then(_$SessionAuthPayloadParamsImpl(
+    return _then(_$SessionAuthPayloadImpl(
       chains: null == chains
           ? _value._chains
           : chains // ignore: cast_nullable_to_non_nullable
@@ -247,8 +242,8 @@ class __$$SessionAuthPayloadParamsImplCopyWithImpl<$Res>
 /// @nodoc
 
 @JsonSerializable(includeIfNull: false)
-class _$SessionAuthPayloadParamsImpl implements _SessionAuthPayloadParams {
-  const _$SessionAuthPayloadParamsImpl(
+class _$SessionAuthPayloadImpl implements _SessionAuthPayload {
+  const _$SessionAuthPayloadImpl(
       {required final List<String> chains,
       required this.domain,
       required this.nonce,
@@ -264,8 +259,8 @@ class _$SessionAuthPayloadParamsImpl implements _SessionAuthPayloadParams {
       : _chains = chains,
         _resources = resources;
 
-  factory _$SessionAuthPayloadParamsImpl.fromJson(Map<String, dynamic> json) =>
-      _$$SessionAuthPayloadParamsImplFromJson(json);
+  factory _$SessionAuthPayloadImpl.fromJson(Map<String, dynamic> json) =>
+      _$$SessionAuthPayloadImplFromJson(json);
 
   final List<String> _chains;
   @override
@@ -309,14 +304,14 @@ class _$SessionAuthPayloadParamsImpl implements _SessionAuthPayloadParams {
 
   @override
   String toString() {
-    return 'SessionAuthPayloadParams(chains: $chains, domain: $domain, nonce: $nonce, aud: $aud, type: $type, version: $version, iat: $iat, nbf: $nbf, exp: $exp, statement: $statement, requestId: $requestId, resources: $resources)';
+    return 'SessionAuthPayload(chains: $chains, domain: $domain, nonce: $nonce, aud: $aud, type: $type, version: $version, iat: $iat, nbf: $nbf, exp: $exp, statement: $statement, requestId: $requestId, resources: $resources)';
   }
 
   @override
   bool operator ==(dynamic other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$SessionAuthPayloadParamsImpl &&
+            other is _$SessionAuthPayloadImpl &&
             const DeepCollectionEquality().equals(other._chains, _chains) &&
             (identical(other.domain, domain) || other.domain == domain) &&
             (identical(other.nonce, nonce) || other.nonce == nonce) &&
@@ -354,20 +349,20 @@ class _$SessionAuthPayloadParamsImpl implements _SessionAuthPayloadParams {
   @JsonKey(ignore: true)
   @override
   @pragma('vm:prefer-inline')
-  _$$SessionAuthPayloadParamsImplCopyWith<_$SessionAuthPayloadParamsImpl>
-      get copyWith => __$$SessionAuthPayloadParamsImplCopyWithImpl<
-          _$SessionAuthPayloadParamsImpl>(this, _$identity);
+  _$$SessionAuthPayloadImplCopyWith<_$SessionAuthPayloadImpl> get copyWith =>
+      __$$SessionAuthPayloadImplCopyWithImpl<_$SessionAuthPayloadImpl>(
+          this, _$identity);
 
   @override
   Map<String, dynamic> toJson() {
-    return _$$SessionAuthPayloadParamsImplToJson(
+    return _$$SessionAuthPayloadImplToJson(
       this,
     );
   }
 }
 
-abstract class _SessionAuthPayloadParams implements SessionAuthPayloadParams {
-  const factory _SessionAuthPayloadParams(
+abstract class _SessionAuthPayload implements SessionAuthPayload {
+  const factory _SessionAuthPayload(
       {required final List<String> chains,
       required final String domain,
       required final String nonce,
@@ -379,10 +374,10 @@ abstract class _SessionAuthPayloadParams implements SessionAuthPayloadParams {
       final String? exp,
       final String? statement,
       final String? requestId,
-      final List<String>? resources}) = _$SessionAuthPayloadParamsImpl;
+      final List<String>? resources}) = _$SessionAuthPayloadImpl;
 
-  factory _SessionAuthPayloadParams.fromJson(Map<String, dynamic> json) =
-      _$SessionAuthPayloadParamsImpl.fromJson;
+  factory _SessionAuthPayload.fromJson(Map<String, dynamic> json) =
+      _$SessionAuthPayloadImpl.fromJson;
 
   @override
   List<String> get chains;
@@ -410,8 +405,8 @@ abstract class _SessionAuthPayloadParams implements SessionAuthPayloadParams {
   List<String>? get resources;
   @override
   @JsonKey(ignore: true)
-  _$$SessionAuthPayloadParamsImplCopyWith<_$SessionAuthPayloadParamsImpl>
-      get copyWith => throw _privateConstructorUsedError;
+  _$$SessionAuthPayloadImplCopyWith<_$SessionAuthPayloadImpl> get copyWith =>
+      throw _privateConstructorUsedError;
 }
 
 PendingSessionAuthRequest _$PendingSessionAuthRequestFromJson(

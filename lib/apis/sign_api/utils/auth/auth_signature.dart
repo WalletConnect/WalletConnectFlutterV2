@@ -209,8 +209,8 @@ class AuthSignature {
     );
   }
 
-  static SessionAuthPayloadParams populateAuthPayload({
-    required SessionAuthPayloadParams authPayload,
+  static SessionAuthPayload populateAuthPayload({
+    required SessionAuthPayload authPayload,
     required List<String> chains,
     required List<String> methods,
   }) {
@@ -267,7 +267,7 @@ class AuthSignature {
       updatedResources.add(ReCapsUtils.encodeRecap(updatedRecap));
     }
     //
-    return SessionAuthPayloadParams.fromJson(authPayload.toJson()).copyWith(
+    return SessionAuthPayload.fromJson(authPayload.toJson()).copyWith(
       statement: ReCapsUtils.buildRecapStatement(
         statement,
         ReCapsUtils.getRecapFromResources(resources: updatedResources),
