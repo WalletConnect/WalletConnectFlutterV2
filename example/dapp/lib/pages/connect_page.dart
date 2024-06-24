@@ -1,8 +1,5 @@
-// ignore_for_file: use_build_context_synchronously
-
 import 'dart:async';
 import 'dart:convert';
-import 'dart:developer';
 
 import 'package:fl_toast/fl_toast.dart';
 import 'package:flutter/foundation.dart';
@@ -179,6 +176,9 @@ class ConnectPageState extends State<ConnectPage> {
                       Navigator.of(context).pop();
                     }
                   },
+                  showToast: (message) {
+                    showPlatformToast(child: Text(message), context: context);
+                  },
                 ),
         style: ButtonStyle(
           backgroundColor: MaterialStateProperty.resolveWith<Color>(
@@ -298,6 +298,7 @@ class ConnectPageState extends State<ConnectPage> {
     // final uri = 'metamask://wc?uri=$encodedUri';
     if (await canLaunchUrlString(uri)) {
       final openApp = await showDialog(
+        // ignore: use_build_context_synchronously
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
@@ -377,7 +378,10 @@ class ConnectPageState extends State<ConnectPage> {
     );
   }
 
-  void _requestAuth(SessionConnect? event) async {
+  void _requestAuth(
+    SessionConnect? event, {
+    Function(String message)? showToast,
+  }) async {
     final shouldAuth = await showDialog(
       context: context,
       barrierDismissible: false,
@@ -425,33 +429,25 @@ class ConnectPageState extends State<ConnectPage> {
 
       debugPrint('[SampleDapp] Awaiting authentication response');
       final response = await authResponse.completer.future;
-      log('[SampleDapp] response ${jsonEncode(response.toJson())}');
-
       if (response.result != null) {
-        showPlatformToast(
-          child: const Text(StringConstants.authSucceeded),
-          context: context,
-        );
+        showToast?.call(StringConstants.authSucceeded);
       } else {
         final error = response.error ?? response.jsonRpcError;
-        showPlatformToast(
-          child: Text(error.toString()),
-          context: context,
-        );
+        showToast?.call(error.toString());
       }
     } catch (e) {
       debugPrint('[SampleDapp] auth $e');
-      showPlatformToast(
-        child: const Text(StringConstants.connectionFailed),
-        context: context,
-      );
+      showToast?.call(StringConstants.connectionFailed);
     }
   }
 
-  void _oneClickAuth({VoidCallback? closeModal}) async {
+  void _oneClickAuth({
+    VoidCallback? closeModal,
+    Function(String message)? showToast,
+  }) async {
     final methods = optionalNamespaces['eip155']?.methods ?? [];
     final authResponse = await widget.web3App.authenticate(
-      params: OCARequestParams(
+      params: SessionAuthRequestParams(
         chains: _selectedChains.map((e) => e.chainId).toList(),
         domain: Constants.domain,
         nonce: AuthUtils.generateNonce(),
@@ -466,6 +462,7 @@ class ConnectPageState extends State<ConnectPage> {
 
     if (await canLaunchUrlString(uri)) {
       final openApp = await showDialog(
+        // ignore: use_build_context_synchronously
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
@@ -495,29 +492,18 @@ class ConnectPageState extends State<ConnectPage> {
     try {
       debugPrint('[SampleDapp] Awaiting 1-CA session');
       final response = await authResponse.completer.future;
-      log('[SampleDapp] response ${jsonEncode(response.toJson())}');
 
       if (response.session != null) {
-        showPlatformToast(
-          child: const Text(
-            '${StringConstants.authSucceeded} and '
-            '${StringConstants.connectionEstablished}',
-          ),
-          context: context,
+        showToast?.call(
+          '${StringConstants.authSucceeded} and ${StringConstants.connectionEstablished}',
         );
       } else {
         final error = response.error ?? response.jsonRpcError;
-        showPlatformToast(
-          child: Text(error.toString()),
-          context: context,
-        );
+        showToast?.call(error.toString());
       }
     } catch (e) {
       debugPrint('[SampleDapp] 1-CA $e');
-      showPlatformToast(
-        child: const Text(StringConstants.connectionFailed),
-        context: context,
-      );
+      showToast?.call(StringConstants.connectionFailed);
     }
     closeModal?.call();
   }
@@ -530,7 +516,12 @@ class ConnectPageState extends State<ConnectPage> {
       Navigator.pop(context);
     }
 
-    _requestAuth(event);
+    _requestAuth(
+      event,
+      showToast: (message) {
+        showPlatformToast(child: Text(message), context: context);
+      },
+    );
   }
 }
 

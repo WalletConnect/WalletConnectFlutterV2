@@ -87,6 +87,14 @@ void main() {
             return StoredCacao.fromJson(value);
           },
         ),
+        sessionAuthRequests: GenericStore(
+          storage: core.storage,
+          context: StoreVersions.CONTEXT_AUTH_REQUESTS,
+          version: StoreVersions.VERSION_AUTH_REQUESTS,
+          fromJson: (dynamic value) {
+            return PendingSessionAuthRequest.fromJson(value);
+          },
+        ),
       );
       await core.start();
       await e.init();
@@ -158,6 +166,14 @@ void main() {
           version: StoreVersions.VERSION_COMPLETE_REQUESTS,
           fromJson: (dynamic value) {
             return StoredCacao.fromJson(value);
+          },
+        ),
+        sessionAuthRequests: GenericStore(
+          storage: core.storage,
+          context: StoreVersions.CONTEXT_AUTH_REQUESTS,
+          version: StoreVersions.VERSION_AUTH_REQUESTS,
+          fromJson: (dynamic value) {
+            return PendingSessionAuthRequest.fromJson(value);
           },
         ),
       );

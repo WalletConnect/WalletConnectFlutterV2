@@ -33,6 +33,9 @@ abstract class ISignClient {
   // FORMER AUTH ENGINE PROPERTY
   abstract final Event<AuthRequest> onAuthRequest;
   abstract final IGenericStore<PendingAuthRequest> authRequests;
+  // NEW 1-CA METHOD
+  abstract final Event<SessionAuthRequest> onSessionAuthRequest;
+  abstract final IGenericStore<PendingSessionAuthRequest> sessionAuthRequests;
 
   // App
   abstract final Event<SessionUpdate> onSessionUpdate;
@@ -41,7 +44,7 @@ abstract class ISignClient {
   // FORMER AUTH ENGINE PROPERTY
   abstract final Event<AuthResponse> onAuthResponse;
   // NEW 1-CA PROPERTY
-  abstract final Event<OCAuthResponse> onOCAuthResponse;
+  abstract final Event<SessionAuthResponse> onSessionAuthResponse;
 
   Future<void> init();
   Future<ConnectResponse> connect({
@@ -177,8 +180,8 @@ abstract class ISignClient {
   });
 
   // NEW 1-CA METHOD FOR DAPP
-  Future<OCARequestResponse> authenticate({
-    required OCARequestParams params,
+  Future<SessionAuthRequestResponse> authenticate({
+    required SessionAuthRequestParams params,
     String? pairingTopic,
     List<List<String>>? methods,
   });
@@ -187,5 +190,17 @@ abstract class ISignClient {
   Future<bool> validateSignedCacao({
     required Cacao cacao,
     required String projectId,
+  });
+
+  Map<int, PendingSessionAuthRequest> getPendingSessionAuthRequests();
+
+  Future<ApproveResponse> approveSessionAuthenticate({
+    required int id,
+    List<Cacao>? auths,
+  });
+
+  Future<void> rejectSessionAuthenticate({
+    required int id,
+    required WalletConnectError reason,
   });
 }

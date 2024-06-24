@@ -16,6 +16,35 @@ import 'package:walletconnect_flutter_v2_wallet/widgets/wc_connection_widget/wc_
 import 'package:walletconnect_flutter_v2_wallet/widgets/wc_connection_widget/wc_connection_widget.dart';
 import 'package:walletconnect_flutter_v2_wallet/widgets/wc_request_widget.dart/wc_request_widget.dart';
 
+enum SupportedEVMMethods {
+  ethSign,
+  ethSignTransaction,
+  ethSignTypedData,
+  ethSignTypedDataV4,
+  switchChain,
+  personalSign,
+  ethSendTransaction;
+
+  String get name {
+    switch (this) {
+      case ethSign:
+        return 'eth_sign';
+      case ethSignTransaction:
+        return 'eth_signTransaction';
+      case ethSignTypedData:
+        return 'eth_signTypedData';
+      case ethSignTypedDataV4:
+        return 'eth_signTypedData_v4';
+      case switchChain:
+        return 'wallet_switchEthereumChain';
+      case personalSign:
+        return 'personal_sign';
+      case ethSendTransaction:
+        return 'eth_sendTransaction';
+    }
+  }
+}
+
 class EVMService {
   final _bottomSheetService = GetIt.I<IBottomSheetService>();
   final _web3Wallet = GetIt.I<IWeb3WalletService>().web3wallet;
@@ -24,17 +53,17 @@ class EVMService {
   late final Web3Client ethClient;
 
   Map<String, dynamic Function(String, dynamic)> get sessionRequestHandlers => {
-        'eth_sign': ethSign,
-        'eth_signTransaction': ethSignTransaction,
-        'eth_signTypedData': ethSignTypedData,
-        'eth_signTypedData_v4': ethSignTypedDataV4,
-        'wallet_switchEthereumChain': switchChain,
+        SupportedEVMMethods.ethSign.name: ethSign,
+        SupportedEVMMethods.ethSignTransaction.name: ethSignTransaction,
+        SupportedEVMMethods.ethSignTypedData.name: ethSignTypedData,
+        SupportedEVMMethods.ethSignTypedDataV4.name: ethSignTypedDataV4,
+        SupportedEVMMethods.switchChain.name: switchChain,
         // 'wallet_addEthereumChain': addChain,
       };
 
   Map<String, dynamic Function(String, dynamic)> get methodRequestHandlers => {
-        'personal_sign': personalSign,
-        'eth_sendTransaction': ethSendTransaction,
+        SupportedEVMMethods.personalSign.name: personalSign,
+        SupportedEVMMethods.ethSendTransaction.name: ethSendTransaction,
       };
 
   EVMService({required this.chainSupported}) {
@@ -451,7 +480,7 @@ class EVMService {
     final gweiGasPrice = (transaction.gasPrice?.getInWei ?? BigInt.zero) /
         BigInt.from(1000000000);
 
-    final approved = await _bottomSheetService.queueBottomSheet(
+    final WCBottomSheetResult rs = await _bottomSheetService.queueBottomSheet(
       widget: WCRequestWidget(
         child: WCConnectionWidget(
           title: 'Approve Transaction',
@@ -466,7 +495,7 @@ class EVMService {
       ),
     );
 
-    if (approved == true) {
+    if (rs != WCBottomSheetResult.reject) {
       return transaction;
     }
 

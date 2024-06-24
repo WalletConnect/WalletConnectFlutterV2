@@ -110,6 +110,14 @@ class Web3Wallet implements IWeb3Wallet {
           return StoredCacao.fromJson(value);
         },
       ),
+      sessionAuthRequests: GenericStore(
+        storage: core.storage,
+        context: StoreVersions.CONTEXT_AUTH_REQUESTS,
+        version: StoreVersions.VERSION_AUTH_REQUESTS,
+        fromJson: (dynamic value) {
+          return PendingSessionAuthRequest.fromJson(value);
+        },
+      ),
     );
 
     authEngine = AuthEngine(
@@ -403,6 +411,13 @@ class Web3Wallet implements IWeb3Wallet {
   IGenericStore<StoredCacao> get completeRequests =>
       authEngine.completeRequests;
 
+  @override
+  IGenericStore<PendingSessionAuthRequest> get sessionAuthRequests =>
+      signEngine.sessionAuthRequests;
+  @override
+  Event<SessionAuthRequest> get onSessionAuthRequest =>
+      signEngine.onSessionAuthRequest;
+
   @Deprecated(
     'AuthEngine/AuthClient is deprecated and will be removed soon.\n'
     'Please use authentication methods from SignEngine/SignClient instead',
@@ -416,7 +431,7 @@ class Web3Wallet implements IWeb3Wallet {
     required String iss,
     CacaoSignature? signature,
     WalletConnectError? error,
-  }) async {
+  }) {
     try {
       return authEngine.respondAuthRequest(
         id: id,
@@ -430,9 +445,48 @@ class Web3Wallet implements IWeb3Wallet {
   }
 
   @override
+  Future<ApproveResponse> approveSessionAuthenticate({
+    required int id,
+    List<Cacao>? auths,
+  }) {
+    try {
+      return signEngine.approveSessionAuthenticate(
+        id: id,
+        auths: auths,
+      );
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> rejectSessionAuthenticate({
+    required int id,
+    required WalletConnectError reason,
+  }) {
+    try {
+      return signEngine.rejectSessionAuthenticate(
+        id: id,
+        reason: reason,
+      );
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
   Map<int, PendingAuthRequest> getPendingAuthRequests() {
     try {
       return authEngine.getPendingAuthRequests();
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Map<int, PendingSessionAuthRequest> getPendingSessionAuthRequests() {
+    try {
+      return signEngine.getPendingSessionAuthRequests();
     } catch (e) {
       rethrow;
     }
@@ -457,7 +511,7 @@ class Web3Wallet implements IWeb3Wallet {
     required CacaoRequestPayload cacaoPayload,
   }) {
     try {
-      return authEngine.formatAuthMessage(
+      return signEngine.formatAuthMessage(
         iss: iss,
         cacaoPayload: cacaoPayload,
       );

@@ -1,21 +1,23 @@
 import 'dart:async';
 
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:walletconnect_flutter_v2/apis/core/verify/models/verify_context.dart';
+import 'package:walletconnect_flutter_v2/apis/models/basic_models.dart';
 
 import 'package:walletconnect_flutter_v2/apis/sign_api/models/auth/common_auth_models.dart';
-import 'package:walletconnect_flutter_v2/apis/sign_api/models/auth/ocauth_events.dart';
+import 'package:walletconnect_flutter_v2/apis/sign_api/models/auth/session_auth_events.dart';
 
-part 'ocauth_models.g.dart';
-part 'ocauth_models.freezed.dart';
+part 'session_auth_models.g.dart';
+part 'session_auth_models.freezed.dart';
 
 // TODO this should be under sign_client_models.dart probably
-class OCARequestResponse {
+class SessionAuthRequestResponse {
   final int id;
   final String pairingTopic;
-  final Completer<OCAuthResponse> completer;
+  final Completer<SessionAuthResponse> completer;
   final Uri? uri;
 
-  OCARequestResponse({
+  SessionAuthRequestResponse({
     required this.id,
     required this.pairingTopic,
     required this.completer,
@@ -23,7 +25,7 @@ class OCARequestResponse {
   });
 }
 
-class OCARequestParams {
+class SessionAuthRequestParams {
   final List<String> chains;
   final String domain;
   final String nonce;
@@ -39,7 +41,7 @@ class OCARequestParams {
   final List<String>? methods;
   //
 
-  OCARequestParams({
+  SessionAuthRequestParams({
     required this.chains,
     required this.domain,
     required this.nonce,
@@ -69,10 +71,11 @@ class OCARequestParams {
       };
 }
 
+// TODO this should be called SessionAuthPayload
 @freezed
-class OCAPayloadParams with _$OCAPayloadParams {
+class SessionAuthPayloadParams with _$SessionAuthPayloadParams {
   @JsonSerializable(includeIfNull: false)
-  const factory OCAPayloadParams({
+  const factory SessionAuthPayloadParams({
     required List<String> chains,
     required String domain,
     required String nonce,
@@ -87,10 +90,12 @@ class OCAPayloadParams with _$OCAPayloadParams {
     String? statement,
     String? requestId,
     List<String>? resources,
-  }) = _OCAPayloadParams;
+  }) = _SessionAuthPayloadParams;
 
-  factory OCAPayloadParams.fromRequestParams(OCARequestParams params) {
-    return OCAPayloadParams(
+  factory SessionAuthPayloadParams.fromRequestParams(
+    SessionAuthRequestParams params,
+  ) {
+    return SessionAuthPayloadParams(
       chains: params.chains,
       domain: params.domain,
       nonce: params.nonce,
@@ -107,6 +112,22 @@ class OCAPayloadParams with _$OCAPayloadParams {
     );
   }
 
-  factory OCAPayloadParams.fromJson(Map<String, dynamic> json) =>
-      _$OCAPayloadParamsFromJson(json);
+  factory SessionAuthPayloadParams.fromJson(Map<String, dynamic> json) =>
+      _$SessionAuthPayloadParamsFromJson(json);
+}
+
+@freezed
+class PendingSessionAuthRequest with _$PendingSessionAuthRequest {
+  @JsonSerializable(includeIfNull: false)
+  const factory PendingSessionAuthRequest({
+    required int id,
+    required String pairingTopic,
+    required ConnectionMetadata requester,
+    required int expiryTimestamp,
+    required CacaoRequestPayload authPayload,
+    required VerifyContext verifyContext,
+  }) = _PendingSessionAuthRequest;
+
+  factory PendingSessionAuthRequest.fromJson(Map<String, dynamic> json) =>
+      _$PendingSessionAuthRequestFromJson(json);
 }

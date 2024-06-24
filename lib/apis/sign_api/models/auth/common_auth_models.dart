@@ -1,7 +1,7 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 
 import 'package:walletconnect_flutter_v2/apis/sign_api/models/auth/auth_client_models.dart';
-import 'package:walletconnect_flutter_v2/apis/sign_api/models/auth/ocauth_models.dart';
+import 'package:walletconnect_flutter_v2/apis/sign_api/models/auth/session_auth_models.dart';
 
 part 'common_auth_models.g.dart';
 part 'common_auth_models.freezed.dart';
@@ -48,7 +48,9 @@ class CacaoRequestPayload with _$CacaoRequestPayload {
     );
   }
 
-  factory CacaoRequestPayload.fromOCAPayloadParams(OCAPayloadParams params) {
+  factory CacaoRequestPayload.fromSessionAuthPayloadParams(
+    SessionAuthPayloadParams params,
+  ) {
     return CacaoRequestPayload(
       domain: params.domain,
       aud: params.aud,
@@ -125,6 +127,7 @@ class CacaoPayload with _$CacaoPayload {
 @freezed
 class CacaoHeader with _$CacaoHeader {
   static const EIP4361 = 'eip4361';
+  static const CAIP122 = 'caip122';
 
   @JsonSerializable(includeIfNull: false)
   const factory CacaoHeader({

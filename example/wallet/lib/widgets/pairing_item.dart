@@ -18,9 +18,10 @@ class PairingItem extends StatelessWidget {
   Widget build(BuildContext context) {
     PairingMetadata? metadata = pairing.peerMetadata;
     if (metadata == null) {
-      return const ListTile(
-        title: Text('Unknown'),
-        subtitle: Text('No metadata available'),
+      return ListTile(
+        title: const Text('Unknown'),
+        subtitle: const Text('No metadata available'),
+        onTap: onTap,
       );
     }
     final sessions = GetIt.I<IWeb3WalletService>()

@@ -21,7 +21,7 @@ class ConnectResponse {
 
 class ApproveResponse {
   final String topic;
-  final SessionData session;
+  final SessionData? session;
 
   ApproveResponse({
     required this.topic,

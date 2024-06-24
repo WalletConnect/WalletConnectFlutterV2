@@ -67,6 +67,16 @@ class MethodConstants {
         prompt: false,
         tag: 1101,
       ),
+      'reject': RpcOptions(
+        ttl: WalletConnectConstants.FIVE_MINUTES,
+        prompt: false,
+        tag: 1120,
+      ),
+      'autoReject': RpcOptions(
+        ttl: WalletConnectConstants.FIVE_MINUTES,
+        prompt: false,
+        tag: 1121,
+      ),
     },
     WC_SESSION_SETTLE: {
       'req': RpcOptions(

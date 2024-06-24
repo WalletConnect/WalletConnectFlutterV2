@@ -117,6 +117,14 @@ class Web3App implements IWeb3App {
           return StoredCacao.fromJson(value);
         },
       ),
+      sessionAuthRequests: GenericStore(
+        storage: core.storage,
+        context: StoreVersions.CONTEXT_AUTH_REQUESTS,
+        version: StoreVersions.VERSION_AUTH_REQUESTS,
+        fromJson: (dynamic value) {
+          return PendingSessionAuthRequest.fromJson(value);
+        },
+      ),
     );
 
     authEngine = AuthEngine(
@@ -341,7 +349,8 @@ class Web3App implements IWeb3App {
   @override
   Event<AuthResponse> get onAuthResponse => authEngine.onAuthResponse;
   @override
-  Event<OCAuthResponse> get onOCAuthResponse => signEngine.onOCAuthResponse;
+  Event<SessionAuthResponse> get onSessionAuthResponse =>
+      signEngine.onSessionAuthResponse;
 
   @override
   IGenericStore<AuthPublicKey> get authKeys => authEngine.authKeys;
@@ -377,8 +386,8 @@ class Web3App implements IWeb3App {
 
   // NEW ONE-CLICK AUTH METHOD FOR DAPPS
   @override
-  Future<OCARequestResponse> authenticate({
-    required OCARequestParams params,
+  Future<SessionAuthRequestResponse> authenticate({
+    required SessionAuthRequestParams params,
     String? pairingTopic,
     List<List<String>>? methods = const [
       [MethodConstants.WC_SESSION_AUTHENTICATE]
@@ -429,7 +438,7 @@ class Web3App implements IWeb3App {
     required CacaoRequestPayload cacaoPayload,
   }) {
     try {
-      return authEngine.formatAuthMessage(
+      return signEngine.formatAuthMessage(
         iss: iss,
         cacaoPayload: cacaoPayload,
       );

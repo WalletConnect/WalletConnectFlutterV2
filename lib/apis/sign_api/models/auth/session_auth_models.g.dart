@@ -1,6 +1,6 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'ocauth_models.dart';
+part of 'session_auth_models.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator

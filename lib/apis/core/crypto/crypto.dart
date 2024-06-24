@@ -189,8 +189,8 @@ class Crypto implements ICrypto {
 
     final Uint8List seed = await _getClientSeed();
     final RelayAuthKeyPair keyPair = await relayAuth.generateKeyPair(seed);
-    String sub = utils.generateRandomBytes32();
-    String jwt = await relayAuth.signJWT(
+    final String sub = utils.generateRandomBytes32();
+    final jwt = await relayAuth.signJWT(
       sub: sub,
       aud: aud,
       ttl: WalletConnectConstants.ONE_DAY,

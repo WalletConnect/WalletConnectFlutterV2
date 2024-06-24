@@ -195,12 +195,4 @@ class ChainData {
       ],
     ),
   ];
-
-  static final List<ChainMetadata> allChains = [
-    ...eip155Chains,
-    ...solanaChains,
-    ...polkadotChains,
-    ...kadenaChains,
-    // ...cosmosChains,
-  ];
 }

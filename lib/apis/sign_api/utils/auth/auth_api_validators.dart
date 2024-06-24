@@ -76,7 +76,7 @@ class AuthApiValidators {
     return true;
   }
 
-  static bool isValidAuthenticate(OCARequestParams params) {
+  static bool isValidAuthenticate(SessionAuthRequestParams params) {
     if (params.chains.isEmpty) {
       throw Errors.getInternalError(
         Errors.MISSING_OR_INVALID,
@@ -131,6 +131,30 @@ class AuthApiValidators {
         Errors.NON_CONFORMING_NAMESPACES,
         context:
             'authenticate() Only eip155 namespace is supported for authenticated sessions. Please use .connect() for non-eip155 chains.',
+      );
+    }
+
+    return true;
+  }
+
+  static bool isValidRespondAuthenticate({
+    required int id,
+    required Map<int, PendingSessionAuthRequest> pendingRequests,
+    List<Cacao>? auths,
+  }) {
+    if (!pendingRequests.containsKey(id)) {
+      throw Errors.getInternalError(
+        Errors.MISSING_OR_INVALID,
+        context:
+            'approveSessionAuthenticate() Could not find pending auth request with id $id',
+      );
+    }
+
+    if (auths == null || auths.isEmpty) {
+      throw Errors.getInternalError(
+        Errors.MISSING_OR_INVALID,
+        context:
+            'approveSessionAuthenticate() invalid response. Must contain Cacao signatures.',
       );
     }
 
