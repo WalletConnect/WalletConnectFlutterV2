@@ -239,7 +239,7 @@ void runTests({
           counterA++;
           completerA.complete();
 
-          expect(args!.result, isNotNull);
+          expect(args!.result != null, true);
         });
         clientB.onAuthRequest.subscribe((AuthRequest? args) async {
           counterB++;
