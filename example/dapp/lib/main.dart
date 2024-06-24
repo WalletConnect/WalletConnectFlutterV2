@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 import 'package:walletconnect_flutter_v2_dapp/models/chain_metadata.dart';
@@ -86,17 +87,18 @@ class _MyHomePageState extends State<MyHomePage> {
     }
 
     // Register event handlers
-    _web3App!.onSessionPing.subscribe(_onSessionPing);
-    _web3App!.onSessionEvent.subscribe(_onSessionEvent);
-    _web3App!.onSessionUpdate.subscribe(_onSessionUpdate);
-
     _web3App!.core.addLogListener(_logListener);
     _web3App!.core.relayClient.onRelayClientConnect.subscribe(_setState);
     _web3App!.core.relayClient.onRelayClientDisconnect.subscribe(_setState);
-    _web3App!.core.relayClient.onRelayClientMessage.subscribe(_onRelayMessage);
+    _web3App!.core.relayClient.onRelayClientMessage.subscribe(
+      _onRelayMessage,
+    );
 
-    _web3App!.signEngine.onSessionEvent.subscribe(_onSessionEvent);
-    _web3App!.signEngine.onSessionUpdate.subscribe(_onSessionUpdate);
+    _web3App!.onSessionPing.subscribe(_onSessionPing);
+    _web3App!.onSessionEvent.subscribe(_onSessionEvent);
+    _web3App!.onSessionUpdate.subscribe(_onSessionUpdate);
+    _web3App!.onSessionConnect.subscribe(_onSessionConnect);
+    _web3App!.onSessionAuthResponse.subscribe(_onSessionAuthResponse);
 
     setState(() {
       _pageDatas = [
@@ -126,28 +128,37 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  void _onSessionConnect(SessionConnect? event) {
+    log('[SampleDapp] _onSessionConnect $event');
+  }
+
+  void _onSessionAuthResponse(SessionAuthResponse? response) {
+    log('[SampleDapp] _onSessionAuthResponse $response');
+  }
+
   void _setState(dynamic args) => setState(() {});
 
   @override
   void dispose() {
     // Unregister event handlers
-    _web3App!.onSessionPing.unsubscribe(_onSessionPing);
-    _web3App!.onSessionEvent.unsubscribe(_onSessionEvent);
-    _web3App!.onSessionUpdate.unsubscribe(_onSessionUpdate);
-
     _web3App!.core.removeLogListener(_logListener);
     _web3App!.core.relayClient.onRelayClientConnect.unsubscribe(_setState);
     _web3App!.core.relayClient.onRelayClientDisconnect.unsubscribe(_setState);
-    _web3App!.core.relayClient.onRelayClientMessage
-        .unsubscribe(_onRelayMessage);
+    _web3App!.core.relayClient.onRelayClientMessage.unsubscribe(
+      _onRelayMessage,
+    );
 
-    _web3App!.signEngine.onSessionEvent.unsubscribe(_onSessionEvent);
-    _web3App!.signEngine.onSessionUpdate.unsubscribe(_onSessionUpdate);
+    _web3App!.onSessionPing.unsubscribe(_onSessionPing);
+    _web3App!.onSessionEvent.unsubscribe(_onSessionEvent);
+    _web3App!.onSessionUpdate.unsubscribe(_onSessionUpdate);
+    _web3App!.onSessionConnect.subscribe(_onSessionConnect);
+    _web3App!.onSessionAuthResponse.subscribe(_onSessionAuthResponse);
+
     super.dispose();
   }
 
   void _logListener(LogEvent event) {
-    debugPrint('[SampleDapp] ${event.level.name}: ${event.message}');
+    debugPrint('[Logger] ${event.level.name}: ${event.message}');
     if (event.level == Level.error) {
       // TODO send to mixpanel
     }

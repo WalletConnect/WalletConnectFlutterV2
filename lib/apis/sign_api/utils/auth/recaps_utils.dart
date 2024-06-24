@@ -1,8 +1,10 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:walletconnect_flutter_v2/apis/utils/errors.dart';
 
 class ReCapsUtils {
+  //
   static String? getRecapFromResources({List<String>? resources}) {
     final resourcesList = resources ?? [];
     if (resourcesList.isEmpty) return null;
@@ -217,5 +219,130 @@ class ReCapsUtils {
     }
 
     return mergedRecap;
+  }
+
+  static Map<String, dynamic>? getDecodedRecapFromResources({
+    List<String>? resources,
+  }) {
+    final resource = getRecapFromResources(resources: resources);
+    if (resource == null) return null;
+    if (!isRecap(resource)) return null;
+    return decodeRecap(resource);
+  }
+
+  static String formatStatementFromRecap({
+    String statement = '',
+    Map<String, dynamic> recap = const {},
+  }) {
+    isValidRecap(recap);
+    //
+    final baseStatement =
+        'I further authorize the stated URI to perform the following actions on my behalf: ';
+    if (statement.contains(baseStatement)) return statement;
+    //
+    final List<String> statementForRecap = <String>[];
+    int currentCounter = 0;
+    final att = recap['att'] as Map<String, dynamic>;
+    final resources = att.keys;
+    for (var resource in resources) {
+      final abilities = att[resource];
+      final resourceAbilities = (abilities as Map<String, dynamic>).keys;
+      final actions = resourceAbilities.map((ability) {
+        return {
+          'ability': ability.split('/')[0],
+          'action': ability.split('/')[1],
+        };
+      }).toList();
+      actions.sort((a, b) => a['action']!.compareTo(b['action']!));
+      //
+      final uniqueAbilities = <String, dynamic>{};
+      for (var actionMap in actions) {
+        final ability = actionMap['ability']!;
+        final action = actionMap['action']!;
+        if (uniqueAbilities[ability] == null) {
+          uniqueAbilities[ability] = [];
+        }
+        uniqueAbilities[ability].add(action);
+      }
+      //
+      final abilitiesStatements = uniqueAbilities.keys.map((ability) {
+        currentCounter++;
+        final abilities = (uniqueAbilities[ability] as List).join('\', \'');
+        return '($currentCounter) \'$ability\': \'$abilities\' for \'$resource\'.';
+      }).toList();
+
+      statementForRecap.add(
+        abilitiesStatements.join(', ').replaceAll('.,', '.'),
+      );
+    }
+    //
+    final recapStatemet = statementForRecap.join(' ');
+    final recapStatement = '$baseStatement$recapStatemet';
+    // add a space if there is a statement
+    return '${statement.isNotEmpty ? "$statement " : ""}$recapStatement';
+  }
+
+  static List<String> getRecapResource({
+    required Map<String, dynamic> recap,
+    required String resource,
+  }) {
+    try {
+      final att = recap['att'] as Map<String, dynamic>?;
+      final abilities = att?[resource] as Map<String, dynamic>?;
+      if (abilities != null) {
+        return abilities.keys.toList();
+      }
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+    return [];
+  }
+
+  static List<String> getReCapActions({required List<String> abilities}) {
+    try {
+      return abilities.map((ability) => ability.split('/')[1]).toList();
+    } catch (e) {
+      debugPrint(e.toString());
+    }
+    return [];
+  }
+
+  static Map<String, dynamic> assignAbilityToActions(
+    String ability,
+    List<String> actions, {
+    Map limits = const {},
+  }) {
+    final sortedActions = List<String>.from(actions)
+      ..sort((a, b) => a.compareTo(b));
+
+    Map<String, dynamic> abilities = {};
+    for (var method in sortedActions) {
+      abilities['$ability/$method'] = [
+        ...(abilities['$ability/$method'] ?? []),
+        limits,
+      ];
+    }
+
+    return Map<String, dynamic>.fromEntries(abilities.entries);
+  }
+
+  static Map<String, dynamic> addResourceToRecap({
+    required Map<String, dynamic> recap,
+    required String resource,
+    required Map<String, dynamic> actions,
+  }) {
+    //
+    final sortedRecap = Map<String, dynamic>.from(recap);
+    sortedRecap['att']![resource] = actions;
+    sortedRecap.keys.toList().sort((a, b) => a.compareTo(b));
+    isValidRecap(sortedRecap);
+    return sortedRecap;
+  }
+
+  static String buildRecapStatement(String statement, String? recap) {
+    if ((recap ?? '').isEmpty) return statement;
+    final decoded = decodeRecap(recap!);
+    isValidRecap(decoded);
+    return formatStatementFromRecap(statement: statement, recap: decoded);
   }
 }

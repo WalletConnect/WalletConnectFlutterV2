@@ -110,6 +110,14 @@ class Web3Wallet implements IWeb3Wallet {
           return StoredCacao.fromJson(value);
         },
       ),
+      sessionAuthRequests: GenericStore(
+        storage: core.storage,
+        context: StoreVersions.CONTEXT_AUTH_REQUESTS,
+        version: StoreVersions.VERSION_AUTH_REQUESTS,
+        fromJson: (dynamic value) {
+          return PendingSessionAuthRequest.fromJson(value);
+        },
+      ),
     );
 
     authEngine = AuthEngine(
@@ -389,7 +397,8 @@ class Web3Wallet implements IWeb3Wallet {
   @override
   IPairingStore get pairings => core.pairing.getStore();
 
-  ///---------- AUTH ENGINE ----------///
+  ///---------- (DEPRECATED) AUTH ENGINE ----------///
+
   @override
   Event<AuthRequest> get onAuthRequest => authEngine.onAuthRequest;
 
@@ -416,7 +425,7 @@ class Web3Wallet implements IWeb3Wallet {
     required String iss,
     CacaoSignature? signature,
     WalletConnectError? error,
-  }) async {
+  }) {
     try {
       return authEngine.respondAuthRequest(
         id: id,
@@ -451,13 +460,61 @@ class Web3Wallet implements IWeb3Wallet {
     }
   }
 
+  ///---------- ONE-CLICK AUTH SIGN ENGINE ----------///
+
+  @override
+  IGenericStore<PendingSessionAuthRequest> get sessionAuthRequests =>
+      signEngine.sessionAuthRequests;
+  @override
+  Event<SessionAuthRequest> get onSessionAuthRequest =>
+      signEngine.onSessionAuthRequest;
+
+  @override
+  Future<ApproveResponse> approveSessionAuthenticate({
+    required int id,
+    List<Cacao>? auths,
+  }) {
+    try {
+      return signEngine.approveSessionAuthenticate(
+        id: id,
+        auths: auths,
+      );
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> rejectSessionAuthenticate({
+    required int id,
+    required WalletConnectError reason,
+  }) {
+    try {
+      return signEngine.rejectSessionAuthenticate(
+        id: id,
+        reason: reason,
+      );
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Map<int, PendingSessionAuthRequest> getPendingSessionAuthRequests() {
+    try {
+      return signEngine.getPendingSessionAuthRequests();
+    } catch (e) {
+      rethrow;
+    }
+  }
+
   @override
   String formatAuthMessage({
     required String iss,
     required CacaoRequestPayload cacaoPayload,
   }) {
     try {
-      return authEngine.formatAuthMessage(
+      return signEngine.formatAuthMessage(
         iss: iss,
         cacaoPayload: cacaoPayload,
       );

@@ -2,6 +2,12 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 
+enum WCBottomSheetResult {
+  reject,
+  one,
+  all,
+}
+
 class BottomSheetQueueItem {
   final Widget widget;
   final Completer<dynamic> completer;

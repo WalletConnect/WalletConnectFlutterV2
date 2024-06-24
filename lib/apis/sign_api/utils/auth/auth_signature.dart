@@ -5,8 +5,11 @@ import 'package:http/http.dart' as http;
 
 import 'package:pointycastle/digests/keccak.dart';
 import 'package:walletconnect_flutter_v2/apis/core/pairing/utils/json_rpc_utils.dart';
+import 'package:walletconnect_flutter_v2/apis/models/basic_models.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/models/auth/common_auth_models.dart';
+import 'package:walletconnect_flutter_v2/apis/sign_api/models/auth/session_auth_models.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/utils/auth/auth_constants.dart';
+import 'package:walletconnect_flutter_v2/apis/sign_api/utils/auth/recaps_utils.dart';
 import 'package:web3dart/crypto.dart' as crypto;
 
 class AuthSignature {
@@ -186,5 +189,92 @@ class AuthSignature {
         'verifySignature failed: Attempted to verify CacaoSignature with unknown type: ${cacaoSignature.t}',
       );
     }
+  }
+
+  static Cacao buildAuthObject({
+    required CacaoRequestPayload requestPayload,
+    required CacaoSignature signature,
+    required String iss,
+  }) {
+    if (!iss.contains('did:pkh:')) {
+      iss = 'did:pkh:$iss';
+    }
+    return Cacao(
+      h: const CacaoHeader(t: CacaoHeader.CAIP122),
+      p: CacaoPayload.fromRequestPayload(
+        issuer: iss,
+        payload: requestPayload,
+      ),
+      s: signature,
+    );
+  }
+
+  static SessionAuthPayload populateAuthPayload({
+    required SessionAuthPayload authPayload,
+    required List<String> chains,
+    required List<String> methods,
+  }) {
+    final statement = authPayload.statement ?? '';
+
+    if (chains.isEmpty) return authPayload;
+
+    final requested = authPayload.chains;
+    final supported = chains;
+
+    final approvedChains =
+        supported.where((value) => requested.contains(value)).toList();
+    if (approvedChains.isEmpty) {
+      throw WalletConnectError(code: -1, message: 'No supported chains');
+    }
+
+    final requestedRecaps = ReCapsUtils.getDecodedRecapFromResources(
+      resources: authPayload.resources,
+    );
+    if (requestedRecaps == null) return authPayload;
+
+    ReCapsUtils.isValidRecap(requestedRecaps);
+
+    final resource = ReCapsUtils.getRecapResource(
+      recap: requestedRecaps,
+      resource: 'eip155',
+    );
+    List<String> updatedResources = authPayload.resources ?? [];
+
+    if (resource.isNotEmpty) {
+      final actions = ReCapsUtils.getReCapActions(abilities: resource);
+      final approvedActions =
+          actions.where((value) => methods.contains(value)).toList();
+      if (approvedActions.isEmpty) {
+        throw WalletConnectError(
+          code: -1,
+          message: 'Supported methods don\'t satisfy the requested: $actions, '
+              'supported: $methods',
+        );
+      }
+      final formattedActions = ReCapsUtils.assignAbilityToActions(
+        'request',
+        approvedActions,
+        limits: {'chains': approvedChains},
+      );
+      final updatedRecap = ReCapsUtils.addResourceToRecap(
+        recap: requestedRecaps,
+        resource: 'eip155',
+        actions: formattedActions,
+      );
+      // remove recap from resources as we will add the updated one
+      updatedResources = List<String>.from((authPayload.resources ?? []))
+        ..removeLast();
+      updatedResources.add(ReCapsUtils.encodeRecap(updatedRecap));
+    }
+    //
+    return SessionAuthPayload.fromJson(authPayload.toJson()).copyWith(
+      statement: ReCapsUtils.buildRecapStatement(
+        statement,
+        ReCapsUtils.getRecapFromResources(resources: updatedResources),
+      ),
+      chains: approvedChains,
+      resources: authPayload.resources ??
+          (updatedResources.isNotEmpty ? updatedResources : null),
+    );
   }
 }

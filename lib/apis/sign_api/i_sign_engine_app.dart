@@ -8,7 +8,7 @@ abstract class ISignEngineApp extends ISignEngineCommon {
   // FORMER AUTH ENGINE PROPERTY
   abstract final Event<AuthResponse> onAuthResponse;
   // NEW 1-CA PROPERTY
-  abstract final Event<OCAuthResponse> onOCAuthResponse;
+  abstract final Event<SessionAuthResponse> onSessionAuthResponse;
 
   Future<ConnectResponse> connect({
     Map<String, RequiredNamespace>? requiredNamespaces,
@@ -57,8 +57,8 @@ abstract class ISignEngineApp extends ISignEngineCommon {
   });
 
   // NEW 1-CA METHOD
-  Future<OCARequestResponse> authenticate({
-    required OCARequestParams params,
+  Future<SessionAuthRequestResponse> authenticate({
+    required SessionAuthRequestParams params,
     String? pairingTopic,
     List<List<String>>? methods,
   });

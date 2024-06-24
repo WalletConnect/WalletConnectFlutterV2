@@ -21,6 +21,7 @@ class PairingInfo with _$PairingInfo {
     required int expiry,
     required Relay relay,
     required bool active,
+    List<String>? methods,
     PairingMetadata? peerMetadata,
   }) = _PairingInfo;
 

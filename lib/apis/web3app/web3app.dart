@@ -117,6 +117,14 @@ class Web3App implements IWeb3App {
           return StoredCacao.fromJson(value);
         },
       ),
+      sessionAuthRequests: GenericStore(
+        storage: core.storage,
+        context: StoreVersions.CONTEXT_AUTH_REQUESTS,
+        version: StoreVersions.VERSION_AUTH_REQUESTS,
+        fromJson: (dynamic value) {
+          return PendingSessionAuthRequest.fromJson(value);
+        },
+      ),
     );
 
     authEngine = AuthEngine(
@@ -337,11 +345,10 @@ class Web3App implements IWeb3App {
   @override
   IPairingStore get pairings => core.pairing.getStore();
 
-  ///---------- AUTH ENGINE ----------///
+  ///---------- (DEPRECATED) AUTH ENGINE ----------///
+
   @override
   Event<AuthResponse> get onAuthResponse => authEngine.onAuthResponse;
-  @override
-  Event<OCAuthResponse> get onOCAuthResponse => signEngine.onOCAuthResponse;
 
   @override
   IGenericStore<AuthPublicKey> get authKeys => authEngine.authKeys;
@@ -375,10 +382,28 @@ class Web3App implements IWeb3App {
     }
   }
 
-  // NEW ONE-CLICK AUTH METHOD FOR DAPPS
   @override
-  Future<OCARequestResponse> authenticate({
-    required OCARequestParams params,
+  Map<int, StoredCacao> getCompletedRequestsForPairing({
+    required String pairingTopic,
+  }) {
+    try {
+      return authEngine.getCompletedRequestsForPairing(
+        pairingTopic: pairingTopic,
+      );
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  ///---------- ONE-CLICK AUTH SIGN ENGINE ----------///
+
+  @override
+  Event<SessionAuthResponse> get onSessionAuthResponse =>
+      signEngine.onSessionAuthResponse;
+
+  @override
+  Future<SessionAuthRequestResponse> authenticate({
+    required SessionAuthRequestParams params,
     String? pairingTopic,
     List<List<String>>? methods = const [
       [MethodConstants.WC_SESSION_AUTHENTICATE]
@@ -389,19 +414,6 @@ class Web3App implements IWeb3App {
         params: params,
         pairingTopic: pairingTopic,
         methods: methods,
-      );
-    } catch (e) {
-      rethrow;
-    }
-  }
-
-  @override
-  Map<int, StoredCacao> getCompletedRequestsForPairing({
-    required String pairingTopic,
-  }) {
-    try {
-      return authEngine.getCompletedRequestsForPairing(
-        pairingTopic: pairingTopic,
       );
     } catch (e) {
       rethrow;
@@ -429,7 +441,7 @@ class Web3App implements IWeb3App {
     required CacaoRequestPayload cacaoPayload,
   }) {
     try {
-      return authEngine.formatAuthMessage(
+      return signEngine.formatAuthMessage(
         iss: iss,
         cacaoPayload: cacaoPayload,
       );

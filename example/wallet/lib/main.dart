@@ -14,7 +14,6 @@ import 'package:walletconnect_flutter_v2_wallet/dependencies/key_service/i_key_s
 import 'package:walletconnect_flutter_v2_wallet/dependencies/key_service/key_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/web3wallet_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/models/chain_data.dart';
-import 'package:walletconnect_flutter_v2_wallet/models/chain_metadata.dart';
 import 'package:walletconnect_flutter_v2_wallet/models/page_data.dart';
 import 'package:walletconnect_flutter_v2_wallet/pages/apps_page.dart';
 import 'package:walletconnect_flutter_v2_wallet/pages/settings_page.dart';
@@ -69,9 +68,7 @@ class _MyHomePageState extends State<MyHomePage> with GetItStateMixin {
     GetIt.I.registerSingleton<IWeb3WalletService>(web3WalletService);
 
     // Support EVM Chains
-    final evmChains =
-        ChainData.allChains.where((c) => c.type == ChainType.eip155).toList();
-    for (final chainData in evmChains) {
+    for (final chainData in ChainData.eip155Chains) {
       GetIt.I.registerSingleton<EVMService>(
         EVMService(chainSupported: chainData),
         instanceName: chainData.chainId,
@@ -79,9 +76,7 @@ class _MyHomePageState extends State<MyHomePage> with GetItStateMixin {
     }
 
     // Support Kadena Chains
-    final kadenaChains =
-        ChainData.allChains.where((c) => c.type == ChainType.kadena).toList();
-    for (final chainData in kadenaChains) {
+    for (final chainData in ChainData.kadenaChains) {
       GetIt.I.registerSingleton<KadenaService>(
         KadenaService(chainSupported: chainData),
         instanceName: chainData.chainId,
@@ -89,9 +84,7 @@ class _MyHomePageState extends State<MyHomePage> with GetItStateMixin {
     }
 
     // Support Polkadot Chains
-    final polkadotChains =
-        ChainData.allChains.where((c) => c.type == ChainType.polkadot).toList();
-    for (final chainData in polkadotChains) {
+    for (final chainData in ChainData.polkadotChains) {
       GetIt.I.registerSingleton<PolkadotService>(
         PolkadotService(chainSupported: chainData),
         instanceName: chainData.chainId,
@@ -99,9 +92,7 @@ class _MyHomePageState extends State<MyHomePage> with GetItStateMixin {
     }
 
     // Support Solana Chains
-    final solanaChains =
-        ChainData.allChains.where((c) => c.type == ChainType.solana).toList();
-    for (final chainData in solanaChains) {
+    for (final chainData in ChainData.solanaChains) {
       GetIt.I.registerSingleton<SolanaService>(
         SolanaService(chainSupported: chainData),
         instanceName: chainData.chainId,
@@ -109,9 +100,7 @@ class _MyHomePageState extends State<MyHomePage> with GetItStateMixin {
     }
 
     // Support Cosmos Chains
-    final cosmosChains =
-        ChainData.allChains.where((c) => c.type == ChainType.cosmos).toList();
-    for (final chainData in cosmosChains) {
+    for (final chainData in ChainData.cosmosChains) {
       GetIt.I.registerSingleton<CosmosService>(
         CosmosService(chainSupported: chainData),
         instanceName: chainData.chainId,
@@ -127,16 +116,16 @@ class _MyHomePageState extends State<MyHomePage> with GetItStateMixin {
           title: StringConstants.connectPageTitle,
           icon: Icons.swap_vert_circle_outlined,
         ),
-        PageData(
-          page: const Center(
-            child: Text(
-              'Inbox (Not Implemented)',
-              style: StyleConstants.bodyText,
-            ),
-          ),
-          title: 'Inbox',
-          icon: Icons.inbox_rounded,
-        ),
+        // PageData(
+        //   page: const Center(
+        //     child: Text(
+        //       'Inbox (Not Implemented)',
+        //       style: StyleConstants.bodyText,
+        //     ),
+        //   ),
+        //   title: 'Inbox',
+        //   icon: Icons.inbox_rounded,
+        // ),
         PageData(
           page: const SettingsPage(),
           title: 'Settings',

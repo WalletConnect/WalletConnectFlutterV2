@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:event/event.dart';
 import 'package:walletconnect_flutter_v2/apis/core/verify/models/verify_context.dart';
 import 'package:walletconnect_flutter_v2/apis/models/basic_models.dart';
@@ -15,9 +17,15 @@ class SessionProposalEvent extends EventArgs {
     this.verifyContext,
   ]);
 
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'params': params.toJson(),
+        'verifyContext': verifyContext?.toJson(),
+      };
+
   @override
   String toString() {
-    return 'SessionProposalEvent(id: $id, params: $params)';
+    return 'SessionProposalEvent(${jsonEncode(toJson())})';
   }
 }
 

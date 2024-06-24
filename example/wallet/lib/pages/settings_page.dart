@@ -6,6 +6,7 @@ import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/bottom_sheet/i_bottom_sheet_service.dart';
+import 'package:walletconnect_flutter_v2_wallet/dependencies/i_web3wallet_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/key_service/i_key_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/utils/constants.dart';
 import 'package:walletconnect_flutter_v2_wallet/widgets/custom_button.dart';
@@ -37,6 +38,7 @@ class _SettingsPageState extends State<SettingsPage> {
   Widget build(BuildContext context) {
     final keysService = GetIt.I<IKeyService>();
     final chainKeys = keysService.getKeysForChain('eip155:1');
+    final web3Wallet = GetIt.I<IWeb3WalletService>().web3wallet;
     return Padding(
       padding: const EdgeInsets.all(12.0),
       child: Column(
@@ -45,6 +47,7 @@ class _SettingsPageState extends State<SettingsPage> {
           Expanded(
             child: SingleChildScrollView(
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Padding(
                     padding: EdgeInsets.only(left: 8.0, bottom: 8.0),
@@ -83,68 +86,92 @@ class _SettingsPageState extends State<SettingsPage> {
                       );
                     },
                   ),
+                  const SizedBox(height: 20.0),
+                  const Divider(height: 1.0),
+                  const Padding(
+                    padding: EdgeInsets.only(left: 8.0, bottom: 8.0, top: 20.0),
+                    child: Text(
+                      'Device',
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 16.0,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                  FutureBuilder<String>(
+                    future: web3Wallet.core.crypto.getClientId(),
+                    builder: (context, snapshot) {
+                      return _DataContainer(
+                        title: 'Client ID',
+                        data: snapshot.data ?? '',
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 20.0),
+                  const Divider(height: 1.0),
+                  const SizedBox(height: 20.0),
+                  Row(
+                    children: [
+                      CustomButton(
+                        onTap: () async {
+                          final mnemonic = await GetIt.I<IBottomSheetService>()
+                              .queueBottomSheet(
+                            widget: RecoverFromSeed(),
+                          );
+                          if (mnemonic is String) {
+                            await keysService.restoreWallet(mnemonic: mnemonic);
+                            setState(() {});
+                          }
+                        },
+                        child: const Center(
+                          child: Text(
+                            'Import account',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12.0),
+                  Row(
+                    children: [
+                      CustomButton(
+                        type: CustomButtonType.invalid,
+                        onTap: () async {
+                          await keysService.loadDefaultWallet();
+                          setState(() {});
+                        },
+                        child: const Center(
+                          child: Text(
+                            'Restore default',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12.0),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: Text(
+                          version ?? '',
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(fontSize: 11.0),
+                        ),
+                      )
+                    ],
+                  ),
                 ],
               ),
             ),
-          ),
-          const SizedBox(height: 8.0),
-          Row(
-            children: [
-              Expanded(
-                child: Text(
-                  version ?? '',
-                  textAlign: TextAlign.center,
-                  style: const TextStyle(fontSize: 11.0),
-                ),
-              )
-            ],
-          ),
-          const SizedBox(height: 8.0),
-          Row(
-            children: [
-              CustomButton(
-                onTap: () async {
-                  final mnemonic =
-                      await GetIt.I<IBottomSheetService>().queueBottomSheet(
-                    widget: RecoverFromSeed(),
-                  );
-                  if (mnemonic is String) {
-                    await keysService.restoreWallet(mnemonic: mnemonic);
-                    setState(() {});
-                  }
-                },
-                child: const Center(
-                  child: Text(
-                    'Import account',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 12.0),
-          Row(
-            children: [
-              CustomButton(
-                type: CustomButtonType.invalid,
-                onTap: () async {
-                  await keysService.loadDefaultWallet();
-                  setState(() {});
-                },
-                child: const Center(
-                  child: Text(
-                    'Restore default',
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ),
-              ),
-            ],
           ),
         ],
       ),

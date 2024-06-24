@@ -9,7 +9,6 @@ import 'package:walletconnect_flutter_v2_wallet/dependencies/bip39/bip39_base.da
     as bip39;
 import 'package:walletconnect_flutter_v2_wallet/dependencies/bip32/bip32_base.dart'
     as bip32;
-import 'package:walletconnect_flutter_v2_wallet/models/chain_metadata.dart';
 import 'package:walletconnect_flutter_v2_wallet/utils/dart_defines.dart';
 
 class KeyService extends IKeyService {
@@ -116,10 +115,7 @@ class KeyService extends IKeyService {
     final private = EthPrivateKey.fromHex(keyPair.privateKey);
     final address = private.address.hex;
     final evmChainKey = ChainKey(
-      chains: ChainData.allChains
-          .where((c) => c.type == ChainType.eip155)
-          .map((e) => e.chainId)
-          .toList(),
+      chains: ChainData.eip155Chains.map((e) => e.chainId).toList(),
       privateKey: keyPair.privateKey,
       publicKey: keyPair.publicKey,
       address: address,
@@ -148,10 +144,7 @@ class KeyService extends IKeyService {
 
   ChainKey _kadenaKeyPair() {
     return ChainKey(
-      chains: ChainData.allChains
-          .where((c) => c.type == ChainType.kadena)
-          .map((e) => e.chainId)
-          .toList(),
+      chains: ChainData.kadenaChains.map((e) => e.chainId).toList(),
       privateKey: DartDefines.kadenaSecretKey,
       publicKey: DartDefines.kadenaAddress,
       address: DartDefines.kadenaAddress,
@@ -159,21 +152,8 @@ class KeyService extends IKeyService {
   }
 
   ChainKey _polkadotKeyPair() {
-    // final keyring = Keyring();
-    // final keyPair1 = await KeyPair.sr25519.fromMnemonic(
-    //   DartDefines.polkadotMnemonic1,
-    // );
-    // keyPair1.ss58Format = 1;
-    // keyring.add(keyPair1);
-
-    // final publicKey = keyPair1.publicKey.bytes;
-    // final encodedPublicKey = hex.encode(publicKey);
-
     return ChainKey(
-      chains: ChainData.allChains
-          .where((c) => c.type == ChainType.polkadot)
-          .map((e) => e.chainId)
-          .toList(),
+      chains: ChainData.polkadotChains.map((e) => e.chainId).toList(),
       privateKey: DartDefines.polkadotMnemonic,
       publicKey: '',
       address: DartDefines.polkadotAddress,
@@ -182,10 +162,7 @@ class KeyService extends IKeyService {
 
   ChainKey _solanaKeyPair() {
     return ChainKey(
-      chains: ChainData.allChains
-          .where((c) => c.type == ChainType.solana)
-          .map((e) => e.chainId)
-          .toList(),
+      chains: ChainData.solanaChains.map((e) => e.chainId).toList(),
       privateKey: DartDefines.solanaSecretKey,
       publicKey: DartDefines.solanaAddress,
       address: DartDefines.solanaAddress,

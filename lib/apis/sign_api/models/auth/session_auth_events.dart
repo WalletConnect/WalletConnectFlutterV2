@@ -1,16 +1,44 @@
 import 'dart:convert';
 
 import 'package:event/event.dart';
+import 'package:walletconnect_flutter_v2/apis/core/verify/models/verify_context.dart';
 import 'package:walletconnect_flutter_v2/apis/models/basic_models.dart';
 import 'package:walletconnect_flutter_v2/apis/models/json_rpc_error.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/models/auth/common_auth_models.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/models/session_models.dart';
 
-class OCAuthRequest extends EventArgs {
-  // TODO to be implemented for wallet usage
+import 'package:walletconnect_flutter_v2/apis/sign_api/models/auth/session_auth_models.dart';
+
+class SessionAuthRequest extends EventArgs {
+  final int id;
+  final String topic;
+  final SessionAuthPayload authPayload;
+  final ConnectionMetadata requester;
+  final VerifyContext? verifyContext;
+
+  SessionAuthRequest({
+    required this.id,
+    required this.topic,
+    required this.authPayload,
+    required this.requester,
+    this.verifyContext,
+  });
+
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'topic': topic,
+        'authPayload': authPayload.toJson(),
+        'requester': requester.toJson(),
+        'verifyContext': verifyContext?.toJson(),
+      };
+
+  @override
+  String toString() {
+    return 'SessionAuthRequest(${jsonEncode(toJson())})';
+  }
 }
 
-class OCAuthResponse extends EventArgs {
+class SessionAuthResponse extends EventArgs {
   final int id;
   final String topic;
   final List<Cacao>? auths;
@@ -18,7 +46,7 @@ class OCAuthResponse extends EventArgs {
   final WalletConnectError? error;
   final JsonRpcError? jsonRpcError;
 
-  OCAuthResponse({
+  SessionAuthResponse({
     required this.id,
     required this.topic,
     this.auths,
@@ -38,6 +66,6 @@ class OCAuthResponse extends EventArgs {
 
   @override
   String toString() {
-    return 'OCAResponse(${jsonEncode(toJson())})';
+    return 'SessionAuthResponse(${jsonEncode(toJson())})';
   }
 }

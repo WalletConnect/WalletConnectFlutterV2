@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
+import 'package:walletconnect_flutter_v2_wallet/dependencies/i_web3wallet_service.dart';
+import 'package:walletconnect_flutter_v2_wallet/dependencies/key_service/i_key_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/utils/constants.dart';
 import 'package:walletconnect_flutter_v2_wallet/utils/namespace_model_builder.dart';
 import 'package:walletconnect_flutter_v2_wallet/utils/string_constants.dart';
-import 'package:walletconnect_flutter_v2_wallet/widgets/wc_connection_request/wc_auth_request_model.dart';
-import 'package:walletconnect_flutter_v2_wallet/widgets/wc_connection_request/wc_session_request_model.dart';
 import 'package:walletconnect_flutter_v2_wallet/widgets/wc_connection_widget/wc_connection_widget.dart';
 
 import '../wc_connection_widget/wc_connection_model.dart';
@@ -12,21 +13,21 @@ import '../wc_connection_widget/wc_connection_model.dart';
 class WCConnectionRequestWidget extends StatelessWidget {
   const WCConnectionRequestWidget({
     Key? key,
-    required this.wallet,
-    this.authRequest,
-    this.sessionProposal,
+    this.authPayloadParams,
+    this.sessionAuthPayload,
+    this.proposalData,
+    this.metadata,
+    this.verifyContext,
   }) : super(key: key);
 
-  final Web3Wallet wallet;
-  final WCAuthRequestModel? authRequest;
-  final WCSessionRequestModel? sessionProposal;
+  final AuthPayloadParams? authPayloadParams;
+  final SessionAuthPayload? sessionAuthPayload;
+  final ProposalData? proposalData;
+  final ConnectionMetadata? metadata;
+  final VerifyContext? verifyContext;
 
   @override
   Widget build(BuildContext context) {
-    // Get the connection metadata
-    final proposerMetadata = sessionProposal?.request.proposer;
-    final metadata = authRequest?.request.requester ?? proposerMetadata;
-
     if (metadata == null) {
       return const Text('ERROR');
     }
@@ -34,16 +35,14 @@ class WCConnectionRequestWidget extends StatelessWidget {
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(
-          StyleConstants.linear8,
-        ),
+        borderRadius: BorderRadius.circular(StyleConstants.linear8),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.center,
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            '${metadata.metadata.name}\n${StringConstants.wouldLikeToConnect}',
+            '${metadata!.metadata.name}\n${StringConstants.wouldLikeToConnect}',
             style: StyleConstants.subtitleText.copyWith(
               fontSize: 18,
               color: Colors.black,
@@ -52,30 +51,73 @@ class WCConnectionRequestWidget extends StatelessWidget {
           ),
           const SizedBox(height: StyleConstants.linear8),
           VerifyContextWidget(
-            verifyContext: sessionProposal?.verifyContext,
+            verifyContext: verifyContext,
           ),
           const SizedBox(height: StyleConstants.linear8),
-          authRequest != null
+          (authPayloadParams != null)
               ? _buildAuthRequestView()
-              : _buildSessionProposalView(context),
+              : (sessionAuthPayload != null)
+                  ? _buildSessionAuthRequestView()
+                  : _buildSessionProposalView(context),
         ],
       ),
     );
   }
 
   Widget _buildAuthRequestView() {
-    final model = WCConnectionModel(
-      text: wallet.formatAuthMessage(
-        iss: 'did:pkh:eip155:1:${authRequest!.iss}',
-        cacaoPayload: CacaoRequestPayload.fromPayloadParams(
-          authRequest!.request.payloadParams,
-        ),
-      ),
+    final web3Wallet = GetIt.I<IWeb3WalletService>().web3wallet;
+    //
+    final cacaoPayload = CacaoRequestPayload.fromPayloadParams(
+      authPayloadParams!,
+    );
+    const chain = 'eip155:1';
+    final chainKeys = GetIt.I<IKeyService>().getKeysForChain(chain);
+    final iss = 'did:pkh:$chain:${chainKeys.first.address}';
+    final message = web3Wallet.formatAuthMessage(
+      iss: iss,
+      cacaoPayload: cacaoPayload,
+    );
+    //
+    final messageModel = WCConnectionModel(
+      text: message,
     );
 
     return WCConnectionWidget(
-      title: StringConstants.message,
-      info: [model],
+      title: 'Message',
+      info: [
+        messageModel,
+      ],
+    );
+  }
+
+  Widget _buildSessionAuthRequestView() {
+    final web3Wallet = GetIt.I<IWeb3WalletService>().web3wallet;
+    //
+    final cacaoPayload = CacaoRequestPayload.fromSessionAuthPayload(
+      sessionAuthPayload!,
+    );
+    //
+    final List<WCConnectionModel> messagesModels = [];
+    for (var chain in sessionAuthPayload!.chains) {
+      final chainKeys = GetIt.I<IKeyService>().getKeysForChain(chain);
+      final iss = 'did:pkh:$chain:${chainKeys.first.address}';
+      final message = web3Wallet.formatAuthMessage(
+        iss: iss,
+        cacaoPayload: cacaoPayload,
+      );
+      messagesModels.add(
+        WCConnectionModel(
+          title: 'Message ${messagesModels.length + 1}',
+          elements: [
+            message,
+          ],
+        ),
+      );
+    }
+    //
+    return WCConnectionWidget(
+      title: 'Messages',
+      info: messagesModels,
     );
   }
 
@@ -83,7 +125,7 @@ class WCConnectionRequestWidget extends StatelessWidget {
     // Create the connection models using the required and optional namespaces provided by the proposal data
     // The key is the title and the list of values is the data
     final views = ConnectionWidgetBuilder.buildFromRequiredNamespaces(
-      sessionProposal!.request.generatedNamespaces!,
+      proposalData!.generatedNamespaces!,
     );
 
     return Column(

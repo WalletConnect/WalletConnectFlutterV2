@@ -7,17 +7,18 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/bottom_sheet/i_bottom_sheet_service.dart';
+import 'package:walletconnect_flutter_v2_wallet/dependencies/chains/evm_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/deep_link_handler.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/i_web3wallet_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/key_service/chain_key.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/key_service/i_key_service.dart';
+import 'package:walletconnect_flutter_v2_wallet/models/chain_data.dart';
 import 'package:walletconnect_flutter_v2_wallet/utils/constants.dart';
 import 'package:walletconnect_flutter_v2_wallet/utils/dart_defines.dart';
 import 'package:walletconnect_flutter_v2_wallet/utils/eth_utils.dart';
-import 'package:walletconnect_flutter_v2_wallet/widgets/wc_connection_request/wc_auth_request_model.dart';
 import 'package:walletconnect_flutter_v2_wallet/widgets/wc_connection_request/wc_connection_request_widget.dart';
-import 'package:walletconnect_flutter_v2_wallet/widgets/wc_connection_request/wc_session_request_model.dart';
 import 'package:walletconnect_flutter_v2_wallet/widgets/wc_request_widget.dart/wc_request_widget.dart';
+import 'package:walletconnect_flutter_v2_wallet/widgets/wc_request_widget.dart/wc_session_auth_request_widget.dart';
 
 class Web3WalletService extends IWeb3WalletService {
   final _bottomSheetHandler = GetIt.I<IBottomSheetService>();
@@ -44,7 +45,6 @@ class Web3WalletService extends IWeb3WalletService {
         ),
       ),
     );
-    _web3Wallet!.core.addLogListener(_logListener);
 
     // Setup our accounts
     List<ChainKey> chainKeys = await GetIt.I<IKeyService>().setKeys();
@@ -74,18 +74,22 @@ class Web3WalletService extends IWeb3WalletService {
 
     // Setup our listeners
     debugPrint('[SampleWallet] create');
+    _web3Wallet!.core.addLogListener(_logListener);
     _web3Wallet!.core.pairing.onPairingInvalid.subscribe(_onPairingInvalid);
     _web3Wallet!.core.pairing.onPairingCreate.subscribe(_onPairingCreate);
-    _web3Wallet!.onSessionProposal.subscribe(_onSessionProposal);
-    _web3Wallet!.onSessionConnect.subscribe(_onSessionConnect);
-    _web3Wallet!.onSessionProposalError.subscribe(_onSessionProposalError);
-    _web3Wallet!.onAuthRequest.subscribe(_onAuthRequest);
     _web3Wallet!.core.relayClient.onRelayClientError.subscribe(
       _onRelayClientError,
     );
     _web3Wallet!.core.relayClient.onRelayClientMessage.subscribe(
       _onRelayClientMessage,
     );
+
+    _web3Wallet!.onSessionProposal.subscribe(_onSessionProposal);
+    _web3Wallet!.onSessionProposalError.subscribe(_onSessionProposalError);
+    _web3Wallet!.onSessionConnect.subscribe(_onSessionConnect);
+    _web3Wallet!.onSessionAuthRequest.subscribe(_onSessionAuthRequest);
+
+    _web3Wallet!.onAuthRequest.subscribe(_onAuthRequest);
   }
 
   @override
@@ -95,7 +99,7 @@ class Web3WalletService extends IWeb3WalletService {
   }
 
   void _logListener(LogEvent event) {
-    debugPrint('[SampleWallet] ${event.level.name}: ${event.message}');
+    debugPrint('[Logger] ${event.level.name}: ${event.message}');
     if (event.level == Level.error) {
       // TODO send to mixpanel
     }
@@ -106,16 +110,19 @@ class Web3WalletService extends IWeb3WalletService {
     _web3Wallet!.core.removeLogListener(_logListener);
     _web3Wallet!.core.pairing.onPairingInvalid.unsubscribe(_onPairingInvalid);
     _web3Wallet!.core.pairing.onPairingCreate.unsubscribe(_onPairingCreate);
-    _web3Wallet!.onSessionProposal.unsubscribe(_onSessionProposal);
-    _web3Wallet!.onSessionConnect.unsubscribe(_onSessionConnect);
-    _web3Wallet!.onSessionProposalError.unsubscribe(_onSessionProposalError);
-    _web3Wallet!.onAuthRequest.unsubscribe(_onAuthRequest);
     _web3Wallet!.core.relayClient.onRelayClientError.unsubscribe(
       _onRelayClientError,
     );
     _web3Wallet!.core.relayClient.onRelayClientMessage.unsubscribe(
       _onRelayClientMessage,
     );
+
+    _web3Wallet!.onSessionProposal.unsubscribe(_onSessionProposal);
+    _web3Wallet!.onSessionProposalError.unsubscribe(_onSessionProposalError);
+    _web3Wallet!.onSessionConnect.unsubscribe(_onSessionConnect);
+    _web3Wallet!.onSessionAuthRequest.unsubscribe(_onSessionAuthRequest);
+
+    _web3Wallet!.onAuthRequest.unsubscribe(_onAuthRequest);
   }
 
   @override
@@ -149,19 +156,17 @@ class Web3WalletService extends IWeb3WalletService {
   void _onSessionProposal(SessionProposalEvent? args) async {
     if (args != null) {
       log('[SampleWallet] _onSessionProposal ${jsonEncode(args.params)}');
-      final approved = await _bottomSheetHandler.queueBottomSheet(
+      final WCBottomSheetResult rs = await _bottomSheetHandler.queueBottomSheet(
         widget: WCRequestWidget(
           child: WCConnectionRequestWidget(
-            wallet: _web3Wallet!,
-            sessionProposal: WCSessionRequestModel(
-              request: args.params,
-              verifyContext: args.verifyContext,
-            ),
+            proposalData: args.params,
+            verifyContext: args.verifyContext,
+            metadata: args.params.proposer,
           ),
         ),
       );
 
-      if (approved == true) {
+      if (rs != WCBottomSheetResult.reject) {
         // generatedNamespaces is constructed based on registered methods handlers
         // so if you want to handle requests using onSessionRequest event then you would need to manually add that method in the approved namespaces
         await _web3Wallet!.approveSession(
@@ -235,47 +240,132 @@ class Web3WalletService extends IWeb3WalletService {
   }
 
   void _onRelayClientError(ErrorEvent? args) {
-    debugPrint(
-        '[$runtimeType] [SampleWallet] _onRelayClientError ${args?.error}');
+    debugPrint('[SampleWallet] _onRelayClientError ${args?.error}');
   }
 
   void _onPairingInvalid(PairingInvalidEvent? args) {
-    debugPrint('[$runtimeType] [SampleWallet] _onPairingInvalid $args');
+    debugPrint('[SampleWallet] _onPairingInvalid $args');
   }
 
   void _onPairingCreate(PairingEvent? args) {
-    debugPrint('[$runtimeType] [SampleWallet] _onPairingCreate $args');
+    debugPrint('[SampleWallet] _onPairingCreate $args');
+  }
+
+  Future<void> _onSessionAuthRequest(SessionAuthRequest? args) async {
+    log('[SampleWallet] _onSessionAuthRequest ${args?.authPayload}');
+    if (args != null) {
+      final SessionAuthPayload payloadParams = args.authPayload;
+      final supportedChains = ChainData.eip155Chains.map((e) => e.chainId);
+      final supportedMethods = SupportedEVMMethods.values.map((e) => e.name);
+      final newPayloadParams = AuthSignature.populateAuthPayload(
+        authPayload: payloadParams,
+        chains: supportedChains.toList(),
+        methods: supportedMethods.toList(),
+      );
+      final cacaoRequestPayload = CacaoRequestPayload.fromSessionAuthPayload(
+        newPayloadParams,
+      );
+      final List<Map<String, dynamic>> formattedMessages = [];
+      for (var chain in newPayloadParams.chains) {
+        final chainKeys = GetIt.I<IKeyService>().getKeysForChain(chain);
+        final iss = 'did:pkh:$chain:${chainKeys.first.address}';
+        final message = _web3Wallet!.formatAuthMessage(
+          iss: iss,
+          cacaoPayload: cacaoRequestPayload,
+          // TODO cacaoPayload should be SessionAuthPayloadParams
+        );
+        formattedMessages.add({iss: message});
+      }
+
+      final WCBottomSheetResult rs = await _bottomSheetHandler.queueBottomSheet(
+        widget: WCSessionAuthRequestWidget(
+          child: WCConnectionRequestWidget(
+            sessionAuthPayload: newPayloadParams,
+            verifyContext: args.verifyContext,
+            metadata: args.requester,
+          ),
+        ),
+      );
+
+      if (rs != WCBottomSheetResult.reject) {
+        const chain = 'eip155:1';
+        final chainKeys = GetIt.I<IKeyService>().getKeysForChain(chain);
+        final privateKey = '0x${chainKeys[0].privateKey}';
+        final credentials = EthPrivateKey.fromHex(privateKey);
+        //
+        final messageToSign = formattedMessages.length;
+        final count = (rs == WCBottomSheetResult.one) ? 1 : messageToSign;
+        //
+        final List<Cacao> cacaos = [];
+        for (var i = 0; i < count; i++) {
+          final iss = formattedMessages[i].keys.first;
+          final message = formattedMessages[i].values.first;
+          final signature = credentials.signPersonalMessageToUint8List(
+            Uint8List.fromList(message.codeUnits),
+          );
+          final hexSignature = bytesToHex(signature, include0x: true);
+          cacaos.add(
+            AuthSignature.buildAuthObject(
+              requestPayload: cacaoRequestPayload,
+              signature: CacaoSignature(
+                t: CacaoSignature.EIP191,
+                s: hexSignature,
+              ),
+              iss: iss,
+            ),
+          );
+        }
+        //
+        final _ = await _web3Wallet!.approveSessionAuthenticate(
+          id: args.id,
+          auths: cacaos,
+        );
+        final scheme = args.requester.metadata.redirect?.native ?? '';
+        DeepLinkHandler.goTo(scheme);
+      } else {
+        await _web3Wallet!.rejectSessionAuthenticate(
+          id: args.id,
+          reason: Errors.getSdkError(Errors.USER_REJECTED_AUTH),
+        );
+        final scheme = args.requester.metadata.redirect?.native ?? '';
+        DeepLinkHandler.goTo(
+          scheme,
+          modalTitle: 'Error',
+          modalMessage: 'User rejected',
+          success: false,
+        );
+      }
+    }
   }
 
   Future<void> _onAuthRequest(AuthRequest? args) async {
     log('[SampleWallet] _onAuthRequest $args');
     if (args != null) {
-      final chainKeys = GetIt.I<IKeyService>().getKeysForChain('eip155:1');
-      // Create the message to be signed
-      final iss = 'did:pkh:eip155:1:${chainKeys.first.address}';
-
-      final bool? auth = await _bottomSheetHandler.queueBottomSheet(
+      //
+      final WCBottomSheetResult rs = await _bottomSheetHandler.queueBottomSheet(
         widget: WCRequestWidget(
           child: WCConnectionRequestWidget(
-            wallet: _web3Wallet!,
-            authRequest: WCAuthRequestModel(
-              iss: iss,
-              request: args,
-            ),
+            authPayloadParams: args.payloadParams,
+            metadata: args.requester,
           ),
         ),
       );
 
-      if (auth != null && auth) {
-        final String message = _web3Wallet!.formatAuthMessage(
+      const chain = 'eip155:1';
+      final chainKeys = GetIt.I<IKeyService>().getKeysForChain(chain);
+      final privateKey = '0x${chainKeys[0].privateKey}';
+      final credentials = EthPrivateKey.fromHex(privateKey);
+      final iss = 'did:pkh:$chain:${credentials.address.hex}';
+
+      if (rs != WCBottomSheetResult.reject) {
+        //
+        final message = _web3Wallet!.formatAuthMessage(
           iss: iss,
           cacaoPayload: CacaoRequestPayload.fromPayloadParams(
             args.payloadParams,
           ),
         );
 
-        final pk = '0x${chainKeys.first.privateKey}';
-        final credentials = EthPrivateKey.fromHex(pk);
         final signature = credentials.signPersonalMessageToUint8List(
           Uint8List.fromList(message.codeUnits),
         );

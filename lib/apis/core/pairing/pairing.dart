@@ -113,6 +113,7 @@ class Pairing implements IPairing {
       expiry: expiry,
       relay: relay,
       active: false,
+      methods: methods?.expand((e) => e).toList() ?? [],
     );
     final Uri uri = WalletConnectUtils.formatUri(
       protocol: core.protocol,
@@ -168,6 +169,7 @@ class Pairing implements IPairing {
       expiry: expiry,
       relay: relay,
       active: false,
+      methods: parsedUri.v2Data!.methods,
     );
 
     try {
@@ -499,6 +501,7 @@ class Pairing implements IPairing {
     String method,
     JsonRpcError error, {
     EncodeOptions? encodeOptions,
+    RpcOptions? rpcOptions,
   }) async {
     core.logger.t(
       'pairing sendError, id: $id topic: $topic, method: $method, error: $error',
@@ -518,10 +521,13 @@ class Pairing implements IPairing {
       return;
     }
 
-    final RpcOptions opts = MethodConstants.RPC_OPTS.containsKey(method)
-        ? MethodConstants.RPC_OPTS[method]!['res']!
-        : MethodConstants
-            .RPC_OPTS[MethodConstants.UNREGISTERED_METHOD]!['res']!;
+    final fallbackMethod = MethodConstants.UNREGISTERED_METHOD;
+    final fallbackRpcOpts = MethodConstants.RPC_OPTS[method] ??
+        MethodConstants.RPC_OPTS[fallbackMethod]!;
+    final fallbackOpts = fallbackRpcOpts['reject'] ?? fallbackRpcOpts['res']!;
+
+    final RpcOptions opts = rpcOptions ?? fallbackOpts;
+
     await core.relayClient.publish(
       topic: topic,
       message: message,

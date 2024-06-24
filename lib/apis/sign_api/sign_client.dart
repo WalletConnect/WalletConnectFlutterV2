@@ -134,6 +134,14 @@ class SignClient implements ISignClient {
           return StoredCacao.fromJson(value);
         },
       ),
+      sessionAuthRequests: GenericStore(
+        storage: core.storage,
+        context: StoreVersions.CONTEXT_AUTH_REQUESTS,
+        version: StoreVersions.VERSION_AUTH_REQUESTS,
+        fromJson: (dynamic value) {
+          return PendingSessionAuthRequest.fromJson(value);
+        },
+      ),
     );
   }
 
@@ -499,6 +507,19 @@ class SignClient implements ISignClient {
   }
 
   @override
+  Map<int, PendingSessionAuthRequest> getPendingSessionAuthRequests() {
+    try {
+      return engine.getPendingSessionAuthRequests();
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  IGenericStore<PendingSessionAuthRequest> get sessionAuthRequests =>
+      engine.sessionAuthRequests;
+
+  @override
   Event<AuthRequest> get onAuthRequest => engine.onAuthRequest;
 
   @override
@@ -506,7 +527,12 @@ class SignClient implements ISignClient {
 
   // NEW 1-CLICK AUTH METHOD
   @override
-  Event<OCAuthResponse> get onOCAuthResponse => engine.onOCAuthResponse;
+  Event<SessionAuthResponse> get onSessionAuthResponse =>
+      engine.onSessionAuthResponse;
+
+  @override
+  Event<SessionAuthRequest> get onSessionAuthRequest =>
+      engine.onSessionAuthRequest;
 
   @override
   Future<AuthRequestResponse> requestAuth({
@@ -527,8 +553,8 @@ class SignClient implements ISignClient {
 
   // NEW ONE-CLICK AUTH METHOD FOR DAPPS
   @override
-  Future<OCARequestResponse> authenticate({
-    required OCARequestParams params,
+  Future<SessionAuthRequestResponse> authenticate({
+    required SessionAuthRequestParams params,
     String? pairingTopic,
     List<List<String>>? methods = const [
       [MethodConstants.WC_SESSION_AUTHENTICATE]
@@ -558,6 +584,36 @@ class SignClient implements ISignClient {
         iss: iss,
         signature: signature,
         error: error,
+      );
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<ApproveResponse> approveSessionAuthenticate({
+    required int id,
+    List<Cacao>? auths,
+  }) {
+    try {
+      return engine.approveSessionAuthenticate(
+        id: id,
+        auths: auths,
+      );
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> rejectSessionAuthenticate({
+    required int id,
+    required WalletConnectError reason,
+  }) {
+    try {
+      return engine.rejectSessionAuthenticate(
+        id: id,
+        reason: reason,
       );
     } catch (e) {
       rethrow;

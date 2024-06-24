@@ -1,14 +1,14 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'ocauth_models.dart';
+part of 'session_auth_models.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-_$OCAPayloadParamsImpl _$$OCAPayloadParamsImplFromJson(
+_$SessionAuthPayloadImpl _$$SessionAuthPayloadImplFromJson(
         Map<String, dynamic> json) =>
-    _$OCAPayloadParamsImpl(
+    _$SessionAuthPayloadImpl(
       chains:
           (json['chains'] as List<dynamic>).map((e) => e as String).toList(),
       domain: json['domain'] as String,
@@ -26,8 +26,8 @@ _$OCAPayloadParamsImpl _$$OCAPayloadParamsImplFromJson(
           .toList(),
     );
 
-Map<String, dynamic> _$$OCAPayloadParamsImplToJson(
-    _$OCAPayloadParamsImpl instance) {
+Map<String, dynamic> _$$SessionAuthPayloadImplToJson(
+    _$SessionAuthPayloadImpl instance) {
   final val = <String, dynamic>{
     'chains': instance.chains,
     'domain': instance.domain,
@@ -51,3 +51,28 @@ Map<String, dynamic> _$$OCAPayloadParamsImplToJson(
   writeNotNull('resources', instance.resources);
   return val;
 }
+
+_$PendingSessionAuthRequestImpl _$$PendingSessionAuthRequestImplFromJson(
+        Map<String, dynamic> json) =>
+    _$PendingSessionAuthRequestImpl(
+      id: json['id'] as int,
+      pairingTopic: json['pairingTopic'] as String,
+      requester: ConnectionMetadata.fromJson(
+          json['requester'] as Map<String, dynamic>),
+      expiryTimestamp: json['expiryTimestamp'] as int,
+      authPayload: CacaoRequestPayload.fromJson(
+          json['authPayload'] as Map<String, dynamic>),
+      verifyContext:
+          VerifyContext.fromJson(json['verifyContext'] as Map<String, dynamic>),
+    );
+
+Map<String, dynamic> _$$PendingSessionAuthRequestImplToJson(
+        _$PendingSessionAuthRequestImpl instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'pairingTopic': instance.pairingTopic,
+      'requester': instance.requester.toJson(),
+      'expiryTimestamp': instance.expiryTimestamp,
+      'authPayload': instance.authPayload.toJson(),
+      'verifyContext': instance.verifyContext.toJson(),
+    };

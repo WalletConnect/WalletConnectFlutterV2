@@ -21,7 +21,7 @@ abstract class ISignClient {
   abstract final ISessions sessions;
   abstract final IGenericStore<SessionRequest> pendingRequests;
 
-  // FORMER AUTH ENGINE PROPERTY
+  // FORMER AUTH ENGINE PROPERTIES
   abstract final IGenericStore<AuthPublicKey> authKeys;
   abstract final IGenericStore<String> pairingTopics;
   abstract final IGenericStore<StoredCacao> completeRequests;
@@ -30,18 +30,21 @@ abstract class ISignClient {
   abstract final Event<SessionProposalEvent> onSessionProposal;
   abstract final Event<SessionProposalErrorEvent> onSessionProposalError;
   abstract final Event<SessionRequestEvent> onSessionRequest;
-  // FORMER AUTH ENGINE PROPERTY
+  // FORMER AUTH ENGINE METHODS
   abstract final Event<AuthRequest> onAuthRequest;
   abstract final IGenericStore<PendingAuthRequest> authRequests;
+  // NEW 1-CA METHODS
+  abstract final Event<SessionAuthRequest> onSessionAuthRequest;
+  abstract final IGenericStore<PendingSessionAuthRequest> sessionAuthRequests;
 
   // App
   abstract final Event<SessionUpdate> onSessionUpdate;
   abstract final Event<SessionExtend> onSessionExtend;
   abstract final Event<SessionEvent> onSessionEvent;
-  // FORMER AUTH ENGINE PROPERTY
+  // FORMER AUTH ENGINE METHOD
   abstract final Event<AuthResponse> onAuthResponse;
-  // NEW 1-CA PROPERTY
-  abstract final Event<OCAuthResponse> onOCAuthResponse;
+  // NEW 1-CA METHOD
+  abstract final Event<SessionAuthResponse> onSessionAuthResponse;
 
   Future<void> init();
   Future<ConnectResponse> connect({
@@ -146,8 +149,8 @@ abstract class ISignClient {
     required String accountAddress,
   });
 
-  // FORMER AUTH ENGINE PROPERTY COMMON
-  /// format payload to message string
+  // FORMER AUTH ENGINE COMMON METHODS
+
   String formatAuthMessage({
     required String iss,
     required CacaoRequestPayload cacaoPayload,
@@ -157,7 +160,8 @@ abstract class ISignClient {
     required String pairingTopic,
   });
 
-  // FORMER AUTH ENGINE PROPERTY FOR WALLET
+  // FORMER AUTH ENGINE WALLET METHODS
+
   Future<void> respondAuthRequest({
     required int id,
     required String iss,
@@ -165,25 +169,38 @@ abstract class ISignClient {
     WalletConnectError? error,
   });
 
-  // FORMER AUTH ENGINE METHOD WALLET
-  // query all pending requests
   Map<int, PendingAuthRequest> getPendingAuthRequests();
 
-  // FORMER AUTH ENGINE METHOD FOR DAPP
+  // FORMER AUTH ENGINE DAPP METHODS
+
   Future<AuthRequestResponse> requestAuth({
     required AuthRequestParams params,
     String? pairingTopic,
     List<List<String>>? methods,
   });
 
-  // NEW 1-CA METHOD FOR DAPP
-  Future<OCARequestResponse> authenticate({
-    required OCARequestParams params,
+  // NEW 1-CA WALLET METHODS
+
+  Future<ApproveResponse> approveSessionAuthenticate({
+    required int id,
+    List<Cacao>? auths,
+  });
+
+  Future<void> rejectSessionAuthenticate({
+    required int id,
+    required WalletConnectError reason,
+  });
+
+  Map<int, PendingSessionAuthRequest> getPendingSessionAuthRequests();
+
+  // NEW 1-CA DAPP METHODS
+
+  Future<SessionAuthRequestResponse> authenticate({
+    required SessionAuthRequestParams params,
     String? pairingTopic,
     List<List<String>>? methods,
   });
 
-  // NEW 1-CA METHOD FOR DAPP
   Future<bool> validateSignedCacao({
     required Cacao cacao,
     required String projectId,

@@ -24,6 +24,7 @@ mixin _$PairingInfo {
   int get expiry => throw _privateConstructorUsedError;
   Relay get relay => throw _privateConstructorUsedError;
   bool get active => throw _privateConstructorUsedError;
+  List<String>? get methods => throw _privateConstructorUsedError;
   PairingMetadata? get peerMetadata => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
@@ -43,6 +44,7 @@ abstract class $PairingInfoCopyWith<$Res> {
       int expiry,
       Relay relay,
       bool active,
+      List<String>? methods,
       PairingMetadata? peerMetadata});
 
   $PairingMetadataCopyWith<$Res>? get peerMetadata;
@@ -65,6 +67,7 @@ class _$PairingInfoCopyWithImpl<$Res, $Val extends PairingInfo>
     Object? expiry = null,
     Object? relay = null,
     Object? active = null,
+    Object? methods = freezed,
     Object? peerMetadata = freezed,
   }) {
     return _then(_value.copyWith(
@@ -84,6 +87,10 @@ class _$PairingInfoCopyWithImpl<$Res, $Val extends PairingInfo>
           ? _value.active
           : active // ignore: cast_nullable_to_non_nullable
               as bool,
+      methods: freezed == methods
+          ? _value.methods
+          : methods // ignore: cast_nullable_to_non_nullable
+              as List<String>?,
       peerMetadata: freezed == peerMetadata
           ? _value.peerMetadata
           : peerMetadata // ignore: cast_nullable_to_non_nullable
@@ -117,6 +124,7 @@ abstract class _$$PairingInfoImplCopyWith<$Res>
       int expiry,
       Relay relay,
       bool active,
+      List<String>? methods,
       PairingMetadata? peerMetadata});
 
   @override
@@ -138,6 +146,7 @@ class __$$PairingInfoImplCopyWithImpl<$Res>
     Object? expiry = null,
     Object? relay = null,
     Object? active = null,
+    Object? methods = freezed,
     Object? peerMetadata = freezed,
   }) {
     return _then(_$PairingInfoImpl(
@@ -157,6 +166,10 @@ class __$$PairingInfoImplCopyWithImpl<$Res>
           ? _value.active
           : active // ignore: cast_nullable_to_non_nullable
               as bool,
+      methods: freezed == methods
+          ? _value._methods
+          : methods // ignore: cast_nullable_to_non_nullable
+              as List<String>?,
       peerMetadata: freezed == peerMetadata
           ? _value.peerMetadata
           : peerMetadata // ignore: cast_nullable_to_non_nullable
@@ -174,7 +187,9 @@ class _$PairingInfoImpl implements _PairingInfo {
       required this.expiry,
       required this.relay,
       required this.active,
-      this.peerMetadata});
+      final List<String>? methods,
+      this.peerMetadata})
+      : _methods = methods;
 
   factory _$PairingInfoImpl.fromJson(Map<String, dynamic> json) =>
       _$$PairingInfoImplFromJson(json);
@@ -187,12 +202,22 @@ class _$PairingInfoImpl implements _PairingInfo {
   final Relay relay;
   @override
   final bool active;
+  final List<String>? _methods;
+  @override
+  List<String>? get methods {
+    final value = _methods;
+    if (value == null) return null;
+    if (_methods is EqualUnmodifiableListView) return _methods;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(value);
+  }
+
   @override
   final PairingMetadata? peerMetadata;
 
   @override
   String toString() {
-    return 'PairingInfo(topic: $topic, expiry: $expiry, relay: $relay, active: $active, peerMetadata: $peerMetadata)';
+    return 'PairingInfo(topic: $topic, expiry: $expiry, relay: $relay, active: $active, methods: $methods, peerMetadata: $peerMetadata)';
   }
 
   @override
@@ -204,14 +229,15 @@ class _$PairingInfoImpl implements _PairingInfo {
             (identical(other.expiry, expiry) || other.expiry == expiry) &&
             (identical(other.relay, relay) || other.relay == relay) &&
             (identical(other.active, active) || other.active == active) &&
+            const DeepCollectionEquality().equals(other._methods, _methods) &&
             (identical(other.peerMetadata, peerMetadata) ||
                 other.peerMetadata == peerMetadata));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, topic, expiry, relay, active, peerMetadata);
+  int get hashCode => Object.hash(runtimeType, topic, expiry, relay, active,
+      const DeepCollectionEquality().hash(_methods), peerMetadata);
 
   @JsonKey(ignore: true)
   @override
@@ -233,6 +259,7 @@ abstract class _PairingInfo implements PairingInfo {
       required final int expiry,
       required final Relay relay,
       required final bool active,
+      final List<String>? methods,
       final PairingMetadata? peerMetadata}) = _$PairingInfoImpl;
 
   factory _PairingInfo.fromJson(Map<String, dynamic> json) =
@@ -246,6 +273,8 @@ abstract class _PairingInfo implements PairingInfo {
   Relay get relay;
   @override
   bool get active;
+  @override
+  List<String>? get methods;
   @override
   PairingMetadata? get peerMetadata;
   @override

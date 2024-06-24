@@ -13,6 +13,9 @@ import 'package:walletconnect_flutter_v2/apis/core/store/i_generic_store.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/models/auth/auth_client_events.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/models/auth/auth_client_models.dart';
 
+import 'package:walletconnect_flutter_v2/apis/sign_api/models/auth/session_auth_models.dart';
+import 'package:walletconnect_flutter_v2/apis/sign_api/models/auth/session_auth_events.dart';
+
 abstract class ISignEngineWallet extends ISignEngineCommon {
   abstract final Event<SessionProposalEvent> onSessionProposal;
   abstract final Event<SessionProposalErrorEvent> onSessionProposalError;
@@ -21,6 +24,9 @@ abstract class ISignEngineWallet extends ISignEngineCommon {
   // FORMER AUTH ENGINE PROPERTY
   abstract final Event<AuthRequest> onAuthRequest;
   abstract final IGenericStore<PendingAuthRequest> authRequests;
+  // NEW 1-CA METHOD
+  abstract final Event<SessionAuthRequest> onSessionAuthRequest;
+  abstract final IGenericStore<PendingSessionAuthRequest> sessionAuthRequests;
 
   Future<PairingInfo> pair({
     required Uri uri,
@@ -85,7 +91,8 @@ abstract class ISignEngineWallet extends ISignEngineCommon {
   //   Map<String, RequiredNamespace>? optionalNamespaces,
   // });
 
-  // FORMER AUTH ENGINE PROPERTY
+  // FORMER AUTH ENGINE METHODS
+
   Future<void> respondAuthRequest({
     required int id,
     required String iss,
@@ -93,7 +100,19 @@ abstract class ISignEngineWallet extends ISignEngineCommon {
     WalletConnectError? error,
   });
 
-  // FORMER AUTH ENGINE PROPERTY
-  // query all pending requests
   Map<int, PendingAuthRequest> getPendingAuthRequests();
+
+  // NEW 1-CA METHODS
+
+  Future<ApproveResponse> approveSessionAuthenticate({
+    required int id,
+    List<Cacao>? auths,
+  });
+
+  Future<void> rejectSessionAuthenticate({
+    required int id,
+    required WalletConnectError reason,
+  });
+
+  Map<int, PendingSessionAuthRequest> getPendingSessionAuthRequests();
 }

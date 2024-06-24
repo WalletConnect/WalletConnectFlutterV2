@@ -77,7 +77,7 @@ class Web3WalletHelpers {
       expect(b.getPendingAuthRequests().length, 1);
 
       // Create the message to be signed
-      String message = b.formatAuthMessage(
+      String message = b.authEngine.formatAuthMessage(
         iss: TEST_ISSUER_EIP191,
         cacaoPayload: CacaoRequestPayload.fromPayloadParams(
           args!.payloadParams,

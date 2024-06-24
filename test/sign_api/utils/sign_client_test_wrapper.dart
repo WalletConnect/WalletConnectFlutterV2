@@ -498,10 +498,19 @@ class SignClientTestWrapper implements ISignEngine {
   Event<AuthResponse> get onAuthResponse => client.onAuthResponse;
 
   @override
-  Event<OCAuthResponse> get onOCAuthResponse => client.onOCAuthResponse;
+  Event<SessionAuthResponse> get onSessionAuthResponse =>
+      client.onSessionAuthResponse;
 
   @override
   IGenericStore<String> get pairingTopics => client.pairingTopics;
+
+  @override
+  IGenericStore<PendingSessionAuthRequest> get sessionAuthRequests =>
+      client.sessionAuthRequests;
+
+  @override
+  Event<SessionAuthRequest> get onSessionAuthRequest =>
+      client.onSessionAuthRequest;
 
   @override
   Future<AuthRequestResponse> requestAuth({
@@ -522,8 +531,8 @@ class SignClientTestWrapper implements ISignEngine {
 
   // NEW ONE-CLICK AUTH METHOD FOR DAPPS
   @override
-  Future<OCARequestResponse> authenticate({
-    required OCARequestParams params,
+  Future<SessionAuthRequestResponse> authenticate({
+    required SessionAuthRequestParams params,
     String? pairingTopic,
     List<List<String>>? methods,
   }) async {
@@ -552,6 +561,45 @@ class SignClientTestWrapper implements ISignEngine {
         signature: signature,
         error: error,
       );
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<ApproveResponse> approveSessionAuthenticate({
+    required int id,
+    List<Cacao>? auths,
+  }) async {
+    try {
+      return await client.approveSessionAuthenticate(
+        id: id,
+        auths: auths,
+      );
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> rejectSessionAuthenticate({
+    required int id,
+    required WalletConnectError reason,
+  }) async {
+    try {
+      return await client.rejectSessionAuthenticate(
+        id: id,
+        reason: reason,
+      );
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Map<int, PendingSessionAuthRequest> getPendingSessionAuthRequests() {
+    try {
+      return client.getPendingSessionAuthRequests();
     } catch (e) {
       rethrow;
     }
