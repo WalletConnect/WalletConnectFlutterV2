@@ -45,10 +45,10 @@ abstract class ISignEngineCommon {
     required String iss,
     required CacaoRequestPayload cacaoPayload,
   });
-  // FORMER AUTH ENGINE METHOD
   Map<int, StoredCacao> getCompletedRequestsForPairing({
     required String pairingTopic,
   });
+
   // NEW 1-CA METHOD
   Future<bool> validateSignedCacao({
     required Cacao cacao,

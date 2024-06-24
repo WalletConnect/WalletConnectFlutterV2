@@ -397,7 +397,8 @@ class Web3Wallet implements IWeb3Wallet {
   @override
   IPairingStore get pairings => core.pairing.getStore();
 
-  ///---------- AUTH ENGINE ----------///
+  ///---------- (DEPRECATED) AUTH ENGINE ----------///
+
   @override
   Event<AuthRequest> get onAuthRequest => authEngine.onAuthRequest;
 
@@ -410,13 +411,6 @@ class Web3Wallet implements IWeb3Wallet {
   @override
   IGenericStore<StoredCacao> get completeRequests =>
       authEngine.completeRequests;
-
-  @override
-  IGenericStore<PendingSessionAuthRequest> get sessionAuthRequests =>
-      signEngine.sessionAuthRequests;
-  @override
-  Event<SessionAuthRequest> get onSessionAuthRequest =>
-      signEngine.onSessionAuthRequest;
 
   @Deprecated(
     'AuthEngine/AuthClient is deprecated and will be removed soon.\n'
@@ -443,6 +437,37 @@ class Web3Wallet implements IWeb3Wallet {
       rethrow;
     }
   }
+
+  @override
+  Map<int, PendingAuthRequest> getPendingAuthRequests() {
+    try {
+      return authEngine.getPendingAuthRequests();
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Map<int, StoredCacao> getCompletedRequestsForPairing({
+    required String pairingTopic,
+  }) {
+    try {
+      return authEngine.getCompletedRequestsForPairing(
+        pairingTopic: pairingTopic,
+      );
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  ///---------- ONE-CLICK AUTH SIGN ENGINE ----------///
+
+  @override
+  IGenericStore<PendingSessionAuthRequest> get sessionAuthRequests =>
+      signEngine.sessionAuthRequests;
+  @override
+  Event<SessionAuthRequest> get onSessionAuthRequest =>
+      signEngine.onSessionAuthRequest;
 
   @override
   Future<ApproveResponse> approveSessionAuthenticate({
@@ -475,31 +500,9 @@ class Web3Wallet implements IWeb3Wallet {
   }
 
   @override
-  Map<int, PendingAuthRequest> getPendingAuthRequests() {
-    try {
-      return authEngine.getPendingAuthRequests();
-    } catch (e) {
-      rethrow;
-    }
-  }
-
-  @override
   Map<int, PendingSessionAuthRequest> getPendingSessionAuthRequests() {
     try {
       return signEngine.getPendingSessionAuthRequests();
-    } catch (e) {
-      rethrow;
-    }
-  }
-
-  @override
-  Map<int, StoredCacao> getCompletedRequestsForPairing({
-    required String pairingTopic,
-  }) {
-    try {
-      return authEngine.getCompletedRequestsForPairing(
-        pairingTopic: pairingTopic,
-      );
     } catch (e) {
       rethrow;
     }

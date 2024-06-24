@@ -91,7 +91,8 @@ abstract class ISignEngineWallet extends ISignEngineCommon {
   //   Map<String, RequiredNamespace>? optionalNamespaces,
   // });
 
-  // FORMER AUTH ENGINE PROPERTY
+  // FORMER AUTH ENGINE METHODS
+
   Future<void> respondAuthRequest({
     required int id,
     required String iss,
@@ -99,11 +100,9 @@ abstract class ISignEngineWallet extends ISignEngineCommon {
     WalletConnectError? error,
   });
 
-  // FORMER AUTH ENGINE PROPERTY
-  // query all pending requests
   Map<int, PendingAuthRequest> getPendingAuthRequests();
 
-  Map<int, PendingSessionAuthRequest> getPendingSessionAuthRequests();
+  // NEW 1-CA METHODS
 
   Future<ApproveResponse> approveSessionAuthenticate({
     required int id,
@@ -114,4 +113,6 @@ abstract class ISignEngineWallet extends ISignEngineCommon {
     required int id,
     required WalletConnectError reason,
   });
+
+  Map<int, PendingSessionAuthRequest> getPendingSessionAuthRequests();
 }
