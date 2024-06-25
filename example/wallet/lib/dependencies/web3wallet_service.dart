@@ -27,11 +27,9 @@ class Web3WalletService extends IWeb3WalletService {
   @override
   Future<void> create() async {
     // Create the web3wallet
-    _web3Wallet = Web3Wallet(
-      core: Core(
-        projectId: DartDefines.projectId,
-        logLevel: LogLevel.error,
-      ),
+    _web3Wallet = await Web3Wallet.createInstance(
+      projectId: DartDefines.projectId,
+      logLevel: LogLevel.error,
       metadata: const PairingMetadata(
         name: 'Sample Wallet Flutter',
         description: 'WalletConnect\'s sample wallet with Flutter',
