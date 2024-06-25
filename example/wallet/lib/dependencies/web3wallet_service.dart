@@ -252,7 +252,7 @@ class Web3WalletService extends IWeb3WalletService {
   }
 
   Future<void> _onSessionAuthRequest(SessionAuthRequest? args) async {
-    log('[SampleWallet] _onSessionAuthRequest ${args?.authPayload}');
+    log('[SampleWallet] _onSessionAuthRequest ${jsonEncode(args?.authPayload.toJson())}');
     if (args != null) {
       final SessionAuthPayload payloadParams = args.authPayload;
       final supportedChains = ChainData.eip155Chains.map((e) => e.chainId);
