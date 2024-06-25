@@ -150,7 +150,7 @@ class ReCapsUtils {
     final jsonRecap = jsonEncode(recap);
     final bytes = utf8.encode(jsonRecap).toList();
     // remove the padding from the base64 string as per recap spec
-    return 'urn:recap:${base64.encode(bytes).replaceAll('/=/g', '')}';
+    return 'urn:recap:${base64.encode(bytes).replaceAll('=', '')}';
   }
 
   static Map<String, dynamic> createRecap(

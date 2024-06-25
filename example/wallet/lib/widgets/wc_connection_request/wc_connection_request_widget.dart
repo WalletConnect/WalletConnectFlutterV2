@@ -116,7 +116,7 @@ class WCConnectionRequestWidget extends StatelessWidget {
     }
     //
     return WCConnectionWidget(
-      title: 'Messages',
+      title: '${messagesModels.length} Messages',
       info: messagesModels,
     );
   }

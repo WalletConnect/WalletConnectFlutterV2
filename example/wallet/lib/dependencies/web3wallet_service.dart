@@ -156,15 +156,17 @@ class Web3WalletService extends IWeb3WalletService {
   void _onSessionProposal(SessionProposalEvent? args) async {
     if (args != null) {
       log('[SampleWallet] _onSessionProposal ${jsonEncode(args.params)}');
-      final WCBottomSheetResult rs = await _bottomSheetHandler.queueBottomSheet(
-        widget: WCRequestWidget(
-          child: WCConnectionRequestWidget(
-            proposalData: args.params,
-            verifyContext: args.verifyContext,
-            metadata: args.params.proposer,
-          ),
-        ),
-      );
+      final WCBottomSheetResult rs =
+          (await _bottomSheetHandler.queueBottomSheet(
+                widget: WCRequestWidget(
+                  child: WCConnectionRequestWidget(
+                    proposalData: args.params,
+                    verifyContext: args.verifyContext,
+                    metadata: args.params.proposer,
+                  ),
+                ),
+              )) ??
+              WCBottomSheetResult.reject;
 
       if (rs != WCBottomSheetResult.reject) {
         // generatedNamespaces is constructed based on registered methods handlers
@@ -254,38 +256,39 @@ class Web3WalletService extends IWeb3WalletService {
   Future<void> _onSessionAuthRequest(SessionAuthRequest? args) async {
     log('[SampleWallet] _onSessionAuthRequest ${jsonEncode(args?.authPayload.toJson())}');
     if (args != null) {
-      final SessionAuthPayload payloadParams = args.authPayload;
+      final SessionAuthPayload authPayload = args.authPayload;
       final supportedChains = ChainData.eip155Chains.map((e) => e.chainId);
       final supportedMethods = SupportedEVMMethods.values.map((e) => e.name);
-      final newPayloadParams = AuthSignature.populateAuthPayload(
-        authPayload: payloadParams,
+      final newAuthPayload = AuthSignature.populateAuthPayload(
+        authPayload: authPayload,
         chains: supportedChains.toList(),
         methods: supportedMethods.toList(),
       );
       final cacaoRequestPayload = CacaoRequestPayload.fromSessionAuthPayload(
-        newPayloadParams,
+        newAuthPayload,
       );
       final List<Map<String, dynamic>> formattedMessages = [];
-      for (var chain in newPayloadParams.chains) {
+      for (var chain in newAuthPayload.chains) {
         final chainKeys = GetIt.I<IKeyService>().getKeysForChain(chain);
         final iss = 'did:pkh:$chain:${chainKeys.first.address}';
         final message = _web3Wallet!.formatAuthMessage(
           iss: iss,
           cacaoPayload: cacaoRequestPayload,
-          // TODO cacaoPayload should be SessionAuthPayloadParams
         );
         formattedMessages.add({iss: message});
       }
 
-      final WCBottomSheetResult rs = await _bottomSheetHandler.queueBottomSheet(
-        widget: WCSessionAuthRequestWidget(
-          child: WCConnectionRequestWidget(
-            sessionAuthPayload: newPayloadParams,
-            verifyContext: args.verifyContext,
-            metadata: args.requester,
-          ),
-        ),
-      );
+      final WCBottomSheetResult rs =
+          (await _bottomSheetHandler.queueBottomSheet(
+                widget: WCSessionAuthRequestWidget(
+                  child: WCConnectionRequestWidget(
+                    sessionAuthPayload: newAuthPayload,
+                    verifyContext: args.verifyContext,
+                    metadata: args.requester,
+                  ),
+                ),
+              )) ??
+              WCBottomSheetResult.reject;
 
       if (rs != WCBottomSheetResult.reject) {
         const chain = 'eip155:1';
@@ -342,14 +345,16 @@ class Web3WalletService extends IWeb3WalletService {
     log('[SampleWallet] _onAuthRequest $args');
     if (args != null) {
       //
-      final WCBottomSheetResult rs = await _bottomSheetHandler.queueBottomSheet(
-        widget: WCRequestWidget(
-          child: WCConnectionRequestWidget(
-            authPayloadParams: args.payloadParams,
-            metadata: args.requester,
-          ),
-        ),
-      );
+      final WCBottomSheetResult rs =
+          (await _bottomSheetHandler.queueBottomSheet(
+                widget: WCRequestWidget(
+                  child: WCConnectionRequestWidget(
+                    authPayloadParams: args.payloadParams,
+                    metadata: args.requester,
+                  ),
+                ),
+              )) ??
+              WCBottomSheetResult.reject;
 
       const chain = 'eip155:1';
       final chainKeys = GetIt.I<IKeyService>().getKeysForChain(chain);

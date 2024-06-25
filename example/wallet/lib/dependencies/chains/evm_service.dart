@@ -480,20 +480,21 @@ class EVMService {
     final gweiGasPrice = (transaction.gasPrice?.getInWei ?? BigInt.zero) /
         BigInt.from(1000000000);
 
-    final WCBottomSheetResult rs = await _bottomSheetService.queueBottomSheet(
-      widget: WCRequestWidget(
-        child: WCConnectionWidget(
-          title: 'Approve Transaction',
-          info: [
-            WCConnectionModel(elements: [jsonEncode(tJson)]),
-            WCConnectionModel(
-              title: 'Gas price',
-              elements: ['${gweiGasPrice.toStringAsFixed(2)} GWEI'],
+    final WCBottomSheetResult rs = (await _bottomSheetService.queueBottomSheet(
+          widget: WCRequestWidget(
+            child: WCConnectionWidget(
+              title: 'Approve Transaction',
+              info: [
+                WCConnectionModel(elements: [jsonEncode(tJson)]),
+                WCConnectionModel(
+                  title: 'Gas price',
+                  elements: ['${gweiGasPrice.toStringAsFixed(2)} GWEI'],
+                ),
+              ],
             ),
-          ],
-        ),
-      ),
-    );
+          ),
+        )) ??
+        WCBottomSheetResult.reject;
 
     if (rs != WCBottomSheetResult.reject) {
       return transaction;

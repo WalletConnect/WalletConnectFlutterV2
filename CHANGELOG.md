@@ -1,6 +1,6 @@
-## 2.3.0-alpha01
+## 2.3.0-beta01
 
-- One-Click Auth support (dApp side)
+- One-Click Auth support
 
 ## 2.2.3
 

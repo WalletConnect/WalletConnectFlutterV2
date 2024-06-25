@@ -273,8 +273,7 @@ class AuthSignature {
         ReCapsUtils.getRecapFromResources(resources: updatedResources),
       ),
       chains: approvedChains,
-      resources: authPayload.resources ??
-          (updatedResources.isNotEmpty ? updatedResources : null),
+      resources: updatedResources.isNotEmpty ? updatedResources : null,
     );
   }
 }

@@ -8,10 +8,6 @@ WalletConnect Dart v2 library for Flutter, heavily inspired by the WalletConnect
 
 ### dApp Flow
 ```dart
-// To create both an Auth and Sign API, you can use the Web3App
-// If you just need one of the other, replace Web3App with SignClient or AuthClient
-// SignClient wcClient = await SignClient.createInstance(
-// AuthClient wcClient = await AuthClient.createInstance(
 Web3App wcClient = await Web3App.createInstance(
   relayUrl: 'wss://relay.walletconnect.com', // The relay websocket URL, leave blank to use the default
   projectId: '123',
