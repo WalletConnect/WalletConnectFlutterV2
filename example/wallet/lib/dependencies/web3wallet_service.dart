@@ -251,7 +251,7 @@ class Web3WalletService extends IWeb3WalletService {
     debugPrint('[SampleWallet] _onPairingCreate $args');
   }
 
-  Future<void> _onSessionAuthRequest(SessionAuthRequest? args) async {
+  void _onSessionAuthRequest(SessionAuthRequest? args) async {
     log('[SampleWallet] _onSessionAuthRequest ${jsonEncode(args?.authPayload.toJson())}');
     if (args != null) {
       final SessionAuthPayload authPayload = args.authPayload;
