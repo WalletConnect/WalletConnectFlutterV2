@@ -12,7 +12,8 @@ WalletConnect Dart v2 library for Flutter, heavily inspired by the WalletConnect
 // If you just need one of the other, replace Web3App with SignClient or AuthClient
 // SignClient wcClient = await SignClient.createInstance(
 // AuthClient wcClient = await AuthClient.createInstance(
-// BE MINDFUL THAT AuthClient is currently deprecated and will be removed soon. Authentication methods, including One-Click Auth, are now withing SignClient
+// BE MINDFUL THAT AuthClient is currently deprecated and will be removed soon.
+// Authentication methods, including One-Click Auth, are now withing SignClient
 Web3App wcClient = await Web3App.createInstance(
   projectId: '123',
   relayUrl: 'wss://relay.walletconnect.com', // The relay websocket URL, leave blank to use the default
