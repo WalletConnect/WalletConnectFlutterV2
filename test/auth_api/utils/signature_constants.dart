@@ -15,6 +15,18 @@ Nonce: 1665443015700
 Issued At: 2022-10-10T23:03:35.700Z
 Expiration Time: 2022-10-11T23:03:35.700Z''';
 
+const TEST_MESSAGE_EIP1271_2 =
+    '''walletconnect.com wants you to sign in with your Ethereum account:
+0x59e2f66C0E96803206B6486cDb39029abAE834c0
+
+Welcome to AppKit for Flutter.
+
+URI: https://walletconnect.com/login
+Version: 1
+Chain ID: 465321
+Nonce: 1719392409504
+Issued At: 2024-06-26T11:00:41.043Z''';
+
 const TEST_SIG_EIP191 =
     '0x560a65deed4aaf332d9dbab82af897245c93139773b483072d5e59afdc5788d76e1dcbefaef36b11a52755bfd152241b4ea03d2cc08638818c5105cba9beb83d1c';
 const TEST_PRIVATE_KEY_EIP191 =

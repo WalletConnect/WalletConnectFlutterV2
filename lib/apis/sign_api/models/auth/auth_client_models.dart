@@ -95,6 +95,7 @@ class AuthPayloadParams with _$AuthPayloadParams {
   }) = _AuthPayloadParams;
 
   factory AuthPayloadParams.fromRequestParams(AuthRequestParams params) {
+    final now = DateTime.now();
     return AuthPayloadParams(
       type: params.type ?? CacaoHeader.EIP4361,
       chainId: params.chainId,
@@ -102,7 +103,15 @@ class AuthPayloadParams with _$AuthPayloadParams {
       aud: params.aud,
       version: '1',
       nonce: params.nonce,
-      iat: DateTime.now().toIso8601String(),
+      iat: DateTime.utc(
+        now.year,
+        now.month,
+        now.day,
+        now.hour,
+        now.minute,
+        now.second,
+        now.millisecond,
+      ).toIso8601String(),
       nbf: params.nbf,
       exp: params.exp,
       statement: params.statement,

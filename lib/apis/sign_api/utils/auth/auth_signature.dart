@@ -276,4 +276,28 @@ class AuthSignature {
       resources: updatedResources.isNotEmpty ? updatedResources : null,
     );
   }
+
+  static String getAddressFromMessage(String message) {
+    try {
+      final regexp = RegExp('0x[a-fA-F0-9]{40}');
+      final matches = regexp.allMatches(message);
+      for (final Match m in matches) {
+        return m[0]!;
+      }
+      return '';
+    } catch (_) {}
+    return '';
+  }
+
+  static String getChainIdFromMessage(String message) {
+    try {
+      final pattern = 'Chain ID: ';
+      final regexp = RegExp('$pattern(?<temp1>\\d+)');
+      final matches = regexp.allMatches(message);
+      for (final Match m in matches) {
+        return m[0]!.toString().replaceAll(pattern, '');
+      }
+    } catch (_) {}
+    return '';
+  }
 }

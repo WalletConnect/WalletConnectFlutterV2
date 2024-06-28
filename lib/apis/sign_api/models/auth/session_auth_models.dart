@@ -25,50 +25,27 @@ class SessionAuthRequestResponse {
   });
 }
 
-class SessionAuthRequestParams {
-  final List<String> chains;
-  final String domain;
-  final String nonce;
-  final String uri;
+@freezed
+class SessionAuthRequestParams with _$SessionAuthRequestParams {
+  @JsonSerializable(includeIfNull: false)
+  const factory SessionAuthRequestParams({
+    required List<String> chains,
+    required String domain,
+    required String nonce,
+    required String uri,
+    //
+    CacaoHeader? type,
+    String? nbf,
+    String? exp,
+    String? statement,
+    String? requestId,
+    List<String>? resources,
+    int? expiry,
+    @Default(<String>[]) List<String>? methods,
+  }) = _SessionAuthRequestParams;
   //
-  final CacaoHeader? type;
-  final String? nbf;
-  final String? exp;
-  final String? statement;
-  final String? requestId;
-  final List<String>? resources;
-  final int? expiry;
-  final List<String>? methods;
-  //
-
-  SessionAuthRequestParams({
-    required this.chains,
-    required this.domain,
-    required this.nonce,
-    required this.uri,
-    this.type,
-    this.nbf,
-    this.exp,
-    this.statement,
-    this.requestId,
-    this.resources,
-    this.expiry,
-    this.methods = const <String>[],
-  });
-
-  Map<String, dynamic> toJson() => {
-        'chains': chains,
-        'domain': domain,
-        'nonce': nonce,
-        'uri': uri,
-        if (type != null) 'type': type,
-        if (nbf != null) 'nbf': nbf,
-        if (exp != null) 'exp': exp,
-        if (statement != null) 'statement': statement,
-        if (requestId != null) 'requestId': requestId,
-        if (resources != null) 'resources': resources,
-        if (expiry != null) 'expiry': expiry,
-      };
+  factory SessionAuthRequestParams.fromJson(Map<String, dynamic> json) =>
+      _$SessionAuthRequestParamsFromJson(json);
 }
 
 @freezed
@@ -94,6 +71,7 @@ class SessionAuthPayload with _$SessionAuthPayload {
   factory SessionAuthPayload.fromRequestParams(
     SessionAuthRequestParams params,
   ) {
+    final now = DateTime.now();
     return SessionAuthPayload(
       chains: params.chains,
       domain: params.domain,
@@ -101,8 +79,15 @@ class SessionAuthPayload with _$SessionAuthPayload {
       aud: params.uri,
       type: params.type?.t ?? 'eip4361',
       version: '1',
-      iat: DateTime.now().toIso8601String(),
-      //
+      iat: DateTime.utc(
+        now.year,
+        now.month,
+        now.day,
+        now.hour,
+        now.minute,
+        now.second,
+        now.millisecond,
+      ).toIso8601String(),
       nbf: params.nbf,
       exp: params.exp,
       statement: params.statement,

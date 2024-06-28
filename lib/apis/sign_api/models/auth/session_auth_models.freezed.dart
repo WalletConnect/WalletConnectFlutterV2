@@ -14,6 +14,432 @@ T _$identity<T>(T value) => value;
 final _privateConstructorUsedError = UnsupportedError(
     'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
 
+SessionAuthRequestParams _$SessionAuthRequestParamsFromJson(
+    Map<String, dynamic> json) {
+  return _SessionAuthRequestParams.fromJson(json);
+}
+
+/// @nodoc
+mixin _$SessionAuthRequestParams {
+  List<String> get chains => throw _privateConstructorUsedError;
+  String get domain => throw _privateConstructorUsedError;
+  String get nonce => throw _privateConstructorUsedError;
+  String get uri => throw _privateConstructorUsedError; //
+  CacaoHeader? get type => throw _privateConstructorUsedError;
+  String? get nbf => throw _privateConstructorUsedError;
+  String? get exp => throw _privateConstructorUsedError;
+  String? get statement => throw _privateConstructorUsedError;
+  String? get requestId => throw _privateConstructorUsedError;
+  List<String>? get resources => throw _privateConstructorUsedError;
+  int? get expiry => throw _privateConstructorUsedError;
+  List<String>? get methods => throw _privateConstructorUsedError;
+
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+  @JsonKey(ignore: true)
+  $SessionAuthRequestParamsCopyWith<SessionAuthRequestParams> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $SessionAuthRequestParamsCopyWith<$Res> {
+  factory $SessionAuthRequestParamsCopyWith(SessionAuthRequestParams value,
+          $Res Function(SessionAuthRequestParams) then) =
+      _$SessionAuthRequestParamsCopyWithImpl<$Res, SessionAuthRequestParams>;
+  @useResult
+  $Res call(
+      {List<String> chains,
+      String domain,
+      String nonce,
+      String uri,
+      CacaoHeader? type,
+      String? nbf,
+      String? exp,
+      String? statement,
+      String? requestId,
+      List<String>? resources,
+      int? expiry,
+      List<String>? methods});
+
+  $CacaoHeaderCopyWith<$Res>? get type;
+}
+
+/// @nodoc
+class _$SessionAuthRequestParamsCopyWithImpl<$Res,
+        $Val extends SessionAuthRequestParams>
+    implements $SessionAuthRequestParamsCopyWith<$Res> {
+  _$SessionAuthRequestParamsCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? chains = null,
+    Object? domain = null,
+    Object? nonce = null,
+    Object? uri = null,
+    Object? type = freezed,
+    Object? nbf = freezed,
+    Object? exp = freezed,
+    Object? statement = freezed,
+    Object? requestId = freezed,
+    Object? resources = freezed,
+    Object? expiry = freezed,
+    Object? methods = freezed,
+  }) {
+    return _then(_value.copyWith(
+      chains: null == chains
+          ? _value.chains
+          : chains // ignore: cast_nullable_to_non_nullable
+              as List<String>,
+      domain: null == domain
+          ? _value.domain
+          : domain // ignore: cast_nullable_to_non_nullable
+              as String,
+      nonce: null == nonce
+          ? _value.nonce
+          : nonce // ignore: cast_nullable_to_non_nullable
+              as String,
+      uri: null == uri
+          ? _value.uri
+          : uri // ignore: cast_nullable_to_non_nullable
+              as String,
+      type: freezed == type
+          ? _value.type
+          : type // ignore: cast_nullable_to_non_nullable
+              as CacaoHeader?,
+      nbf: freezed == nbf
+          ? _value.nbf
+          : nbf // ignore: cast_nullable_to_non_nullable
+              as String?,
+      exp: freezed == exp
+          ? _value.exp
+          : exp // ignore: cast_nullable_to_non_nullable
+              as String?,
+      statement: freezed == statement
+          ? _value.statement
+          : statement // ignore: cast_nullable_to_non_nullable
+              as String?,
+      requestId: freezed == requestId
+          ? _value.requestId
+          : requestId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      resources: freezed == resources
+          ? _value.resources
+          : resources // ignore: cast_nullable_to_non_nullable
+              as List<String>?,
+      expiry: freezed == expiry
+          ? _value.expiry
+          : expiry // ignore: cast_nullable_to_non_nullable
+              as int?,
+      methods: freezed == methods
+          ? _value.methods
+          : methods // ignore: cast_nullable_to_non_nullable
+              as List<String>?,
+    ) as $Val);
+  }
+
+  @override
+  @pragma('vm:prefer-inline')
+  $CacaoHeaderCopyWith<$Res>? get type {
+    if (_value.type == null) {
+      return null;
+    }
+
+    return $CacaoHeaderCopyWith<$Res>(_value.type!, (value) {
+      return _then(_value.copyWith(type: value) as $Val);
+    });
+  }
+}
+
+/// @nodoc
+abstract class _$$SessionAuthRequestParamsImplCopyWith<$Res>
+    implements $SessionAuthRequestParamsCopyWith<$Res> {
+  factory _$$SessionAuthRequestParamsImplCopyWith(
+          _$SessionAuthRequestParamsImpl value,
+          $Res Function(_$SessionAuthRequestParamsImpl) then) =
+      __$$SessionAuthRequestParamsImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call(
+      {List<String> chains,
+      String domain,
+      String nonce,
+      String uri,
+      CacaoHeader? type,
+      String? nbf,
+      String? exp,
+      String? statement,
+      String? requestId,
+      List<String>? resources,
+      int? expiry,
+      List<String>? methods});
+
+  @override
+  $CacaoHeaderCopyWith<$Res>? get type;
+}
+
+/// @nodoc
+class __$$SessionAuthRequestParamsImplCopyWithImpl<$Res>
+    extends _$SessionAuthRequestParamsCopyWithImpl<$Res,
+        _$SessionAuthRequestParamsImpl>
+    implements _$$SessionAuthRequestParamsImplCopyWith<$Res> {
+  __$$SessionAuthRequestParamsImplCopyWithImpl(
+      _$SessionAuthRequestParamsImpl _value,
+      $Res Function(_$SessionAuthRequestParamsImpl) _then)
+      : super(_value, _then);
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? chains = null,
+    Object? domain = null,
+    Object? nonce = null,
+    Object? uri = null,
+    Object? type = freezed,
+    Object? nbf = freezed,
+    Object? exp = freezed,
+    Object? statement = freezed,
+    Object? requestId = freezed,
+    Object? resources = freezed,
+    Object? expiry = freezed,
+    Object? methods = freezed,
+  }) {
+    return _then(_$SessionAuthRequestParamsImpl(
+      chains: null == chains
+          ? _value._chains
+          : chains // ignore: cast_nullable_to_non_nullable
+              as List<String>,
+      domain: null == domain
+          ? _value.domain
+          : domain // ignore: cast_nullable_to_non_nullable
+              as String,
+      nonce: null == nonce
+          ? _value.nonce
+          : nonce // ignore: cast_nullable_to_non_nullable
+              as String,
+      uri: null == uri
+          ? _value.uri
+          : uri // ignore: cast_nullable_to_non_nullable
+              as String,
+      type: freezed == type
+          ? _value.type
+          : type // ignore: cast_nullable_to_non_nullable
+              as CacaoHeader?,
+      nbf: freezed == nbf
+          ? _value.nbf
+          : nbf // ignore: cast_nullable_to_non_nullable
+              as String?,
+      exp: freezed == exp
+          ? _value.exp
+          : exp // ignore: cast_nullable_to_non_nullable
+              as String?,
+      statement: freezed == statement
+          ? _value.statement
+          : statement // ignore: cast_nullable_to_non_nullable
+              as String?,
+      requestId: freezed == requestId
+          ? _value.requestId
+          : requestId // ignore: cast_nullable_to_non_nullable
+              as String?,
+      resources: freezed == resources
+          ? _value._resources
+          : resources // ignore: cast_nullable_to_non_nullable
+              as List<String>?,
+      expiry: freezed == expiry
+          ? _value.expiry
+          : expiry // ignore: cast_nullable_to_non_nullable
+              as int?,
+      methods: freezed == methods
+          ? _value._methods
+          : methods // ignore: cast_nullable_to_non_nullable
+              as List<String>?,
+    ));
+  }
+}
+
+/// @nodoc
+
+@JsonSerializable(includeIfNull: false)
+class _$SessionAuthRequestParamsImpl implements _SessionAuthRequestParams {
+  const _$SessionAuthRequestParamsImpl(
+      {required final List<String> chains,
+      required this.domain,
+      required this.nonce,
+      required this.uri,
+      this.type,
+      this.nbf,
+      this.exp,
+      this.statement,
+      this.requestId,
+      final List<String>? resources,
+      this.expiry,
+      final List<String>? methods = const <String>[]})
+      : _chains = chains,
+        _resources = resources,
+        _methods = methods;
+
+  factory _$SessionAuthRequestParamsImpl.fromJson(Map<String, dynamic> json) =>
+      _$$SessionAuthRequestParamsImplFromJson(json);
+
+  final List<String> _chains;
+  @override
+  List<String> get chains {
+    if (_chains is EqualUnmodifiableListView) return _chains;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_chains);
+  }
+
+  @override
+  final String domain;
+  @override
+  final String nonce;
+  @override
+  final String uri;
+//
+  @override
+  final CacaoHeader? type;
+  @override
+  final String? nbf;
+  @override
+  final String? exp;
+  @override
+  final String? statement;
+  @override
+  final String? requestId;
+  final List<String>? _resources;
+  @override
+  List<String>? get resources {
+    final value = _resources;
+    if (value == null) return null;
+    if (_resources is EqualUnmodifiableListView) return _resources;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(value);
+  }
+
+  @override
+  final int? expiry;
+  final List<String>? _methods;
+  @override
+  @JsonKey()
+  List<String>? get methods {
+    final value = _methods;
+    if (value == null) return null;
+    if (_methods is EqualUnmodifiableListView) return _methods;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(value);
+  }
+
+  @override
+  String toString() {
+    return 'SessionAuthRequestParams(chains: $chains, domain: $domain, nonce: $nonce, uri: $uri, type: $type, nbf: $nbf, exp: $exp, statement: $statement, requestId: $requestId, resources: $resources, expiry: $expiry, methods: $methods)';
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$SessionAuthRequestParamsImpl &&
+            const DeepCollectionEquality().equals(other._chains, _chains) &&
+            (identical(other.domain, domain) || other.domain == domain) &&
+            (identical(other.nonce, nonce) || other.nonce == nonce) &&
+            (identical(other.uri, uri) || other.uri == uri) &&
+            (identical(other.type, type) || other.type == type) &&
+            (identical(other.nbf, nbf) || other.nbf == nbf) &&
+            (identical(other.exp, exp) || other.exp == exp) &&
+            (identical(other.statement, statement) ||
+                other.statement == statement) &&
+            (identical(other.requestId, requestId) ||
+                other.requestId == requestId) &&
+            const DeepCollectionEquality()
+                .equals(other._resources, _resources) &&
+            (identical(other.expiry, expiry) || other.expiry == expiry) &&
+            const DeepCollectionEquality().equals(other._methods, _methods));
+  }
+
+  @JsonKey(ignore: true)
+  @override
+  int get hashCode => Object.hash(
+      runtimeType,
+      const DeepCollectionEquality().hash(_chains),
+      domain,
+      nonce,
+      uri,
+      type,
+      nbf,
+      exp,
+      statement,
+      requestId,
+      const DeepCollectionEquality().hash(_resources),
+      expiry,
+      const DeepCollectionEquality().hash(_methods));
+
+  @JsonKey(ignore: true)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$SessionAuthRequestParamsImplCopyWith<_$SessionAuthRequestParamsImpl>
+      get copyWith => __$$SessionAuthRequestParamsImplCopyWithImpl<
+          _$SessionAuthRequestParamsImpl>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$SessionAuthRequestParamsImplToJson(
+      this,
+    );
+  }
+}
+
+abstract class _SessionAuthRequestParams implements SessionAuthRequestParams {
+  const factory _SessionAuthRequestParams(
+      {required final List<String> chains,
+      required final String domain,
+      required final String nonce,
+      required final String uri,
+      final CacaoHeader? type,
+      final String? nbf,
+      final String? exp,
+      final String? statement,
+      final String? requestId,
+      final List<String>? resources,
+      final int? expiry,
+      final List<String>? methods}) = _$SessionAuthRequestParamsImpl;
+
+  factory _SessionAuthRequestParams.fromJson(Map<String, dynamic> json) =
+      _$SessionAuthRequestParamsImpl.fromJson;
+
+  @override
+  List<String> get chains;
+  @override
+  String get domain;
+  @override
+  String get nonce;
+  @override
+  String get uri;
+  @override //
+  CacaoHeader? get type;
+  @override
+  String? get nbf;
+  @override
+  String? get exp;
+  @override
+  String? get statement;
+  @override
+  String? get requestId;
+  @override
+  List<String>? get resources;
+  @override
+  int? get expiry;
+  @override
+  List<String>? get methods;
+  @override
+  @JsonKey(ignore: true)
+  _$$SessionAuthRequestParamsImplCopyWith<_$SessionAuthRequestParamsImpl>
+      get copyWith => throw _privateConstructorUsedError;
+}
+
 SessionAuthPayload _$SessionAuthPayloadFromJson(Map<String, dynamic> json) {
   return _SessionAuthPayload.fromJson(json);
 }
