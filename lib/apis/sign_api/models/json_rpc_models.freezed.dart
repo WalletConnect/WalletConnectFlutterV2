@@ -2413,3 +2413,747 @@ abstract class _SessionEventParams implements SessionEventParams {
   _$$SessionEventParamsImplCopyWith<_$SessionEventParamsImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }
+
+WcAuthRequestRequest _$WcAuthRequestRequestFromJson(Map<String, dynamic> json) {
+  return _WcAuthRequestRequest.fromJson(json);
+}
+
+/// @nodoc
+mixin _$WcAuthRequestRequest {
+  AuthPayloadParams get payloadParams => throw _privateConstructorUsedError;
+  ConnectionMetadata get requester => throw _privateConstructorUsedError;
+
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+  @JsonKey(ignore: true)
+  $WcAuthRequestRequestCopyWith<WcAuthRequestRequest> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $WcAuthRequestRequestCopyWith<$Res> {
+  factory $WcAuthRequestRequestCopyWith(WcAuthRequestRequest value,
+          $Res Function(WcAuthRequestRequest) then) =
+      _$WcAuthRequestRequestCopyWithImpl<$Res, WcAuthRequestRequest>;
+  @useResult
+  $Res call({AuthPayloadParams payloadParams, ConnectionMetadata requester});
+
+  $AuthPayloadParamsCopyWith<$Res> get payloadParams;
+  $ConnectionMetadataCopyWith<$Res> get requester;
+}
+
+/// @nodoc
+class _$WcAuthRequestRequestCopyWithImpl<$Res,
+        $Val extends WcAuthRequestRequest>
+    implements $WcAuthRequestRequestCopyWith<$Res> {
+  _$WcAuthRequestRequestCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? payloadParams = null,
+    Object? requester = null,
+  }) {
+    return _then(_value.copyWith(
+      payloadParams: null == payloadParams
+          ? _value.payloadParams
+          : payloadParams // ignore: cast_nullable_to_non_nullable
+              as AuthPayloadParams,
+      requester: null == requester
+          ? _value.requester
+          : requester // ignore: cast_nullable_to_non_nullable
+              as ConnectionMetadata,
+    ) as $Val);
+  }
+
+  @override
+  @pragma('vm:prefer-inline')
+  $AuthPayloadParamsCopyWith<$Res> get payloadParams {
+    return $AuthPayloadParamsCopyWith<$Res>(_value.payloadParams, (value) {
+      return _then(_value.copyWith(payloadParams: value) as $Val);
+    });
+  }
+
+  @override
+  @pragma('vm:prefer-inline')
+  $ConnectionMetadataCopyWith<$Res> get requester {
+    return $ConnectionMetadataCopyWith<$Res>(_value.requester, (value) {
+      return _then(_value.copyWith(requester: value) as $Val);
+    });
+  }
+}
+
+/// @nodoc
+abstract class _$$WcAuthRequestRequestImplCopyWith<$Res>
+    implements $WcAuthRequestRequestCopyWith<$Res> {
+  factory _$$WcAuthRequestRequestImplCopyWith(_$WcAuthRequestRequestImpl value,
+          $Res Function(_$WcAuthRequestRequestImpl) then) =
+      __$$WcAuthRequestRequestImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({AuthPayloadParams payloadParams, ConnectionMetadata requester});
+
+  @override
+  $AuthPayloadParamsCopyWith<$Res> get payloadParams;
+  @override
+  $ConnectionMetadataCopyWith<$Res> get requester;
+}
+
+/// @nodoc
+class __$$WcAuthRequestRequestImplCopyWithImpl<$Res>
+    extends _$WcAuthRequestRequestCopyWithImpl<$Res, _$WcAuthRequestRequestImpl>
+    implements _$$WcAuthRequestRequestImplCopyWith<$Res> {
+  __$$WcAuthRequestRequestImplCopyWithImpl(_$WcAuthRequestRequestImpl _value,
+      $Res Function(_$WcAuthRequestRequestImpl) _then)
+      : super(_value, _then);
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? payloadParams = null,
+    Object? requester = null,
+  }) {
+    return _then(_$WcAuthRequestRequestImpl(
+      payloadParams: null == payloadParams
+          ? _value.payloadParams
+          : payloadParams // ignore: cast_nullable_to_non_nullable
+              as AuthPayloadParams,
+      requester: null == requester
+          ? _value.requester
+          : requester // ignore: cast_nullable_to_non_nullable
+              as ConnectionMetadata,
+    ));
+  }
+}
+
+/// @nodoc
+
+@JsonSerializable()
+class _$WcAuthRequestRequestImpl implements _WcAuthRequestRequest {
+  const _$WcAuthRequestRequestImpl(
+      {required this.payloadParams, required this.requester});
+
+  factory _$WcAuthRequestRequestImpl.fromJson(Map<String, dynamic> json) =>
+      _$$WcAuthRequestRequestImplFromJson(json);
+
+  @override
+  final AuthPayloadParams payloadParams;
+  @override
+  final ConnectionMetadata requester;
+
+  @override
+  String toString() {
+    return 'WcAuthRequestRequest(payloadParams: $payloadParams, requester: $requester)';
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$WcAuthRequestRequestImpl &&
+            (identical(other.payloadParams, payloadParams) ||
+                other.payloadParams == payloadParams) &&
+            (identical(other.requester, requester) ||
+                other.requester == requester));
+  }
+
+  @JsonKey(ignore: true)
+  @override
+  int get hashCode => Object.hash(runtimeType, payloadParams, requester);
+
+  @JsonKey(ignore: true)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$WcAuthRequestRequestImplCopyWith<_$WcAuthRequestRequestImpl>
+      get copyWith =>
+          __$$WcAuthRequestRequestImplCopyWithImpl<_$WcAuthRequestRequestImpl>(
+              this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$WcAuthRequestRequestImplToJson(
+      this,
+    );
+  }
+}
+
+abstract class _WcAuthRequestRequest implements WcAuthRequestRequest {
+  const factory _WcAuthRequestRequest(
+          {required final AuthPayloadParams payloadParams,
+          required final ConnectionMetadata requester}) =
+      _$WcAuthRequestRequestImpl;
+
+  factory _WcAuthRequestRequest.fromJson(Map<String, dynamic> json) =
+      _$WcAuthRequestRequestImpl.fromJson;
+
+  @override
+  AuthPayloadParams get payloadParams;
+  @override
+  ConnectionMetadata get requester;
+  @override
+  @JsonKey(ignore: true)
+  _$$WcAuthRequestRequestImplCopyWith<_$WcAuthRequestRequestImpl>
+      get copyWith => throw _privateConstructorUsedError;
+}
+
+WcAuthRequestResult _$WcAuthRequestResultFromJson(Map<String, dynamic> json) {
+  return _WcAuthRequestResult.fromJson(json);
+}
+
+/// @nodoc
+mixin _$WcAuthRequestResult {
+  Cacao get cacao => throw _privateConstructorUsedError;
+
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+  @JsonKey(ignore: true)
+  $WcAuthRequestResultCopyWith<WcAuthRequestResult> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $WcAuthRequestResultCopyWith<$Res> {
+  factory $WcAuthRequestResultCopyWith(
+          WcAuthRequestResult value, $Res Function(WcAuthRequestResult) then) =
+      _$WcAuthRequestResultCopyWithImpl<$Res, WcAuthRequestResult>;
+  @useResult
+  $Res call({Cacao cacao});
+
+  $CacaoCopyWith<$Res> get cacao;
+}
+
+/// @nodoc
+class _$WcAuthRequestResultCopyWithImpl<$Res, $Val extends WcAuthRequestResult>
+    implements $WcAuthRequestResultCopyWith<$Res> {
+  _$WcAuthRequestResultCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? cacao = null,
+  }) {
+    return _then(_value.copyWith(
+      cacao: null == cacao
+          ? _value.cacao
+          : cacao // ignore: cast_nullable_to_non_nullable
+              as Cacao,
+    ) as $Val);
+  }
+
+  @override
+  @pragma('vm:prefer-inline')
+  $CacaoCopyWith<$Res> get cacao {
+    return $CacaoCopyWith<$Res>(_value.cacao, (value) {
+      return _then(_value.copyWith(cacao: value) as $Val);
+    });
+  }
+}
+
+/// @nodoc
+abstract class _$$WcAuthRequestResultImplCopyWith<$Res>
+    implements $WcAuthRequestResultCopyWith<$Res> {
+  factory _$$WcAuthRequestResultImplCopyWith(_$WcAuthRequestResultImpl value,
+          $Res Function(_$WcAuthRequestResultImpl) then) =
+      __$$WcAuthRequestResultImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({Cacao cacao});
+
+  @override
+  $CacaoCopyWith<$Res> get cacao;
+}
+
+/// @nodoc
+class __$$WcAuthRequestResultImplCopyWithImpl<$Res>
+    extends _$WcAuthRequestResultCopyWithImpl<$Res, _$WcAuthRequestResultImpl>
+    implements _$$WcAuthRequestResultImplCopyWith<$Res> {
+  __$$WcAuthRequestResultImplCopyWithImpl(_$WcAuthRequestResultImpl _value,
+      $Res Function(_$WcAuthRequestResultImpl) _then)
+      : super(_value, _then);
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? cacao = null,
+  }) {
+    return _then(_$WcAuthRequestResultImpl(
+      cacao: null == cacao
+          ? _value.cacao
+          : cacao // ignore: cast_nullable_to_non_nullable
+              as Cacao,
+    ));
+  }
+}
+
+/// @nodoc
+
+@JsonSerializable()
+class _$WcAuthRequestResultImpl implements _WcAuthRequestResult {
+  const _$WcAuthRequestResultImpl({required this.cacao});
+
+  factory _$WcAuthRequestResultImpl.fromJson(Map<String, dynamic> json) =>
+      _$$WcAuthRequestResultImplFromJson(json);
+
+  @override
+  final Cacao cacao;
+
+  @override
+  String toString() {
+    return 'WcAuthRequestResult(cacao: $cacao)';
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$WcAuthRequestResultImpl &&
+            (identical(other.cacao, cacao) || other.cacao == cacao));
+  }
+
+  @JsonKey(ignore: true)
+  @override
+  int get hashCode => Object.hash(runtimeType, cacao);
+
+  @JsonKey(ignore: true)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$WcAuthRequestResultImplCopyWith<_$WcAuthRequestResultImpl> get copyWith =>
+      __$$WcAuthRequestResultImplCopyWithImpl<_$WcAuthRequestResultImpl>(
+          this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$WcAuthRequestResultImplToJson(
+      this,
+    );
+  }
+}
+
+abstract class _WcAuthRequestResult implements WcAuthRequestResult {
+  const factory _WcAuthRequestResult({required final Cacao cacao}) =
+      _$WcAuthRequestResultImpl;
+
+  factory _WcAuthRequestResult.fromJson(Map<String, dynamic> json) =
+      _$WcAuthRequestResultImpl.fromJson;
+
+  @override
+  Cacao get cacao;
+  @override
+  @JsonKey(ignore: true)
+  _$$WcAuthRequestResultImplCopyWith<_$WcAuthRequestResultImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+WcSessionAuthRequestParams _$WcSessionAuthRequestParamsFromJson(
+    Map<String, dynamic> json) {
+  return _WcSessionAuthRequestParams.fromJson(json);
+}
+
+/// @nodoc
+mixin _$WcSessionAuthRequestParams {
+  SessionAuthPayload get authPayload => throw _privateConstructorUsedError;
+  ConnectionMetadata get requester => throw _privateConstructorUsedError;
+  int get expiryTimestamp => throw _privateConstructorUsedError;
+
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+  @JsonKey(ignore: true)
+  $WcSessionAuthRequestParamsCopyWith<WcSessionAuthRequestParams>
+      get copyWith => throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $WcSessionAuthRequestParamsCopyWith<$Res> {
+  factory $WcSessionAuthRequestParamsCopyWith(WcSessionAuthRequestParams value,
+          $Res Function(WcSessionAuthRequestParams) then) =
+      _$WcSessionAuthRequestParamsCopyWithImpl<$Res,
+          WcSessionAuthRequestParams>;
+  @useResult
+  $Res call(
+      {SessionAuthPayload authPayload,
+      ConnectionMetadata requester,
+      int expiryTimestamp});
+
+  $SessionAuthPayloadCopyWith<$Res> get authPayload;
+  $ConnectionMetadataCopyWith<$Res> get requester;
+}
+
+/// @nodoc
+class _$WcSessionAuthRequestParamsCopyWithImpl<$Res,
+        $Val extends WcSessionAuthRequestParams>
+    implements $WcSessionAuthRequestParamsCopyWith<$Res> {
+  _$WcSessionAuthRequestParamsCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? authPayload = null,
+    Object? requester = null,
+    Object? expiryTimestamp = null,
+  }) {
+    return _then(_value.copyWith(
+      authPayload: null == authPayload
+          ? _value.authPayload
+          : authPayload // ignore: cast_nullable_to_non_nullable
+              as SessionAuthPayload,
+      requester: null == requester
+          ? _value.requester
+          : requester // ignore: cast_nullable_to_non_nullable
+              as ConnectionMetadata,
+      expiryTimestamp: null == expiryTimestamp
+          ? _value.expiryTimestamp
+          : expiryTimestamp // ignore: cast_nullable_to_non_nullable
+              as int,
+    ) as $Val);
+  }
+
+  @override
+  @pragma('vm:prefer-inline')
+  $SessionAuthPayloadCopyWith<$Res> get authPayload {
+    return $SessionAuthPayloadCopyWith<$Res>(_value.authPayload, (value) {
+      return _then(_value.copyWith(authPayload: value) as $Val);
+    });
+  }
+
+  @override
+  @pragma('vm:prefer-inline')
+  $ConnectionMetadataCopyWith<$Res> get requester {
+    return $ConnectionMetadataCopyWith<$Res>(_value.requester, (value) {
+      return _then(_value.copyWith(requester: value) as $Val);
+    });
+  }
+}
+
+/// @nodoc
+abstract class _$$WcSessionAuthRequestParamsImplCopyWith<$Res>
+    implements $WcSessionAuthRequestParamsCopyWith<$Res> {
+  factory _$$WcSessionAuthRequestParamsImplCopyWith(
+          _$WcSessionAuthRequestParamsImpl value,
+          $Res Function(_$WcSessionAuthRequestParamsImpl) then) =
+      __$$WcSessionAuthRequestParamsImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call(
+      {SessionAuthPayload authPayload,
+      ConnectionMetadata requester,
+      int expiryTimestamp});
+
+  @override
+  $SessionAuthPayloadCopyWith<$Res> get authPayload;
+  @override
+  $ConnectionMetadataCopyWith<$Res> get requester;
+}
+
+/// @nodoc
+class __$$WcSessionAuthRequestParamsImplCopyWithImpl<$Res>
+    extends _$WcSessionAuthRequestParamsCopyWithImpl<$Res,
+        _$WcSessionAuthRequestParamsImpl>
+    implements _$$WcSessionAuthRequestParamsImplCopyWith<$Res> {
+  __$$WcSessionAuthRequestParamsImplCopyWithImpl(
+      _$WcSessionAuthRequestParamsImpl _value,
+      $Res Function(_$WcSessionAuthRequestParamsImpl) _then)
+      : super(_value, _then);
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? authPayload = null,
+    Object? requester = null,
+    Object? expiryTimestamp = null,
+  }) {
+    return _then(_$WcSessionAuthRequestParamsImpl(
+      authPayload: null == authPayload
+          ? _value.authPayload
+          : authPayload // ignore: cast_nullable_to_non_nullable
+              as SessionAuthPayload,
+      requester: null == requester
+          ? _value.requester
+          : requester // ignore: cast_nullable_to_non_nullable
+              as ConnectionMetadata,
+      expiryTimestamp: null == expiryTimestamp
+          ? _value.expiryTimestamp
+          : expiryTimestamp // ignore: cast_nullable_to_non_nullable
+              as int,
+    ));
+  }
+}
+
+/// @nodoc
+
+@JsonSerializable()
+class _$WcSessionAuthRequestParamsImpl implements _WcSessionAuthRequestParams {
+  const _$WcSessionAuthRequestParamsImpl(
+      {required this.authPayload,
+      required this.requester,
+      required this.expiryTimestamp});
+
+  factory _$WcSessionAuthRequestParamsImpl.fromJson(
+          Map<String, dynamic> json) =>
+      _$$WcSessionAuthRequestParamsImplFromJson(json);
+
+  @override
+  final SessionAuthPayload authPayload;
+  @override
+  final ConnectionMetadata requester;
+  @override
+  final int expiryTimestamp;
+
+  @override
+  String toString() {
+    return 'WcSessionAuthRequestParams(authPayload: $authPayload, requester: $requester, expiryTimestamp: $expiryTimestamp)';
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$WcSessionAuthRequestParamsImpl &&
+            (identical(other.authPayload, authPayload) ||
+                other.authPayload == authPayload) &&
+            (identical(other.requester, requester) ||
+                other.requester == requester) &&
+            (identical(other.expiryTimestamp, expiryTimestamp) ||
+                other.expiryTimestamp == expiryTimestamp));
+  }
+
+  @JsonKey(ignore: true)
+  @override
+  int get hashCode =>
+      Object.hash(runtimeType, authPayload, requester, expiryTimestamp);
+
+  @JsonKey(ignore: true)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$WcSessionAuthRequestParamsImplCopyWith<_$WcSessionAuthRequestParamsImpl>
+      get copyWith => __$$WcSessionAuthRequestParamsImplCopyWithImpl<
+          _$WcSessionAuthRequestParamsImpl>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$WcSessionAuthRequestParamsImplToJson(
+      this,
+    );
+  }
+}
+
+abstract class _WcSessionAuthRequestParams
+    implements WcSessionAuthRequestParams {
+  const factory _WcSessionAuthRequestParams(
+      {required final SessionAuthPayload authPayload,
+      required final ConnectionMetadata requester,
+      required final int expiryTimestamp}) = _$WcSessionAuthRequestParamsImpl;
+
+  factory _WcSessionAuthRequestParams.fromJson(Map<String, dynamic> json) =
+      _$WcSessionAuthRequestParamsImpl.fromJson;
+
+  @override
+  SessionAuthPayload get authPayload;
+  @override
+  ConnectionMetadata get requester;
+  @override
+  int get expiryTimestamp;
+  @override
+  @JsonKey(ignore: true)
+  _$$WcSessionAuthRequestParamsImplCopyWith<_$WcSessionAuthRequestParamsImpl>
+      get copyWith => throw _privateConstructorUsedError;
+}
+
+WcSessionAuthRequestResult _$WcSessionAuthRequestResultFromJson(
+    Map<String, dynamic> json) {
+  return _WcSessionAuthRequestResult.fromJson(json);
+}
+
+/// @nodoc
+mixin _$WcSessionAuthRequestResult {
+  List<Cacao> get cacaos => throw _privateConstructorUsedError;
+  ConnectionMetadata get responder => throw _privateConstructorUsedError;
+
+  Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
+  @JsonKey(ignore: true)
+  $WcSessionAuthRequestResultCopyWith<WcSessionAuthRequestResult>
+      get copyWith => throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class $WcSessionAuthRequestResultCopyWith<$Res> {
+  factory $WcSessionAuthRequestResultCopyWith(WcSessionAuthRequestResult value,
+          $Res Function(WcSessionAuthRequestResult) then) =
+      _$WcSessionAuthRequestResultCopyWithImpl<$Res,
+          WcSessionAuthRequestResult>;
+  @useResult
+  $Res call({List<Cacao> cacaos, ConnectionMetadata responder});
+
+  $ConnectionMetadataCopyWith<$Res> get responder;
+}
+
+/// @nodoc
+class _$WcSessionAuthRequestResultCopyWithImpl<$Res,
+        $Val extends WcSessionAuthRequestResult>
+    implements $WcSessionAuthRequestResultCopyWith<$Res> {
+  _$WcSessionAuthRequestResultCopyWithImpl(this._value, this._then);
+
+  // ignore: unused_field
+  final $Val _value;
+  // ignore: unused_field
+  final $Res Function($Val) _then;
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? cacaos = null,
+    Object? responder = null,
+  }) {
+    return _then(_value.copyWith(
+      cacaos: null == cacaos
+          ? _value.cacaos
+          : cacaos // ignore: cast_nullable_to_non_nullable
+              as List<Cacao>,
+      responder: null == responder
+          ? _value.responder
+          : responder // ignore: cast_nullable_to_non_nullable
+              as ConnectionMetadata,
+    ) as $Val);
+  }
+
+  @override
+  @pragma('vm:prefer-inline')
+  $ConnectionMetadataCopyWith<$Res> get responder {
+    return $ConnectionMetadataCopyWith<$Res>(_value.responder, (value) {
+      return _then(_value.copyWith(responder: value) as $Val);
+    });
+  }
+}
+
+/// @nodoc
+abstract class _$$WcSessionAuthRequestResultImplCopyWith<$Res>
+    implements $WcSessionAuthRequestResultCopyWith<$Res> {
+  factory _$$WcSessionAuthRequestResultImplCopyWith(
+          _$WcSessionAuthRequestResultImpl value,
+          $Res Function(_$WcSessionAuthRequestResultImpl) then) =
+      __$$WcSessionAuthRequestResultImplCopyWithImpl<$Res>;
+  @override
+  @useResult
+  $Res call({List<Cacao> cacaos, ConnectionMetadata responder});
+
+  @override
+  $ConnectionMetadataCopyWith<$Res> get responder;
+}
+
+/// @nodoc
+class __$$WcSessionAuthRequestResultImplCopyWithImpl<$Res>
+    extends _$WcSessionAuthRequestResultCopyWithImpl<$Res,
+        _$WcSessionAuthRequestResultImpl>
+    implements _$$WcSessionAuthRequestResultImplCopyWith<$Res> {
+  __$$WcSessionAuthRequestResultImplCopyWithImpl(
+      _$WcSessionAuthRequestResultImpl _value,
+      $Res Function(_$WcSessionAuthRequestResultImpl) _then)
+      : super(_value, _then);
+
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? cacaos = null,
+    Object? responder = null,
+  }) {
+    return _then(_$WcSessionAuthRequestResultImpl(
+      cacaos: null == cacaos
+          ? _value._cacaos
+          : cacaos // ignore: cast_nullable_to_non_nullable
+              as List<Cacao>,
+      responder: null == responder
+          ? _value.responder
+          : responder // ignore: cast_nullable_to_non_nullable
+              as ConnectionMetadata,
+    ));
+  }
+}
+
+/// @nodoc
+
+@JsonSerializable()
+class _$WcSessionAuthRequestResultImpl implements _WcSessionAuthRequestResult {
+  const _$WcSessionAuthRequestResultImpl(
+      {required final List<Cacao> cacaos, required this.responder})
+      : _cacaos = cacaos;
+
+  factory _$WcSessionAuthRequestResultImpl.fromJson(
+          Map<String, dynamic> json) =>
+      _$$WcSessionAuthRequestResultImplFromJson(json);
+
+  final List<Cacao> _cacaos;
+  @override
+  List<Cacao> get cacaos {
+    if (_cacaos is EqualUnmodifiableListView) return _cacaos;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(_cacaos);
+  }
+
+  @override
+  final ConnectionMetadata responder;
+
+  @override
+  String toString() {
+    return 'WcSessionAuthRequestResult(cacaos: $cacaos, responder: $responder)';
+  }
+
+  @override
+  bool operator ==(dynamic other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$WcSessionAuthRequestResultImpl &&
+            const DeepCollectionEquality().equals(other._cacaos, _cacaos) &&
+            (identical(other.responder, responder) ||
+                other.responder == responder));
+  }
+
+  @JsonKey(ignore: true)
+  @override
+  int get hashCode => Object.hash(
+      runtimeType, const DeepCollectionEquality().hash(_cacaos), responder);
+
+  @JsonKey(ignore: true)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$WcSessionAuthRequestResultImplCopyWith<_$WcSessionAuthRequestResultImpl>
+      get copyWith => __$$WcSessionAuthRequestResultImplCopyWithImpl<
+          _$WcSessionAuthRequestResultImpl>(this, _$identity);
+
+  @override
+  Map<String, dynamic> toJson() {
+    return _$$WcSessionAuthRequestResultImplToJson(
+      this,
+    );
+  }
+}
+
+abstract class _WcSessionAuthRequestResult
+    implements WcSessionAuthRequestResult {
+  const factory _WcSessionAuthRequestResult(
+          {required final List<Cacao> cacaos,
+          required final ConnectionMetadata responder}) =
+      _$WcSessionAuthRequestResultImpl;
+
+  factory _WcSessionAuthRequestResult.fromJson(Map<String, dynamic> json) =
+      _$WcSessionAuthRequestResultImpl.fromJson;
+
+  @override
+  List<Cacao> get cacaos;
+  @override
+  ConnectionMetadata get responder;
+  @override
+  @JsonKey(ignore: true)
+  _$$WcSessionAuthRequestResultImplCopyWith<_$WcSessionAuthRequestResultImpl>
+      get copyWith => throw _privateConstructorUsedError;
+}

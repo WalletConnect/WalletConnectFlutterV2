@@ -275,3 +275,66 @@ Map<String, dynamic> _$$SessionEventParamsImplToJson(
       'name': instance.name,
       'data': instance.data,
     };
+
+_$WcAuthRequestRequestImpl _$$WcAuthRequestRequestImplFromJson(
+        Map<String, dynamic> json) =>
+    _$WcAuthRequestRequestImpl(
+      payloadParams: AuthPayloadParams.fromJson(
+          json['payloadParams'] as Map<String, dynamic>),
+      requester: ConnectionMetadata.fromJson(
+          json['requester'] as Map<String, dynamic>),
+    );
+
+Map<String, dynamic> _$$WcAuthRequestRequestImplToJson(
+        _$WcAuthRequestRequestImpl instance) =>
+    <String, dynamic>{
+      'payloadParams': instance.payloadParams.toJson(),
+      'requester': instance.requester.toJson(),
+    };
+
+_$WcAuthRequestResultImpl _$$WcAuthRequestResultImplFromJson(
+        Map<String, dynamic> json) =>
+    _$WcAuthRequestResultImpl(
+      cacao: Cacao.fromJson(json['cacao'] as Map<String, dynamic>),
+    );
+
+Map<String, dynamic> _$$WcAuthRequestResultImplToJson(
+        _$WcAuthRequestResultImpl instance) =>
+    <String, dynamic>{
+      'cacao': instance.cacao.toJson(),
+    };
+
+_$WcSessionAuthRequestParamsImpl _$$WcSessionAuthRequestParamsImplFromJson(
+        Map<String, dynamic> json) =>
+    _$WcSessionAuthRequestParamsImpl(
+      authPayload: SessionAuthPayload.fromJson(
+          json['authPayload'] as Map<String, dynamic>),
+      requester: ConnectionMetadata.fromJson(
+          json['requester'] as Map<String, dynamic>),
+      expiryTimestamp: json['expiryTimestamp'] as int,
+    );
+
+Map<String, dynamic> _$$WcSessionAuthRequestParamsImplToJson(
+        _$WcSessionAuthRequestParamsImpl instance) =>
+    <String, dynamic>{
+      'authPayload': instance.authPayload.toJson(),
+      'requester': instance.requester.toJson(),
+      'expiryTimestamp': instance.expiryTimestamp,
+    };
+
+_$WcSessionAuthRequestResultImpl _$$WcSessionAuthRequestResultImplFromJson(
+        Map<String, dynamic> json) =>
+    _$WcSessionAuthRequestResultImpl(
+      cacaos: (json['cacaos'] as List<dynamic>)
+          .map((e) => Cacao.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      responder: ConnectionMetadata.fromJson(
+          json['responder'] as Map<String, dynamic>),
+    );
+
+Map<String, dynamic> _$$WcSessionAuthRequestResultImplToJson(
+        _$WcSessionAuthRequestResultImpl instance) =>
+    <String, dynamic>{
+      'cacaos': instance.cacaos.map((e) => e.toJson()).toList(),
+      'responder': instance.responder.toJson(),
+    };

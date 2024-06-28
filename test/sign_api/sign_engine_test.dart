@@ -55,6 +55,46 @@ void main() {
             return SessionRequest.fromJson(value);
           },
         ),
+        authKeys: GenericStore(
+          storage: core.storage,
+          context: StoreVersions.CONTEXT_AUTH_KEYS,
+          version: StoreVersions.VERSION_AUTH_KEYS,
+          fromJson: (dynamic value) {
+            return AuthPublicKey.fromJson(value);
+          },
+        ),
+        pairingTopics: GenericStore(
+          storage: core.storage,
+          context: StoreVersions.CONTEXT_PAIRING_TOPICS,
+          version: StoreVersions.VERSION_PAIRING_TOPICS,
+          fromJson: (dynamic value) {
+            return value;
+          },
+        ),
+        authRequests: GenericStore(
+          storage: core.storage,
+          context: StoreVersions.CONTEXT_AUTH_REQUESTS,
+          version: StoreVersions.VERSION_AUTH_REQUESTS,
+          fromJson: (dynamic value) {
+            return PendingAuthRequest.fromJson(value);
+          },
+        ),
+        completeRequests: GenericStore(
+          storage: core.storage,
+          context: StoreVersions.CONTEXT_COMPLETE_REQUESTS,
+          version: StoreVersions.VERSION_COMPLETE_REQUESTS,
+          fromJson: (dynamic value) {
+            return StoredCacao.fromJson(value);
+          },
+        ),
+        sessionAuthRequests: GenericStore(
+          storage: core.storage,
+          context: StoreVersions.CONTEXT_AUTH_REQUESTS,
+          version: StoreVersions.VERSION_AUTH_REQUESTS,
+          fromJson: (dynamic value) {
+            return PendingSessionAuthRequest.fromJson(value);
+          },
+        ),
       );
       await core.start();
       await e.init();
@@ -94,6 +134,46 @@ void main() {
           version: StoreVersions.VERSION_PENDING_REQUESTS,
           fromJson: (dynamic value) {
             return SessionRequest.fromJson(value);
+          },
+        ),
+        authKeys: GenericStore(
+          storage: core.storage,
+          context: StoreVersions.CONTEXT_AUTH_KEYS,
+          version: StoreVersions.VERSION_AUTH_KEYS,
+          fromJson: (dynamic value) {
+            return AuthPublicKey.fromJson(value);
+          },
+        ),
+        pairingTopics: GenericStore(
+          storage: core.storage,
+          context: StoreVersions.CONTEXT_PAIRING_TOPICS,
+          version: StoreVersions.VERSION_PAIRING_TOPICS,
+          fromJson: (dynamic value) {
+            return value;
+          },
+        ),
+        authRequests: GenericStore(
+          storage: core.storage,
+          context: StoreVersions.CONTEXT_AUTH_REQUESTS,
+          version: StoreVersions.VERSION_AUTH_REQUESTS,
+          fromJson: (dynamic value) {
+            return PendingAuthRequest.fromJson(value);
+          },
+        ),
+        completeRequests: GenericStore(
+          storage: core.storage,
+          context: StoreVersions.CONTEXT_COMPLETE_REQUESTS,
+          version: StoreVersions.VERSION_COMPLETE_REQUESTS,
+          fromJson: (dynamic value) {
+            return StoredCacao.fromJson(value);
+          },
+        ),
+        sessionAuthRequests: GenericStore(
+          storage: core.storage,
+          context: StoreVersions.CONTEXT_AUTH_REQUESTS,
+          version: StoreVersions.VERSION_AUTH_REQUESTS,
+          fromJson: (dynamic value) {
+            return PendingSessionAuthRequest.fromJson(value);
           },
         ),
       );

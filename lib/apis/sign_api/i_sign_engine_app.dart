@@ -5,6 +5,10 @@ abstract class ISignEngineApp extends ISignEngineCommon {
   abstract final Event<SessionUpdate> onSessionUpdate;
   abstract final Event<SessionExtend> onSessionExtend;
   abstract final Event<SessionEvent> onSessionEvent;
+  // FORMER AUTH ENGINE PROPERTY
+  abstract final Event<AuthResponse> onAuthResponse;
+  // NEW 1-CA PROPERTY
+  abstract final Event<SessionAuthResponse> onSessionAuthResponse;
 
   Future<ConnectResponse> connect({
     Map<String, RequiredNamespace>? requiredNamespaces,
@@ -43,5 +47,19 @@ abstract class ISignEngineApp extends ISignEngineCommon {
   });
   Future<void> ping({
     required String topic,
+  });
+
+  // FORMER AUTH ENGINE METHOD
+  Future<AuthRequestResponse> requestAuth({
+    required AuthRequestParams params,
+    String? pairingTopic,
+    List<List<String>>? methods,
+  });
+
+  // NEW 1-CA METHOD
+  Future<SessionAuthRequestResponse> authenticate({
+    required SessionAuthRequestParams params,
+    String? pairingTopic,
+    List<List<String>>? methods,
   });
 }

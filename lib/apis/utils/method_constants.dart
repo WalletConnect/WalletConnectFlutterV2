@@ -17,6 +17,8 @@ class MethodConstants {
 
   static const WC_AUTH_REQUEST = 'wc_authRequest';
 
+  static const WC_SESSION_AUTHENTICATE = 'wc_sessionAuthenticate';
+
   static const Map<String, Map<String, RpcOptions>> RPC_OPTS = {
     WC_PAIRING_PING: {
       'req': RpcOptions(
@@ -64,6 +66,16 @@ class MethodConstants {
         ttl: WalletConnectConstants.FIVE_MINUTES,
         prompt: false,
         tag: 1101,
+      ),
+      'reject': RpcOptions(
+        ttl: WalletConnectConstants.FIVE_MINUTES,
+        prompt: false,
+        tag: 1120,
+      ),
+      'autoReject': RpcOptions(
+        ttl: WalletConnectConstants.FIVE_MINUTES,
+        prompt: false,
+        tag: 1121,
       ),
     },
     WC_SESSION_SETTLE: {
@@ -148,6 +160,28 @@ class MethodConstants {
         ttl: WalletConnectConstants.THIRTY_SECONDS,
         prompt: false,
         tag: 1115,
+      ),
+    },
+    WC_SESSION_AUTHENTICATE: {
+      'req': RpcOptions(
+        ttl: WalletConnectConstants.ONE_HOUR,
+        prompt: false,
+        tag: 1116,
+      ),
+      'res': RpcOptions(
+        ttl: WalletConnectConstants.ONE_HOUR,
+        prompt: false,
+        tag: 1117,
+      ),
+      'reject': RpcOptions(
+        ttl: WalletConnectConstants.FIVE_MINUTES,
+        prompt: false,
+        tag: 1118,
+      ),
+      'autoReject': RpcOptions(
+        ttl: WalletConnectConstants.FIVE_MINUTES,
+        prompt: false,
+        tag: 1119,
       ),
     },
     WC_AUTH_REQUEST: {

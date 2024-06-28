@@ -1,3 +1,7 @@
+## 2.3.0-beta01
+
+- One-Click Auth support
+
 ## 2.2.3
 
 - Full web support

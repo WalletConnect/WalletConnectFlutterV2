@@ -2,14 +2,15 @@ import 'dart:async';
 
 import 'package:event/event.dart';
 import 'package:walletconnect_flutter_v2/apis/auth_api/i_auth_engine.dart';
-import 'package:walletconnect_flutter_v2/apis/auth_api/models/auth_client_events.dart';
-import 'package:walletconnect_flutter_v2/apis/auth_api/models/auth_client_models.dart';
-import 'package:walletconnect_flutter_v2/apis/auth_api/models/json_rpc_models.dart';
+import 'package:walletconnect_flutter_v2/apis/sign_api/models/auth/auth_client_events.dart';
+import 'package:walletconnect_flutter_v2/apis/sign_api/models/auth/auth_client_models.dart';
+import 'package:walletconnect_flutter_v2/apis/sign_api/models/auth/common_auth_models.dart';
 import 'package:walletconnect_flutter_v2/apis/core/store/i_generic_store.dart';
-import 'package:walletconnect_flutter_v2/apis/auth_api/utils/address_utils.dart';
-import 'package:walletconnect_flutter_v2/apis/auth_api/utils/auth_api_validators.dart';
-import 'package:walletconnect_flutter_v2/apis/auth_api/utils/auth_constants.dart';
-import 'package:walletconnect_flutter_v2/apis/auth_api/utils/auth_signature.dart';
+import 'package:walletconnect_flutter_v2/apis/sign_api/models/json_rpc_models.dart';
+import 'package:walletconnect_flutter_v2/apis/sign_api/utils/auth/address_utils.dart';
+import 'package:walletconnect_flutter_v2/apis/sign_api/utils/auth/auth_api_validators.dart';
+import 'package:walletconnect_flutter_v2/apis/sign_api/utils/auth/auth_constants.dart';
+import 'package:walletconnect_flutter_v2/apis/sign_api/utils/auth/auth_signature.dart';
 import 'package:walletconnect_flutter_v2/apis/core/crypto/crypto_models.dart';
 import 'package:walletconnect_flutter_v2/apis/core/i_core.dart';
 import 'package:walletconnect_flutter_v2/apis/core/pairing/utils/pairing_models.dart';
@@ -22,7 +23,7 @@ import 'package:walletconnect_flutter_v2/apis/utils/errors.dart';
 import 'package:walletconnect_flutter_v2/apis/utils/method_constants.dart';
 
 class AuthEngine implements IAuthEngine {
-  static const List<List<String>> defaultMethods = [
+  static const List<List<String>> DEFAULT_METHODS = [
     [
       MethodConstants.WC_AUTH_REQUEST,
     ]
@@ -80,7 +81,7 @@ class AuthEngine implements IAuthEngine {
   Future<AuthRequestResponse> requestAuth({
     required AuthRequestParams params,
     String? pairingTopic,
-    List<List<String>>? methods = defaultMethods,
+    List<List<String>>? methods = DEFAULT_METHODS,
   }) async {
     _checkInitialized();
 

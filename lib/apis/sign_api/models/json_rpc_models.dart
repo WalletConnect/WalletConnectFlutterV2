@@ -1,6 +1,9 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:walletconnect_flutter_v2/apis/core/relay_client/relay_client_models.dart';
 import 'package:walletconnect_flutter_v2/apis/models/basic_models.dart';
+import 'package:walletconnect_flutter_v2/apis/sign_api/models/auth/auth_client_models.dart';
+import 'package:walletconnect_flutter_v2/apis/sign_api/models/auth/common_auth_models.dart';
+import 'package:walletconnect_flutter_v2/apis/sign_api/models/auth/session_auth_models.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/models/proposal_models.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/models/session_models.dart';
 
@@ -166,4 +169,54 @@ class SessionEventParams with _$SessionEventParams {
 
   factory SessionEventParams.fromJson(Map<String, dynamic> json) =>
       _$SessionEventParamsFromJson(json);
+}
+
+/* AUTHENTICATION MODELS */
+
+@freezed
+class WcAuthRequestRequest with _$WcAuthRequestRequest {
+  @JsonSerializable()
+  const factory WcAuthRequestRequest({
+    required AuthPayloadParams payloadParams,
+    required ConnectionMetadata requester,
+  }) = _WcAuthRequestRequest;
+
+  factory WcAuthRequestRequest.fromJson(Map<String, dynamic> json) =>
+      _$WcAuthRequestRequestFromJson(json);
+}
+
+@freezed
+class WcAuthRequestResult with _$WcAuthRequestResult {
+  @JsonSerializable()
+  const factory WcAuthRequestResult({
+    required Cacao cacao,
+  }) = _WcAuthRequestResult;
+
+  factory WcAuthRequestResult.fromJson(Map<String, dynamic> json) =>
+      _$WcAuthRequestResultFromJson(json);
+}
+
+@freezed
+class WcSessionAuthRequestParams with _$WcSessionAuthRequestParams {
+  @JsonSerializable()
+  const factory WcSessionAuthRequestParams({
+    required SessionAuthPayload authPayload,
+    required ConnectionMetadata requester,
+    required int expiryTimestamp,
+  }) = _WcSessionAuthRequestParams;
+
+  factory WcSessionAuthRequestParams.fromJson(Map<String, dynamic> json) =>
+      _$WcSessionAuthRequestParamsFromJson(json);
+}
+
+@freezed
+class WcSessionAuthRequestResult with _$WcSessionAuthRequestResult {
+  @JsonSerializable()
+  const factory WcSessionAuthRequestResult({
+    required List<Cacao> cacaos,
+    required ConnectionMetadata responder,
+  }) = _WcSessionAuthRequestResult;
+
+  factory WcSessionAuthRequestResult.fromJson(Map<String, dynamic> json) =>
+      _$WcSessionAuthRequestResultFromJson(json);
 }

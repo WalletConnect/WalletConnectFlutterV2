@@ -12,6 +12,8 @@ _$PairingInfoImpl _$$PairingInfoImplFromJson(Map<String, dynamic> json) =>
       expiry: json['expiry'] as int,
       relay: Relay.fromJson(json['relay'] as Map<String, dynamic>),
       active: json['active'] as bool,
+      methods:
+          (json['methods'] as List<dynamic>?)?.map((e) => e as String).toList(),
       peerMetadata: json['peerMetadata'] == null
           ? null
           : PairingMetadata.fromJson(
@@ -24,6 +26,7 @@ Map<String, dynamic> _$$PairingInfoImplToJson(_$PairingInfoImpl instance) =>
       'expiry': instance.expiry,
       'relay': instance.relay.toJson(),
       'active': instance.active,
+      'methods': instance.methods,
       'peerMetadata': instance.peerMetadata?.toJson(),
     };
 

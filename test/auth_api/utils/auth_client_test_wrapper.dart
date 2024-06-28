@@ -3,12 +3,13 @@ import 'package:walletconnect_flutter_v2/apis/auth_api/auth_client.dart';
 import 'package:walletconnect_flutter_v2/apis/auth_api/auth_engine.dart';
 import 'package:walletconnect_flutter_v2/apis/auth_api/i_auth_client.dart';
 import 'package:walletconnect_flutter_v2/apis/auth_api/i_auth_engine.dart';
-import 'package:walletconnect_flutter_v2/apis/auth_api/models/auth_client_events.dart';
+import 'package:walletconnect_flutter_v2/apis/sign_api/models/auth/auth_client_events.dart';
 import 'package:walletconnect_flutter_v2/apis/core/core.dart';
 import 'package:walletconnect_flutter_v2/apis/core/relay_client/websocket/http_client.dart';
 import 'package:walletconnect_flutter_v2/apis/core/relay_client/websocket/i_http_client.dart';
 import 'package:walletconnect_flutter_v2/apis/core/store/i_generic_store.dart';
-import 'package:walletconnect_flutter_v2/apis/auth_api/models/auth_client_models.dart';
+import 'package:walletconnect_flutter_v2/apis/sign_api/models/auth/auth_client_models.dart';
+import 'package:walletconnect_flutter_v2/apis/sign_api/models/auth/common_auth_models.dart';
 import 'package:walletconnect_flutter_v2/apis/core/i_core.dart';
 import 'package:walletconnect_flutter_v2/apis/models/basic_models.dart';
 import 'package:walletconnect_flutter_v2/apis/core/pairing/utils/pairing_models.dart';
@@ -87,7 +88,7 @@ class AuthClientTestWrapper implements IAuthEngine {
   Future<AuthRequestResponse> requestAuth({
     required AuthRequestParams params,
     String? pairingTopic,
-    List<List<String>>? methods = AuthEngine.defaultMethods,
+    List<List<String>>? methods = AuthEngine.DEFAULT_METHODS,
   }) async {
     try {
       return client.request(

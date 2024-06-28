@@ -102,6 +102,46 @@ class SignClient implements ISignClient {
           return SessionRequest.fromJson(value);
         },
       ),
+      authKeys: GenericStore(
+        storage: core.storage,
+        context: StoreVersions.CONTEXT_AUTH_KEYS,
+        version: StoreVersions.VERSION_AUTH_KEYS,
+        fromJson: (dynamic value) {
+          return AuthPublicKey.fromJson(value);
+        },
+      ),
+      pairingTopics: GenericStore(
+        storage: core.storage,
+        context: StoreVersions.CONTEXT_PAIRING_TOPICS,
+        version: StoreVersions.VERSION_PAIRING_TOPICS,
+        fromJson: (dynamic value) {
+          return value;
+        },
+      ),
+      authRequests: GenericStore(
+        storage: core.storage,
+        context: StoreVersions.CONTEXT_AUTH_REQUESTS,
+        version: StoreVersions.VERSION_AUTH_REQUESTS,
+        fromJson: (dynamic value) {
+          return PendingAuthRequest.fromJson(value);
+        },
+      ),
+      completeRequests: GenericStore(
+        storage: core.storage,
+        context: StoreVersions.CONTEXT_COMPLETE_REQUESTS,
+        version: StoreVersions.VERSION_COMPLETE_REQUESTS,
+        fromJson: (dynamic value) {
+          return StoredCacao.fromJson(value);
+        },
+      ),
+      sessionAuthRequests: GenericStore(
+        storage: core.storage,
+        context: StoreVersions.CONTEXT_AUTH_REQUESTS,
+        version: StoreVersions.VERSION_AUTH_REQUESTS,
+        fromJson: (dynamic value) {
+          return PendingSessionAuthRequest.fromJson(value);
+        },
+      ),
     );
   }
 
@@ -451,4 +491,184 @@ class SignClient implements ISignClient {
 
   @override
   IPairingStore get pairings => core.pairing.getStore();
+
+  // FORMER AUTH ENGINE METHODS
+
+  @override
+  IGenericStore<PendingAuthRequest> get authRequests => engine.authRequests;
+
+  @override
+  Map<int, PendingAuthRequest> getPendingAuthRequests() {
+    try {
+      return engine.getPendingAuthRequests();
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Map<int, PendingSessionAuthRequest> getPendingSessionAuthRequests() {
+    try {
+      return engine.getPendingSessionAuthRequests();
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  IGenericStore<PendingSessionAuthRequest> get sessionAuthRequests =>
+      engine.sessionAuthRequests;
+
+  @override
+  Event<AuthRequest> get onAuthRequest => engine.onAuthRequest;
+
+  @override
+  Event<AuthResponse> get onAuthResponse => engine.onAuthResponse;
+
+  // NEW 1-CLICK AUTH METHOD
+  @override
+  Event<SessionAuthResponse> get onSessionAuthResponse =>
+      engine.onSessionAuthResponse;
+
+  @override
+  Event<SessionAuthRequest> get onSessionAuthRequest =>
+      engine.onSessionAuthRequest;
+
+  @override
+  Future<AuthRequestResponse> requestAuth({
+    required AuthRequestParams params,
+    String? pairingTopic,
+    List<List<String>>? methods = SignEngine.DEFAULT_METHODS_AUTH,
+  }) {
+    try {
+      return engine.requestAuth(
+        params: params,
+        pairingTopic: pairingTopic,
+        methods: methods,
+      );
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  // NEW ONE-CLICK AUTH METHOD FOR DAPPS
+  @override
+  Future<SessionAuthRequestResponse> authenticate({
+    required SessionAuthRequestParams params,
+    String? pairingTopic,
+    List<List<String>>? methods = const [
+      [MethodConstants.WC_SESSION_AUTHENTICATE]
+    ],
+  }) {
+    try {
+      return engine.authenticate(
+        params: params,
+        pairingTopic: pairingTopic,
+        methods: methods,
+      );
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> respondAuthRequest({
+    required int id,
+    required String iss,
+    CacaoSignature? signature,
+    WalletConnectError? error,
+  }) {
+    try {
+      return engine.respondAuthRequest(
+        id: id,
+        iss: iss,
+        signature: signature,
+        error: error,
+      );
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<ApproveResponse> approveSessionAuthenticate({
+    required int id,
+    List<Cacao>? auths,
+  }) {
+    try {
+      return engine.approveSessionAuthenticate(
+        id: id,
+        auths: auths,
+      );
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<void> rejectSessionAuthenticate({
+    required int id,
+    required WalletConnectError reason,
+  }) {
+    try {
+      return engine.rejectSessionAuthenticate(
+        id: id,
+        reason: reason,
+      );
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  IGenericStore<AuthPublicKey> get authKeys => engine.authKeys;
+
+  @override
+  IGenericStore<StoredCacao> get completeRequests => engine.completeRequests;
+
+  @override
+  Future<bool> validateSignedCacao({
+    required Cacao cacao,
+    required String projectId,
+  }) {
+    try {
+      return engine.validateSignedCacao(
+        cacao: cacao,
+        projectId: projectId,
+      );
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  String formatAuthMessage({
+    required String iss,
+    required CacaoRequestPayload cacaoPayload,
+  }) {
+    try {
+      return engine.formatAuthMessage(
+        iss: iss,
+        cacaoPayload: cacaoPayload,
+      );
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Map<int, StoredCacao> getCompletedRequestsForPairing({
+    required String pairingTopic,
+  }) {
+    try {
+      return engine.getCompletedRequestsForPairing(
+        pairingTopic: pairingTopic,
+      );
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  IGenericStore<String> get pairingTopics => engine.pairingTopics;
 }

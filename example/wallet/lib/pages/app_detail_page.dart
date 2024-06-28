@@ -45,6 +45,7 @@ class AppDetailPageState extends State<AppDetailPage> {
 
   @override
   Widget build(BuildContext context) {
+    final metadata = widget.pairing.peerMetadata;
     DateTime dateTime =
         DateTime.fromMillisecondsSinceEpoch(widget.pairing.expiry * 1000);
     int year = dateTime.year;
@@ -104,10 +105,10 @@ class AppDetailPageState extends State<AppDetailPage> {
         ),
       );
     }
-    final scheme = widget.pairing.peerMetadata?.redirect?.native ?? '';
+    final scheme = metadata?.redirect?.native ?? '';
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.pairing.peerMetadata?.name ?? 'Unknown'),
+        title: Text(metadata?.name ?? 'Unknown'),
         actions: [
           Visibility(
             visible: scheme.isNotEmpty,
@@ -131,33 +132,39 @@ class AppDetailPageState extends State<AppDetailPage> {
         ),
         child: Column(
           children: [
-            Row(
-              children: [
-                CircleAvatar(
-                  radius: 40.0,
-                  backgroundImage: (widget
-                              .pairing.peerMetadata!.icons.isNotEmpty
-                          ? NetworkImage(widget.pairing.peerMetadata!.icons[0])
-                          : const AssetImage('assets/images/default_icon.png'))
-                      as ImageProvider<Object>,
-                ),
-                const SizedBox(width: 10.0),
-                Expanded(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(widget.pairing.peerMetadata!.url),
-                      Text('Expires on: $expiryDate'),
-                    ],
+            Visibility(
+              visible: metadata != null,
+              child: Row(
+                children: [
+                  CircleAvatar(
+                    radius: 40.0,
+                    backgroundImage: ((metadata?.icons ?? []).isNotEmpty
+                            ? NetworkImage(metadata!.icons[0])
+                            : const AssetImage(
+                                'assets/images/default_icon.png'))
+                        as ImageProvider<Object>,
                   ),
-                ),
-              ],
+                  const SizedBox(width: 10.0),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(metadata?.url ?? ''),
+                        Text('Expires on: $expiryDate'),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
             ),
             const SizedBox(height: 20.0),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: sessionWidgets,
+            Visibility(
+              visible: metadata != null,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: sessionWidgets,
+              ),
             ),
             const SizedBox(height: 20.0),
             Row(

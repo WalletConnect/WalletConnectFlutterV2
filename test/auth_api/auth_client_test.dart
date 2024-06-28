@@ -249,12 +249,29 @@ void runTests({
           expect(args != null, true);
 
           // Create the message to be signed
-          String message = clientB.formatAuthMessage(
-            iss: TEST_ISSUER_EIP191,
-            cacaoPayload: CacaoRequestPayload.fromPayloadParams(
-              args!.payloadParams,
-            ),
-          );
+          late String message;
+          if (clientB is Web3Wallet) {
+            message = (clientB as Web3Wallet).authEngine.formatAuthMessage(
+                  iss: TEST_ISSUER_EIP191,
+                  cacaoPayload: CacaoRequestPayload.fromPayloadParams(
+                    args!.payloadParams,
+                  ),
+                );
+          } else if (clientB is Web3Wallet) {
+            message = (clientB as Web3App).authEngine.formatAuthMessage(
+                  iss: TEST_ISSUER_EIP191,
+                  cacaoPayload: CacaoRequestPayload.fromPayloadParams(
+                    args!.payloadParams,
+                  ),
+                );
+          } else {
+            message = clientB.formatAuthMessage(
+              iss: TEST_ISSUER_EIP191,
+              cacaoPayload: CacaoRequestPayload.fromPayloadParams(
+                args!.payloadParams,
+              ),
+            );
+          }
 
           String sig = EthSigUtil.signPersonalMessage(
             message: Uint8List.fromList(message.codeUnits),

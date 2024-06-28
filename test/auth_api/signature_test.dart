@@ -5,6 +5,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 
 import '../shared/shared_test_values.dart';
+import 'utils/engine_constants.dart';
 import 'utils/signature_constants.dart';
 
 void main() {
@@ -69,6 +70,40 @@ void main() {
 
       // print(bool);
       expect(bool2, false);
+    });
+
+    test('getAddressFromMessage', () {
+      final address = AuthSignature.getAddressFromMessage(
+        TEST_MESSAGE_EIP1271,
+      );
+      expect(address, TEST_ADDRESS_EIP1271);
+
+      final address2 = AuthSignature.getAddressFromMessage(
+        TEST_FORMATTED_MESSAGE,
+      );
+      expect(address2, '0x06C6A22feB5f8CcEDA0db0D593e6F26A3611d5fa');
+
+      final address3 = AuthSignature.getAddressFromMessage(
+        TEST_MESSAGE_EIP1271_2,
+      );
+      expect(address3, '0x59e2f66C0E96803206B6486cDb39029abAE834c0');
+    });
+
+    test('getChainIdFromMessage', () {
+      final chainId = AuthSignature.getChainIdFromMessage(
+        TEST_MESSAGE_EIP1271,
+      );
+      expect(chainId, '1');
+
+      final chainId2 = AuthSignature.getChainIdFromMessage(
+        TEST_FORMATTED_MESSAGE,
+      );
+      expect(chainId2, '1');
+
+      final chainId3 = AuthSignature.getChainIdFromMessage(
+        TEST_MESSAGE_EIP1271_2,
+      );
+      expect(chainId3, '465321');
     });
 
     // TODO: Fix this test, can't call http requests from within the test

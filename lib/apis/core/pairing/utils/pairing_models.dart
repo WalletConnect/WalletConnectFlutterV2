@@ -21,6 +21,7 @@ class PairingInfo with _$PairingInfo {
     required int expiry,
     required Relay relay,
     required bool active,
+    List<String>? methods,
     PairingMetadata? peerMetadata,
   }) = _PairingInfo;
 
@@ -76,7 +77,7 @@ class CreateResponse {
 
   @override
   String toString() {
-    return 'CreateResponse(topic: $topic, uri: $uri)';
+    return 'CreateResponse(topic: $topic, uri: $uri, pairingInfo: ${pairingInfo.toJson()})';
   }
 }
 

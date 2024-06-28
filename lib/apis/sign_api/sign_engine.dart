@@ -1,14 +1,17 @@
 import 'dart:async';
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:http/http.dart' as http;
 import 'package:walletconnect_flutter_v2/apis/core/pairing/utils/json_rpc_utils.dart';
 import 'package:walletconnect_flutter_v2/apis/core/store/i_generic_store.dart';
-import 'package:walletconnect_flutter_v2/apis/core/verify/models/verify_context.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/i_sessions.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/utils/custom_credentials.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/utils/sign_api_validator_utils.dart';
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
+import 'package:walletconnect_flutter_v2/apis/sign_api/utils/auth/recaps_utils.dart';
+import 'package:walletconnect_flutter_v2/apis/core/crypto/crypto_models.dart';
+import 'package:walletconnect_flutter_v2/apis/sign_api/utils/auth/auth_constants.dart';
 
 class SignEngine implements ISignEngine {
   static const List<List<String>> DEFAULT_METHODS = [
@@ -16,6 +19,12 @@ class SignEngine implements ISignEngine {
       MethodConstants.WC_SESSION_PROPOSE,
       MethodConstants.WC_SESSION_REQUEST,
     ],
+  ];
+
+  static const List<List<String>> DEFAULT_METHODS_AUTH = [
+    [
+      MethodConstants.WC_AUTH_REQUEST,
+    ]
   ];
 
   bool _initialized = false;
@@ -60,12 +69,46 @@ class SignEngine implements ISignEngine {
 
   List<SessionProposalCompleter> pendingProposals = [];
 
+  // FORMER AUTH ENGINE PROPERTY
+  @override
+  late IGenericStore<AuthPublicKey> authKeys;
+  @override
+  late IGenericStore<PendingAuthRequest> authRequests;
+  @override
+  IGenericStore<StoredCacao> completeRequests;
+  @override
+  final Event<AuthRequest> onAuthRequest = Event<AuthRequest>();
+  @override
+  final Event<AuthResponse> onAuthResponse = Event<AuthResponse>();
+  @override
+  late IGenericStore<String> pairingTopics;
+
+  // NEW 1-CA METHOD
+  @override
+  late IGenericStore<PendingSessionAuthRequest> sessionAuthRequests;
+  @override
+  final Event<SessionAuthRequest> onSessionAuthRequest =
+      Event<SessionAuthRequest>();
+  @override
+  final Event<SessionAuthResponse> onSessionAuthResponse =
+      Event<SessionAuthResponse>();
+
+  // FORMER AUTH ENGINE PROPERTY (apparently not used before and not used now)
+  List<AuthRequestCompleter> pendingAuthRequests = [];
+
   SignEngine({
     required this.core,
     required this.metadata,
     required this.proposals,
     required this.sessions,
     required this.pendingRequests,
+    // FORMER AUTH ENGINE PROPERTIES
+    required this.authKeys,
+    required this.pairingTopics,
+    required this.authRequests,
+    required this.completeRequests,
+    // NEW 1-CA PROPERTY
+    required this.sessionAuthRequests,
   });
 
   @override
@@ -79,6 +122,14 @@ class SignEngine implements ISignEngine {
     await proposals.init();
     await sessions.init();
     await pendingRequests.init();
+
+    // FORMER AUTH ENGINE PROPERTIES
+    await authKeys.init();
+    await pairingTopics.init();
+    await authRequests.init();
+    await completeRequests.init();
+    // NEW 1-CA PROPERTY
+    await sessionAuthRequests.init();
 
     _registerInternalEvents();
     _registerRelayClientFunctions();
@@ -131,7 +182,7 @@ class SignEngine implements ISignEngine {
     final publicKey = await core.crypto.generateKeyPair();
     final int id = JsonRpcUtils.payloadId();
 
-    final WcSessionProposeRequest request = WcSessionProposeRequest(
+    final request = WcSessionProposeRequest(
       relays:
           relays ?? [Relay(WalletConnectConstants.RELAYER_DEFAULT_PROTOCOL)],
       requiredNamespaces: requiredNamespaces ?? {},
@@ -197,13 +248,13 @@ class SignEngine implements ISignEngine {
     // print("sending proposal for $topic");
     // print('connectResponseHandler requestId: $requestId');
     try {
-      final Map<String, dynamic> resp = await core.pairing.sendRequest(
+      final Map<String, dynamic> response = await core.pairing.sendRequest(
         topic,
         MethodConstants.WC_SESSION_PROPOSE,
-        request,
+        request.toJson(),
         id: requestId,
       );
-      final String peerPublicKey = resp['responderPublicKey'];
+      final String peerPublicKey = response['responderPublicKey'];
 
       final ProposalData proposal = proposals.get(
         requestId.toString(),
@@ -310,7 +361,6 @@ class SignEngine implements ISignEngine {
       sessionProperties: proposal.sessionProperties,
     );
 
-    // print('session connect');
     onSessionConnect.broadcast(SessionConnect(session));
 
     await sessions.set(sessionTopic, session);
@@ -373,13 +423,14 @@ class SignEngine implements ISignEngine {
       // Attempt to send a response, if the pairing is not active, this will fail
       // but we don't care
       try {
+        final method = MethodConstants.WC_SESSION_PROPOSE;
+        final rpcOpts = MethodConstants.RPC_OPTS[method];
         await core.pairing.sendError(
           id,
           proposal.pairingTopic,
-          MethodConstants.WC_SESSION_PROPOSE,
-          JsonRpcError.fromJson(
-            reason.toJson(),
-          ),
+          method,
+          JsonRpcError(code: reason.code, message: reason.message),
+          rpcOptions: rpcOpts?['reject'],
         );
       } catch (_) {
         // print('got here');
@@ -474,14 +525,12 @@ class SignEngine implements ISignEngine {
     List<dynamic> parameters = const [],
   }) async {
     try {
-      core.logger.i('readContractCall: with function $functionName');
       final results = await Web3Client(rpcUrl, http.Client()).call(
         contract: deployedContract,
         function: deployedContract.function(functionName),
         params: parameters,
       );
 
-      core.logger.i('readContractCall: $functionName - results: $results');
       return results;
     } catch (e) {
       rethrow;
@@ -929,12 +978,38 @@ class SignEngine implements ISignEngine {
       function: _onSessionEventRequest,
       type: ProtocolType.sign,
     );
+    // FORMER AUTH ENGINE PROPERTY
+    core.pairing.register(
+      method: MethodConstants.WC_AUTH_REQUEST,
+      function: _onAuthRequest,
+      type: ProtocolType.sign,
+    );
+    core.pairing.register(
+      method: MethodConstants.WC_SESSION_AUTHENTICATE,
+      function: _onSessionAuthRequest,
+      type: ProtocolType.sign,
+    );
+  }
+
+  bool _shouldIgnoreSessionPropose(String topic) {
+    final PairingInfo? pairingInfo = core.pairing.getPairing(topic: topic);
+    final implementSessionAuth = onSessionAuthRequest.subscriberCount > 0;
+    final method = MethodConstants.WC_SESSION_AUTHENTICATE;
+    final containsMethod = (pairingInfo?.methods ?? []).contains(method);
+
+    return implementSessionAuth && containsMethod;
   }
 
   Future<void> _onSessionProposeRequest(
     String topic,
     JsonRpcRequest payload,
   ) async {
+    if (_shouldIgnoreSessionPropose(topic)) {
+      core.logger.t(
+        'Session Propose ignored. Session Authenticate will be used instead',
+      );
+      return;
+    }
     try {
       core.logger.t(
         '_onSessionProposeRequest, topic: $topic, payload: $payload',
@@ -971,13 +1046,13 @@ class SignEngine implements ISignEngine {
           core.logger.t(
             '_onSessionProposeRequest WalletConnectError: $err',
           );
+          final rpcOpts = MethodConstants.RPC_OPTS[payload.method];
           await core.pairing.sendError(
             payload.id,
             topic,
             payload.method,
-            JsonRpcError.fromJson(
-              err.toJson(),
-            ),
+            JsonRpcError(code: err.code, message: err.message),
+            rpcOptions: rpcOpts?['autoReject'],
           );
 
           // Broadcast that a session proposal error has occurred
@@ -1024,13 +1099,13 @@ class SignEngine implements ISignEngine {
       );
     } on WalletConnectError catch (err) {
       core.logger.e('_onSessionProposeRequest Error: $err');
+      final rpcOpts = MethodConstants.RPC_OPTS[payload.method];
       await core.pairing.sendError(
         payload.id,
         topic,
         payload.method,
-        JsonRpcError.fromJson(
-          err.toJson(),
-        ),
+        JsonRpcError(code: err.code, message: err.message),
+        rpcOptions: rpcOpts?['autoReject'],
       );
     }
   }
@@ -1769,6 +1844,932 @@ class SignEngine implements ISignEngine {
         origin: proposerMetada.url,
         verifyUrl: proposerMetada.verifyUrl ?? '',
         validation: Validation.UNKNOWN,
+      );
+    }
+  }
+
+  // NEW 1-CA METHOD (Should this be private?)
+
+  @override
+  Future<bool> validateSignedCacao({
+    required Cacao cacao,
+    required String projectId,
+  }) async {
+    final CacaoSignature signature = cacao.s;
+    final CacaoPayload payload = cacao.p;
+
+    final reconstructed = formatAuthMessage(
+      iss: payload.iss,
+      cacaoPayload: CacaoRequestPayload.fromCacaoPayload(payload),
+    );
+
+    final walletAddress = AddressUtils.getDidAddress(payload.iss);
+    final chainId = AddressUtils.getDidChainId(payload.iss);
+
+    final isValid = await AuthSignature.verifySignature(
+      walletAddress,
+      reconstructed,
+      signature,
+      chainId,
+      projectId,
+    );
+
+    return isValid;
+  }
+
+  // FORMER AUTH ENGINE PROPERTY
+  @override
+  String formatAuthMessage({
+    required String iss,
+    required CacaoRequestPayload cacaoPayload,
+  }) {
+    final header =
+        '${cacaoPayload.domain} wants you to sign in with your Ethereum account:';
+    final walletAddress = AddressUtils.getDidAddress(iss);
+
+    if (cacaoPayload.aud.isEmpty) {
+      throw WalletConnectError(code: -1, message: 'aud is required');
+    }
+
+    String statement = cacaoPayload.statement ?? '';
+    final uri = 'URI: ${cacaoPayload.aud}';
+    final version = 'Version: ${cacaoPayload.version}';
+    final chainId = 'Chain ID: ${AddressUtils.getDidChainId(iss)}';
+    final nonce = 'Nonce: ${cacaoPayload.nonce}';
+    final issuedAt = 'Issued At: ${cacaoPayload.iat}';
+    final resources = cacaoPayload.resources != null &&
+            cacaoPayload.resources!.isNotEmpty
+        ? 'Resources:\n${cacaoPayload.resources!.map((resource) => '- $resource').join('\n')}'
+        : null;
+    final recap = ReCapsUtils.getRecapFromResources(
+      resources: cacaoPayload.resources,
+    );
+    if (recap != null) {
+      final decoded = ReCapsUtils.decodeRecap(recap);
+      statement = ReCapsUtils.formatStatementFromRecap(
+        statement: statement,
+        recap: decoded,
+      );
+    }
+
+    final message = [
+      header,
+      walletAddress,
+      '',
+      statement,
+      '',
+      uri,
+      version,
+      chainId,
+      nonce,
+      issuedAt,
+      resources,
+    ].where((element) => element != null).join('\n');
+
+    return message;
+  }
+
+  // FORMER AUTH ENGINE PROPERTY
+  @override
+  Map<int, StoredCacao> getCompletedRequestsForPairing({
+    required String pairingTopic,
+  }) {
+    Map<int, StoredCacao> completedRequests = {};
+    completeRequests
+        .getAll()
+        .where(
+          (e) => e.pairingTopic == pairingTopic,
+        )
+        .forEach((key) {
+      completedRequests[key.id] = key;
+    });
+    return completedRequests;
+  }
+
+  // FORMER AUTH ENGINE PROPERTY
+  @override
+  Map<int, PendingAuthRequest> getPendingAuthRequests() {
+    Map<int, PendingAuthRequest> pendingRequests = {};
+    authRequests.getAll().forEach((key) {
+      pendingRequests[key.id] = key;
+    });
+    return pendingRequests;
+  }
+
+  // FORMER AUTH ENGINE PROPERTY
+  @override
+  Future<AuthRequestResponse> requestAuth({
+    required AuthRequestParams params,
+    String? pairingTopic,
+    List<List<String>>? methods = DEFAULT_METHODS_AUTH,
+  }) async {
+    _checkInitialized();
+
+    AuthApiValidators.isValidRequest(params);
+    String? pTopic = pairingTopic;
+    Uri? uri;
+
+    if (pTopic == null) {
+      final CreateResponse newTopicAndUri = await core.pairing.create(
+        methods: methods,
+      );
+      pTopic = newTopicAndUri.topic;
+      uri = newTopicAndUri.uri;
+    } else {
+      // TODO this should be used when pairingTopic is passed (existent pairing topic case)
+      // but it does not seems right
+      core.pairing.isValidPairingTopic(topic: pTopic);
+    }
+
+    final publicKey = await core.crypto.generateKeyPair();
+    // print('requestAuth, publicKey: $publicKey');
+    final String responseTopic = core.crypto.getUtils().hashKey(publicKey);
+    final int id = JsonRpcUtils.payloadId();
+
+    final request = WcAuthRequestRequest(
+      payloadParams: AuthPayloadParams.fromRequestParams(
+        params,
+      ),
+      requester: ConnectionMetadata(
+        publicKey: publicKey,
+        metadata: metadata,
+      ),
+    );
+
+    final int expiry = params.expiry ?? WalletConnectConstants.FIVE_MINUTES;
+
+    await authKeys.set(
+      AuthConstants.AUTH_CLIENT_PUBLIC_KEY_NAME,
+      AuthPublicKey(publicKey: publicKey),
+    );
+
+    await pairingTopics.set(
+      responseTopic,
+      pTopic,
+    );
+
+    // Set the one time use receiver public key for decoding the Type 1 envelope
+    await core.pairing.setReceiverPublicKey(
+      topic: responseTopic,
+      publicKey: publicKey,
+      expiry: expiry,
+    );
+
+    Completer<AuthResponse> completer = Completer();
+
+    _requestAuthResponseHandler(
+      pairingTopic: pTopic,
+      responseTopic: responseTopic,
+      request: request,
+      id: id,
+      expiry: expiry,
+      completer: completer,
+    );
+
+    return AuthRequestResponse(
+      id: id,
+      pairingTopic: pTopic,
+      completer: completer,
+      uri: uri,
+    );
+  }
+
+  // FORMER AUTH ENGINE PROPERTY
+  Future<void> _requestAuthResponseHandler({
+    required String pairingTopic,
+    required String responseTopic,
+    required WcAuthRequestRequest request,
+    required int id,
+    required int expiry,
+    required Completer<AuthResponse> completer,
+  }) async {
+    // Subscribe to the responseTopic because we expect the response to use this topic
+    await core.relayClient.subscribe(topic: responseTopic);
+
+    late WcAuthRequestResult result;
+    try {
+      final Map<String, dynamic> response = await core.pairing.sendRequest(
+        pairingTopic,
+        MethodConstants.WC_AUTH_REQUEST,
+        request.toJson(),
+        id: id,
+        ttl: expiry,
+      );
+      result = WcAuthRequestResult.fromJson({'cacao': response});
+    } catch (error) {
+      final response = AuthResponse(
+        id: id,
+        topic: responseTopic,
+        jsonRpcError: (error is JsonRpcError) ? error : null,
+        error: (error is! JsonRpcError)
+            ? WalletConnectError(
+                code: -1,
+                message: error.toString(),
+              )
+            : null,
+      );
+      onAuthResponse.broadcast(response);
+      completer.complete(response);
+      return;
+    }
+
+    await core.pairing.activate(topic: pairingTopic);
+
+    final Cacao cacao = result.cacao;
+    await completeRequests.set(
+      id.toString(),
+      StoredCacao.fromCacao(
+        id: id,
+        pairingTopic: pairingTopic,
+        cacao: cacao,
+      ),
+    );
+
+    final isValid = await validateSignedCacao(
+      cacao: cacao,
+      projectId: core.projectId,
+    );
+
+    if (!isValid) {
+      final resp = AuthResponse(
+        id: id,
+        topic: responseTopic,
+        error: const WalletConnectError(
+          code: -1,
+          message: 'Invalid signature',
+        ),
+      );
+      onAuthResponse.broadcast(resp);
+      completer.complete(resp);
+    } else {
+      final resp = AuthResponse(
+        id: id,
+        topic: responseTopic,
+        result: cacao,
+      );
+      onAuthResponse.broadcast(resp);
+      completer.complete(resp);
+    }
+  }
+
+  // NEW ONE-CLICK AUTH METHOD FOR DAPPS
+  @override
+  Map<int, PendingSessionAuthRequest> getPendingSessionAuthRequests() {
+    Map<int, PendingSessionAuthRequest> pendingRequests = {};
+    sessionAuthRequests.getAll().forEach((key) {
+      pendingRequests[key.id] = key;
+    });
+    return pendingRequests;
+  }
+
+  @override
+  Future<SessionAuthRequestResponse> authenticate({
+    required SessionAuthRequestParams params,
+    String? pairingTopic,
+    List<List<String>>? methods = const [
+      [MethodConstants.WC_SESSION_AUTHENTICATE]
+    ],
+  }) async {
+    _checkInitialized();
+
+    AuthApiValidators.isValidAuthenticate(params);
+
+    final chains = params.chains;
+    final resources = params.resources ?? [];
+    final requestMethods = params.methods ?? [];
+
+    String? pTopic = pairingTopic;
+    Uri? connectionUri;
+
+    if (pTopic == null) {
+      final CreateResponse pairing = await core.pairing.create(
+        methods: methods,
+      );
+      pTopic = pairing.topic;
+      connectionUri = pairing.uri;
+    } else {
+      core.pairing.isValidPairingTopic(topic: pTopic);
+    }
+
+    final publicKey = await core.crypto.generateKeyPair();
+    final responseTopic = core.crypto.getUtils().hashKey(publicKey);
+
+    await Future.wait([
+      authKeys.set(
+        AuthConstants.OCAUTH_CLIENT_PUBLIC_KEY_NAME,
+        AuthPublicKey(publicKey: publicKey),
+      ),
+      pairingTopics.set(responseTopic, pTopic),
+    ]);
+
+    if (requestMethods.isNotEmpty) {
+      final namespace = NamespaceUtils.getNamespaceFromChain(chains.first);
+      String recap = ReCapsUtils.createEncodedRecap(
+        namespace,
+        'request',
+        requestMethods,
+      );
+      final existingRecap = ReCapsUtils.getRecapFromResources(
+        resources: resources,
+      );
+      if (existingRecap != null) {
+        // per Recaps spec, recap must occupy the last position in the resources array
+        // using .removeLast() to remove the element given we already checked it's a recap and will replace it
+        recap = ReCapsUtils.mergeEncodedRecaps(recap, resources.removeLast());
+      }
+      resources.add(recap);
+    }
+
+    // Subscribe to the responseTopic because we expect the response to use this topic
+    await core.relayClient.subscribe(topic: responseTopic);
+
+    final id = JsonRpcUtils.payloadId();
+    final proposalId = JsonRpcUtils.payloadId();
+
+    // Ensure the expiry is greater than the minimum required for the request - currently 1h
+    final method = MethodConstants.WC_SESSION_AUTHENTICATE;
+    final opts = MethodConstants.RPC_OPTS[method]!['req']!;
+    final authRequestExpiry = max((params.expiry ?? 0), opts.ttl);
+    final expiryTimestamp = DateTime.now().add(
+      Duration(seconds: authRequestExpiry),
+    );
+
+    final request = WcSessionAuthRequestParams(
+      authPayload: SessionAuthPayload.fromRequestParams(params).copyWith(
+        resources: resources,
+      ),
+      requester: ConnectionMetadata(
+        publicKey: publicKey,
+        metadata: metadata,
+      ),
+      expiryTimestamp: expiryTimestamp.millisecondsSinceEpoch,
+    );
+
+    // Set the one time use receiver public key for decoding the Type 1 envelope
+    await core.pairing.setReceiverPublicKey(
+      topic: responseTopic,
+      publicKey: publicKey,
+      expiry: authRequestExpiry,
+    );
+
+    Completer<SessionAuthResponse> completer = Completer();
+
+    // ----- build fallback session proposal request ----- //
+
+    final fallbackMethod = MethodConstants.WC_SESSION_PROPOSE;
+    final fallbackOpts = MethodConstants.RPC_OPTS[fallbackMethod]!['req']!;
+    final fallbackExpiryTimestamp = DateTime.now().add(
+      Duration(seconds: fallbackOpts.ttl),
+    );
+    final proposalData = ProposalData(
+      id: proposalId,
+      requiredNamespaces: {},
+      optionalNamespaces: {
+        'eip155': RequiredNamespace(
+          chains: chains,
+          methods: {'personal_sign', ...requestMethods}.toList(),
+          events: EventsConstants.requiredEvents,
+        ),
+      },
+      relays: [Relay(WalletConnectConstants.RELAYER_DEFAULT_PROTOCOL)],
+      expiry: fallbackExpiryTimestamp.millisecondsSinceEpoch,
+      proposer: ConnectionMetadata(
+        publicKey: publicKey,
+        metadata: metadata,
+      ),
+      pairingTopic: pTopic,
+    );
+    final proposeRequest = WcSessionProposeRequest(
+      relays: proposalData.relays,
+      requiredNamespaces: proposalData.requiredNamespaces,
+      optionalNamespaces: proposalData.optionalNamespaces,
+      proposer: proposalData.proposer,
+    );
+    await _setProposal(proposalData.id, proposalData);
+
+    Completer<SessionData> completerFallback = Completer();
+
+    pendingProposals.add(
+      SessionProposalCompleter(
+        id: proposalData.id,
+        selfPublicKey: proposalData.proposer.publicKey,
+        pairingTopic: proposalData.pairingTopic,
+        requiredNamespaces: proposalData.requiredNamespaces,
+        optionalNamespaces: proposalData.optionalNamespaces,
+        completer: completerFallback,
+      ),
+    );
+
+    // ------------------------------------------------------- //
+
+    // Send One-Click Auth request
+    _sessionAuthResponseHandler(
+      id: id,
+      publicKey: publicKey,
+      pairingTopic: pTopic,
+      responseTopic: responseTopic,
+      request: request,
+      expiry: authRequestExpiry,
+      completer: completer,
+    );
+
+    // Send Session Proposal request
+    _connectResponseHandler(
+      pTopic,
+      proposeRequest,
+      proposalData.id,
+    );
+
+    return SessionAuthRequestResponse(
+      id: id,
+      pairingTopic: pTopic,
+      completer: completer,
+      uri: connectionUri,
+    );
+  }
+
+  Future<void> _sessionAuthResponseHandler({
+    required int id,
+    required String publicKey,
+    required String pairingTopic,
+    required String responseTopic,
+    required int expiry,
+    required WcSessionAuthRequestParams request,
+    required Completer<SessionAuthResponse> completer,
+  }) async {
+    //
+    late WcSessionAuthRequestResult result;
+    try {
+      final Map<String, dynamic> response = await core.pairing.sendRequest(
+        pairingTopic,
+        MethodConstants.WC_SESSION_AUTHENTICATE,
+        request.toJson(),
+        id: id,
+        ttl: expiry,
+      );
+      result = WcSessionAuthRequestResult.fromJson(response);
+    } catch (error) {
+      final response = SessionAuthResponse(
+        id: id,
+        topic: responseTopic,
+        jsonRpcError: (error is JsonRpcError) ? error : null,
+        error: (error is! JsonRpcError)
+            ? WalletConnectError(
+                code: -1,
+                message: error.toString(),
+              )
+            : null,
+      );
+      onSessionAuthResponse.broadcast(response);
+      completer.complete(response);
+      return;
+    }
+
+    await core.pairing.activate(topic: pairingTopic);
+
+    final List<Cacao> cacaos = result.cacaos;
+    final ConnectionMetadata responder = result.responder;
+
+    final approvedMethods = <String>{};
+    final approvedAccounts = <String>{};
+
+    try {
+      for (final Cacao cacao in cacaos) {
+        final isValid = await validateSignedCacao(
+          cacao: cacao,
+          projectId: core.projectId,
+        );
+        if (!isValid) {
+          throw Errors.getSdkError(
+            Errors.SIGNATURE_VERIFICATION_FAILED,
+            context: 'Invalid signature',
+          );
+        }
+
+        // This is used on Auth request, would it be needed on 1-CA?
+        // await completeRequests.set(
+        //   id.toString(),
+        //   StoredCacao.fromCacao(
+        //     id: id,
+        //     pairingTopic: pairingTopic,
+        //     cacao: cacao,
+        //   ),
+        // );
+
+        final CacaoPayload payload = cacao.p;
+        final chainId = AddressUtils.getDidChainId(payload.iss);
+        final approvedChains = ['eip155:$chainId'];
+
+        final recap = ReCapsUtils.getRecapFromResources(
+          resources: payload.resources,
+        );
+        if (recap != null) {
+          final methodsfromRecap = ReCapsUtils.getMethodsFromRecap(recap);
+          final chainsFromRecap = ReCapsUtils.getChainsFromRecap(recap);
+          approvedMethods.addAll(methodsfromRecap);
+          approvedChains.addAll(chainsFromRecap);
+        }
+
+        final parsedAddress = AddressUtils.getDidAddress(payload.iss);
+        for (var chain in approvedChains.toSet()) {
+          approvedAccounts.add('$chain:$parsedAddress');
+        }
+      }
+    } on WalletConnectError catch (e) {
+      final resp = SessionAuthResponse(
+        id: id,
+        topic: responseTopic,
+        error: WalletConnectError(
+          code: e.code,
+          message: e.message,
+        ),
+      );
+      onSessionAuthResponse.broadcast(resp);
+      completer.complete(resp);
+      return;
+    }
+
+    final sessionTopic = await core.crypto.generateSharedKey(
+      publicKey,
+      responder.publicKey,
+    );
+
+    SessionData? session;
+    if (approvedMethods.isNotEmpty) {
+      session = SessionData(
+        topic: sessionTopic,
+        acknowledged: true,
+        self: ConnectionMetadata(
+          publicKey: publicKey,
+          metadata: metadata,
+        ),
+        peer: responder,
+        controller: publicKey,
+        expiry: WalletConnectUtils.calculateExpiry(
+          WalletConnectConstants.SEVEN_DAYS,
+        ),
+        relay: Relay(WalletConnectConstants.RELAYER_DEFAULT_PROTOCOL),
+        pairingTopic: pairingTopic,
+        namespaces: NamespaceUtils.buildNamespacesFromAuth(
+          accounts: approvedAccounts,
+          methods: approvedMethods,
+        ),
+      );
+
+      await core.relayClient.subscribe(topic: sessionTopic);
+      await sessions.set(sessionTopic, session);
+
+      await core.pairing.updateMetadata(
+        topic: pairingTopic,
+        metadata: responder.metadata,
+      );
+
+      session = sessions.get(sessionTopic);
+    }
+
+    final resp = SessionAuthResponse(
+      id: id,
+      topic: responseTopic,
+      auths: cacaos,
+      session: session,
+    );
+    onSessionAuthResponse.broadcast(resp);
+    completer.complete(resp);
+  }
+
+  // FORMER AUTH ENGINE PROPERTY
+  @override
+  Future<void> respondAuthRequest({
+    required int id,
+    required String iss,
+    CacaoSignature? signature,
+    WalletConnectError? error,
+  }) async {
+    _checkInitialized();
+
+    Map<int, PendingAuthRequest> pendingRequests = getPendingAuthRequests();
+    AuthApiValidators.isValidRespond(
+      id: id,
+      pendingRequests: pendingRequests,
+      signature: signature,
+      error: error,
+    );
+
+    final PendingAuthRequest pendingRequest = pendingRequests[id]!;
+    final String receiverPublicKey = pendingRequest.metadata.publicKey;
+    final String senderPublicKey = await core.crypto.generateKeyPair();
+    final String responseTopic = core.crypto.getUtils().hashKey(
+          receiverPublicKey,
+        );
+    final EncodeOptions encodeOpts = EncodeOptions(
+      type: EncodeOptions.TYPE_1,
+      receiverPublicKey: receiverPublicKey,
+      senderPublicKey: senderPublicKey,
+    );
+
+    if (error != null) {
+      await core.pairing.sendError(
+        id,
+        responseTopic,
+        MethodConstants.WC_AUTH_REQUEST,
+        JsonRpcError.serverError(error.message),
+        encodeOptions: encodeOpts,
+      );
+    } else {
+      final Cacao cacao = Cacao(
+        h: const CacaoHeader(),
+        p: CacaoPayload.fromRequestPayload(
+          issuer: iss,
+          payload: pendingRequest.cacaoPayload,
+        ),
+        s: signature!,
+      );
+
+      // print('auth res id: $id');
+      await core.pairing.sendResult(
+        id,
+        responseTopic,
+        MethodConstants.WC_AUTH_REQUEST,
+        cacao.toJson(),
+        encodeOptions: encodeOpts,
+      );
+
+      await authRequests.delete(id.toString());
+
+      await completeRequests.set(
+        id.toString(),
+        StoredCacao.fromCacao(
+          id: id,
+          pairingTopic: pendingRequest.pairingTopic,
+          cacao: cacao,
+        ),
+      );
+    }
+  }
+
+  @override
+  Future<ApproveResponse> approveSessionAuthenticate({
+    required int id,
+    List<Cacao>? auths,
+  }) async {
+    _checkInitialized();
+
+    final pendingRequests = getPendingSessionAuthRequests();
+
+    AuthApiValidators.isValidRespondAuthenticate(
+      id: id,
+      pendingRequests: pendingRequests,
+      auths: auths,
+    );
+
+    final PendingSessionAuthRequest pendingRequest = pendingRequests[id]!;
+    final receiverPublicKey = pendingRequest.requester.publicKey;
+    final senderPublicKey = await core.crypto.generateKeyPair();
+    final responseTopic = core.crypto.getUtils().hashKey(receiverPublicKey);
+
+    final encodeOpts = EncodeOptions(
+      type: EncodeOptions.TYPE_1,
+      receiverPublicKey: receiverPublicKey,
+      senderPublicKey: senderPublicKey,
+    );
+
+    final approvedMethods = <String>{};
+    final approvedAccounts = <String>{};
+    for (final Cacao cacao in auths!) {
+      final isValid = await validateSignedCacao(
+        cacao: cacao,
+        projectId: core.projectId,
+      );
+      if (!isValid) {
+        final error = Errors.getSdkError(
+          Errors.SIGNATURE_VERIFICATION_FAILED,
+          context: 'Signature verification failed',
+        );
+        await core.pairing.sendError(
+          id,
+          responseTopic,
+          MethodConstants.WC_SESSION_AUTHENTICATE,
+          JsonRpcError(code: error.code, message: error.message),
+          encodeOptions: encodeOpts,
+        );
+        throw error;
+      }
+
+      final CacaoPayload payload = cacao.p;
+      final chainId = AddressUtils.getDidChainId(payload.iss);
+      final approvedChains = ['eip155:$chainId'];
+
+      final recap = ReCapsUtils.getRecapFromResources(
+        resources: payload.resources,
+      );
+      if (recap != null) {
+        final methodsfromRecap = ReCapsUtils.getMethodsFromRecap(recap);
+        final chainsFromRecap = ReCapsUtils.getChainsFromRecap(recap);
+        approvedMethods.addAll(methodsfromRecap);
+        approvedChains.addAll(chainsFromRecap);
+      }
+
+      final parsedAddress = AddressUtils.getDidAddress(payload.iss);
+      for (var chain in approvedChains.toSet()) {
+        approvedAccounts.add('$chain:$parsedAddress');
+      }
+    }
+
+    final sessionTopic = await core.crypto.generateSharedKey(
+      senderPublicKey,
+      receiverPublicKey,
+    );
+
+    SessionData? session;
+    if (approvedMethods.isNotEmpty) {
+      session = SessionData(
+        topic: sessionTopic,
+        acknowledged: true,
+        self: ConnectionMetadata(
+          publicKey: senderPublicKey,
+          metadata: metadata,
+        ),
+        peer: pendingRequest.requester,
+        controller: receiverPublicKey,
+        expiry: WalletConnectUtils.calculateExpiry(
+          WalletConnectConstants.SEVEN_DAYS,
+        ),
+        relay: Relay(WalletConnectConstants.RELAYER_DEFAULT_PROTOCOL),
+        pairingTopic: pendingRequest.pairingTopic,
+        namespaces: NamespaceUtils.buildNamespacesFromAuth(
+          accounts: approvedAccounts,
+          methods: approvedMethods,
+        ),
+      );
+
+      await core.relayClient.subscribe(topic: sessionTopic);
+      await sessions.set(sessionTopic, session);
+
+      session = sessions.get(sessionTopic);
+    }
+
+    final result = WcSessionAuthRequestResult(
+      cacaos: auths,
+      responder: ConnectionMetadata(
+        publicKey: senderPublicKey,
+        metadata: metadata,
+      ),
+    );
+    await core.pairing.sendResult(
+      id,
+      responseTopic,
+      MethodConstants.WC_SESSION_AUTHENTICATE,
+      result.toJson(),
+      encodeOptions: encodeOpts,
+    );
+
+    await sessionAuthRequests.delete(id.toString());
+    await core.pairing.activate(topic: pendingRequest.pairingTopic);
+    await core.pairing.updateMetadata(
+      topic: pendingRequest.pairingTopic,
+      metadata: pendingRequest.requester.metadata,
+    );
+
+    return ApproveResponse(
+      topic: sessionTopic,
+      session: session,
+    );
+  }
+
+  @override
+  Future<void> rejectSessionAuthenticate({
+    required int id,
+    required WalletConnectError reason,
+  }) async {
+    _checkInitialized();
+
+    final pendingRequests = getPendingSessionAuthRequests();
+
+    if (!pendingRequests.containsKey(id)) {
+      throw Errors.getInternalError(
+        Errors.MISSING_OR_INVALID,
+        context:
+            'rejectSessionAuthenticate() Could not find pending auth request with id $id',
+      );
+    }
+
+    final PendingSessionAuthRequest pendingRequest = pendingRequests[id]!;
+    final receiverPublicKey = pendingRequest.requester.publicKey;
+    final senderPublicKey = await core.crypto.generateKeyPair();
+    final responseTopic = core.crypto.getUtils().hashKey(receiverPublicKey);
+
+    final encodeOpts = EncodeOptions(
+      type: EncodeOptions.TYPE_1,
+      receiverPublicKey: receiverPublicKey,
+      senderPublicKey: senderPublicKey,
+    );
+
+    final method = MethodConstants.WC_SESSION_AUTHENTICATE;
+    final rpcOpts = MethodConstants.RPC_OPTS[method];
+    await core.pairing.sendError(
+      id,
+      responseTopic,
+      method,
+      JsonRpcError(code: reason.code, message: reason.message),
+      encodeOptions: encodeOpts,
+      rpcOptions: rpcOpts?['reject'],
+    );
+
+    await sessionAuthRequests.delete(id.toString());
+    await _deleteProposal(id);
+  }
+
+  // FORMER AUTH ENGINE PROPERTY
+  void _onAuthRequest(String topic, JsonRpcRequest payload) async {
+    try {
+      final request = WcAuthRequestRequest.fromJson(payload.params);
+
+      final CacaoRequestPayload cacaoPayload =
+          CacaoRequestPayload.fromPayloadParams(
+        request.payloadParams,
+      );
+
+      authRequests.set(
+        payload.id.toString(),
+        PendingAuthRequest(
+          id: payload.id,
+          pairingTopic: topic,
+          metadata: request.requester,
+          cacaoPayload: cacaoPayload,
+        ),
+      );
+
+      onAuthRequest.broadcast(
+        AuthRequest(
+          id: payload.id,
+          topic: topic,
+          requester: request.requester,
+          payloadParams: request.payloadParams,
+        ),
+      );
+    } on WalletConnectError catch (err) {
+      await core.pairing.sendError(
+        payload.id,
+        topic,
+        payload.method,
+        JsonRpcError.invalidParams(
+          err.message,
+        ),
+      );
+    }
+  }
+
+  void _onSessionAuthRequest(String topic, JsonRpcRequest payload) async {
+    core.logger.t('_onSessionAuthRequest, topic: $topic, payload: $payload');
+
+    final sessionAuthRequest = WcSessionAuthRequestParams.fromJson(
+      payload.params,
+    );
+    try {
+      final cacaoPayload = CacaoRequestPayload.fromSessionAuthPayload(
+        sessionAuthRequest.authPayload,
+      );
+
+      final verifyContext = await _getVerifyContext(payload, metadata);
+
+      sessionAuthRequests.set(
+        payload.id.toString(),
+        PendingSessionAuthRequest(
+          id: payload.id,
+          pairingTopic: topic,
+          requester: sessionAuthRequest.requester,
+          authPayload: cacaoPayload,
+          expiryTimestamp: sessionAuthRequest.expiryTimestamp,
+          verifyContext: verifyContext,
+        ),
+      );
+
+      onSessionAuthRequest.broadcast(
+        SessionAuthRequest(
+          id: payload.id,
+          topic: topic,
+          requester: sessionAuthRequest.requester,
+          authPayload: sessionAuthRequest.authPayload,
+          verifyContext: verifyContext,
+        ),
+      );
+    } on WalletConnectError catch (err) {
+      final receiverPublicKey = sessionAuthRequest.requester.publicKey;
+      final senderPublicKey = await core.crypto.generateKeyPair();
+
+      final encodeOpts = EncodeOptions(
+        type: EncodeOptions.TYPE_1,
+        receiverPublicKey: receiverPublicKey,
+        senderPublicKey: senderPublicKey,
+      );
+      final rpcOpts = MethodConstants.RPC_OPTS[payload.method];
+      await core.pairing.sendError(
+        payload.id,
+        topic,
+        payload.method,
+        JsonRpcError.invalidParams(err.message),
+        encodeOptions: encodeOpts,
+        rpcOptions: rpcOpts?['autoReject'],
       );
     }
   }
