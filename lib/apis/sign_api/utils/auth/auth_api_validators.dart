@@ -15,15 +15,6 @@ class AuthApiValidators {
             'requestAuth() invalid aud: ${params.aud}. Must be a valid url.',
       );
     }
-    // final validChainId = true; //NamespaceUtils.isValidChainId(params.chainId);
-
-    if (!params.aud.contains(params.domain)) {
-      throw Errors.getInternalError(
-        Errors.MISSING_OR_INVALID,
-        context:
-            'requestAuth() invalid domain: ${params.domain}. aud must contain domain.',
-      );
-    }
 
     if (params.nonce.isEmpty) {
       throw Errors.getInternalError(
@@ -89,14 +80,6 @@ class AuthApiValidators {
         Errors.MISSING_OR_INVALID,
         context:
             'authenticate() invalid uri: ${params.uri}. Must be a valid url.',
-      );
-    }
-
-    if (!params.uri.contains(params.domain)) {
-      throw Errors.getInternalError(
-        Errors.MISSING_OR_INVALID,
-        context:
-            'authenticate() invalid domain: ${params.domain}. aud must contain domain.',
       );
     }
 

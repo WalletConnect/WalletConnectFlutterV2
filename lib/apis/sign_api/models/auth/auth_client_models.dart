@@ -34,7 +34,6 @@ class AuthRequestParams {
 
   /// The domain you are logging in to.
   /// Example: example.com
-  /// Domain must exist within the aud, or validation will fail
   final String domain;
   final String nonce;
   final String? type;

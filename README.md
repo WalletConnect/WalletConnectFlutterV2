@@ -1,6 +1,8 @@
 # Overview
 
-WalletConnect Dart v2 library for Flutter, heavily inspired by the WalletConnect V2 Javascript Monorepo.  
+WalletConnect Dart v2 package for WalletKit. https://walletconnect.com/walletkit.
+
+Check out official docs: https://docs.walletconnect.com/walletkit/overview
 
 # To Use
 

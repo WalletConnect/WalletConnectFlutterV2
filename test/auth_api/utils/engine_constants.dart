@@ -6,8 +6,6 @@ import 'signature_constants.dart';
 const TEST_AUD = 'http://localhost:3000/login';
 const TEST_AUD_INVALID = '<>:http://localhost:3000/login';
 const TEST_DOMAIN = 'localhost:3000';
-// Invliad because it isn't contained in the audience (aud)
-const TEST_DOMAIN_INVALID = 'example.com:3000';
 
 const TEST_PUBLIC_KEY_A = '0x123';
 const TEST_PUBLIC_KEY_B = '0xxyz';
@@ -45,11 +43,6 @@ final testAuthRequestParamsInvalidAud = AuthRequestParams(
   chainId: TEST_ETHEREUM_CHAIN,
   domain: TEST_DOMAIN,
   aud: TEST_AUD_INVALID,
-);
-final testAuthRequestParamsInvalidDomain = AuthRequestParams(
-  chainId: TEST_ETHEREUM_CHAIN,
-  domain: TEST_DOMAIN_INVALID,
-  aud: TEST_AUD,
 );
 final testAuthRequestParamsInvalidNonce = AuthRequestParams(
   chainId: TEST_ETHEREUM_CHAIN,

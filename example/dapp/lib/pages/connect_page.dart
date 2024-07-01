@@ -449,7 +449,7 @@ class ConnectPageState extends State<ConnectPage> {
     final authResponse = await widget.web3App.authenticate(
       params: SessionAuthRequestParams(
         chains: _selectedChains.map((e) => e.chainId).toList(),
-        domain: Constants.domain,
+        domain: 'wcflutterdapp://',
         nonce: AuthUtils.generateNonce(),
         uri: Constants.aud,
         statement: 'Welcome to example flutter app',

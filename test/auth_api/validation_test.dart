@@ -52,17 +52,6 @@ void main() {
       );
       expect(
         () => AuthApiValidators.isValidRequest(
-            testAuthRequestParamsInvalidDomain),
-        throwsA(
-          isA<WalletConnectError>().having(
-            (e) => e.message,
-            'message',
-            'Missing or invalid. requestAuth() invalid domain: ${testAuthRequestParamsInvalidDomain.domain}. aud must contain domain.',
-          ),
-        ),
-      );
-      expect(
-        () => AuthApiValidators.isValidRequest(
           testAuthRequestParamsInvalidNonce,
         ),
         throwsA(
