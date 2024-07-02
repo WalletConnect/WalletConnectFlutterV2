@@ -1,8 +1,8 @@
 # Overview
 
-WalletConnect Dart v2 package for WalletKit. https://walletconnect.com/walletkit.
+WalletConnect Dart v2 package for WalletKit and AppKit. https://walletconnect.com/.
 
-Check out official docs: https://docs.walletconnect.com/walletkit/overview
+Check out official docs: https://docs.walletconnect.com/
 
 # To Use
 

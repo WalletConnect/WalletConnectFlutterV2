@@ -1897,6 +1897,14 @@ class SignEngine implements ISignEngine {
     final chainId = 'Chain ID: ${AddressUtils.getDidChainId(iss)}';
     final nonce = 'Nonce: ${cacaoPayload.nonce}';
     final issuedAt = 'Issued At: ${cacaoPayload.iat}';
+    final expirationTime = (cacaoPayload.exp != null)
+        ? 'Expiration Time: ${cacaoPayload.exp}'
+        : null;
+    final notBefore =
+        (cacaoPayload.nbf != null) ? 'Not Before: ${cacaoPayload.nbf}' : null;
+    final requestId = (cacaoPayload.requestId != null)
+        ? 'Request ID: ${cacaoPayload.requestId}'
+        : null;
     final resources = cacaoPayload.resources != null &&
             cacaoPayload.resources!.isNotEmpty
         ? 'Resources:\n${cacaoPayload.resources!.map((resource) => '- $resource').join('\n')}'
@@ -1923,6 +1931,9 @@ class SignEngine implements ISignEngine {
       chainId,
       nonce,
       issuedAt,
+      expirationTime,
+      notBefore,
+      requestId,
       resources,
     ].where((element) => element != null).join('\n');
 
