@@ -3,7 +3,7 @@ import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 
 const TEST_RELAY_URL = String.fromEnvironment(
   'RELAY_ENDPOINT',
-  defaultValue: 'wss://relay.walletconnect.com',
+  defaultValue: 'wss://relay.walletconnect.org',
 );
 const TEST_PROJECT_ID = String.fromEnvironment(
   'PROJECT_ID',

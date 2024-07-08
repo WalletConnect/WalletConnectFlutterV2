@@ -27,9 +27,10 @@ class Web3WalletService extends IWeb3WalletService {
   @override
   Future<void> create() async {
     // Create the web3wallet
-    _web3Wallet = await Web3Wallet.createInstance(
-      projectId: DartDefines.projectId,
-      logLevel: LogLevel.error,
+    _web3Wallet = Web3Wallet(
+      core: Core(
+        projectId: DartDefines.projectId,
+      ),
       metadata: const PairingMetadata(
         name: 'Sample Wallet Flutter',
         description: 'WalletConnect\'s sample wallet with Flutter',
@@ -43,6 +44,28 @@ class Web3WalletService extends IWeb3WalletService {
         ),
       ),
     );
+
+    _web3Wallet!.core.addLogListener(_logListener);
+
+    // Setup our listeners
+    debugPrint('[SampleWallet] create');
+    _web3Wallet!.core.pairing.onPairingInvalid.subscribe(_onPairingInvalid);
+    _web3Wallet!.core.pairing.onPairingCreate.subscribe(_onPairingCreate);
+    _web3Wallet!.core.relayClient.onRelayClientError.subscribe(
+      _onRelayClientError,
+    );
+    _web3Wallet!.core.relayClient.onRelayClientMessage.subscribe(
+      _onRelayClientMessage,
+    );
+
+    _web3Wallet!.onSessionProposal.subscribe(_onSessionProposal);
+    _web3Wallet!.onSessionProposalError.subscribe(_onSessionProposalError);
+    _web3Wallet!.onSessionConnect.subscribe(_onSessionConnect);
+    _web3Wallet!.onSessionAuthRequest.subscribe(_onSessionAuthRequest);
+
+    _web3Wallet!.onAuthRequest.subscribe(_onAuthRequest);
+
+    await _web3Wallet!.init();
 
     // Setup our accounts
     List<ChainKey> chainKeys = await GetIt.I<IKeyService>().setKeys();
@@ -69,25 +92,6 @@ class Web3WalletService extends IWeb3WalletService {
         }
       }
     }
-
-    // Setup our listeners
-    debugPrint('[SampleWallet] create');
-    _web3Wallet!.core.addLogListener(_logListener);
-    _web3Wallet!.core.pairing.onPairingInvalid.subscribe(_onPairingInvalid);
-    _web3Wallet!.core.pairing.onPairingCreate.subscribe(_onPairingCreate);
-    _web3Wallet!.core.relayClient.onRelayClientError.subscribe(
-      _onRelayClientError,
-    );
-    _web3Wallet!.core.relayClient.onRelayClientMessage.subscribe(
-      _onRelayClientMessage,
-    );
-
-    _web3Wallet!.onSessionProposal.subscribe(_onSessionProposal);
-    _web3Wallet!.onSessionProposalError.subscribe(_onSessionProposalError);
-    _web3Wallet!.onSessionConnect.subscribe(_onSessionConnect);
-    _web3Wallet!.onSessionAuthRequest.subscribe(_onSessionAuthRequest);
-
-    _web3Wallet!.onAuthRequest.subscribe(_onAuthRequest);
   }
 
   @override

@@ -27,11 +27,11 @@ void main() {
   test('relays are correct', () {
     expect(
       WalletConnectConstants.DEFAULT_RELAY_URL,
-      'wss://relay.walletconnect.com',
+      'wss://relay.walletconnect.org',
     );
     expect(
       WalletConnectConstants.DEFAULT_PUSH_URL,
-      'https://echo.walletconnect.com',
+      'https://echo.walletconnect.org',
     );
   });
 

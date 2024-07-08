@@ -98,6 +98,7 @@ abstract class ISignClient {
     required DeployedContract deployedContract,
     required String functionName,
     required String rpcUrl,
+    EthereumAddress? sender,
     List<dynamic> parameters = const [],
   });
   Future<dynamic> requestWriteContract({

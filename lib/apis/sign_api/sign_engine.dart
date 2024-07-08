@@ -522,10 +522,12 @@ class SignEngine implements ISignEngine {
     required DeployedContract deployedContract,
     required String functionName,
     required String rpcUrl,
+    EthereumAddress? sender,
     List<dynamic> parameters = const [],
   }) async {
     try {
       final results = await Web3Client(rpcUrl, http.Client()).call(
+        sender: sender,
         contract: deployedContract,
         function: deployedContract.function(functionName),
         params: parameters,

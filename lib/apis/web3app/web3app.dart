@@ -227,10 +227,12 @@ class Web3App implements IWeb3App {
     required DeployedContract deployedContract,
     required String functionName,
     required String rpcUrl,
+    EthereumAddress? sender,
     List parameters = const [],
   }) async {
     try {
       return await signEngine.requestReadContract(
+        sender: sender,
         deployedContract: deployedContract,
         functionName: functionName,
         rpcUrl: rpcUrl,

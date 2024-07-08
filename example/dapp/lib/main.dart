@@ -58,9 +58,10 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> initialize() async {
-    _web3App = await Web3App.createInstance(
-      projectId: DartDefines.projectId,
-      logLevel: LogLevel.error,
+    _web3App = Web3App(
+      core: Core(
+        projectId: DartDefines.projectId,
+      ),
       metadata: const PairingMetadata(
         name: 'Sample dApp Flutter',
         description: 'WalletConnect\'s sample dapp with Flutter',
@@ -75,19 +76,12 @@ class _MyHomePageState extends State<MyHomePage> {
       ),
     );
 
-    // Loop through all the chain data
-    for (final ChainMetadata chain in ChainData.allChains) {
-      // Loop through the events for that chain
-      for (final event in getChainEvents(chain.type)) {
-        _web3App!.registerEventHandler(
-          chainId: chain.chainId,
-          event: event,
-        );
-      }
-    }
+    _web3App!.core.addLogListener(_logListener);
 
     // Register event handlers
-    _web3App!.core.addLogListener(_logListener);
+    _web3App!.core.relayClient.onRelayClientError.subscribe(
+      _relayClientError,
+    );
     _web3App!.core.relayClient.onRelayClientConnect.subscribe(_setState);
     _web3App!.core.relayClient.onRelayClientDisconnect.subscribe(_setState);
     _web3App!.core.relayClient.onRelayClientMessage.subscribe(
@@ -99,6 +93,19 @@ class _MyHomePageState extends State<MyHomePage> {
     _web3App!.onSessionUpdate.subscribe(_onSessionUpdate);
     _web3App!.onSessionConnect.subscribe(_onSessionConnect);
     _web3App!.onSessionAuthResponse.subscribe(_onSessionAuthResponse);
+
+    await _web3App!.init();
+
+    // Loop through all the chain data
+    for (final ChainMetadata chain in ChainData.allChains) {
+      // Loop through the events for that chain
+      for (final event in getChainEvents(chain.type)) {
+        _web3App!.registerEventHandler(
+          chainId: chain.chainId,
+          event: event,
+        );
+      }
+    }
 
     setState(() {
       _pageDatas = [
@@ -138,10 +145,34 @@ class _MyHomePageState extends State<MyHomePage> {
 
   void _setState(dynamic args) => setState(() {});
 
+  void _relayClientError(ErrorEvent? event) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          content: Text(event?.error.toString() ?? 'Relay Client error'),
+          actions: [
+            TextButton(
+              onPressed: () {
+                _web3App!.core.relayClient.connect();
+                Navigator.of(context).pop();
+              },
+              child: const Text('RETRY'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
   @override
   void dispose() {
     // Unregister event handlers
     _web3App!.core.removeLogListener(_logListener);
+
+    _web3App!.core.relayClient.onRelayClientError.unsubscribe(
+      _relayClientError,
+    );
     _web3App!.core.relayClient.onRelayClientConnect.unsubscribe(_setState);
     _web3App!.core.relayClient.onRelayClientDisconnect.unsubscribe(_setState);
     _web3App!.core.relayClient.onRelayClientMessage.unsubscribe(
@@ -158,9 +189,11 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _logListener(LogEvent event) {
-    debugPrint('[Logger] ${event.level.name}: ${event.message}');
-    if (event.level == Level.error) {
+    if (event.level == Level.debug) {
       // TODO send to mixpanel
+      log('[Mixpanel] ${event.message}');
+    } else {
+      debugPrint('[Logger] ${event.level.name}: ${event.message}');
     }
   }
 

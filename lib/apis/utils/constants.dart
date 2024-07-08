@@ -7,8 +7,7 @@ class WalletConnectConstants {
   static const CORE_VERSION = 2;
   static const CORE_CONTEXT = 'core';
 
-  static const DEFAULT_RELAY_URL = 'wss://relay.walletconnect.com';
-  static const FALLBACK_RELAY_URL = 'wss://relay.walletconnect.org';
+  static const DEFAULT_RELAY_URL = 'wss://relay.walletconnect.org';
 
   static const CORE_STORAGE_PREFIX =
       '$CORE_PROTOCOL@$CORE_VERSION:$CORE_CONTEXT:';
@@ -23,11 +22,10 @@ class WalletConnectConstants {
 
   static const RELAYER_DEFAULT_PROTOCOL = 'irn';
 
-  static const DEFAULT_PUSH_URL = 'https://echo.walletconnect.com';
+  static const DEFAULT_PUSH_URL = 'https://echo.walletconnect.org';
 
-  static const VERIFY_SERVER = 'https://verify.walletconnect.com';
-  static const VERIFY_FALLBACK_SERVER = 'https://verify.walletconnect.org';
-  static const TRUSTED_VERIFY_URLS = [VERIFY_SERVER, VERIFY_FALLBACK_SERVER];
+  static const VERIFY_SERVER = 'https://verify.walletconnect.org';
+  static const TRUSTED_VERIFY_URLS = [VERIFY_SERVER];
 }
 
 class StoreVersions {

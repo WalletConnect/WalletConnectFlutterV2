@@ -292,10 +292,12 @@ class SignClient implements ISignClient {
     required DeployedContract deployedContract,
     required String functionName,
     required String rpcUrl,
+    EthereumAddress? sender,
     List parameters = const [],
   }) async {
     try {
       return await engine.requestReadContract(
+        sender: sender,
         deployedContract: deployedContract,
         functionName: functionName,
         rpcUrl: rpcUrl,
