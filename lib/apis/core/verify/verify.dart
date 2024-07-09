@@ -13,7 +13,6 @@ class Verify implements IVerify {
 
   Verify({
     required ICore core,
-    required String projectId,
     required IHttpClient httpClient,
   })  : _core = core,
         _httpClient = httpClient;

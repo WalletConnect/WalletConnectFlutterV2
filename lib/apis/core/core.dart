@@ -167,7 +167,6 @@ class Core implements ICore {
     );
     verify = Verify(
       core: this,
-      projectId: projectId,
       httpClient: httpClient,
     );
   }
