@@ -210,6 +210,7 @@ class RelayClient implements IRelayClient {
       core.logger.d('[$runtimeType] Connect timeout: $e');
       onRelayClientError.broadcast(ErrorEvent('Connection to relay timeout'));
       _connecting = false;
+      _connect();
     } catch (e) {
       core.logger.d('[$runtimeType] Connect error: $e');
       onRelayClientError.broadcast(ErrorEvent(e));
@@ -310,13 +311,9 @@ class RelayClient implements IRelayClient {
     }
 
     // If the code requires reconnect, do so
+    final reconnectCodes = [1001, 4008, 4010, 1002, 1005, 10002];
     if (code != null) {
-      if (code == 1001 ||
-          code == 4008 ||
-          code == 4010 ||
-          code == 1002 ||
-          code == 10002 ||
-          code == 1005) {
+      if (reconnectCodes.contains(code)) {
         await connect();
       } else {
         await disconnect();
@@ -324,9 +321,10 @@ class RelayClient implements IRelayClient {
             ? reason ?? WebSocketErrors.INVALID_PROJECT_ID_OR_JWT
             : '';
         onRelayClientError.broadcast(
-          ErrorEvent(
-            WalletConnectError(code: code, message: errorReason),
-          ),
+          ErrorEvent(WalletConnectError(
+            code: code,
+            message: errorReason,
+          )),
         );
       }
     }

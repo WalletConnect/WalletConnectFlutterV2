@@ -146,23 +146,8 @@ class _MyHomePageState extends State<MyHomePage> {
   void _setState(dynamic args) => setState(() {});
 
   void _relayClientError(ErrorEvent? event) {
-    showDialog(
-      context: context,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          content: Text(event?.error.toString() ?? 'Relay Client error'),
-          actions: [
-            TextButton(
-              onPressed: () {
-                _web3App!.core.relayClient.connect();
-                Navigator.of(context).pop();
-              },
-              child: const Text('RETRY'),
-            ),
-          ],
-        );
-      },
-    );
+    debugPrint('[SampleDapp] _relayClientError ${event?.error}');
+    _setState('');
   }
 
   @override
@@ -220,6 +205,16 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         title: Text(_pageDatas[_selectedIndex].title),
+        centerTitle: true,
+        actions: [
+          CircleAvatar(
+            radius: 6.0,
+            backgroundColor: _web3App!.core.relayClient.isConnected
+                ? Colors.green
+                : Colors.red,
+          ),
+          const SizedBox(width: 16.0),
+        ],
       ),
       bottomNavigationBar:
           MediaQuery.of(context).size.width < Constants.smallScreen
