@@ -1,0 +1,93 @@
+name: iOS Web3Dapp deploy
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - v[0-9]+.[0-9]+.[0-9]+
+
+jobs:
+  build:
+    runs-on: macos-latest-xlarge
+
+    steps:
+    # Checkout the repo
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    # Cache
+    - name: Cache
+      uses: actions/cache@v3
+      with:
+        path: |
+          .build
+          SourcePackagesCache
+          DerivedDataCache
+        key: ${{ runner.os }}-spm-${{ hashFiles('**/Package.resolved') }}
+        restore-keys: |
+          ${{ runner.os }}-spm-
+
+    # # Install Ruby
+    # - name: Install Ruby
+    #   uses: ruby/setup-ruby@v1
+    #   with:
+    #     ruby-version: 3.0.2
+    #     bundler-cache: true
+
+    # # Install Fastlane
+    # - name: Install Fastlane
+    #   run: gem install fastlane
+    
+    # Install Flutter SDK
+    - name: Install Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        channel: "stable"
+        architecture: x64
+
+    # Get package dependencies and generate files
+    - name: Get package dependencies and generate files
+      run: |
+        flutter pub get
+        flutter pub run build_runner build --delete-conflicting-outputs
+
+    # Get example app dependencies and generate files
+    - name: Get example app dependencies and generate files
+      working-directory: example/dapp
+      run: |
+        flutter pub get
+        flutter pub run build_runner build --delete-conflicting-outputs
+  
+    # Build and deploy
+    - name: Build and deploy
+      working-directory: example/dapp
+      env:
+        APPLE_ID: ${{ secrets.APPLE_ID }}
+        PROJECT_ID: ${{ secrets.PROJECT_ID }}
+        P12_PASSWORD: ${{ secrets.P12_PASSWORD }}
+        APP_STORE_KEY_ID: ${{ secrets.APP_STORE_KEY_ID }}
+        APPLE_ISSUER_ID: ${{ secrets.APPLE_ISSUER_ID }}
+        GH_TOKEN: ${{ secrets.GH_TOKEN }}
+        GH_USER: ${{ secrets.GH_USER }}
+        APP_STORE_CONNECT_KEY: ${{ secrets.APP_STORE_CONNECT_KEY }}
+        MATCH_GIT_URL: ${{ secrets.MATCH_GIT_URL }}
+      run: |
+        flutter build ipa --dart-define="PROJECT_ID=$PROJECT_ID"
+        # flutter build ios --dart-define="PROJECT_ID=$PROJECT_ID" --config-only --release
+        cd ios
+        fastlane release_testflight username:$APPLE_ID token:$(echo -n $GH_USER:$GH_TOKEN | base64) project_id:$PROJECT_ID app_store_key_id:$APP_STORE_KEY_ID apple_issuer_id:$APPLE_ISSUER_ID app_store_connect_key:$(echo -n $APP_STORE_CONNECT_KEY | base64 --decode) p12_password:$P12_PASSWORD match_git_url:$MATCH_GIT_URL --verbose
+
+    # # Notify to Flutter Slack Channel
+    # - name: Notify Channel
+    #   uses: slackapi/slack-github-action@v1.24.0
+    #   env:
+    #     SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+    #     SLACK_WEBHOOK_TYPE: 'INCOMING_WEBHOOK'
+    #   with:
+    #     payload: |-
+    #       {
+    #         "text":"🍎 [TEST!] New *iOS* build *${{ github.ref_name }}* stable version for *Web3Dapp Flutter* was just deployed."
+    #       }
+
+
+# act -j build --container-architecture linux/amd64 -P macos-latest-xlarge=-self-hosted --secret-file .github/workflows/.env.secret -W .github/workflows/release_dapp_ios.yml --no-skip-checkout
