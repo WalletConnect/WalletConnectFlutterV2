@@ -1,4 +1,4 @@
-name: iOS Web3Dapp deploy
+name: iOS Web3Wallet deploy
 
 on:
   workflow_dispatch:
@@ -19,17 +19,17 @@ jobs:
     #   with:
     #     bundler-cache: true
 
-    # Cache
-    - name: Cache
-      uses: actions/cache@v3
-      with:
-        path: |
-          .build
-          SourcePackagesCache
-          DerivedDataCache
-        key: ${{ runner.os }}-spm-${{ hashFiles('**/Package.resolved') }}
-        restore-keys: |
-          ${{ runner.os }}-spm-
+    # # Cache
+    # - name: Cache
+    #   uses: actions/cache@v3
+    #   with:
+    #     path: |
+    #       .build
+    #       SourcePackagesCache
+    #       DerivedDataCache
+    #     key: ${{ runner.os }}-spm-${{ hashFiles('**/Package.resolved') }}
+    #     restore-keys: |
+    #       ${{ runner.os }}-spm-
 
     # # Install Ruby
     # - name: Install Ruby
@@ -57,16 +57,16 @@ jobs:
 
     # Get example app dependencies and generate files
     - name: Get example app dependencies and generate files
-      working-directory: example/dapp
+      working-directory: example/wallet
       run: |
         flutter pub get
         flutter pub run build_runner build --delete-conflicting-outputs
   
     # Build App
     - name: Build App
-      working-directory: example/dapp
+      working-directory: example/wallet
       env:
-        PROJECT_ID: ${{ secrets.DAPP_PROJECT_ID }}
+        PROJECT_ID: ${{ secrets.WALLET_PROJECT_ID }}
       run: |
         PUBSPEC_FILE=../../pubspec.yaml
         FILE_VALUE=$(echo | grep "^version: " $PUBSPEC_FILE)
@@ -78,11 +78,11 @@ jobs:
     
     # Fastlane
     - name: Fastlane
-      working-directory: example/dapp/ios
+      working-directory: example/wallet/ios
       env:
         APPLE_ID: ${{ secrets.APPLE_ID }}
-        APPLE_DAPP_ID: ${{ secrets.APPLE_DAPP_ID }}
-        PROJECT_ID: ${{ secrets.DAPP_PROJECT_ID }}
+        APPLE_DAPP_ID: ${{ secrets.APPLE_WALLET_ID }}
+        PROJECT_ID: ${{ secrets.WALLET_PROJECT_ID }}
         MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
         APP_STORE_KEY_ID: ${{ secrets.APP_STORE_KEY_ID }}
         APPLE_ISSUER_ID: ${{ secrets.APPLE_ISSUER_ID }}
@@ -100,4 +100,4 @@ jobs:
         fastlane release_testflight username:$APPLE_ID token:$GH_BASIC_AUTH project_id:$PROJECT_ID app_id:$APPLE_DAPP_ID app_store_key_id:$APP_STORE_KEY_ID apple_issuer_id:$APPLE_ISSUER_ID app_store_connect_key:"$APP_STORE_CONNECT_KEY" match_git_url:$MATCH_GIT_URL app_version:$VERSION_NUMBER
 
 # Launch locally
-# act -j build --container-architecture linux/amd64 -P macos-latest-xlarge=-self-hosted --secret-file .github/workflows/.env.secret -W .github/workflows/release_dapp_ios.yml
+# act -j build --container-architecture linux/amd64 -P macos-latest-xlarge=-self-hosted --secret-file .github/workflows/.env.secret -W .github/workflows/release_wallet_ios.yml
