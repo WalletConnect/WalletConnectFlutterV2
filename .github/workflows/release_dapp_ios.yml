@@ -14,6 +14,10 @@ jobs:
     # Checkout the repo
     - name: Checkout repository
       uses: actions/checkout@v4
+    # - uses: actions/checkout@v3
+    # - uses: ruby/setup-ruby@v1
+    #   with:
+    #     bundler-cache: true
 
     # Cache
     - name: Cache
@@ -58,36 +62,42 @@ jobs:
         flutter pub get
         flutter pub run build_runner build --delete-conflicting-outputs
   
-    # Build and deploy
-    - name: Build and deploy
+    # Build App
+    - name: Build App
       working-directory: example/dapp
       env:
-        APPLE_ID: ${{ secrets.APPLE_ID }}
         PROJECT_ID: ${{ secrets.PROJECT_ID }}
-        P12_PASSWORD: ${{ secrets.P12_PASSWORD }}
+      run: |
+        PUBSPEC_FILE=../../pubspec.yaml
+        FILE_VALUE=$(echo | grep "^version: " $PUBSPEC_FILE)
+        PARTS=(${FILE_VALUE//:/ })
+        FULL_VERSION=${PARTS[1]}
+        VERSION_NUMBER=(${FULL_VERSION//-/ })
+
+        flutter build ipa --build-name $VERSION_NUMBER --dart-define="PROJECT_ID=$PROJECT_ID" --release
+    
+    # Fastlane
+    - name: Fastlane
+      working-directory: example/dapp/ios
+      env:
+        APPLE_ID: ${{ secrets.APPLE_ID }}
+        APPLE_DAPP_ID: ${{ secrets.APPLE_DAPP_ID }}
+        PROJECT_ID: ${{ secrets.PROJECT_ID }}
+        MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
         APP_STORE_KEY_ID: ${{ secrets.APP_STORE_KEY_ID }}
         APPLE_ISSUER_ID: ${{ secrets.APPLE_ISSUER_ID }}
-        GH_TOKEN: ${{ secrets.GH_TOKEN }}
-        GH_USER: ${{ secrets.GH_USER }}
+        GH_BASIC_AUTH: ${{ secrets.GH_BASIC_AUTH }}
         APP_STORE_CONNECT_KEY: ${{ secrets.APP_STORE_CONNECT_KEY }}
         MATCH_GIT_URL: ${{ secrets.MATCH_GIT_URL }}
+        SLACK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
       run: |
-        flutter build ipa --dart-define="PROJECT_ID=$PROJECT_ID"
-        # flutter build ios --dart-define="PROJECT_ID=$PROJECT_ID" --config-only --release
-        cd ios
-        fastlane release_testflight username:$APPLE_ID token:$(echo -n $GH_USER:$GH_TOKEN | base64) project_id:$PROJECT_ID app_store_key_id:$APP_STORE_KEY_ID apple_issuer_id:$APPLE_ISSUER_ID app_store_connect_key:$(echo -n $APP_STORE_CONNECT_KEY | base64 --decode) p12_password:$P12_PASSWORD match_git_url:$MATCH_GIT_URL --verbose
+        PUBSPEC_FILE=../../../pubspec.yaml
+        FILE_VALUE=$(echo | grep "^version: " $PUBSPEC_FILE)
+        PARTS=(${FILE_VALUE//:/ })
+        FULL_VERSION=${PARTS[1]}
+        VERSION_NUMBER=(${FULL_VERSION//-/ })
 
-    # # Notify to Flutter Slack Channel
-    # - name: Notify Channel
-    #   uses: slackapi/slack-github-action@v1.24.0
-    #   env:
-    #     SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
-    #     SLACK_WEBHOOK_TYPE: 'INCOMING_WEBHOOK'
-    #   with:
-    #     payload: |-
-    #       {
-    #         "text":"🍎 [TEST!] New *iOS* build *${{ github.ref_name }}* stable version for *Web3Dapp Flutter* was just deployed."
-    #       }
+        fastlane release_testflight username:$APPLE_ID token:$GH_BASIC_AUTH project_id:$PROJECT_ID app_id:$APPLE_DAPP_ID app_store_key_id:$APP_STORE_KEY_ID apple_issuer_id:$APPLE_ISSUER_ID app_store_connect_key:"$APP_STORE_CONNECT_KEY" match_git_url:$MATCH_GIT_URL app_version:$VERSION_NUMBER
 
-
-# act -j build --container-architecture linux/amd64 -P macos-latest-xlarge=-self-hosted --secret-file .github/workflows/.env.secret -W .github/workflows/release_dapp_ios.yml --no-skip-checkout
+# Launch locally
+# act -j build --container-architecture linux/amd64 -P macos-latest-xlarge=-self-hosted --secret-file .github/workflows/.env.secret -W .github/workflows/release_dapp_ios.yml
