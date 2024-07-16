@@ -19,17 +19,17 @@ jobs:
     #   with:
     #     bundler-cache: true
 
-    # # Cache
-    # - name: Cache
-    #   uses: actions/cache@v3
-    #   with:
-    #     path: |
-    #       .build
-    #       SourcePackagesCache
-    #       DerivedDataCache
-    #     key: ${{ runner.os }}-spm-${{ hashFiles('**/Package.resolved') }}
-    #     restore-keys: |
-    #       ${{ runner.os }}-spm-
+    # Cache
+    - name: Cache
+      uses: actions/cache@v3
+      with:
+        path: |
+          .build
+          SourcePackagesCache
+          DerivedDataCache
+        key: ${{ runner.os }}-spm-${{ hashFiles('**/Package.resolved') }}
+        restore-keys: |
+          ${{ runner.os }}-spm-
 
     # # Install Ruby
     # - name: Install Ruby
@@ -40,27 +40,10 @@ jobs:
 
     # # Install Fastlane
     # - name: Install Fastlane
-    #   run: gem install fastlane
-    
-    # Install Flutter SDK
-    - name: Install Flutter
-      uses: subosito/flutter-action@v2
-      with:
-        channel: "stable"
-        architecture: x64
+    #   run: gem install fastlane 
 
-    # Get package dependencies and generate files
-    - name: Get package dependencies and generate files
-      run: |
-        flutter pub get
-        flutter pub run build_runner build --delete-conflicting-outputs
-
-    # Get example app dependencies and generate files
-    - name: Get example app dependencies and generate files
-      working-directory: example/wallet
-      run: |
-        flutter pub get
-        flutter pub run build_runner build --delete-conflicting-outputs
+    # Install Flutter and Dependencies
+    - uses: ./.github/actions/dependencies
   
     # Build App
     - name: Build App

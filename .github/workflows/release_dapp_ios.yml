@@ -42,25 +42,8 @@ jobs:
     # - name: Install Fastlane
     #   run: gem install fastlane
     
-    # Install Flutter SDK
-    - name: Install Flutter
-      uses: subosito/flutter-action@v2
-      with:
-        channel: "stable"
-        architecture: x64
-
-    # Get package dependencies and generate files
-    - name: Get package dependencies and generate files
-      run: |
-        flutter pub get
-        flutter pub run build_runner build --delete-conflicting-outputs
-
-    # Get example app dependencies and generate files
-    - name: Get example app dependencies and generate files
-      working-directory: example/dapp
-      run: |
-        flutter pub get
-        flutter pub run build_runner build --delete-conflicting-outputs
+    # Install Flutter and Dependencies
+    - uses: ./.github/actions/dependencies
   
     # Build App
     - name: Build App

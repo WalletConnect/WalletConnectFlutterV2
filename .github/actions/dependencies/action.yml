@@ -4,18 +4,35 @@ description: Installs dependencies
 runs:
   using: composite
   steps:
-    # General Tests
-    - name: Install packages
-      shell: bash
-      run: flutter pub get
+    # Install Flutter SDK
+    - name: Install Flutter
+      uses: subosito/flutter-action@v2
+      with:
+        channel: "stable"
+        architecture: x64
 
-    # - name: Generate code
-    #   shell: bash
-    #   run: flutter pub run build_runner build --delete-conflicting-outputs
-
-    - name: Install packages for example
+    # Get package dependencies and generate files
+    - name: Get package dependencies and generate files
       shell: bash
-      run: cd example/dapp && flutter pub get && cd ../..
+      run: |
+        flutter pub get
+        flutter pub run build_runner build --delete-conflicting-outputs
+
+    # Get example app dependencies and generate files
+    - name: Get example app dependencies and generate files
+      shell: bash
+      working-directory: example/wallet
+      run: |
+        flutter pub get
+        flutter pub run build_runner build --delete-conflicting-outputs
+
+    # Get example app dependencies and generate files
+    - name: Get example app dependencies and generate files
+      shell: bash
+      working-directory: example/dapp
+      run: |
+        flutter pub get
+        flutter pub run build_runner build --delete-conflicting-outputs
 
     - name: Verify formatting and analyze project source
       shell: bash
