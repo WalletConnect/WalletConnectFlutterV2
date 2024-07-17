@@ -48,10 +48,10 @@ platform :android do
     
     slack_url = ENV['SLACK_URL']
     firebase_token = ENV['FIREBASE_TOKEN']
-    firebase_dapp_id = ENV['FIREBASE_DAPP_ID']
+    firebase_wallet_id = ENV['FIREBASE_WALLET_ID']
     
     _latest_release = firebase_app_distribution_get_latest_release(
-      app: "#{firebase_dapp_id}",
+      app: "#{firebase_wallet_id}",
     )
     _new_build_number = _latest_release[:buildVersion].to_i + 1
     _app_version = "#{options[:app_version]}"
@@ -63,7 +63,7 @@ platform :android do
     changelog = read_changelog
 
     firebase_app_distribution(
-      app: "#{firebase_dapp_id}",
+      app: "#{firebase_wallet_id}",
       groups: "flutter-team, javascript-team, kotlin-team, rust-team, unity, wc-testers",
       android_artifact_path: '../build/app/outputs/flutter-apk/app-release.apk',
       release_notes: changelog,
@@ -71,7 +71,7 @@ platform :android do
     )
 
     slack(
-      message: "📱 Web3Dapp Flutter #{_app_version} (#{_new_build_number}) for 🤖 Android successfully released!\n\n",
+      message: "🔐 Web3Wallet Flutter #{_app_version} (#{_new_build_number}) for 🤖 Android successfully released!\n\n",
       default_payloads: [],
       attachment_properties: {
         fields: [
@@ -82,7 +82,7 @@ platform :android do
           },
           {
             title: "LINK",
-            value: "https://appdistribution.firebase.dev/i/2c6573f6956fa7b5",
+            value: "https://appdistribution.firebase.dev/i/2b8b3dce9e2831cd",
             # short: true
           },
         ]
