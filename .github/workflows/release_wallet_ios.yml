@@ -2,14 +2,13 @@ name: iOS Web3Wallet deploy
 
 on:
   workflow_dispatch:
-  push:
-    branches:
-      - master
-    # tags:
-    #   - v[0-9]+.[0-9]+.[0-9]+
+  pull_request:
+    types:
+      - closed
 
 jobs:
   build:
+    if: github.event.pull_request.merged == true
     runs-on: macos-latest-xlarge
 
     steps:
