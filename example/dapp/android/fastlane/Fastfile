@@ -1,0 +1,93 @@
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#
+#     https://docs.fastlane.tools/actions
+#
+# For a list of all available plugins, check out
+#
+#     https://docs.fastlane.tools/plugins/available-plugins
+#
+
+# Uncomment the line if you want fastlane to automatically update itself
+# update_fastlane
+
+default_platform(:android)
+
+platform :android do
+  
+  # Helper method to read the changelog
+  def read_changelog
+    changelog_file = '../../../../CHANGELOG.md'
+    changelog = ""
+  
+    if File.exist?(changelog_file)
+      File.open(changelog_file, 'r') do |file|
+        changelog = file.read
+      end
+  
+      # Split the changelog into entries based on the version header pattern
+      entries = changelog.split(/^##\s/)
+  
+      # Get the latest entry, which is the first one after splitting
+      latest_entry = entries[1]
+  
+      # Re-add the '##' header to the latest entry and remove empty lines
+      changelog = latest_entry.strip if latest_entry
+      changelog = changelog.gsub /^$\n/, ''
+    else
+      UI.user_error!("CHANGELOG.md file not found")
+    end
+  
+    changelog
+  end
+
+
+  lane :release_firebase do |options|
+    
+    slack_url = ENV['SLACK_URL']
+    firebase_token = ENV['FIREBASE_TOKEN']
+    firebase_dapp_id = ENV['FIREBASE_DAPP_ID']
+    
+    _latest_release = firebase_app_distribution_get_latest_release(
+      app: "#{firebase_dapp_id}",
+    )
+    _new_build_number = _latest_release[:buildVersion].to_i + 1
+    _app_version = "#{options[:app_version]}"
+    _project_id = "#{options[:project_id]}"
+
+    # gradle(task: 'assemble', build_type: 'Release')
+    sh "flutter build apk --build-name #{_app_version} --build-number #{_new_build_number} --dart-define='PROJECT_ID=#{_project_id}' --release"
+
+    changelog = read_changelog
+
+    firebase_app_distribution(
+      app: "#{firebase_dapp_id}",
+      groups: "flutter-team, javascript-team, kotlin-team, rust-team, unity, wc-testers",
+      android_artifact_path: '../build/app/outputs/flutter-apk/app-release.apk',
+      release_notes: changelog,
+      android_artifact_type: "APK",
+    )
+
+    slack(
+      message: "📱 Web3Dapp Flutter #{_app_version} (#{_new_build_number}) for 🤖 Android successfully released!\n\n",
+      default_payloads: [],
+      attachment_properties: {
+        fields: [
+          {
+            title: "CHANGELOG",
+            value: changelog,
+            # short: true
+          },
+          {
+            title: "LINK",
+            value: "https://appdistribution.firebase.dev/i/2c6573f6956fa7b5",
+            # short: true
+          },
+        ]
+      }
+    )
+
+  end
+end

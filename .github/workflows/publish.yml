@@ -14,26 +14,22 @@ jobs:
     steps:
       # Checkout the repo
       - uses: actions/checkout@v3
-
-      # Install Flutter
-      - name: Install and set Flutter version
-        uses: subosito/flutter-action@v2
-        with:
-          flutter-version: '3.19.5'
       
+      # Install Flutter and Dependencies
+      - uses: ./.github/actions/dependencies
+
       # Setup Dart SDK
       - uses: dart-lang/setup-dart@v1
-
-      # Setup Dependencies
-      - uses: ./.github/actions/dependencies
 
       # Publish
       - name: Check Publish Warnings
         shell: bash
         run: flutter pub publish --dry-run
+
       - name: Publish Package
         shell: bash
         run: flutter pub publish -f
+      
       # Notify
       - name: Notify Channel
         uses: slackapi/slack-github-action@v1.24.0
@@ -45,3 +41,6 @@ jobs:
             {
               "text":"🚀 WalletConnectFlutterV2 *${{ github.ref_name }}* was just published at https://pub.dev/packages/walletconnect_flutter_v2"
             }
+
+# Launch locally
+# act -j publish --container-architecture linux/amd64 -P macos-latest-xlarge=-self-hosted --secret-file .github/workflows/.env.secret -W .github/workflows/publish.yml

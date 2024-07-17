@@ -1,5 +1,6 @@
 name: ci
 description: Executes Dart specific CI steps.
+
 inputs:
   type:
     description: The type of CI to run.

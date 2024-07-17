@@ -1,0 +1,137 @@
+# This file contains the fastlane.tools configuration
+# You can find the documentation at https://docs.fastlane.tools
+#
+# For a list of all available actions, check out
+#
+#     https://docs.fastlane.tools/actions
+#
+# For a list of all available plugins, check out
+#
+#     https://docs.fastlane.tools/plugins/available-plugins
+#
+
+# Uncomment the line if you want fastlane to automatically update itself
+# update_fastlane
+
+ENV["FASTLANE_XCODEBUILD_SETTINGS_TIMEOUT"] = "120"
+
+default_platform(:ios)
+
+platform :ios do
+
+  # Helper method to read the changelog
+  def read_changelog
+    changelog_file = '../../../../CHANGELOG.md'
+    changelog = ""
+  
+    if File.exist?(changelog_file)
+      File.open(changelog_file, 'r') do |file|
+        changelog = file.read
+      end
+  
+      # Split the changelog into entries based on the version header pattern
+      entries = changelog.split(/^##\s/)
+  
+      # Get the latest entry, which is the first one after splitting
+      latest_entry = entries[1]
+  
+      # Re-add the '##' header to the latest entry and remove empty lines
+      changelog = latest_entry.strip if latest_entry
+      changelog = changelog.gsub /^$\n/, ''
+    else
+      UI.user_error!("CHANGELOG.md file not found")
+    end
+  
+    changelog
+  end
+
+  lane :release_testflight do |options|
+    
+    # Setup the keychain and match to work with CI
+    setup_ci
+
+    match_password = ENV['MATCH_PASSWORD']
+    slack_url = ENV['SLACK_URL']
+    app_identifier = CredentialsManager::AppfileConfig.try_fetch_value(:app_identifier)
+
+    api_key = app_store_connect_api_key(
+      key_id: options[:app_store_key_id],
+      issuer_id: options[:apple_issuer_id],
+      key_content: options[:app_store_connect_key],
+      duration: 1200,            
+      in_house: false,
+    )
+
+    match(
+      readonly: false,
+      type: "appstore",
+      app_identifier: "#{app_identifier}",
+      git_url: options[:match_git_url],
+      git_basic_authorization: options[:token],
+      api_key: api_key,
+      include_all_certificates: true,
+      force_for_new_devices: true,
+      force_for_new_certificates: true,
+    )
+
+    number = latest_testflight_build_number(
+      app_identifier: "#{app_identifier}",
+      username: options[:username],
+    )
+    new_build_number = number + 1
+
+    increment_build_number(
+      build_number: new_build_number,
+      xcodeproj: "Runner.xcodeproj"
+    )
+
+    gym(
+      configuration: "Release",
+      # project: "Runner.xcodeproj",
+      workspace: "Runner.xcworkspace",
+      scheme: "Runner",
+      export_method: "app-store",
+      clean: true,
+      xcargs: "PROJECT_ID='#{options[:project_id]}'"
+    )
+    
+    changelog = read_changelog
+
+    upload_to_testflight(
+      apple_id: options[:app_id],
+      app_version: options[:app_version],
+      build_number: "#{new_build_number}",
+      app_identifier: "#{app_identifier}",
+      changelog: changelog,
+      distribute_external: true,
+      notify_external_testers: true,
+      distribute_external: true,
+      notify_external_testers: true,
+      skip_waiting_for_build_processing: false,
+      groups: ["External Testers"]
+    )
+
+    slack(
+      message: "🔐 Web3Wallet Flutter #{options[:app_version]} (#{new_build_number}) for 🍎 iOS successfully released!\n\n",
+      default_payloads: [],
+      attachment_properties: {
+        fields: [
+          {
+            title: "CHANGELOG",
+            value: changelog,
+            # short: true
+          },
+          {
+            title: "LINK",
+            value: "https://testflight.apple.com/join/Uv0XoBuD",
+            # short: true
+          },
+        ]
+      }
+    )
+
+    clean_build_artifacts()
+
+  end
+
+end
