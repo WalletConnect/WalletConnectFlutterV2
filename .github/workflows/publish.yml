@@ -14,18 +14,19 @@ jobs:
     steps:
       # Checkout the repo
       - uses: actions/checkout@v3
-      
-      # Install Flutter and Dependencies
-      - uses: ./.github/actions/dependencies
 
       # Setup Dart SDK
       - uses: dart-lang/setup-dart@v1
 
-      # Publish
+      # Install Flutter and Dependencies
+      - uses: ./.github/actions/dependencies
+
+      # Publish --dry-run
       - name: Check Publish Warnings
         shell: bash
         run: flutter pub publish --dry-run
 
+      # Publish
       - name: Publish Package
         shell: bash
         run: flutter pub publish -f

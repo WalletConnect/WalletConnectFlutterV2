@@ -15,10 +15,6 @@ jobs:
     # Checkout the repo
     - name: Checkout repository
       uses: actions/checkout@v4
-    # - uses: actions/checkout@v3
-    # - uses: ruby/setup-ruby@v1
-    #   with:
-    #     bundler-cache: true
 
     # Cache
     - name: Cache
@@ -31,17 +27,6 @@ jobs:
         key: ${{ runner.os }}-spm-${{ hashFiles('**/Package.resolved') }}
         restore-keys: |
           ${{ runner.os }}-spm-
-
-    # # Install Ruby
-    # - name: Install Ruby
-    #   uses: ruby/setup-ruby@v1
-    #   with:
-    #     ruby-version: 3.0.2
-    #     bundler-cache: true
-
-    # # Install Fastlane
-    # - name: Install Fastlane
-    #   run: gem install fastlane 
 
     # Install Flutter and Dependencies
     - uses: ./.github/actions/dependencies

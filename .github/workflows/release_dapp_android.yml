@@ -15,17 +15,6 @@ jobs:
     # Checkout the repo
     - name: Checkout repository
       uses: actions/checkout@v4
-    
-    # Create temp firebase key
-    # - name: Create temp firebase key
-    #   env:
-    #     FIREBASE_KEY_BASE64: ${{ secrets.FIREBASE_KEY_BASE64 }}
-    #   run: |
-    #     # create variables
-    #     FIREBASE_KEY_PATH=$RUNNER_TEMP/flutter-c7c2c-6df892fe6ddb.json
-
-    #     # import certificate and provisioning profile from secrets
-    #     echo -n "$FIREBASE_KEY_BASE64" | base64 --decode -o $FIREBASE_KEY_PATH
 
     # Install Java 17
     - name: Install Java 17
@@ -46,10 +35,6 @@ jobs:
         key: ${{ runner.os }}-gradle-${{ hashFiles('**/*.gradle*', '**/gradle-wrapper.properties') }}
         restore-keys: |
           ${{ runner.os }}-gradle-
-
-    # # Install Fastlane
-    # - name: Install Fastlane
-    #   run: gem install fastlane
     
     # Install Flutter and Dependencies
     - uses: ./.github/actions/dependencies
