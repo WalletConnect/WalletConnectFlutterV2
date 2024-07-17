@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    if: github.event.pull_request.merged == true
+    if: github.event.pull_request.merged == true || github.event == workflow_dispatch
     runs-on: macos-latest-xlarge
 
     steps:
