@@ -62,13 +62,7 @@ platform :ios do
       in_house: false,
     )
 
-    puts "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
-    puts "app_identifier #{app_identifier}"
-    puts "match_git_url #{options[:match_git_url]}"
-    puts "git_basic_authorization #{options[:token]}"
-    puts "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
-
-    _match_result = match(
+    match(
       readonly: false,
       type: "appstore",
       app_identifier: "#{app_identifier}",
@@ -80,10 +74,6 @@ platform :ios do
       force_for_new_certificates: true,
       verbose: true,
     )
-    
-    puts "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
-    puts "match_result #{_match_result}"
-    puts "%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%"
 
     number = latest_testflight_build_number(
       app_identifier: "#{app_identifier}",
