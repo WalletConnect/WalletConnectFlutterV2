@@ -58,7 +58,8 @@ jobs:
         FULL_VERSION=${PARTS[1]}
         VERSION_NUMBER=(${FULL_VERSION//-/ })
 
-        flutter build ipa --build-name $VERSION_NUMBER --dart-define="PROJECT_ID=$PROJECT_ID" --release
+        # flutter build ipa --build-name $VERSION_NUMBER --dart-define="PROJECT_ID=$PROJECT_ID" --release
+        flutter build ios --build-name $VERSION_NUMBER --dart-define="PROJECT_ID=$PROJECT_ID" --config-only --release
     
     # Fastlane
     - name: Fastlane
