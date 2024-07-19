@@ -1,5 +1,3 @@
-app_identifier("com.walletconnect.flutterdapp") # The bundle identifier of your app
-
 itc_team_id("123564616") # App Store Connect Team ID
 team_id("W5R8AG9K22") # Developer Portal Team ID
 

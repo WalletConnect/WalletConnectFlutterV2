@@ -13,14 +13,14 @@ dependencies:
     sdk: flutter
 
   cupertino_icons: ^1.0.2
-  qr_flutter: ^4.0.0
+  # qr_flutter: ^4.0.0
   json_annotation: ^4.8.1
   fl_toast: ^3.1.0
-  mobile_scanner: ^3.0.0
+  # mobile_scanner: ^3.0.0
   get_it: ^7.2.0
   eth_sig_util: ^0.0.9
   get_it_mixin: ^4.0.0
-  package_info_plus: ^7.0.0
+  # package_info_plus: ^7.0.0
   convert: ^3.0.1
   url_launcher: ^6.2.2
   kadena_dart_sdk: ^2.3.2

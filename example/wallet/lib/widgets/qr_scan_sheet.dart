@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:mobile_scanner/mobile_scanner.dart';
+// import 'package:mobile_scanner/mobile_scanner.dart';
 import 'package:walletconnect_flutter_v2_wallet/utils/constants.dart';
 
 class QRScanSheet extends StatelessWidget {
-  QRScanSheet({
+  const QRScanSheet({
     required this.title,
     Key? key,
   }) : super(key: key);
 
   final String title;
-  final MobileScannerController controller = MobileScannerController(
-    detectionSpeed: DetectionSpeed.noDuplicates,
-  );
+  // final MobileScannerController controller = MobileScannerController(
+  //   detectionSpeed: DetectionSpeed.noDuplicates,
+  // );
 
   @override
   Widget build(BuildContext context) {
@@ -65,18 +65,18 @@ class QRScanSheet extends StatelessWidget {
                 ),
               ),
             ),
-            Center(
-              child: MobileScanner(
-                controller: controller,
-                onDetect: (barcode) async {
-                  // If the barcode has a value, return it and pop the sheet
-                  if (barcode.barcodes.isNotEmpty &&
-                      barcode.barcodes.first.rawValue != null) {
-                    Navigator.of(context).pop(barcode.barcodes.first.rawValue);
-                  }
-                },
-              ),
-            ),
+            // Center(
+            //   child: MobileScanner(
+            //     controller: controller,
+            //     onDetect: (barcode) async {
+            //       // If the barcode has a value, return it and pop the sheet
+            //       if (barcode.barcodes.isNotEmpty &&
+            //           barcode.barcodes.first.rawValue != null) {
+            //         Navigator.of(context).pop(barcode.barcodes.first.rawValue);
+            //       }
+            //     },
+            //   ),
+            // ),
           ],
         ),
       ),

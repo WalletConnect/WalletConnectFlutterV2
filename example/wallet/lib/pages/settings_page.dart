@@ -12,7 +12,7 @@ import 'package:walletconnect_flutter_v2_wallet/utils/constants.dart';
 import 'package:walletconnect_flutter_v2_wallet/widgets/custom_button.dart';
 import 'package:walletconnect_flutter_v2_wallet/widgets/recover_from_seed.dart';
 
-import 'package:package_info_plus/package_info_plus.dart';
+// import 'package:package_info_plus/package_info_plus.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -26,12 +26,12 @@ class _SettingsPageState extends State<SettingsPage> {
   @override
   void initState() {
     super.initState();
-    PackageInfo.fromPlatform().then((info) {
-      setState(() {
-        version =
-            '${info.version} (${info.buildNumber}) - SDK v$packageVersion';
-      });
-    });
+    // PackageInfo.fromPlatform().then((info) {
+    //   setState(() {
+    //     version =
+    //         '${info.version} (${info.buildNumber}) - SDK v$packageVersion';
+    //   });
+    // });
   }
 
   @override
