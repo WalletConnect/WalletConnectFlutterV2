@@ -18,13 +18,21 @@ _$NamespaceImpl _$$NamespaceImplFromJson(Map<String, dynamic> json) =>
           (json['events'] as List<dynamic>).map((e) => e as String).toList(),
     );
 
-Map<String, dynamic> _$$NamespaceImplToJson(_$NamespaceImpl instance) =>
-    <String, dynamic>{
-      'chains': instance.chains,
-      'accounts': instance.accounts,
-      'methods': instance.methods,
-      'events': instance.events,
-    };
+Map<String, dynamic> _$$NamespaceImplToJson(_$NamespaceImpl instance) {
+  final val = <String, dynamic>{};
+
+  void writeNotNull(String key, dynamic value) {
+    if (value != null) {
+      val[key] = value;
+    }
+  }
+
+  writeNotNull('chains', instance.chains);
+  val['accounts'] = instance.accounts;
+  val['methods'] = instance.methods;
+  val['events'] = instance.events;
+  return val;
+}
 
 _$SessionDataImpl _$$SessionDataImplFromJson(Map<String, dynamic> json) =>
     _$SessionDataImpl(

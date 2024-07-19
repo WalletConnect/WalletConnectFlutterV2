@@ -136,7 +136,7 @@ class __$$NamespaceImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-@JsonSerializable()
+@JsonSerializable(includeIfNull: false)
 class _$NamespaceImpl implements _Namespace {
   const _$NamespaceImpl(
       {final List<String>? chains,

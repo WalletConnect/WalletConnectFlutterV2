@@ -175,7 +175,9 @@ class Web3WalletService extends IWeb3WalletService {
         // so if you want to handle requests using onSessionRequest event then you would need to manually add that method in the approved namespaces
         await _web3Wallet!.approveSession(
           id: args.id,
-          namespaces: args.params.generatedNamespaces!,
+          namespaces: NamespaceUtils.regenerateNamespacesWithChains(
+            args.params.generatedNamespaces!,
+          ),
           sessionProperties: args.params.sessionProperties,
         );
       } else {
