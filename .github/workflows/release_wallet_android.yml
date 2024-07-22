@@ -1,4 +1,4 @@
-name: Android Web3Wallet deploy
+name: Android Web3Wallet (production) deploy
 
 on:
   workflow_dispatch:
