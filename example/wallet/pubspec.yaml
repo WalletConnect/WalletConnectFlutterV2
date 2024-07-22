@@ -13,10 +13,10 @@ dependencies:
     sdk: flutter
 
   cupertino_icons: ^1.0.2
-  qr_flutter: ^4.0.0
   json_annotation: ^4.8.1
   fl_toast: ^3.1.0
-  mobile_scanner: ^3.0.0
+  qr_bar_code_scanner_dialog:
+    path: packages/qr-bar-code-scanner-dialog
   get_it: ^7.2.0
   eth_sig_util: ^0.0.9
   get_it_mixin: ^4.0.0

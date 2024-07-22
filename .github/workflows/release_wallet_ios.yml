@@ -1,4 +1,4 @@
-name: iOS Web3Wallet deploy
+name: iOS Web3Wallet (production) deploy
 
 on:
   workflow_dispatch:
@@ -8,7 +8,7 @@ on:
 
 jobs:
   build:
-    if: github.event.pull_request.merged == true || github.event_name == 'workflow_dispatch'
+    if: (github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'master') || github.event_name == 'workflow_dispatch'
     runs-on: macos-latest-xlarge
 
     steps:
@@ -43,13 +43,13 @@ jobs:
         FULL_VERSION=${PARTS[1]}
         VERSION_NUMBER=(${FULL_VERSION//-/ })
 
-        # flutter build ipa --build-name $VERSION_NUMBER --dart-define="PROJECT_ID=$PROJECT_ID" --release
-        flutter build ios --build-name $VERSION_NUMBER --dart-define="PROJECT_ID=$PROJECT_ID" --config-only --release
+        flutter build ios --flavor production --build-name $VERSION_NUMBER --dart-define="PROJECT_ID=$PROJECT_ID" --config-only --release
     
     # Fastlane
     - name: Fastlane
       working-directory: example/wallet/ios
       env:
+        BUNDLE_ID: "com.walletconnect.flutterwallet"
         APPLE_ID: ${{ secrets.APPLE_ID }}
         APPLE_DAPP_ID: ${{ secrets.APPLE_WALLET_ID }}
         PROJECT_ID: ${{ secrets.WALLET_PROJECT_ID }}
@@ -60,6 +60,7 @@ jobs:
         APP_STORE_CONNECT_KEY: ${{ secrets.APP_STORE_CONNECT_KEY }}
         MATCH_GIT_URL: ${{ secrets.MATCH_GIT_URL }}
         SLACK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        TESTFLIGHT_URL: ${{ secrets.TESTFLIGHT_URL_WALLET }}
       run: |
         PUBSPEC_FILE=../../../pubspec.yaml
         FILE_VALUE=$(echo | grep "^version: " $PUBSPEC_FILE)
@@ -67,7 +68,7 @@ jobs:
         FULL_VERSION=${PARTS[1]}
         VERSION_NUMBER=(${FULL_VERSION//-/ })
 
-        fastlane release_testflight username:$APPLE_ID token:$GH_BASIC_AUTH project_id:$PROJECT_ID app_id:$APPLE_DAPP_ID app_store_key_id:$APP_STORE_KEY_ID apple_issuer_id:$APPLE_ISSUER_ID app_store_connect_key:"$APP_STORE_CONNECT_KEY" match_git_url:$MATCH_GIT_URL app_version:$VERSION_NUMBER
+        fastlane release_testflight username:$APPLE_ID token:$GH_BASIC_AUTH project_id:$PROJECT_ID app_id:$APPLE_DAPP_ID app_store_key_id:$APP_STORE_KEY_ID apple_issuer_id:$APPLE_ISSUER_ID app_store_connect_key:"$APP_STORE_CONNECT_KEY" match_git_url:$MATCH_GIT_URL app_version:$VERSION_NUMBER flavor:production
 
 # Launch locally
 # act -j build --container-architecture linux/amd64 -P macos-latest-xlarge=-self-hosted --secret-file .github/workflows/.env.secret -W .github/workflows/release_wallet_ios.yml

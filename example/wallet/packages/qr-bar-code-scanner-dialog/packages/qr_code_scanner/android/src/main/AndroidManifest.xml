@@ -1,0 +1,4 @@
+<manifest package="net.touchcapture.qr.flutterqr"
+    xmlns:tools="http://schemas.android.com/tools">
+  <uses-sdk tools:overrideLibrary="com.google.zxing.client.android" />
+</manifest>

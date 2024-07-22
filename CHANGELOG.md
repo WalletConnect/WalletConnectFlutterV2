@@ -1,4 +1,4 @@
-## 2.3.0-beta05
+## 2.3.0
 
 - One-Click Auth support
 - Bug fixes and improvements

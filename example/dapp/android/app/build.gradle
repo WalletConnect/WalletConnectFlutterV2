@@ -53,6 +53,19 @@ android {
         versionName flutterVersionName
     }
 
+    // Specifies one flavor dimension.
+    flavorDimensions = ["version"]
+
+    productFlavors {
+        internal {
+            dimension "version"
+            applicationIdSuffix ".internal"
+        }
+        production {
+            dimension "version"
+        }
+    }
+
     buildTypes {
         release {
             // TODO: Add your own signing config for the release build.
@@ -60,6 +73,7 @@ android {
             signingConfig signingConfigs.debug
         }
     }
+
     namespace 'com.walletconnect.flutterdapp'
 }
 

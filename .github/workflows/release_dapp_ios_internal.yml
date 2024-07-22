@@ -1,0 +1,74 @@
+name: iOS Web3Dapp (internal) deploy
+
+on:
+  workflow_dispatch:
+  pull_request:
+    types:
+      - closed
+
+jobs:
+  build:
+    if: (github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'develop') || github.event_name == 'workflow_dispatch'
+    runs-on: macos-latest-xlarge
+
+    steps:
+    # Checkout the repo
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    # Cache
+    - name: Cache
+      uses: actions/cache@v3
+      with:
+        path: |
+          .build
+          SourcePackagesCache
+          DerivedDataCache
+        key: ${{ runner.os }}-spm-${{ hashFiles('**/Package.resolved') }}
+        restore-keys: |
+          ${{ runner.os }}-spm-
+    
+    # Install Flutter and Dependencies
+    - uses: ./.github/actions/dependencies
+  
+    # Build App
+    - name: Build App
+      working-directory: example/dapp
+      env:
+        PROJECT_ID: ${{ secrets.DAPP_PROJECT_ID }}
+      run: |
+        PUBSPEC_FILE=../../pubspec.yaml
+        FILE_VALUE=$(echo | grep "^version: " $PUBSPEC_FILE)
+        PARTS=(${FILE_VALUE//:/ })
+        FULL_VERSION=${PARTS[1]}
+        VERSION_NUMBER=(${FULL_VERSION//-/ })
+
+        flutter build ios --flavor internal --build-name $VERSION_NUMBER --dart-define="PROJECT_ID=$PROJECT_ID" --config-only --release
+    
+    # Fastlane
+    - name: Fastlane
+      working-directory: example/dapp/ios
+      env:
+        BUNDLE_ID: "com.walletconnect.flutterdapp.internal"
+        APPLE_ID: ${{ secrets.APPLE_ID }}
+        APPLE_DAPP_ID: ${{ secrets.APPLE_DAPP_ID_INTERNAL }}
+        PROJECT_ID: ${{ secrets.DAPP_PROJECT_ID }}
+        MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+        APP_STORE_KEY_ID: ${{ secrets.APP_STORE_KEY_ID }}
+        APPLE_ISSUER_ID: ${{ secrets.APPLE_ISSUER_ID }}
+        GH_BASIC_AUTH: ${{ secrets.GH_BASIC_AUTH }}
+        APP_STORE_CONNECT_KEY: ${{ secrets.APP_STORE_CONNECT_KEY }}
+        MATCH_GIT_URL: ${{ secrets.MATCH_GIT_URL }}
+        SLACK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        TESTFLIGHT_URL: ${{ secrets.TESTFLIGHT_URL_DAPP_INTERNAL }}
+      run: |
+        PUBSPEC_FILE=../../../pubspec.yaml
+        FILE_VALUE=$(echo | grep "^version: " $PUBSPEC_FILE)
+        PARTS=(${FILE_VALUE//:/ })
+        FULL_VERSION=${PARTS[1]}
+        VERSION_NUMBER=(${FULL_VERSION//-/ })
+
+        fastlane release_testflight username:$APPLE_ID token:$GH_BASIC_AUTH project_id:$PROJECT_ID app_id:$APPLE_DAPP_ID app_store_key_id:$APP_STORE_KEY_ID apple_issuer_id:$APPLE_ISSUER_ID app_store_connect_key:"$APP_STORE_CONNECT_KEY" match_git_url:$MATCH_GIT_URL app_version:$VERSION_NUMBER flavor:internal
+
+# Launch locally
+# act -j build --container-architecture linux/amd64 -P macos-latest-xlarge=-self-hosted --secret-file .github/workflows/.env.secret -W .github/workflows/release_dapp_ios_internal.yml

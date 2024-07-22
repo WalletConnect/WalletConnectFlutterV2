@@ -49,6 +49,8 @@ platform :android do
     slack_url = ENV['SLACK_URL']
     firebase_token = ENV['FIREBASE_TOKEN']
     firebase_dapp_id = ENV['FIREBASE_DAPP_ID']
+    _flavor = ENV['FLAVOR']
+    _download_url = ENV['DOWNLOAD_URL']
     
     _latest_release = firebase_app_distribution_get_latest_release(
       app: "#{firebase_dapp_id}",
@@ -58,32 +60,30 @@ platform :android do
     _project_id = "#{options[:project_id]}"
 
     # gradle(task: 'assemble', build_type: 'Release')
-    sh "flutter build apk --build-name #{_app_version} --build-number #{_new_build_number} --dart-define='PROJECT_ID=#{_project_id}' --release"
+    sh "flutter build apk --build-name #{_app_version} --build-number #{_new_build_number} --dart-define='PROJECT_ID=#{_project_id}' --flavor #{_flavor} --release"
 
     changelog = read_changelog
 
     firebase_app_distribution(
       app: "#{firebase_dapp_id}",
       groups: "flutter-team, javascript-team, kotlin-team, rust-team, unity, wc-testers",
-      android_artifact_path: '../build/app/outputs/flutter-apk/app-release.apk',
+      android_artifact_path: "../build/app/outputs/flutter-apk/app-#{_flavor}-release.apk",
       release_notes: changelog,
       android_artifact_type: "APK",
     )
 
     slack(
-      message: "📱 Web3Dapp Flutter #{_app_version} (#{_new_build_number}) for 🤖 Android successfully released!\n\n",
+      message: "📱 Web3Dapp Flutter #{_app_version}-#{_flavor} (#{_new_build_number}) for 🤖 Android successfully released!\n\n",
       default_payloads: [],
       attachment_properties: {
         fields: [
           {
             title: "CHANGELOG",
             value: changelog,
-            # short: true
           },
           {
             title: "LINK",
-            value: "https://appdistribution.firebase.dev/i/2c6573f6956fa7b5",
-            # short: true
+            value: "#{_download_url}",
           },
         ]
       }

@@ -8,7 +8,8 @@ on:
 
 jobs:
   build:
-    if: github.event.pull_request.merged == true
+    # if: github.event.pull_request.merged == true
+    if: (github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'master') || github.event_name == 'workflow_dispatch'
     runs-on: macos-latest-xlarge
 
     steps:
@@ -43,10 +44,12 @@ jobs:
     - name: Fastlane
       working-directory: example/wallet/android
       env:
+        FLAVOR: "production"
         PROJECT_ID: ${{ secrets.WALLET_PROJECT_ID }}
         SLACK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
         FIREBASE_WALLET_ID: ${{ secrets.FIREBASE_WALLET_ID }}
+        DOWNLOAD_URL: ${{ secrets.DOWNLOAD_URL_WALLET }}
       run: |
         PUBSPEC_FILE=../../../pubspec.yaml
         FILE_VALUE=$(echo | grep "^version: " $PUBSPEC_FILE)
