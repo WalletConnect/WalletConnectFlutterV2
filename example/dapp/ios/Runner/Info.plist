@@ -31,7 +31,7 @@
 			<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>wcflutterdapp</string>
+				<string>wcflutterdapp-production</string>
 			</array>
 		</dict>
 	</array>
@@ -43,7 +43,7 @@
 	<string></string>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
-		<string>wcflutterwallet</string>
+		<string>wcflutterwallet-production</string>
 		<string>walletapp</string>
 	</array>
 	<key>LSRequiresIPhoneOS</key>

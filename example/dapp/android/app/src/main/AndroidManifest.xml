@@ -28,7 +28,13 @@
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="wcflutterdapp" />
+                <data android:scheme="wcflutterdapp-internal" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="wcflutterdapp-production" />
             </intent-filter>
         </activity>
         <!-- Don't delete the meta-data below.

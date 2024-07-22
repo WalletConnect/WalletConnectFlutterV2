@@ -55,3 +55,5 @@ app.*.map.json
 # Run scripts
 *.sh
 *.env.secret
+
+example/wallet/packages/

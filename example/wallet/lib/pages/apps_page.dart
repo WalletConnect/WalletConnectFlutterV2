@@ -2,6 +2,7 @@ import 'package:fl_toast/fl_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:get_it_mixin/get_it_mixin.dart';
+import 'package:qr_bar_code_scanner_dialog/qr_bar_code_scanner_dialog.dart';
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/bottom_sheet/i_bottom_sheet_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/deep_link_handler.dart';
@@ -11,7 +12,6 @@ import 'package:walletconnect_flutter_v2_wallet/utils/constants.dart';
 import 'package:walletconnect_flutter_v2_wallet/utils/eth_utils.dart';
 import 'package:walletconnect_flutter_v2_wallet/utils/string_constants.dart';
 import 'package:walletconnect_flutter_v2_wallet/widgets/pairing_item.dart';
-import 'package:walletconnect_flutter_v2_wallet/widgets/qr_scan_sheet.dart';
 import 'package:walletconnect_flutter_v2_wallet/widgets/uri_input_popup.dart';
 
 class AppsPage extends StatefulWidget with GetItStatefulWidgetMixin {
@@ -196,16 +196,17 @@ class AppsPageState extends State<AppsPage> with GetItStateMixin {
   }
 
   Future _onScanQrCode() async {
-    final scannedValue = await showModalBottomSheet<String>(
-      context: context,
-      builder: (BuildContext modalContext) {
-        return QRScanSheet(
-          title: StringConstants.scanPairing,
-        );
-      },
-    );
-
-    _onFoundUri(scannedValue);
+    try {
+      QrBarCodeScannerDialog().getScannedQrBarCode(
+        context: context,
+        onCode: (value) {
+          if (!mounted) return;
+          _onFoundUri(value);
+        },
+      );
+    } catch (e) {
+      debugPrint(e.toString());
+    }
   }
 
   Future<void> _onFoundUri(String? uri) async {

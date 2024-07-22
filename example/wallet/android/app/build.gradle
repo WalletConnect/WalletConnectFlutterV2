@@ -26,6 +26,7 @@ apply plugin: 'kotlin-android'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
 
 android {
+    namespace "com.walletconnect.flutterwallet"
     compileSdkVersion flutter.compileSdkVersion
     ndkVersion flutter.ndkVersion
 
@@ -51,6 +52,19 @@ android {
         targetSdkVersion 33
         versionCode flutterVersionCode.toInteger()
         versionName flutterVersionName
+    }
+
+    // Specifies one flavor dimension.
+    flavorDimensions = ["version"]
+
+    productFlavors {
+        internal {
+            dimension "version"
+            applicationIdSuffix ".internal"
+        }
+        production {
+            dimension "version"
+        }
     }
 
     buildTypes {

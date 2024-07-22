@@ -31,7 +31,7 @@
 			<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
 			<key>CFBundleURLSchemes</key>
 			<array>
-				<string>wcflutterwallet</string>
+				<string>wcflutterwallet-production</string>
 			</array>
 		</dict>
 	</array>

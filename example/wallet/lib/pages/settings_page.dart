@@ -26,12 +26,15 @@ class _SettingsPageState extends State<SettingsPage> {
   @override
   void initState() {
     super.initState();
+    // TODO
     // PackageInfo.fromPlatform().then((info) {
     //   setState(() {
     //     version =
     //         '${info.version} (${info.buildNumber}) - SDK v$packageVersion';
     //   });
     // });
+
+    version = const String.fromEnvironment('FLUTTER_APP_FLAVOR');
   }
 
   @override
