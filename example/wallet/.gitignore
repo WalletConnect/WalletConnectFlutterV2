@@ -45,5 +45,3 @@ app.*.map.json
 
 # Run scripts
 *.sh
-
-packages/
