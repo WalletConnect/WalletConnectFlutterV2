@@ -60,6 +60,7 @@ jobs:
         APP_STORE_CONNECT_KEY: ${{ secrets.APP_STORE_CONNECT_KEY }}
         MATCH_GIT_URL: ${{ secrets.MATCH_GIT_URL }}
         SLACK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        TESTFLIGHT_URL: ${{ secrets.TESTFLIGHT_URL_DAPP }}
       run: |
         PUBSPEC_FILE=../../../pubspec.yaml
         FILE_VALUE=$(echo | grep "^version: " $PUBSPEC_FILE)

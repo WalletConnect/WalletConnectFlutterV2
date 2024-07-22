@@ -1,4 +1,4 @@
-name: Android Web3Dapp deploy
+name: Android Web3Dapp (production) deploy
 
 on:
   workflow_dispatch:
@@ -43,10 +43,12 @@ jobs:
     - name: Fastlane
       working-directory: example/dapp/android
       env:
+        FLAVOR: "production"
         PROJECT_ID: ${{ secrets.DAPP_PROJECT_ID }}
         SLACK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
         FIREBASE_DAPP_ID: ${{ secrets.FIREBASE_DAPP_ID }}
+        DOWNLOAD_URL: ${{ secrets.DOWNLOAD_URL_DAPP }}
       run: |
         PUBSPEC_FILE=../../../pubspec.yaml
         FILE_VALUE=$(echo | grep "^version: " $PUBSPEC_FILE)

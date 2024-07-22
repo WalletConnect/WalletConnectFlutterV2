@@ -53,6 +53,7 @@ platform :ios do
     match_password = ENV['MATCH_PASSWORD']
     slack_url = ENV['SLACK_URL']
     app_identifier = ENV['BUNDLE_ID']
+    _testflight_url = ENV['TESTFLIGHT_URL']
 
     api_key = app_store_connect_api_key(
       key_id: options[:app_store_key_id],
@@ -124,8 +125,8 @@ platform :ios do
             value: changelog,
           },
           {
-            title: "BUNDLE ID",
-            value: app_identifier,
+            title: "LINK",
+            value: "#{_testflight_url}",
           },
         ]
       }

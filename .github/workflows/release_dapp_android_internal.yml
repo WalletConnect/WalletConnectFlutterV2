@@ -1,4 +1,4 @@
-name: Android Web3Wallet deploy
+name: Android Web3Dapp (internal) deploy
 
 on:
   workflow_dispatch:
@@ -8,8 +8,7 @@ on:
 
 jobs:
   build:
-    # if: github.event.pull_request.merged == true
-    if: (github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'master') || github.event_name == 'workflow_dispatch'
+    if: (github.event.pull_request.merged == true && github.event.pull_request.base.ref == 'develop') || github.event_name == 'workflow_dispatch'
     runs-on: macos-latest-xlarge
 
     steps:
@@ -42,14 +41,14 @@ jobs:
     
     # Fastlane
     - name: Fastlane
-      working-directory: example/wallet/android
+      working-directory: example/dapp/android
       env:
-        FLAVOR: "production"
-        PROJECT_ID: ${{ secrets.WALLET_PROJECT_ID }}
+        FLAVOR: "internal"
+        PROJECT_ID: ${{ secrets.DAPP_PROJECT_ID }}
         SLACK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
         FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
-        FIREBASE_WALLET_ID: ${{ secrets.FIREBASE_WALLET_ID }}
-        DOWNLOAD_URL: ${{ secrets.DOWNLOAD_URL_WALLET }}
+        FIREBASE_DAPP_ID: ${{ secrets.FIREBASE_DAPP_ID_INTERNAL }}
+        DOWNLOAD_URL: ${{ secrets.DOWNLOAD_URL_DAPP_INTERNAL }}
       run: |
         PUBSPEC_FILE=../../../pubspec.yaml
         FILE_VALUE=$(echo | grep "^version: " $PUBSPEC_FILE)
@@ -61,4 +60,4 @@ jobs:
         fastlane release_firebase project_id:$PROJECT_ID app_version:$VERSION_NUMBER
 
 # Launch locally
-# act -j build --container-architecture linux/amd64 -P macos-latest-xlarge=-self-hosted --secret-file .github/workflows/.env.secret -W .github/workflows/release_wallet_android.yml
+# act -j build --container-architecture linux/amd64 -P macos-latest-xlarge=-self-hosted --secret-file .github/workflows/.env.secret -W .github/workflows/release_dapp_android.yml
