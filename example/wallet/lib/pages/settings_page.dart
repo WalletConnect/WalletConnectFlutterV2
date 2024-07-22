@@ -4,6 +4,7 @@ import 'package:fl_toast/fl_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/bottom_sheet/i_bottom_sheet_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/i_web3wallet_service.dart';
@@ -22,21 +23,6 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
-  String? version;
-  @override
-  void initState() {
-    super.initState();
-    // TODO
-    // PackageInfo.fromPlatform().then((info) {
-    //   setState(() {
-    //     version =
-    //         '${info.version} (${info.buildNumber}) - SDK v$packageVersion';
-    //   });
-    // });
-
-    version = const String.fromEnvironment('FLUTTER_APP_FLAVOR');
-  }
-
   @override
   Widget build(BuildContext context) {
     final keysService = GetIt.I<IKeyService>();
@@ -111,6 +97,22 @@ class _SettingsPageState extends State<SettingsPage> {
                       );
                     },
                   ),
+                  const SizedBox(height: 12.0),
+                  FutureBuilder<PackageInfo>(
+                    future: PackageInfo.fromPlatform(),
+                    builder: (context, snapshot) {
+                      if (!snapshot.hasData) {
+                        return const SizedBox.shrink();
+                      }
+                      final v = snapshot.data!.version;
+                      final b = snapshot.data!.buildNumber;
+                      const f = String.fromEnvironment('FLUTTER_APP_FLAVOR');
+                      return _DataContainer(
+                        title: 'App version',
+                        data: '$v-$f ($b) - SDK v$packageVersion',
+                      );
+                    },
+                  ),
                   const SizedBox(height: 20.0),
                   const Divider(height: 1.0),
                   const SizedBox(height: 20.0),
@@ -161,17 +163,6 @@ class _SettingsPageState extends State<SettingsPage> {
                     ],
                   ),
                   const SizedBox(height: 12.0),
-                  Row(
-                    children: [
-                      Expanded(
-                        child: Text(
-                          version ?? '',
-                          textAlign: TextAlign.center,
-                          style: const TextStyle(fontSize: 11.0),
-                        ),
-                      )
-                    ],
-                  ),
                 ],
               ),
             ),

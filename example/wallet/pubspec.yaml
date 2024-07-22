@@ -20,7 +20,7 @@ dependencies:
   get_it: ^7.2.0
   eth_sig_util: ^0.0.9
   get_it_mixin: ^4.0.0
-  # package_info_plus: ^7.0.0
+  package_info_plus: ^7.0.0
   convert: ^3.0.1
   url_launcher: ^6.2.2
   kadena_dart_sdk: ^2.3.2

@@ -18,6 +18,7 @@ dependencies:
   fl_toast: ^3.1.0
   url_launcher: ^6.2.2
   intl: ^0.19.0
+  package_info_plus: ^7.0.0
   walletconnect_flutter_v2:
     path: ../..
 

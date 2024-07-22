@@ -5,6 +5,7 @@ import 'package:fl_toast/fl_toast.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
@@ -220,10 +221,26 @@ class ConnectPageState extends State<ConnectPage> {
         ),
         child: ListView(
           children: <Widget>[
-            const Text(
-              StringConstants.appTitle,
-              style: StyleConstants.subtitleText,
-              textAlign: TextAlign.center,
+            Column(
+              children: [
+                const Text(
+                  'Flutter Dapp',
+                  style: StyleConstants.subtitleText,
+                  textAlign: TextAlign.center,
+                ),
+                FutureBuilder<PackageInfo>(
+                  future: PackageInfo.fromPlatform(),
+                  builder: (context, snapshot) {
+                    if (!snapshot.hasData) {
+                      return const SizedBox.shrink();
+                    }
+                    final v = snapshot.data!.version;
+                    final b = snapshot.data!.buildNumber;
+                    const f = String.fromEnvironment('FLUTTER_APP_FLAVOR');
+                    return Text('$v-$f ($b) - SDK v$packageVersion');
+                  },
+                ),
+              ],
             ),
             const SizedBox(
               height: StyleConstants.linear16,
@@ -234,7 +251,7 @@ class ConnectPageState extends State<ConnectPage> {
               textAlign: TextAlign.center,
             ),
             const SizedBox(
-              height: StyleConstants.linear16,
+              height: StyleConstants.linear8,
             ),
             SizedBox(
               height: StyleConstants.linear48,
