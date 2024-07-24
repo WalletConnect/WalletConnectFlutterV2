@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher_string.dart';
-import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
+
 import 'package:walletconnect_flutter_v2_dapp/models/chain_metadata.dart';
 import 'package:walletconnect_flutter_v2_dapp/utils/constants.dart';
 import 'package:walletconnect_flutter_v2_dapp/utils/crypto/eip155.dart';
@@ -10,6 +10,8 @@ import 'package:walletconnect_flutter_v2_dapp/utils/crypto/polkadot.dart';
 import 'package:walletconnect_flutter_v2_dapp/utils/crypto/solana.dart';
 import 'package:walletconnect_flutter_v2_dapp/utils/string_constants.dart';
 import 'package:walletconnect_flutter_v2_dapp/widgets/method_dialog.dart';
+
+import 'package:walletconnect_flutter_v2_dapp/imports.dart';
 
 class SessionWidget extends StatefulWidget {
   const SessionWidget({

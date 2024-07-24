@@ -91,14 +91,31 @@ class WalletConnectUtils {
   }) {
     final Uri uri = Uri.parse(relayUrl);
     final Map<String, String> queryParams = Uri.splitQueryString(uri.query);
-    String ua = formatUA(protocol, version, sdkVersion);
+    final userAgent = formatUA(protocol, version, sdkVersion);
 
+    // Add basic query params
     final Map<String, String> relayParams = {
       'auth': auth,
-      if ((projectId ?? '').isNotEmpty) 'projectId': projectId!,
-      'ua': ua,
-      if ((packageName ?? '').isNotEmpty) 'origin': packageName!,
+      'ua': userAgent,
     };
+
+    // Add projectId query param
+    if ((projectId ?? '').isNotEmpty) {
+      relayParams['projectId'] = projectId!;
+    }
+
+    // Add bundleId, packageName or origin query param based on platform
+    if ((packageName ?? '').isNotEmpty) {
+      final platform = getId();
+      if (platform == 'ios') {
+        relayParams['bundleId'] = packageName!;
+      } else if (platform == 'android') {
+        relayParams['packageName'] = packageName!;
+      } else {
+        relayParams['origin'] = packageName!;
+      }
+    }
+
     queryParams.addAll(relayParams);
     return uri.replace(queryParameters: queryParams).toString();
   }

@@ -1,4 +1,4 @@
-import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
+import 'package:walletconnect_flutter_v2_dapp/imports.dart';
 
 enum PolkadotMethods {
   polkadotSignTransaction,
