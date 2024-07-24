@@ -347,7 +347,6 @@ class ConnectPageState extends State<ConnectPage> {
     final encodedUri = Uri.encodeComponent(connectResponse.uri.toString());
     const flavor = String.fromEnvironment('FLUTTER_APP_FLAVOR');
     final uri = 'wcflutterwallet-$flavor://wc?uri=$encodedUri';
-    // final uri = 'metamask://wc?uri=$encodedUri';
     if (await canLaunchUrlString(uri)) {
       final openApp = await showDialog(
         // ignore: use_build_context_synchronously

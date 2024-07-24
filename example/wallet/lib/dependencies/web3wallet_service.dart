@@ -41,7 +41,7 @@ class Web3WalletService extends IWeb3WalletService {
         ],
         redirect: Redirect(
           native: 'wcflutterwallet-$flavor://',
-          universal: 'https://walletconnect.com',
+          // universal: 'https://walletconnect.com',
         ),
       ),
     );

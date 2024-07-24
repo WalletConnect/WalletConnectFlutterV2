@@ -74,7 +74,7 @@ class _MyHomePageState extends State<MyHomePage> {
         ],
         redirect: Redirect(
           native: 'wcflutterdapp-$flavor://',
-          universal: 'https://walletconnect.com',
+          // universal: 'https://walletconnect.com',
         ),
       ),
     );
