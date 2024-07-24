@@ -80,7 +80,12 @@ platform :ios do
       app_identifier: "#{app_identifier}",
       username: options[:username],
     )
-    new_build_number = number + 1
+    if number && !number.to_s.empty?
+      new_build_number = number.to_i + 1
+    else
+      # Handle the case where there is no previous build number
+      new_build_number = 1
+    end
 
     increment_build_number(
       build_number: new_build_number,
