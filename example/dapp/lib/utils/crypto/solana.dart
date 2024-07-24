@@ -2,8 +2,8 @@ import 'dart:convert';
 // ignore: depend_on_referenced_packages
 import 'package:bs58/bs58.dart';
 
-import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 import 'package:walletconnect_flutter_v2_dapp/models/chain_metadata.dart';
+import 'package:walletconnect_flutter_v2_dapp/imports.dart';
 
 enum SolanaMethods {
   solanaSignTransaction,

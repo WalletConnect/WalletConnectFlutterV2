@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
+
 import 'package:walletconnect_flutter_v2_dapp/utils/constants.dart';
+import 'package:walletconnect_flutter_v2_dapp/imports.dart';
 
 class PairingItem extends StatelessWidget {
   const PairingItem({

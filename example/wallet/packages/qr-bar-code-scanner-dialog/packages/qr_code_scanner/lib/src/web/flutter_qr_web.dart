@@ -1,4 +1,4 @@
-// ignore_for_file: avoid_web_libraries_in_flutter
+// ignore_for_file: avoid_web_libraries_in_flutter, library_private_types_in_public_api
 
 import 'dart:async';
 import 'dart:core';
@@ -23,12 +23,12 @@ class WebQrView extends StatefulWidget {
   final PermissionSetCallback? onPermissionSet;
   final CameraFacing? cameraFacing;
 
-  const WebQrView(
-      {Key? key,
-      required this.onPlatformViewCreated,
-      this.onPermissionSet,
-      this.cameraFacing = CameraFacing.front})
-      : super(key: key);
+  const WebQrView({
+    Key? key,
+    required this.onPlatformViewCreated,
+    this.onPermissionSet,
+    this.cameraFacing = CameraFacing.front,
+  }) : super(key: key);
 
   @override
   _WebQrViewState createState() => _WebQrViewState();
@@ -64,7 +64,7 @@ class _WebQrViewState extends State<WebQrView> {
   String? code;
   String? _errorMsg;
   html.VideoElement video = html.VideoElement();
-  String viewID = 'QRVIEW-' + DateTime.now().millisecondsSinceEpoch.toString();
+  String viewID = 'QRVIEW-${DateTime.now().millisecondsSinceEpoch}';
 
   final StreamController<Barcode> _scanUpdateController =
       StreamController<Barcode>();

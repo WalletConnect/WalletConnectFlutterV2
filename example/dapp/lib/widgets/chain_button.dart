@@ -17,7 +17,7 @@ class ChainButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: double.infinity,
+      width: (MediaQuery.of(context).size.width / 2) - 14.0,
       height: StyleConstants.linear48,
       margin: const EdgeInsets.symmetric(
         vertical: StyleConstants.linear8,
@@ -26,13 +26,13 @@ class ChainButton extends StatelessWidget {
         onPressed: onPressed,
         style: ButtonStyle(
           backgroundColor: MaterialStateProperty.all<Color>(
-            Colors.white,
+            selected ? Colors.grey.shade400 : Colors.white,
           ),
           shape: MaterialStateProperty.all<RoundedRectangleBorder>(
             RoundedRectangleBorder(
               side: BorderSide(
-                color: chain.color,
-                width: selected ? 6 : 2,
+                color: selected ? Colors.grey.shade400 : chain.color,
+                width: selected ? 4 : 2,
               ),
               borderRadius: BorderRadius.circular(
                 StyleConstants.linear8,

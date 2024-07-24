@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
+
 import 'package:walletconnect_flutter_v2_dapp/utils/constants.dart';
 import 'package:walletconnect_flutter_v2_dapp/utils/string_constants.dart';
 import 'package:walletconnect_flutter_v2_dapp/widgets/session_item.dart';
 import 'package:walletconnect_flutter_v2_dapp/widgets/session_widget.dart';
+
+import 'package:walletconnect_flutter_v2_dapp/imports.dart';
 
 class SessionsPage extends StatefulWidget {
   const SessionsPage({
