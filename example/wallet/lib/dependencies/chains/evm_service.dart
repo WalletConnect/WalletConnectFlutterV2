@@ -97,15 +97,21 @@ class EVMService {
   // personal_sign is handled using onSessionRequest event for demo purposes
   Future<void> personalSign(String topic, dynamic parameters) async {
     debugPrint('[WALLET] personalSign request: $parameters');
-    final pRequest = _web3Wallet.pendingRequests.getAll().last;
-    final data = EthUtils.getDataFromParamsList(parameters);
+    final SessionRequest pRequest = _web3Wallet.pendingRequests.getAll().last;
+    final address = EthUtils.getAddressFromSessionRequest(pRequest);
+    final data = EthUtils.getDataFromSessionRequest(pRequest);
     final message = EthUtils.getUtf8Message(data.toString());
     var response = JsonRpcResponse(
       id: pRequest.id,
       jsonrpc: '2.0',
     );
 
-    if (await CommonMethods.requestApproval(message)) {
+    if (await CommonMethods.requestApproval(
+      message,
+      method: pRequest.method,
+      chainId: pRequest.chainId,
+      address: address,
+    )) {
       try {
         // Load the private key
         final keys = GetIt.I<IKeyService>().getKeysForChain(
@@ -145,7 +151,7 @@ class EVMService {
   Future<void> ethSign(String topic, dynamic parameters) async {
     debugPrint('[WALLET] ethSign request: $parameters');
     final pRequest = _web3Wallet.pendingRequests.getAll().last;
-    final data = EthUtils.getDataFromParamsList(parameters);
+    final data = EthUtils.getDataFromSessionRequest(pRequest);
     final message = EthUtils.getUtf8Message(data.toString());
     var response = JsonRpcResponse(
       id: pRequest.id,
@@ -192,7 +198,7 @@ class EVMService {
   Future<void> ethSignTypedData(String topic, dynamic parameters) async {
     debugPrint('[WALLET] ethSignTypedData request: $parameters');
     final pRequest = _web3Wallet.pendingRequests.getAll().last;
-    final data = EthUtils.getDataFromParamsList(parameters);
+    final data = EthUtils.getDataFromSessionRequest(pRequest);
     var response = JsonRpcResponse(
       id: pRequest.id,
       jsonrpc: '2.0',
@@ -234,7 +240,7 @@ class EVMService {
   Future<void> ethSignTypedDataV4(String topic, dynamic parameters) async {
     debugPrint('[WALLET] ethSignTypedDataV4 request: $parameters');
     final pRequest = _web3Wallet.pendingRequests.getAll().last;
-    final data = EthUtils.getDataFromParamsList(parameters);
+    final data = EthUtils.getDataFromSessionRequest(pRequest);
     var response = JsonRpcResponse(
       id: pRequest.id,
       jsonrpc: '2.0',
@@ -275,15 +281,21 @@ class EVMService {
 
   Future<void> ethSignTransaction(String topic, dynamic parameters) async {
     debugPrint('[WALLET] ethSignTransaction request: $parameters');
-    final pRequest = _web3Wallet.pendingRequests.getAll().last;
-    final data = EthUtils.getTransactionFromParams(parameters);
+    final SessionRequest pRequest = _web3Wallet.pendingRequests.getAll().last;
+
+    final data = EthUtils.getTransactionFromSessionRequest(pRequest);
     if (data == null) return;
+
     var response = JsonRpcResponse(
       id: pRequest.id,
       jsonrpc: '2.0',
     );
 
-    final transaction = await _approveTransaction(data);
+    final transaction = await _approveTransaction(
+      data,
+      method: pRequest.method,
+      chainId: pRequest.chainId,
+    );
     if (transaction is Transaction) {
       try {
         // Load the private key
@@ -329,15 +341,21 @@ class EVMService {
 
   Future<void> ethSendTransaction(String topic, dynamic parameters) async {
     debugPrint('[WALLET] ethSendTransaction request: $parameters');
-    final pRequest = _web3Wallet.pendingRequests.getAll().last;
-    final data = EthUtils.getTransactionFromParams(parameters);
+    final SessionRequest pRequest = _web3Wallet.pendingRequests.getAll().last;
+
+    final data = EthUtils.getTransactionFromSessionRequest(pRequest);
     if (data == null) return;
+
     var response = JsonRpcResponse(
       id: pRequest.id,
       jsonrpc: '2.0',
     );
 
-    final transaction = await _approveTransaction(data);
+    final transaction = await _approveTransaction(
+      data,
+      method: pRequest.method,
+      chainId: pRequest.chainId,
+    );
     if (transaction is Transaction) {
       try {
         // Load the private key
@@ -430,7 +448,12 @@ class EVMService {
   //   CommonMethods.goBackToDapp(topic, true);
   // }
 
-  Future<dynamic> _approveTransaction(Map<String, dynamic> tJson) async {
+  Future<dynamic> _approveTransaction(
+    Map<String, dynamic> tJson, {
+    String? title,
+    String? method,
+    String? chainId,
+  }) async {
     Transaction transaction = tJson.toTransaction();
 
     final gasPrice = await ethClient.getGasPrice();
@@ -480,12 +503,21 @@ class EVMService {
     final gweiGasPrice = (transaction.gasPrice?.getInWei ?? BigInt.zero) /
         BigInt.from(1000000000);
 
+    const encoder = JsonEncoder.withIndent('  ');
+    final trx = encoder.convert(tJson);
     final WCBottomSheetResult rs = (await _bottomSheetService.queueBottomSheet(
           widget: WCRequestWidget(
             child: WCConnectionWidget(
-              title: 'Approve Transaction',
+              title: title ?? 'Approve Transaction',
               info: [
-                WCConnectionModel(elements: [jsonEncode(tJson)]),
+                WCConnectionModel(
+                  title: 'Method: $method\n'
+                      'Chain ID: $chainId\n\n'
+                      'Transaction:',
+                  elements: [
+                    trx,
+                  ],
+                ),
                 WCConnectionModel(
                   title: 'Gas price',
                   elements: ['${gweiGasPrice.toStringAsFixed(2)} GWEI'],

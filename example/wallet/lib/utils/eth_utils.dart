@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:convert/convert.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/i_web3wallet_service.dart';
@@ -22,36 +23,54 @@ class EthUtils {
     return maybeHex;
   }
 
-  static dynamic getAddressFromParamsList(dynamic params) {
-    return (params as List).firstWhere((p) {
-      try {
-        if (addressRegEx.hasMatch(p)) {
+  static String? getAddressFromSessionRequest(SessionRequest request) {
+    try {
+      final paramsList = List.from((request.params as List));
+      if (request.method == 'personal_sign') {
+        // for `personal_sign` first value in params has to be always the message
+        paramsList.removeAt(0);
+      }
+
+      return paramsList.firstWhere((p) {
+        try {
           EthereumAddress.fromHex(p);
           return true;
+        } catch (e) {
+          return false;
         }
-        return false;
-      } catch (e) {
-        return false;
+      });
+    } catch (e) {
+      debugPrint(e.toString());
+      return null;
+    }
+  }
+
+  static dynamic getDataFromSessionRequest(SessionRequest request) {
+    try {
+      final paramsList = List.from((request.params as List));
+      if (request.method == 'personal_sign') {
+        return paramsList.first;
       }
-    }, orElse: () => null);
+      return paramsList.firstWhere((p) {
+        final address = getAddressFromSessionRequest(request);
+        return p != address;
+      });
+    } catch (e) {
+      debugPrint(e.toString());
+      return null;
+    }
   }
 
-  static dynamic getDataFromParamsList(dynamic params) {
-    final address = getAddressFromParamsList(params);
-    final param = (params as List).firstWhere(
-      (p) => p != address,
-      orElse: () => null,
-    );
-    return param;
-  }
-
-  static Map<String, dynamic>? getTransactionFromParams(dynamic params) {
-    final address = getAddressFromParamsList(params);
-    final param = params.firstWhere(
-      (p) => p != address,
-      orElse: () => null,
-    );
-    return param as Map<String, dynamic>?;
+  static Map<String, dynamic>? getTransactionFromSessionRequest(
+    SessionRequest request,
+  ) {
+    try {
+      final param = (request.params as List<dynamic>).first;
+      return param as Map<String, dynamic>;
+    } catch (e) {
+      debugPrint(e.toString());
+      return null;
+    }
   }
 
   static Future<dynamic> decodeMessageEvent(MessageEvent event) async {
