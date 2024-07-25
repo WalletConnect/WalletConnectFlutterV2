@@ -1,0 +1,1 @@
+genhtml --rc genhtml_hi_limit=75 --rc genhtml_med_limit=50 -o coverage/html coverage/lcov.info --no-function-coverage

@@ -1,0 +1,316 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - lcov.info - core/relay_client/json_rpc_2/src/client.dart</title>
+  <link rel="stylesheet" type="text/css" href="../../../../gcov.css">
+</head>
+
+<body>
+
+          <table width="100%" border=0 cellspacing=0 cellpadding=0>
+            <tr><td class="title">LCOV - code coverage report</td></tr>
+            <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+            <tr>
+              <td width="100%">
+                <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="10%" class="headerValue"><a href="../../../../index.html" title="Click to go to top-level">top level</a> - <a href="index.html" title="Click to go to directory core/relay_client/json_rpc_2/src">core/relay_client/json_rpc_2/src</a> - client.dart</td>
+            <td width="5%"></td>
+            <td width="5%"></td>
+            <td width="5%" class="headerCovTableHead">Coverage</td>
+            <td width="5%" class="headerCovTableHead" title="Covered + Uncovered code">Total</td>
+            <td width="5%" class="headerCovTableHead" title="Exercised code only">Hit</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">lcov.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntryMed">73.1&nbsp;%</td>
+            <td class="headerCovTableEntry">78</td>
+            <td class="headerCovTableEntry">57</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test Date:</td>
+            <td class="headerValue">2024-07-25 14:52:52</td>
+            <td></td>
+          </tr>
+                  <tr><td><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+                </table>
+              </td>
+            </tr>
+
+            <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+          </table>
+
+          <table cellpadding=0 cellspacing=0 border=0>
+            <tr>
+              <td><br></td>
+            </tr>
+            <tr>
+              <td>
+<pre class="sourceHeading">            Line data    Source code</pre>
+<pre class="source">
+<span id="L1"><span class="lineNum">       1</span>              : // Copyright (c) 2014, the Dart project authors.  Please see the AUTHORS file</span>
+<span id="L2"><span class="lineNum">       2</span>              : // for details. All rights reserved. Use of this source code is governed by a</span>
+<span id="L3"><span class="lineNum">       3</span>              : // BSD-style license that can be found in the LICENSE file.</span>
+<span id="L4"><span class="lineNum">       4</span>              : </span>
+<span id="L5"><span class="lineNum">       5</span>              : import 'dart:async';</span>
+<span id="L6"><span class="lineNum">       6</span>              : </span>
+<span id="L7"><span class="lineNum">       7</span>              : import 'package:stack_trace/stack_trace.dart';</span>
+<span id="L8"><span class="lineNum">       8</span>              : import 'package:stream_channel/stream_channel.dart';</span>
+<span id="L9"><span class="lineNum">       9</span>              : </span>
+<span id="L10"><span class="lineNum">      10</span>              : import 'exception.dart';</span>
+<span id="L11"><span class="lineNum">      11</span>              : import 'utils.dart';</span>
+<span id="L12"><span class="lineNum">      12</span>              : </span>
+<span id="L13"><span class="lineNum">      13</span>              : /// A JSON-RPC 2.0 client.</span>
+<span id="L14"><span class="lineNum">      14</span>              : ///</span>
+<span id="L15"><span class="lineNum">      15</span>              : /// A client calls methods on a server and handles the server's responses to</span>
+<span id="L16"><span class="lineNum">      16</span>              : /// those method calls. Methods can be called with [sendRequest], or with</span>
+<span id="L17"><span class="lineNum">      17</span>              : /// [sendNotification] if no response is expected.</span>
+<span id="L18"><span class="lineNum">      18</span>              : class Client {</span>
+<span id="L19"><span class="lineNum">      19</span>              :   final StreamChannel&lt;dynamic&gt; _channel;</span>
+<span id="L20"><span class="lineNum">      20</span>              : </span>
+<span id="L21"><span class="lineNum">      21</span>              :   /// The next request id.</span>
+<span id="L22"><span class="lineNum">      22</span>              :   var _id = 0;</span>
+<span id="L23"><span class="lineNum">      23</span>              : </span>
+<span id="L24"><span class="lineNum">      24</span>              :   /// The current batch of requests to be sent together.</span>
+<span id="L25"><span class="lineNum">      25</span>              :   ///</span>
+<span id="L26"><span class="lineNum">      26</span>              :   /// Each element is a JSON RPC spec compliant message.</span>
+<span id="L27"><span class="lineNum">      27</span>              :   List&lt;Map&lt;String, dynamic&gt;&gt;? _batch;</span>
+<span id="L28"><span class="lineNum">      28</span>              : </span>
+<span id="L29"><span class="lineNum">      29</span>              :   /// The map of request ids to pending requests.</span>
+<span id="L30"><span class="lineNum">      30</span>              :   final _pendingRequests = &lt;int, _Request&gt;{};</span>
+<span id="L31"><span class="lineNum">      31</span>              : </span>
+<span id="L32"><span class="lineNum">      32</span>              :   final _done = Completer&lt;void&gt;();</span>
+<span id="L33"><span class="lineNum">      33</span>              : </span>
+<span id="L34"><span class="lineNum">      34</span>              :   /// Returns a [Future] that completes when the underlying connection is</span>
+<span id="L35"><span class="lineNum">      35</span>              :   /// closed.</span>
+<span id="L36"><span class="lineNum">      36</span>              :   ///</span>
+<span id="L37"><span class="lineNum">      37</span>              :   /// This is the same future that's returned by [listen] and [close]. It may</span>
+<span id="L38"><span class="lineNum">      38</span>              :   /// complete before [close] is called if the remote endpoint closes the</span>
+<span id="L39"><span class="lineNum">      39</span>              :   /// connection.</span>
+<span id="L40"><span class="lineNum">      40</span> <span class="tlaGNC tlaBgGNC">          24 :   Future get done =&gt; _done.future;</span></span>
+<span id="L41"><span class="lineNum">      41</span>              : </span>
+<span id="L42"><span class="lineNum">      42</span>              :   /// Whether the underlying connection is closed.</span>
+<span id="L43"><span class="lineNum">      43</span>              :   ///</span>
+<span id="L44"><span class="lineNum">      44</span>              :   /// Note that this will be `true` before [close] is called if the remote</span>
+<span id="L45"><span class="lineNum">      45</span>              :   /// endpoint closes the connection.</span>
+<span id="L46"><span class="lineNum">      46</span> <span class="tlaGNC">          24 :   bool get isClosed =&gt; _done.isCompleted;</span></span>
+<span id="L47"><span class="lineNum">      47</span>              : </span>
+<span id="L48"><span class="lineNum">      48</span>              :   /// Creates a [Client] that communicates over [channel].</span>
+<span id="L49"><span class="lineNum">      49</span>              :   ///</span>
+<span id="L50"><span class="lineNum">      50</span>              :   /// Note that the client won't begin listening to [responses] until</span>
+<span id="L51"><span class="lineNum">      51</span>              :   /// [Client.listen] is called.</span>
+<span id="L52"><span class="lineNum">      52</span> <span class="tlaUNC tlaBgUNC">           0 :   Client(StreamChannel&lt;String&gt; channel)</span></span>
+<span id="L53"><span class="lineNum">      53</span> <span class="tlaUNC">           0 :       : this.withoutJson(</span></span>
+<span id="L54"><span class="lineNum">      54</span> <span class="tlaUNC">           0 :             jsonDocument.bind(channel).transformStream(ignoreFormatExceptions));</span></span>
+<span id="L55"><span class="lineNum">      55</span>              : </span>
+<span id="L56"><span class="lineNum">      56</span>              :   /// Creates a [Client] that communicates using decoded messages over</span>
+<span id="L57"><span class="lineNum">      57</span>              :   /// [channel].</span>
+<span id="L58"><span class="lineNum">      58</span>              :   ///</span>
+<span id="L59"><span class="lineNum">      59</span>              :   /// Unlike [Client], this doesn't read or write JSON strings. Instead, it</span>
+<span id="L60"><span class="lineNum">      60</span>              :   /// reads and writes decoded maps or lists.</span>
+<span id="L61"><span class="lineNum">      61</span>              :   ///</span>
+<span id="L62"><span class="lineNum">      62</span>              :   /// Note that the client won't begin listening to [responses] until</span>
+<span id="L63"><span class="lineNum">      63</span>              :   /// [Client.listen] is called.</span>
+<span id="L64"><span class="lineNum">      64</span> <span class="tlaGNC tlaBgGNC">           8 :   Client.withoutJson(this._channel) {</span></span>
+<span id="L65"><span class="lineNum">      65</span> <span class="tlaGNC">          24 :     done.whenComplete(() {</span></span>
+<span id="L66"><span class="lineNum">      66</span> <span class="tlaGNC">          21 :       for (var request in _pendingRequests.values) {</span></span>
+<span id="L67"><span class="lineNum">      67</span> <span class="tlaGNC">          15 :         request.completer.completeError(StateError(</span></span>
+<span id="L68"><span class="lineNum">      68</span> <span class="tlaGNC">          10 :             'The client closed with pending request &quot;${request.method}&quot;.'));</span></span>
+<span id="L69"><span class="lineNum">      69</span>              :       }</span>
+<span id="L70"><span class="lineNum">      70</span> <span class="tlaGNC">          16 :       _pendingRequests.clear();</span></span>
+<span id="L71"><span class="lineNum">      71</span> <span class="tlaGNC">           8 :     }).catchError((_) {</span></span>
+<span id="L72"><span class="lineNum">      72</span>              :       // Avoid an unhandled error.</span>
+<span id="L73"><span class="lineNum">      73</span>              :     });</span>
+<span id="L74"><span class="lineNum">      74</span>              :   }</span>
+<span id="L75"><span class="lineNum">      75</span>              : </span>
+<span id="L76"><span class="lineNum">      76</span>              :   /// Starts listening to the underlying stream.</span>
+<span id="L77"><span class="lineNum">      77</span>              :   ///</span>
+<span id="L78"><span class="lineNum">      78</span>              :   /// Returns a [Future] that will complete when the connection is closed or</span>
+<span id="L79"><span class="lineNum">      79</span>              :   /// when it has an error. This is the same as [done].</span>
+<span id="L80"><span class="lineNum">      80</span>              :   ///</span>
+<span id="L81"><span class="lineNum">      81</span>              :   /// [listen] may only be called once.</span>
+<span id="L82"><span class="lineNum">      82</span> <span class="tlaGNC">           8 :   Future listen() {</span></span>
+<span id="L83"><span class="lineNum">      83</span> <span class="tlaGNC">          32 :     _channel.stream.listen(_handleResponse, onError: (error, stackTrace) {</span></span>
+<span id="L84"><span class="lineNum">      84</span> <span class="tlaUNC tlaBgUNC">           0 :       _done.completeError(error, stackTrace);</span></span>
+<span id="L85"><span class="lineNum">      85</span> <span class="tlaUNC">           0 :       _channel.sink.close();</span></span>
+<span id="L86"><span class="lineNum">      86</span> <span class="tlaUNC">           0 :     }, onDone: () {</span></span>
+<span id="L87"><span class="lineNum">      87</span> <span class="tlaUNC">           0 :       if (!_done.isCompleted) _done.complete();</span></span>
+<span id="L88"><span class="lineNum">      88</span> <span class="tlaUNC">           0 :       close();</span></span>
+<span id="L89"><span class="lineNum">      89</span>              :     });</span>
+<span id="L90"><span class="lineNum">      90</span> <span class="tlaGNC tlaBgGNC">           8 :     return done;</span></span>
+<span id="L91"><span class="lineNum">      91</span>              :   }</span>
+<span id="L92"><span class="lineNum">      92</span>              : </span>
+<span id="L93"><span class="lineNum">      93</span>              :   /// Closes the underlying connection.</span>
+<span id="L94"><span class="lineNum">      94</span>              :   ///</span>
+<span id="L95"><span class="lineNum">      95</span>              :   /// Returns a [Future] that completes when all resources have been released.</span>
+<span id="L96"><span class="lineNum">      96</span>              :   /// This is the same as [done].</span>
+<span id="L97"><span class="lineNum">      97</span> <span class="tlaGNC">           8 :   Future close() {</span></span>
+<span id="L98"><span class="lineNum">      98</span> <span class="tlaGNC">          24 :     _channel.sink.close();</span></span>
+<span id="L99"><span class="lineNum">      99</span> <span class="tlaGNC">          32 :     if (!_done.isCompleted) _done.complete();</span></span>
+<span id="L100"><span class="lineNum">     100</span> <span class="tlaGNC">           8 :     return done;</span></span>
+<span id="L101"><span class="lineNum">     101</span>              :   }</span>
+<span id="L102"><span class="lineNum">     102</span>              : </span>
+<span id="L103"><span class="lineNum">     103</span>              :   /// Sends a JSON-RPC 2 request to invoke the given [method].</span>
+<span id="L104"><span class="lineNum">     104</span>              :   ///</span>
+<span id="L105"><span class="lineNum">     105</span>              :   /// If passed, [parameters] is the parameters for the method. This must be</span>
+<span id="L106"><span class="lineNum">     106</span>              :   /// either an [Iterable] (to pass parameters by position) or a [Map] with</span>
+<span id="L107"><span class="lineNum">     107</span>              :   /// [String] keys (to pass parameters by name). Either way, it must be</span>
+<span id="L108"><span class="lineNum">     108</span>              :   /// JSON-serializable.</span>
+<span id="L109"><span class="lineNum">     109</span>              :   ///</span>
+<span id="L110"><span class="lineNum">     110</span>              :   /// If the request succeeds, this returns the response result as a decoded</span>
+<span id="L111"><span class="lineNum">     111</span>              :   /// JSON-serializable object. If it fails, it throws an [RpcException]</span>
+<span id="L112"><span class="lineNum">     112</span>              :   /// describing the failure.</span>
+<span id="L113"><span class="lineNum">     113</span>              :   ///</span>
+<span id="L114"><span class="lineNum">     114</span>              :   /// Throws a [StateError] if the client is closed while the request is in</span>
+<span id="L115"><span class="lineNum">     115</span>              :   /// flight, or if the client is closed when this method is called.</span>
+<span id="L116"><span class="lineNum">     116</span> <span class="tlaGNC">           8 :   Future sendRequest(String method, [parameters, int? id]) {</span></span>
+<span id="L117"><span class="lineNum">     117</span> <span class="tlaUNC tlaBgUNC">           0 :     var idAct = id ?? _id++;</span></span>
+<span id="L118"><span class="lineNum">     118</span> <span class="tlaGNC tlaBgGNC">           8 :     _send(method, parameters, idAct);</span></span>
+<span id="L119"><span class="lineNum">     119</span>              : </span>
+<span id="L120"><span class="lineNum">     120</span> <span class="tlaGNC">           8 :     var completer = Completer.sync();</span></span>
+<span id="L121"><span class="lineNum">     121</span> <span class="tlaGNC">          32 :     _pendingRequests[idAct] = _Request(method, completer, Chain.current());</span></span>
+<span id="L122"><span class="lineNum">     122</span> <span class="tlaGNC">           8 :     return completer.future;</span></span>
+<span id="L123"><span class="lineNum">     123</span>              :   }</span>
+<span id="L124"><span class="lineNum">     124</span>              : </span>
+<span id="L125"><span class="lineNum">     125</span>              :   /// Sends a JSON-RPC 2 request to invoke the given [method] without expecting</span>
+<span id="L126"><span class="lineNum">     126</span>              :   /// a response.</span>
+<span id="L127"><span class="lineNum">     127</span>              :   ///</span>
+<span id="L128"><span class="lineNum">     128</span>              :   /// If passed, [parameters] is the parameters for the method. This must be</span>
+<span id="L129"><span class="lineNum">     129</span>              :   /// either an [Iterable] (to pass parameters by position) or a [Map] with</span>
+<span id="L130"><span class="lineNum">     130</span>              :   /// [String] keys (to pass parameters by name). Either way, it must be</span>
+<span id="L131"><span class="lineNum">     131</span>              :   /// JSON-serializable.</span>
+<span id="L132"><span class="lineNum">     132</span>              :   ///</span>
+<span id="L133"><span class="lineNum">     133</span>              :   /// Since this is just a notification to which the server isn't expected to</span>
+<span id="L134"><span class="lineNum">     134</span>              :   /// send a response, it has no return value.</span>
+<span id="L135"><span class="lineNum">     135</span>              :   ///</span>
+<span id="L136"><span class="lineNum">     136</span>              :   /// Throws a [StateError] if the client is closed when this method is called.</span>
+<span id="L137"><span class="lineNum">     137</span> <span class="tlaUNC tlaBgUNC">           0 :   void sendNotification(String method, [parameters]) =&gt;</span></span>
+<span id="L138"><span class="lineNum">     138</span> <span class="tlaUNC">           0 :       _send(method, parameters);</span></span>
+<span id="L139"><span class="lineNum">     139</span>              : </span>
+<span id="L140"><span class="lineNum">     140</span>              :   /// A helper method for [sendRequest] and [sendNotification].</span>
+<span id="L141"><span class="lineNum">     141</span>              :   ///</span>
+<span id="L142"><span class="lineNum">     142</span>              :   /// Sends a request to invoke [method] with [parameters]. If [id] is given,</span>
+<span id="L143"><span class="lineNum">     143</span>              :   /// the request uses that id.</span>
+<span id="L144"><span class="lineNum">     144</span> <span class="tlaGNC tlaBgGNC">           8 :   void _send(String method, parameters, [int? id]) {</span></span>
+<span id="L145"><span class="lineNum">     145</span> <span class="tlaGNC">           8 :     if (parameters is Iterable) parameters = parameters.toList();</span></span>
+<span id="L146"><span class="lineNum">     146</span> <span class="tlaGNC">           8 :     if (parameters is! Map &amp;&amp; parameters is! List &amp;&amp; parameters != null) {</span></span>
+<span id="L147"><span class="lineNum">     147</span> <span class="tlaUNC tlaBgUNC">           0 :       throw ArgumentError('Only maps and lists may be used as JSON-RPC '</span></span>
+<span id="L148"><span class="lineNum">     148</span>              :           'parameters, was &quot;$parameters&quot;.');</span>
+<span id="L149"><span class="lineNum">     149</span>              :     }</span>
+<span id="L150"><span class="lineNum">     150</span> <span class="tlaGNC tlaBgGNC">           8 :     if (isClosed) throw StateError('The client is closed.');</span></span>
+<span id="L151"><span class="lineNum">     151</span>              : </span>
+<span id="L152"><span class="lineNum">     152</span> <span class="tlaGNC">           8 :     var message = &lt;String, dynamic&gt;{'jsonrpc': '2.0', 'method': method};</span></span>
+<span id="L153"><span class="lineNum">     153</span> <span class="tlaGNC">           8 :     if (id != null) message['id'] = id;</span></span>
+<span id="L154"><span class="lineNum">     154</span> <span class="tlaGNC">           8 :     if (parameters != null) message['params'] = parameters;</span></span>
+<span id="L155"><span class="lineNum">     155</span>              : </span>
+<span id="L156"><span class="lineNum">     156</span> <span class="tlaGNC">           8 :     if (_batch != null) {</span></span>
+<span id="L157"><span class="lineNum">     157</span> <span class="tlaUNC tlaBgUNC">           0 :       _batch!.add(message);</span></span>
+<span id="L158"><span class="lineNum">     158</span>              :     } else {</span>
+<span id="L159"><span class="lineNum">     159</span> <span class="tlaGNC tlaBgGNC">          24 :       _channel.sink.add(message);</span></span>
+<span id="L160"><span class="lineNum">     160</span>              :     }</span>
+<span id="L161"><span class="lineNum">     161</span>              :   }</span>
+<span id="L162"><span class="lineNum">     162</span>              : </span>
+<span id="L163"><span class="lineNum">     163</span>              :   /// Runs [callback] and batches any requests sent until it returns.</span>
+<span id="L164"><span class="lineNum">     164</span>              :   ///</span>
+<span id="L165"><span class="lineNum">     165</span>              :   /// A batch of requests is sent in a single message on the underlying stream,</span>
+<span id="L166"><span class="lineNum">     166</span>              :   /// and the responses are likewise sent back in a single message.</span>
+<span id="L167"><span class="lineNum">     167</span>              :   ///</span>
+<span id="L168"><span class="lineNum">     168</span>              :   /// [callback] may be synchronous or asynchronous. If it returns a [Future],</span>
+<span id="L169"><span class="lineNum">     169</span>              :   /// requests will be batched until that Future returns; otherwise, requests</span>
+<span id="L170"><span class="lineNum">     170</span>              :   /// will only be batched while synchronously executing [callback].</span>
+<span id="L171"><span class="lineNum">     171</span>              :   ///</span>
+<span id="L172"><span class="lineNum">     172</span>              :   /// If this is called in the context of another [withBatch] call, it just</span>
+<span id="L173"><span class="lineNum">     173</span>              :   /// invokes [callback] without creating another batch. This means that</span>
+<span id="L174"><span class="lineNum">     174</span>              :   /// responses are batched until the first batch ends.</span>
+<span id="L175"><span class="lineNum">     175</span> <span class="tlaUNC tlaBgUNC">           0 :   void withBatch(Function() callback) {</span></span>
+<span id="L176"><span class="lineNum">     176</span> <span class="tlaUNC">           0 :     if (_batch != null) {</span></span>
+<span id="L177"><span class="lineNum">     177</span> <span class="tlaUNC">           0 :       callback();</span></span>
+<span id="L178"><span class="lineNum">     178</span>              :       return;</span>
+<span id="L179"><span class="lineNum">     179</span>              :     }</span>
+<span id="L180"><span class="lineNum">     180</span>              : </span>
+<span id="L181"><span class="lineNum">     181</span> <span class="tlaUNC">           0 :     _batch = [];</span></span>
+<span id="L182"><span class="lineNum">     182</span> <span class="tlaUNC">           0 :     return tryFinally(callback, () {</span></span>
+<span id="L183"><span class="lineNum">     183</span> <span class="tlaUNC">           0 :       _channel.sink.add(_batch);</span></span>
+<span id="L184"><span class="lineNum">     184</span> <span class="tlaUNC">           0 :       _batch = null;</span></span>
+<span id="L185"><span class="lineNum">     185</span>              :     });</span>
+<span id="L186"><span class="lineNum">     186</span>              :   }</span>
+<span id="L187"><span class="lineNum">     187</span>              : </span>
+<span id="L188"><span class="lineNum">     188</span>              :   /// Handles a decoded response from the server.</span>
+<span id="L189"><span class="lineNum">     189</span> <span class="tlaGNC tlaBgGNC">           8 :   void _handleResponse(response) {</span></span>
+<span id="L190"><span class="lineNum">     190</span> <span class="tlaGNC">           8 :     if (response is List) {</span></span>
+<span id="L191"><span class="lineNum">     191</span> <span class="tlaUNC tlaBgUNC">           0 :       response.forEach(_handleSingleResponse);</span></span>
+<span id="L192"><span class="lineNum">     192</span>              :     } else {</span>
+<span id="L193"><span class="lineNum">     193</span> <span class="tlaGNC tlaBgGNC">           8 :       _handleSingleResponse(response);</span></span>
+<span id="L194"><span class="lineNum">     194</span>              :     }</span>
+<span id="L195"><span class="lineNum">     195</span>              :   }</span>
+<span id="L196"><span class="lineNum">     196</span>              : </span>
+<span id="L197"><span class="lineNum">     197</span>              :   /// Handles a decoded response from the server after batches have been</span>
+<span id="L198"><span class="lineNum">     198</span>              :   /// resolved.</span>
+<span id="L199"><span class="lineNum">     199</span> <span class="tlaGNC">           8 :   void _handleSingleResponse(response) {</span></span>
+<span id="L200"><span class="lineNum">     200</span> <span class="tlaGNC">           8 :     if (!_isResponseValid(response)) return;</span></span>
+<span id="L201"><span class="lineNum">     201</span> <span class="tlaGNC">           8 :     var id = response['id'];</span></span>
+<span id="L202"><span class="lineNum">     202</span> <span class="tlaGNC">           8 :     id = (id is String) ? int.parse(id) : id;</span></span>
+<span id="L203"><span class="lineNum">     203</span> <span class="tlaGNC">          16 :     var request = _pendingRequests.remove(id)!;</span></span>
+<span id="L204"><span class="lineNum">     204</span> <span class="tlaGNC">           8 :     if (response.containsKey('result')) {</span></span>
+<span id="L205"><span class="lineNum">     205</span> <span class="tlaGNC">          21 :       request.completer.complete(response['result']);</span></span>
+<span id="L206"><span class="lineNum">     206</span>              :     } else {</span>
+<span id="L207"><span class="lineNum">     207</span> <span class="tlaGNC">           8 :       request.completer.completeError(</span></span>
+<span id="L208"><span class="lineNum">     208</span> <span class="tlaGNC">          20 :           RpcException(response['error']['code'], response['error']['message'],</span></span>
+<span id="L209"><span class="lineNum">     209</span> <span class="tlaGNC">           8 :               data: response['error']['data']),</span></span>
+<span id="L210"><span class="lineNum">     210</span> <span class="tlaGNC">           4 :           request.chain);</span></span>
+<span id="L211"><span class="lineNum">     211</span>              :     }</span>
+<span id="L212"><span class="lineNum">     212</span>              :   }</span>
+<span id="L213"><span class="lineNum">     213</span>              : </span>
+<span id="L214"><span class="lineNum">     214</span>              :   /// Determines whether the server's response is valid per the spec.</span>
+<span id="L215"><span class="lineNum">     215</span> <span class="tlaGNC">           8 :   bool _isResponseValid(response) {</span></span>
+<span id="L216"><span class="lineNum">     216</span> <span class="tlaGNC">           8 :     if (response is! Map) return false;</span></span>
+<span id="L217"><span class="lineNum">     217</span> <span class="tlaGNC">          16 :     if (response['jsonrpc'] != '2.0') return false;</span></span>
+<span id="L218"><span class="lineNum">     218</span> <span class="tlaGNC">           8 :     var id = response['id'];</span></span>
+<span id="L219"><span class="lineNum">     219</span> <span class="tlaGNC">           8 :     id = (id is String) ? int.parse(id) : id;</span></span>
+<span id="L220"><span class="lineNum">     220</span> <span class="tlaGNC">          16 :     if (!_pendingRequests.containsKey(id)) return false;</span></span>
+<span id="L221"><span class="lineNum">     221</span> <span class="tlaGNC">           8 :     if (response.containsKey('result')) return true;</span></span>
+<span id="L222"><span class="lineNum">     222</span>              : </span>
+<span id="L223"><span class="lineNum">     223</span> <span class="tlaGNC">           4 :     if (!response.containsKey('error')) return false;</span></span>
+<span id="L224"><span class="lineNum">     224</span> <span class="tlaGNC">           4 :     var error = response['error'];</span></span>
+<span id="L225"><span class="lineNum">     225</span> <span class="tlaGNC">           4 :     if (error is! Map) return false;</span></span>
+<span id="L226"><span class="lineNum">     226</span> <span class="tlaGNC">           8 :     if (error['code'] is! int) return false;</span></span>
+<span id="L227"><span class="lineNum">     227</span> <span class="tlaGNC">           8 :     if (error['message'] is! String) return false;</span></span>
+<span id="L228"><span class="lineNum">     228</span>              :     return true;</span>
+<span id="L229"><span class="lineNum">     229</span>              :   }</span>
+<span id="L230"><span class="lineNum">     230</span>              : }</span>
+<span id="L231"><span class="lineNum">     231</span>              : </span>
+<span id="L232"><span class="lineNum">     232</span>              : /// A pending request to the server.</span>
+<span id="L233"><span class="lineNum">     233</span>              : class _Request {</span>
+<span id="L234"><span class="lineNum">     234</span>              :   /// THe method that was sent.</span>
+<span id="L235"><span class="lineNum">     235</span>              :   final String method;</span>
+<span id="L236"><span class="lineNum">     236</span>              : </span>
+<span id="L237"><span class="lineNum">     237</span>              :   /// The completer to use to complete the response future.</span>
+<span id="L238"><span class="lineNum">     238</span>              :   final Completer completer;</span>
+<span id="L239"><span class="lineNum">     239</span>              : </span>
+<span id="L240"><span class="lineNum">     240</span>              :   /// The stack chain from where the request was made.</span>
+<span id="L241"><span class="lineNum">     241</span>              :   final Chain chain;</span>
+<span id="L242"><span class="lineNum">     242</span>              : </span>
+<span id="L243"><span class="lineNum">     243</span> <span class="tlaGNC">           8 :   _Request(this.method, this.completer, this.chain);</span></span>
+<span id="L244"><span class="lineNum">     244</span>              : }</span>
+        </pre>
+              </td>
+            </tr>
+          </table>
+          <br>
+
+          <table width="100%" border=0 cellspacing=0 cellpadding=0>
+            <tr><td class="ruler"><img src="../../../../glass.png" width=3 height=3 alt=""></td></tr>
+            <tr><td class="versionInfo">Generated by: <a href="https://github.com//linux-test-project/lcov" target="_parent">LCOV version 2.1-1</a></td></tr>
+          </table>
+          <br>
+
+</body>
+</html>

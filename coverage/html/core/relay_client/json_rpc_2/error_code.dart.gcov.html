@@ -1,0 +1,129 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+
+<html lang="en">
+
+<head>
+  <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  <title>LCOV - lcov.info - core/relay_client/json_rpc_2/error_code.dart</title>
+  <link rel="stylesheet" type="text/css" href="../../../gcov.css">
+</head>
+
+<body>
+
+          <table width="100%" border=0 cellspacing=0 cellpadding=0>
+            <tr><td class="title">LCOV - code coverage report</td></tr>
+            <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+
+            <tr>
+              <td width="100%">
+                <table cellpadding=1 border=0 width="100%">
+          <tr>
+            <td width="10%" class="headerItem">Current view:</td>
+            <td width="10%" class="headerValue"><a href="../../../index.html" title="Click to go to top-level">top level</a> - <a href="index.html" title="Click to go to directory core/relay_client/json_rpc_2">core/relay_client/json_rpc_2</a> - error_code.dart</td>
+            <td width="5%"></td>
+            <td width="5%"></td>
+            <td width="5%" class="headerCovTableHead">Coverage</td>
+            <td width="5%" class="headerCovTableHead" title="Covered + Uncovered code">Total</td>
+            <td width="5%" class="headerCovTableHead" title="Exercised code only">Hit</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test:</td>
+            <td class="headerValue">lcov.info</td>
+            <td></td>
+            <td class="headerItem">Lines:</td>
+            <td class="headerCovTableEntryLo">0.0&nbsp;%</td>
+            <td class="headerCovTableEntry">6</td>
+            <td class="headerCovTableEntry">0</td>
+          </tr>
+          <tr>
+            <td class="headerItem">Test Date:</td>
+            <td class="headerValue">2024-07-25 14:52:52</td>
+            <td></td>
+          </tr>
+                  <tr><td><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+                </table>
+              </td>
+            </tr>
+
+            <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+          </table>
+
+          <table cellpadding=0 cellspacing=0 border=0>
+            <tr>
+              <td><br></td>
+            </tr>
+            <tr>
+              <td>
+<pre class="sourceHeading">            Line data    Source code</pre>
+<pre class="source">
+<span id="L1"><span class="lineNum">       1</span>              : // Copyright (c) 2014, the Dart project authors.  Please see the AUTHORS file</span>
+<span id="L2"><span class="lineNum">       2</span>              : // for details. All rights reserved. Use of this source code is governed by a</span>
+<span id="L3"><span class="lineNum">       3</span>              : // BSD-style license that can be found in the LICENSE file.</span>
+<span id="L4"><span class="lineNum">       4</span>              : </span>
+<span id="L5"><span class="lineNum">       5</span>              : // ignore_for_file: constant_identifier_names</span>
+<span id="L6"><span class="lineNum">       6</span>              : </span>
+<span id="L7"><span class="lineNum">       7</span>              : /// Error codes defined in the [JSON-RPC 2.0 specificiation][spec].</span>
+<span id="L8"><span class="lineNum">       8</span>              : ///</span>
+<span id="L9"><span class="lineNum">       9</span>              : /// These codes are generally used for protocol-level communication. Most of</span>
+<span id="L10"><span class="lineNum">      10</span>              : /// them shouldn't be used by the application. Those that should have</span>
+<span id="L11"><span class="lineNum">      11</span>              : /// convenience constructors in [RpcException].</span>
+<span id="L12"><span class="lineNum">      12</span>              : ///</span>
+<span id="L13"><span class="lineNum">      13</span>              : /// [spec]: http://www.jsonrpc.org/specification#error_object</span>
+<span id="L14"><span class="lineNum">      14</span>              : /// An error code indicating that invalid JSON was received by the server.</span>
+<span id="L15"><span class="lineNum">      15</span>              : const PARSE_ERROR = -32700;</span>
+<span id="L16"><span class="lineNum">      16</span>              : </span>
+<span id="L17"><span class="lineNum">      17</span>              : /// An error code indicating that the request JSON was invalid according to the</span>
+<span id="L18"><span class="lineNum">      18</span>              : /// JSON-RPC 2.0 spec.</span>
+<span id="L19"><span class="lineNum">      19</span>              : const INVALID_REQUEST = -32600;</span>
+<span id="L20"><span class="lineNum">      20</span>              : </span>
+<span id="L21"><span class="lineNum">      21</span>              : /// An error code indicating that the requested method does not exist or is</span>
+<span id="L22"><span class="lineNum">      22</span>              : /// unavailable.</span>
+<span id="L23"><span class="lineNum">      23</span>              : const METHOD_NOT_FOUND = -32601;</span>
+<span id="L24"><span class="lineNum">      24</span>              : </span>
+<span id="L25"><span class="lineNum">      25</span>              : /// An error code indicating that the request parameters are invalid for the</span>
+<span id="L26"><span class="lineNum">      26</span>              : /// requested method.</span>
+<span id="L27"><span class="lineNum">      27</span>              : const INVALID_PARAMS = -32602;</span>
+<span id="L28"><span class="lineNum">      28</span>              : </span>
+<span id="L29"><span class="lineNum">      29</span>              : /// An internal JSON-RPC error.</span>
+<span id="L30"><span class="lineNum">      30</span>              : const INTERNAL_ERROR = -32603;</span>
+<span id="L31"><span class="lineNum">      31</span>              : </span>
+<span id="L32"><span class="lineNum">      32</span>              : /// An unexpected error occurred on the server.</span>
+<span id="L33"><span class="lineNum">      33</span>              : ///</span>
+<span id="L34"><span class="lineNum">      34</span>              : /// The spec reserves the range from -32000 to -32099 for implementation-defined</span>
+<span id="L35"><span class="lineNum">      35</span>              : /// server exceptions, but for now we only use one of those values.</span>
+<span id="L36"><span class="lineNum">      36</span>              : const SERVER_ERROR = -32000;</span>
+<span id="L37"><span class="lineNum">      37</span>              : </span>
+<span id="L38"><span class="lineNum">      38</span>              : /// Returns a human-readable name for [errorCode] if it's one specified by the</span>
+<span id="L39"><span class="lineNum">      39</span>              : /// JSON-RPC 2.0 spec.</span>
+<span id="L40"><span class="lineNum">      40</span>              : ///</span>
+<span id="L41"><span class="lineNum">      41</span>              : /// If [errorCode] isn't defined in the JSON-RPC 2.0 spec, returns null.</span>
+<span id="L42"><span class="lineNum">      42</span> <span class="tlaUNC tlaBgUNC">           0 : String? name(int errorCode) {</span></span>
+<span id="L43"><span class="lineNum">      43</span>              :   switch (errorCode) {</span>
+<span id="L44"><span class="lineNum">      44</span> <span class="tlaUNC">           0 :     case PARSE_ERROR:</span></span>
+<span id="L45"><span class="lineNum">      45</span>              :       return 'parse error';</span>
+<span id="L46"><span class="lineNum">      46</span> <span class="tlaUNC">           0 :     case INVALID_REQUEST:</span></span>
+<span id="L47"><span class="lineNum">      47</span>              :       return 'invalid request';</span>
+<span id="L48"><span class="lineNum">      48</span> <span class="tlaUNC">           0 :     case METHOD_NOT_FOUND:</span></span>
+<span id="L49"><span class="lineNum">      49</span>              :       return 'method not found';</span>
+<span id="L50"><span class="lineNum">      50</span> <span class="tlaUNC">           0 :     case INVALID_PARAMS:</span></span>
+<span id="L51"><span class="lineNum">      51</span>              :       return 'invalid parameters';</span>
+<span id="L52"><span class="lineNum">      52</span> <span class="tlaUNC">           0 :     case INTERNAL_ERROR:</span></span>
+<span id="L53"><span class="lineNum">      53</span>              :       return 'internal error';</span>
+<span id="L54"><span class="lineNum">      54</span>              :     default:</span>
+<span id="L55"><span class="lineNum">      55</span>              :       return null;</span>
+<span id="L56"><span class="lineNum">      56</span>              :   }</span>
+<span id="L57"><span class="lineNum">      57</span>              : }</span>
+        </pre>
+              </td>
+            </tr>
+          </table>
+          <br>
+
+          <table width="100%" border=0 cellspacing=0 cellpadding=0>
+            <tr><td class="ruler"><img src="../../../glass.png" width=3 height=3 alt=""></td></tr>
+            <tr><td class="versionInfo">Generated by: <a href="https://github.com//linux-test-project/lcov" target="_parent">LCOV version 2.1-1</a></td></tr>
+          </table>
+          <br>
+
+</body>
+</html>
