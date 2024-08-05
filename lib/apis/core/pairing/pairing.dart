@@ -194,19 +194,25 @@ class Pairing implements IPairing {
       rethrow;
     }
 
-    await pairings.set(topic, pairing);
-    await core.crypto.setSymKey(symKey, overrideTopic: topic);
-    await core.relayClient.subscribe(topic: topic);
-    await core.expirer.set(topic, expiry);
+    try {
+      await pairings.set(topic, pairing);
+      await core.crypto.setSymKey(symKey, overrideTopic: topic);
+      await core.relayClient.subscribe(topic: topic).timeout(
+            const Duration(seconds: 15),
+          );
+      await core.expirer.set(topic, expiry);
 
-    onPairingCreate.broadcast(
-      PairingEvent(
-        topic: topic,
-      ),
-    );
+      onPairingCreate.broadcast(
+        PairingEvent(
+          topic: topic,
+        ),
+      );
 
-    if (activatePairing) {
-      await activate(topic: topic);
+      if (activatePairing) {
+        await activate(topic: topic);
+      }
+    } catch (e) {
+      rethrow;
     }
 
     return pairing;

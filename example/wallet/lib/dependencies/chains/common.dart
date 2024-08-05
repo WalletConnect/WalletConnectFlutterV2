@@ -28,15 +28,24 @@ class CommonMethods {
     }
   }
 
-  static Future<bool> requestApproval(String text, {String? title}) async {
+  static Future<bool> requestApproval(
+    String text, {
+    String? title,
+    String? method,
+    String? chainId,
+    String? address,
+  }) async {
     final bottomSheetService = GetIt.I<IBottomSheetService>();
     final WCBottomSheetResult rs = (await bottomSheetService.queueBottomSheet(
           widget: WCRequestWidget(
             child: WCConnectionWidget(
-              title: 'Approve Request',
+              title: title ?? 'Approve Request',
               info: [
                 WCConnectionModel(
-                  title: title,
+                  title: 'Method: $method\n'
+                      'Chain ID: $chainId\n'
+                      'Address: $address\n\n'
+                      'Message:',
                   elements: [
                     text,
                   ],
