@@ -24,7 +24,7 @@ class CommonMethods {
         );
       }
     } catch (e) {
-      debugPrint('[WALLET] ${e.toString()}');
+      debugPrint('[SampleWallet] ${e.toString()}');
     }
   }
 

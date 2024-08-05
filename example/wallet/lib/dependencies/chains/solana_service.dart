@@ -35,7 +35,7 @@ class SolanaService {
   }
 
   Future<void> solanaSignMessage(String topic, dynamic parameters) async {
-    debugPrint('[WALLET] solanaSignMessage request: $parameters');
+    debugPrint('[SampleWallet] solanaSignMessage request: $parameters');
     const method = 'solana_signMessage';
     final pRequest = _web3Wallet.pendingRequests.getAll().last;
     var response = JsonRpcResponse(id: pRequest.id, jsonrpc: '2.0');
@@ -71,7 +71,7 @@ class SolanaService {
       }
       //
     } catch (e) {
-      debugPrint('[WALLET] polkadotSignMessage error $e');
+      debugPrint('[SampleWallet] polkadotSignMessage error $e');
       response = response.copyWith(
         error: JsonRpcError(code: 0, message: e.toString()),
       );
@@ -86,7 +86,8 @@ class SolanaService {
   }
 
   Future<void> solanaSignTransaction(String topic, dynamic parameters) async {
-    debugPrint('[WALLET] solanaSignTransaction: ${jsonEncode(parameters)}');
+    debugPrint(
+        '[SampleWallet] solanaSignTransaction: ${jsonEncode(parameters)}');
     const method = 'solana_signTransaction';
     final pRequest = _web3Wallet.pendingRequests.getAll().last;
     var response = JsonRpcResponse(id: pRequest.id, jsonrpc: '2.0');
@@ -137,7 +138,7 @@ class SolanaService {
         );
       }
     } catch (e) {
-      debugPrint('[WALLET] solanaSignTransaction error $e');
+      debugPrint('[SampleWallet] solanaSignTransaction error $e');
       response = response.copyWith(
         error: JsonRpcError(code: 0, message: e.toString()),
       );

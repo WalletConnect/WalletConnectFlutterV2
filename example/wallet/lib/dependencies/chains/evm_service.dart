@@ -96,7 +96,7 @@ class EVMService {
 
   // personal_sign is handled using onSessionRequest event for demo purposes
   Future<void> personalSign(String topic, dynamic parameters) async {
-    debugPrint('[WALLET] personalSign request: $parameters');
+    debugPrint('[SampleWallet] personalSign request: $parameters');
     final SessionRequest pRequest = _web3Wallet.pendingRequests.getAll().last;
     final address = EthUtils.getAddressFromSessionRequest(pRequest);
     final data = EthUtils.getDataFromSessionRequest(pRequest);
@@ -129,7 +129,7 @@ class EVMService {
 
         response = response.copyWith(result: signedTx);
       } catch (e) {
-        debugPrint('[WALLET] personalSign error $e');
+        debugPrint('[SampleWallet] personalSign error $e');
         response = response.copyWith(
           error: JsonRpcError(code: 0, message: e.toString()),
         );
@@ -149,7 +149,7 @@ class EVMService {
   }
 
   Future<void> ethSign(String topic, dynamic parameters) async {
-    debugPrint('[WALLET] ethSign request: $parameters');
+    debugPrint('[SampleWallet] ethSign request: $parameters');
     final pRequest = _web3Wallet.pendingRequests.getAll().last;
     final data = EthUtils.getDataFromSessionRequest(pRequest);
     final message = EthUtils.getUtf8Message(data.toString());
@@ -176,7 +176,7 @@ class EVMService {
 
         response = response.copyWith(result: signedTx);
       } catch (e) {
-        debugPrint('[WALLET] ethSign error $e');
+        debugPrint('[SampleWallet] ethSign error $e');
         response = response.copyWith(
           error: JsonRpcError(code: 0, message: e.toString()),
         );
@@ -196,7 +196,7 @@ class EVMService {
   }
 
   Future<void> ethSignTypedData(String topic, dynamic parameters) async {
-    debugPrint('[WALLET] ethSignTypedData request: $parameters');
+    debugPrint('[SampleWallet] ethSignTypedData request: $parameters');
     final pRequest = _web3Wallet.pendingRequests.getAll().last;
     final data = EthUtils.getDataFromSessionRequest(pRequest);
     var response = JsonRpcResponse(
@@ -218,7 +218,7 @@ class EVMService {
 
         response = response.copyWith(result: signature);
       } catch (e) {
-        debugPrint('[WALLET] ethSignTypedData error $e');
+        debugPrint('[SampleWallet] ethSignTypedData error $e');
         response = response.copyWith(
           error: JsonRpcError(code: 0, message: e.toString()),
         );
@@ -238,7 +238,7 @@ class EVMService {
   }
 
   Future<void> ethSignTypedDataV4(String topic, dynamic parameters) async {
-    debugPrint('[WALLET] ethSignTypedDataV4 request: $parameters');
+    debugPrint('[SampleWallet] ethSignTypedDataV4 request: $parameters');
     final pRequest = _web3Wallet.pendingRequests.getAll().last;
     final data = EthUtils.getDataFromSessionRequest(pRequest);
     var response = JsonRpcResponse(
@@ -260,7 +260,7 @@ class EVMService {
 
         response = response.copyWith(result: signature);
       } catch (e) {
-        debugPrint('[WALLET] ethSignTypedDataV4 error $e');
+        debugPrint('[SampleWallet] ethSignTypedDataV4 error $e');
         response = response.copyWith(
           error: JsonRpcError(code: 0, message: e.toString()),
         );
@@ -280,7 +280,7 @@ class EVMService {
   }
 
   Future<void> ethSignTransaction(String topic, dynamic parameters) async {
-    debugPrint('[WALLET] ethSignTransaction request: $parameters');
+    debugPrint('[SampleWallet] ethSignTransaction request: $parameters');
     final SessionRequest pRequest = _web3Wallet.pendingRequests.getAll().last;
 
     final data = EthUtils.getTransactionFromSessionRequest(pRequest);
@@ -317,12 +317,12 @@ class EVMService {
 
         response = response.copyWith(result: signedTx);
       } on RPCError catch (e) {
-        debugPrint('[WALLET] ethSignTransaction error $e');
+        debugPrint('[SampleWallet] ethSignTransaction error $e');
         response = response.copyWith(
           error: JsonRpcError(code: e.errorCode, message: e.message),
         );
       } catch (e) {
-        debugPrint('[WALLET] ethSignTransaction error $e');
+        debugPrint('[SampleWallet] ethSignTransaction error $e');
         response = response.copyWith(
           error: JsonRpcError(code: 0, message: e.toString()),
         );
@@ -340,7 +340,7 @@ class EVMService {
   }
 
   Future<void> ethSendTransaction(String topic, dynamic parameters) async {
-    debugPrint('[WALLET] ethSendTransaction request: $parameters');
+    debugPrint('[SampleWallet] ethSendTransaction request: $parameters');
     final SessionRequest pRequest = _web3Wallet.pendingRequests.getAll().last;
 
     final data = EthUtils.getTransactionFromSessionRequest(pRequest);
@@ -375,12 +375,12 @@ class EVMService {
 
         response = response.copyWith(result: signedTx);
       } on RPCError catch (e) {
-        debugPrint('[WALLET] ethSendTransaction error $e');
+        debugPrint('[SampleWallet] ethSendTransaction error $e');
         response = response.copyWith(
           error: JsonRpcError(code: e.errorCode, message: e.message),
         );
       } catch (e) {
-        debugPrint('[WALLET] ethSendTransaction error $e');
+        debugPrint('[SampleWallet] ethSendTransaction error $e');
         response = response.copyWith(
           error: JsonRpcError(code: 0, message: e.toString()),
         );
@@ -398,7 +398,7 @@ class EVMService {
   }
 
   Future<void> switchChain(String topic, dynamic parameters) async {
-    debugPrint('[WALLET] switchChain request: $topic $parameters');
+    debugPrint('[SampleWallet] switchChain request: $topic $parameters');
     final pRequest = _web3Wallet.pendingRequests.getAll().last;
     var response = JsonRpcResponse(id: pRequest.id, jsonrpc: '2.0');
     try {
@@ -415,12 +415,12 @@ class EVMService {
       );
       response = response.copyWith(result: true);
     } on WalletConnectError catch (e) {
-      debugPrint('[WALLET] switchChain error $e');
+      debugPrint('[SampleWallet] switchChain error $e');
       response = response.copyWith(
         error: JsonRpcError(code: e.code, message: e.message),
       );
     } catch (e) {
-      debugPrint('[WALLET] switchChain error $e');
+      debugPrint('[SampleWallet] switchChain error $e');
       response = response.copyWith(
         error: JsonRpcError(code: 0, message: e.toString()),
       );
@@ -435,7 +435,6 @@ class EVMService {
   }
 
   // Future<void> addChain(String topic, dynamic parameters) async {
-  //   debugPrint('[WALLET] addChain request: $topic $parameters');
   //   final pRequest = _web3Wallet.pendingRequests.getAll().last;
   //   await _web3Wallet.respondSessionRequest(
   //     topic: topic,
@@ -537,7 +536,7 @@ class EVMService {
 
   void _onSessionRequest(SessionRequestEvent? args) async {
     if (args != null && args.chainId == chainSupported.chainId) {
-      debugPrint('[WALLET] _onSessionRequest ${args.toString()}');
+      debugPrint('[SampleWallet] _onSessionRequest ${args.toString()}');
       final handler = sessionRequestHandlers[args.method];
       if (handler != null) {
         await handler(args.topic, args.params);
@@ -551,24 +550,23 @@ class EVMService {
     String hexAddress,
   ) {
     try {
-      debugPrint('isValidSignature(): $hexSignature, $message, $hexAddress');
+      debugPrint(
+          '[SampleWallet] isValidSignature: $hexSignature, $message, $hexAddress');
       final recoveredAddress = EthSigUtil.recoverPersonalSignature(
         signature: hexSignature,
         message: utf8.encode(message),
       );
-      debugPrint('recoveredAddress: $recoveredAddress');
+      debugPrint('[SampleWallet] recoveredAddress: $recoveredAddress');
 
       final recoveredAddress2 = EthSigUtil.recoverSignature(
         signature: hexSignature,
         message: utf8.encode(message),
       );
-      debugPrint('recoveredAddress2: $recoveredAddress2');
+      debugPrint('[SampleWallet] recoveredAddress2: $recoveredAddress2');
 
       final isValid = recoveredAddress == hexAddress;
-      debugPrint('isValidSignature: $isValid');
       return isValid;
     } catch (e) {
-      debugPrint('isValidSignature() error, $e');
       return false;
     }
   }

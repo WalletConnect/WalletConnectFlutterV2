@@ -47,7 +47,7 @@ class KadenaService {
   }
 
   Future<void> kadenaGetAccountsV1(String topic, dynamic parameters) async {
-    debugPrint('[WALLET] kadenaGetAccountsV1 request: $parameters');
+    debugPrint('[SampleWallet] kadenaGetAccountsV1 request: $parameters');
     final pRequest = _web3Wallet.pendingRequests.getAll().last;
     var response = JsonRpcResponse(
       id: pRequest.id,
@@ -89,7 +89,7 @@ class KadenaService {
         ).toJson(),
       );
     } catch (e) {
-      debugPrint('[WALLET] kadenaGetAccountsV1 error: $e');
+      debugPrint('[SampleWallet] kadenaGetAccountsV1 error: $e');
       response = response.copyWith(
         error: JsonRpcError(code: 0, message: e.toString()),
       );
@@ -104,7 +104,8 @@ class KadenaService {
   }
 
   Future<void> kadenaSignV1(String topic, dynamic parameters) async {
-    debugPrint('[WALLET] kadenaSignV1 request: ${jsonEncode(parameters)}');
+    debugPrint(
+        '[SampleWallet] kadenaSignV1 request: ${jsonEncode(parameters)}');
     final pRequest = _web3Wallet.pendingRequests.getAll().last;
     var response = JsonRpcResponse(
       id: pRequest.id,
@@ -156,7 +157,7 @@ class KadenaService {
         );
       }
     } catch (e) {
-      debugPrint('[WALLET] kadenaSignV1 error: $e');
+      debugPrint('[SampleWallet] kadenaSignV1 error: $e');
       response = response.copyWith(
         error: JsonRpcError(code: 0, message: e.toString()),
       );
@@ -171,7 +172,8 @@ class KadenaService {
   }
 
   Future<void> kadenaQuicksignV1(String topic, dynamic parameters) async {
-    debugPrint('[WALLET] kadenaQuicksignV1 request: ${jsonEncode(parameters)}');
+    debugPrint(
+        '[SampleWallet] kadenaQuicksignV1 request: ${jsonEncode(parameters)}');
     final pRequest = _web3Wallet.pendingRequests.getAll().last;
     var response = JsonRpcResponse(
       id: pRequest.id,
@@ -242,7 +244,7 @@ class KadenaService {
         );
       }
     } catch (e) {
-      debugPrint('[WALLET] kadenaSignV1 error: $e');
+      debugPrint('[SampleWallet] kadenaSignV1 error: $e');
       response = response.copyWith(
         error: JsonRpcError(code: 0, message: e.toString()),
       );
@@ -258,7 +260,7 @@ class KadenaService {
 
   void _onSessionRequest(SessionRequestEvent? args) async {
     if (args != null && args.chainId == chainSupported.chainId) {
-      debugPrint('[WALLET] _onSessionRequest ${args.toString()}');
+      debugPrint('[SampleWallet] _onSessionRequest ${args.toString()}');
       final handler = kadenaRequestHandlers[args.method];
       if (handler != null) {
         await handler(args.topic, args.params);

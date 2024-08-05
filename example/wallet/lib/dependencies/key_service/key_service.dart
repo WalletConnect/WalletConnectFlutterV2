@@ -120,7 +120,7 @@ class KeyService extends IKeyService {
       publicKey: keyPair.publicKey,
       address: address,
     );
-    debugPrint('[WALLET] evmChainKey ${evmChainKey.toString()}');
+    debugPrint('[SampleWallet] evmChainKey ${evmChainKey.toString()}');
     return evmChainKey;
   }
 
@@ -129,11 +129,12 @@ class KeyService extends IKeyService {
   Future<List<ChainKey>> _extraKeyPairs() async {
     // HARDCODED VALUES
     final kadenaChainKey = _kadenaKeyPair();
-    debugPrint('[WALLET] kadenaChainKey ${kadenaChainKey.toString()}');
+    debugPrint('[SampleWallet] kadenaChainKey ${kadenaChainKey.toString()}');
     final polkadotChainKey = _polkadotKeyPair();
-    debugPrint('[WALLET] polkadotChainKey ${polkadotChainKey.toString()}');
+    debugPrint(
+        '[SampleWallet] polkadotChainKey ${polkadotChainKey.toString()}');
     final solanaChainKeys = _solanaKeyPair();
-    debugPrint('[WALLET] solanaChainKey $solanaChainKeys');
+    debugPrint('[SampleWallet] solanaChainKey $solanaChainKeys');
     //
     return [
       kadenaChainKey,
