@@ -24,7 +24,7 @@ class CustomButton extends StatelessWidget {
       case CustomButtonType.invalid:
         return StyleConstants.errorColor;
       default:
-        return Colors.blue[200]!;
+        return Colors.black54;
     }
   }
 

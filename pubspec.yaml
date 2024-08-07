@@ -8,6 +8,7 @@ environment:
 
 dependencies:
   bs58: ^1.0.2
+  connectivity_plus: ^6.0.4
   convert: ^3.0.1
   cryptography: ^2.0.5
   ed25519_edwards: ^0.3.1

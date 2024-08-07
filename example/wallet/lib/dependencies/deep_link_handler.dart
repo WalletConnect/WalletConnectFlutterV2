@@ -10,12 +10,18 @@ import 'package:walletconnect_flutter_v2_wallet/utils/constants.dart';
 
 class DeepLinkHandler {
   //
-  static final waiting = ValueNotifier<bool>(false);
+  static const _methodChannel = MethodChannel(
+    'com.walletconnect.flutterwallet/methods',
+  );
+  static const _eventChannel = EventChannel(
+    'com.walletconnect.flutterwallet/events',
+  );
+  //
   static final _linksController = StreamController<String>.broadcast();
-  static const _methodChannel =
-      MethodChannel('com.walletconnect.flutterwallet/methods');
-  static const _eventChannel =
-      EventChannel('com.walletconnect.flutterwallet/events');
+  static Stream<String> get onLink => _linksController.stream;
+  //
+  static final waiting = ValueNotifier<bool>(false);
+  //
 
   static void initListener() {
     if (kIsWeb) return;
@@ -33,11 +39,9 @@ class DeepLinkHandler {
             onError: _onError,
           );
     } catch (e) {
-      debugPrint('[WALLET] [DeepLinkHandler] checkInitialLink $e');
+      debugPrint('[SampleWallet] [DeepLinkHandler] checkInitialLink $e');
     }
   }
-
-  static Stream<String> get onLink => _linksController.stream;
 
   static void goTo(
     String scheme, {
@@ -47,15 +51,13 @@ class DeepLinkHandler {
     bool success = true,
   }) async {
     waiting.value = false;
-    if (kIsWeb) return;
-    if (scheme.isEmpty) return;
     await Future.delayed(Duration(milliseconds: delay));
-    debugPrint('[WALLET] [DeepLinkHandler] redirecting to $scheme');
+    debugPrint('[SampleWallet] [DeepLinkHandler] redirecting to $scheme');
     try {
       await launchUrlString(scheme, mode: LaunchMode.externalApplication);
     } catch (e) {
       debugPrint(
-          '[WALLET] [DeepLinkHandler] error re-opening dapp ($scheme). $e');
+          '[SampleWallet] [DeepLinkHandler] error re-opening dapp ($scheme). $e');
       _goBackModal(
         title: modalTitle,
         message: modalMessage,
@@ -79,7 +81,7 @@ class DeepLinkHandler {
 
   static void _onError(Object error) {
     waiting.value = false;
-    debugPrint('[WALLET] [DeepLinkHandler] _onError $error');
+    debugPrint('[SampleWallet] [DeepLinkHandler] _onError $error');
   }
 
   static void _goBackModal({

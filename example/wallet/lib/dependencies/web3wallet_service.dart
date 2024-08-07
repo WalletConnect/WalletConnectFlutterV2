@@ -66,13 +66,11 @@ class Web3WalletService extends IWeb3WalletService {
 
     _web3Wallet!.onAuthRequest.subscribe(_onAuthRequest);
 
-    await _web3Wallet!.init();
-
     // Setup our accounts
-    List<ChainKey> chainKeys = await GetIt.I<IKeyService>().setKeys();
+    List<ChainKey> chainKeys = await GetIt.I<IKeyService>().loadKeys();
     if (chainKeys.isEmpty) {
       await GetIt.I<IKeyService>().loadDefaultWallet();
-      chainKeys = await GetIt.I<IKeyService>().setKeys();
+      chainKeys = await GetIt.I<IKeyService>().loadKeys();
     }
     for (final chainKey in chainKeys) {
       for (final chainId in chainKey.chains) {
@@ -99,6 +97,21 @@ class Web3WalletService extends IWeb3WalletService {
   Future<void> init() async {
     // Await the initialization of the web3wallet
     await _web3Wallet!.init();
+
+    final sessions = _web3Wallet!.sessions.getAll();
+    final chainKeys = GetIt.I<IKeyService>().getKeysForChain('eip155');
+    for (var session in sessions) {
+      try {
+        _web3Wallet!.emitSessionEvent(
+          topic: session.topic,
+          chainId: 'eip155:1',
+          event: SessionEventParams(
+            name: 'accountsChanged',
+            data: [chainKeys.first.address],
+          ),
+        );
+      } catch (e) {}
+    }
   }
 
   void _logListener(LogEvent event) {
@@ -131,26 +144,19 @@ class Web3WalletService extends IWeb3WalletService {
   @override
   Web3Wallet get web3wallet => _web3Wallet!;
 
+  List<String> get _loaderMethods => [
+        'wc_sessionPropose',
+        'wc_sessionRequest',
+        'wc_sessionAuthenticate',
+      ];
+
   void _onRelayClientMessage(MessageEvent? event) async {
     if (event != null) {
       final jsonObject = await EthUtils.decodeMessageEvent(event);
-      debugPrint('[SampleWallet] _onRelayClientMessage $jsonObject');
+      log('[SampleWallet] _onRelayClientMessage $jsonObject');
       if (jsonObject is JsonRpcRequest) {
-        if (jsonObject.method == 'wc_sessionPropose' ||
-            jsonObject.method == 'wc_sessionRequest') {
-          DeepLinkHandler.waiting.value = true;
-        }
-      } else {
-        final session = _web3Wallet!.sessions.get(event.topic);
-        final scheme = session?.peer.metadata.redirect?.native ?? '';
-        final isSuccess = jsonObject.result != null;
-        final title = isSuccess ? null : 'Error';
-        final message = isSuccess ? null : jsonObject.error?.message ?? '';
-        DeepLinkHandler.goTo(
-          scheme,
-          modalTitle: title,
-          modalMessage: message,
-          success: isSuccess,
+        DeepLinkHandler.waiting.value = _loaderMethods.contains(
+          jsonObject.method,
         );
       }
     }
@@ -159,19 +165,18 @@ class Web3WalletService extends IWeb3WalletService {
   void _onSessionProposal(SessionProposalEvent? args) async {
     if (args != null) {
       log('[SampleWallet] _onSessionProposal ${jsonEncode(args.params)}');
-      final WCBottomSheetResult rs =
-          (await _bottomSheetHandler.queueBottomSheet(
-                widget: WCRequestWidget(
-                  child: WCConnectionRequestWidget(
-                    proposalData: args.params,
-                    verifyContext: args.verifyContext,
-                    metadata: args.params.proposer,
-                  ),
-                ),
-              )) ??
-              WCBottomSheetResult.reject;
+      final result = (await _bottomSheetHandler.queueBottomSheet(
+            widget: WCRequestWidget(
+              child: WCConnectionRequestWidget(
+                proposalData: args.params,
+                verifyContext: args.verifyContext,
+                metadata: args.params.proposer,
+              ),
+            ),
+          )) ??
+          WCBottomSheetResult.reject;
 
-      if (rs != WCBottomSheetResult.reject) {
+      if (result != WCBottomSheetResult.reject) {
         // generatedNamespaces is constructed based on registered methods handlers
         // so if you want to handle requests using onSessionRequest event then you would need to manually add that method in the approved namespaces
         await _web3Wallet!.approveSession(
@@ -240,7 +245,7 @@ class Web3WalletService extends IWeb3WalletService {
 
   void _onSessionConnect(SessionConnect? args) {
     if (args != null) {
-      log('[SampleWallet] _onSessionConnect ${jsonEncode(args.session)}');
+      log('[SampleWallet] _onSessionConnect ${jsonEncode(args.session.toJson())}');
       final scheme = args.session.peer.metadata.redirect?.native ?? '';
       DeepLinkHandler.goTo(scheme);
     }

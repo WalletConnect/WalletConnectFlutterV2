@@ -45,7 +45,12 @@ class BottomSheetListenerState extends State<BottomSheetListener> {
         builder: (context) {
           if (item.closeAfter > 0) {
             Future.delayed(Duration(seconds: item.closeAfter), () {
-              Navigator.pop(context);
+              try {
+                if (!mounted) return;
+                Navigator.pop(context);
+              } catch (e) {
+                debugPrint('[$runtimeType] close $e');
+              }
             });
           }
           return Container(
