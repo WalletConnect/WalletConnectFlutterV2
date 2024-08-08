@@ -836,6 +836,9 @@ class SignEngine implements ISignEngine {
     if (!_initialized) {
       throw Errors.getInternalError(Errors.NOT_INITIALIZED);
     }
+    if (!core.connectivity.isOnline) {
+      throw WalletConnectError(code: -1, message: 'No internet connection');
+    }
   }
 
   String _getRegisterKey(String chainId, String value) {
@@ -1964,11 +1967,11 @@ class SignEngine implements ISignEngine {
   // FORMER AUTH ENGINE PROPERTY
   @override
   Map<int, PendingAuthRequest> getPendingAuthRequests() {
-    Map<int, PendingAuthRequest> pendingRequests = {};
+    Map<int, PendingAuthRequest> pendingAuthRequests = {};
     authRequests.getAll().forEach((key) {
-      pendingRequests[key.id] = key;
+      pendingAuthRequests[key.id] = key;
     });
-    return pendingRequests;
+    return pendingAuthRequests;
   }
 
   // FORMER AUTH ENGINE PROPERTY
@@ -2130,11 +2133,11 @@ class SignEngine implements ISignEngine {
   // NEW ONE-CLICK AUTH METHOD FOR DAPPS
   @override
   Map<int, PendingSessionAuthRequest> getPendingSessionAuthRequests() {
-    Map<int, PendingSessionAuthRequest> pendingRequests = {};
+    Map<int, PendingSessionAuthRequest> pendingSessionAuthRequests = {};
     sessionAuthRequests.getAll().forEach((key) {
-      pendingRequests[key.id] = key;
+      pendingSessionAuthRequests[key.id] = key;
     });
-    return pendingRequests;
+    return pendingSessionAuthRequests;
   }
 
   @override

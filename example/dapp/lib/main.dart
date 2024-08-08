@@ -210,6 +210,7 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(_pageDatas[_selectedIndex].title),
         centerTitle: true,
         actions: [
+          const Text('Relay '),
           CircleAvatar(
             radius: 6.0,
             backgroundColor: _web3App!.core.relayClient.isConnected
@@ -219,14 +220,20 @@ class _MyHomePageState extends State<MyHomePage> {
           const SizedBox(width: 16.0),
         ],
       ),
+      body: Center(
+        child: Container(
+          constraints: BoxConstraints(
+            maxWidth: Constants.smallScreen.toDouble(),
+          ),
+          child: Row(
+            children: navRail,
+          ),
+        ),
+      ),
       bottomNavigationBar:
           MediaQuery.of(context).size.width < Constants.smallScreen
               ? _buildBottomNavBar()
               : null,
-      body: Row(
-        mainAxisSize: MainAxisSize.max,
-        children: navRail,
-      ),
     );
   }
 

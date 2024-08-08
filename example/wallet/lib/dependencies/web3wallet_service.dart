@@ -110,7 +110,7 @@ class Web3WalletService extends IWeb3WalletService {
             data: [chainKeys.first.address],
           ),
         );
-      } catch (e) {}
+      } catch (_) {}
     }
   }
 
@@ -179,13 +179,21 @@ class Web3WalletService extends IWeb3WalletService {
       if (result != WCBottomSheetResult.reject) {
         // generatedNamespaces is constructed based on registered methods handlers
         // so if you want to handle requests using onSessionRequest event then you would need to manually add that method in the approved namespaces
-        await _web3Wallet!.approveSession(
-          id: args.id,
-          namespaces: NamespaceUtils.regenerateNamespacesWithChains(
-            args.params.generatedNamespaces!,
-          ),
-          sessionProperties: args.params.sessionProperties,
-        );
+        try {
+          await _web3Wallet!.approveSession(
+            id: args.id,
+            namespaces: NamespaceUtils.regenerateNamespacesWithChains(
+              args.params.generatedNamespaces!,
+            ),
+            sessionProperties: args.params.sessionProperties,
+          );
+        } on WalletConnectError catch (error) {
+          DeepLinkHandler.goBackModal(
+            title: 'Error',
+            message: error.message,
+            success: false,
+          );
+        }
       } else {
         final error = Errors.getSdkError(Errors.USER_REJECTED);
         await _web3Wallet!.rejectSession(id: args.id, reason: error);
@@ -193,12 +201,11 @@ class Web3WalletService extends IWeb3WalletService {
           topic: args.params.pairingTopic,
         );
 
-        // TODO this should be triggered on _onRelayClientMessage
         final scheme = args.params.proposer.metadata.redirect?.native ?? '';
         DeepLinkHandler.goTo(
           scheme,
           modalTitle: 'Error',
-          modalMessage: 'User rejected',
+          modalMessage: error.message,
           success: false,
         );
       }
@@ -301,8 +308,7 @@ class Web3WalletService extends IWeb3WalletService {
               WCBottomSheetResult.reject;
 
       if (rs != WCBottomSheetResult.reject) {
-        const chain = 'eip155:1';
-        final chainKeys = GetIt.I<IKeyService>().getKeysForChain(chain);
+        final chainKeys = GetIt.I<IKeyService>().getKeysForChain('eip155:1');
         final privateKey = '0x${chainKeys[0].privateKey}';
         final credentials = EthPrivateKey.fromHex(privateKey);
         //
@@ -329,12 +335,20 @@ class Web3WalletService extends IWeb3WalletService {
           );
         }
         //
-        final _ = await _web3Wallet!.approveSessionAuthenticate(
-          id: args.id,
-          auths: cacaos,
-        );
-        final scheme = args.requester.metadata.redirect?.native ?? '';
-        DeepLinkHandler.goTo(scheme);
+        try {
+          await _web3Wallet!.approveSessionAuthenticate(
+            id: args.id,
+            auths: cacaos,
+          );
+          final scheme = args.requester.metadata.redirect?.native ?? '';
+          DeepLinkHandler.goTo(scheme);
+        } on WalletConnectError catch (error) {
+          DeepLinkHandler.goBackModal(
+            title: 'Error',
+            message: error.message,
+            success: false,
+          );
+        }
       } else {
         await _web3Wallet!.rejectSessionAuthenticate(
           id: args.id,

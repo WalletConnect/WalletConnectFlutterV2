@@ -58,7 +58,7 @@ class DeepLinkHandler {
     } catch (e) {
       debugPrint(
           '[SampleWallet] [DeepLinkHandler] error re-opening dapp ($scheme). $e');
-      _goBackModal(
+      goBackModal(
         title: modalTitle,
         message: modalMessage,
         success: success,
@@ -66,25 +66,7 @@ class DeepLinkHandler {
     }
   }
 
-  static void _onLink(Object? event) {
-    final decodedUri = Uri.parse(Uri.decodeFull(event.toString()));
-    if (decodedUri.toString().startsWith('wc:')) {
-      return;
-    }
-    final pairingUri = decodedUri.query.replaceFirst('uri=', '');
-    if (!pairingUri.toString().startsWith('wc:')) {
-      return;
-    }
-    waiting.value = true;
-    _linksController.sink.add(pairingUri);
-  }
-
-  static void _onError(Object error) {
-    waiting.value = false;
-    debugPrint('[SampleWallet] [DeepLinkHandler] _onError $error');
-  }
-
-  static void _goBackModal({
+  static void goBackModal({
     String? title,
     String? message,
     bool success = true,
@@ -116,5 +98,23 @@ class DeepLinkHandler {
         ),
       ),
     );
+  }
+
+  static void _onLink(Object? event) {
+    final decodedUri = Uri.parse(Uri.decodeFull(event.toString()));
+    if (decodedUri.toString().startsWith('wc:')) {
+      return;
+    }
+    final pairingUri = decodedUri.query.replaceFirst('uri=', '');
+    if (!pairingUri.toString().startsWith('wc:')) {
+      return;
+    }
+    waiting.value = true;
+    _linksController.sink.add(pairingUri);
+  }
+
+  static void _onError(Object error) {
+    waiting.value = false;
+    debugPrint('[SampleWallet] [DeepLinkHandler] _onError $error');
   }
 }

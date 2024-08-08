@@ -20,7 +20,7 @@ dependencies:
   json_annotation: ^4.8.1
   logger: ^2.2.0
   package_info_plus: ^7.0.0
-  pointycastle: ^3.7.4
+  pointycastle: ^3.9.1
   shared_preferences: ^2.2.2
   stack_trace: ^1.10.0
   stream_channel: ^2.1.0
