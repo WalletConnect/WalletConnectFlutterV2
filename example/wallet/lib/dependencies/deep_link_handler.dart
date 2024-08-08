@@ -98,15 +98,16 @@ class DeepLinkHandler {
 
   static void _onLink(Object? event) {
     final decodedUri = Uri.parse(Uri.decodeFull(event.toString()));
-    if (decodedUri.toString().startsWith('wc:')) {
-      return;
+    if (decodedUri.isScheme('wc')) {
+      waiting.value = true;
+      _linksController.sink.add(decodedUri.toString());
+    } else {
+      if (decodedUri.query.startsWith('uri=')) {
+        final pairingUri = decodedUri.query.replaceFirst('uri=', '');
+        waiting.value = true;
+        _linksController.sink.add(pairingUri);
+      }
     }
-    final pairingUri = decodedUri.query.replaceFirst('uri=', '');
-    if (!pairingUri.toString().startsWith('wc:')) {
-      return;
-    }
-    waiting.value = true;
-    _linksController.sink.add(pairingUri);
   }
 
   static void _onError(Object error) {
