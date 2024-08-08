@@ -9,19 +9,15 @@ import 'package:walletconnect_flutter_v2_wallet/dependencies/bottom_sheet/i_bott
 import 'package:walletconnect_flutter_v2_wallet/utils/constants.dart';
 
 class DeepLinkHandler {
-  //
   static const _methodChannel = MethodChannel(
     'com.walletconnect.flutterwallet/methods',
   );
   static const _eventChannel = EventChannel(
     'com.walletconnect.flutterwallet/events',
   );
-  //
   static final _linksController = StreamController<String>.broadcast();
   static Stream<String> get onLink => _linksController.stream;
-  //
   static final waiting = ValueNotifier<bool>(false);
-  //
 
   static void initListener() {
     if (kIsWeb) return;

@@ -88,9 +88,6 @@ class KeyService extends IKeyService {
     _keys.add(chainKey);
 
     await _saveKeys();
-
-    // final mnemonic = bip39.generateMnemonic();
-    // await restoreWallet(mnemonic: mnemonic);
   }
 
   @override
@@ -98,7 +95,6 @@ class KeyService extends IKeyService {
     // ⚠️ WARNING: SharedPreferences is not the best way to store your keys! This is just for example purposes!
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('w3w_chain_keys');
-    // await prefs.remove('w3w_mnemonic');
     await prefs.setString('w3w_mnemonic', mnemonic);
 
     final keyPair = _keyPairFromMnemonic(mnemonic);

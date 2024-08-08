@@ -102,9 +102,12 @@ class Web3WalletService extends IWeb3WalletService {
     final chainKeys = GetIt.I<IKeyService>().getKeysForChain('eip155');
     for (var session in sessions) {
       try {
+        final chainIds = NamespaceUtils.getChainIdsFromNamespaces(
+          namespaces: session.namespaces,
+        );
         _web3Wallet!.emitSessionEvent(
           topic: session.topic,
-          chainId: 'eip155:1',
+          chainId: chainIds.first,
           event: SessionEventParams(
             name: 'accountsChanged',
             data: [chainKeys.first.address],
