@@ -32,14 +32,10 @@ class ConnectivityState implements IConnectivity {
 
     _isOnline = isMobileData || isWifi;
 
-    if (!_isOnline) {
-      if (_core.relayClient.isConnected) {
-        await _core.relayClient.disconnect();
-      }
-    } else {
-      if (!_core.relayClient.isConnected) {
-        await _core.relayClient.connect();
-      }
+    if (_isOnline && !_core.relayClient.isConnected) {
+       await _core.relayClient.connect();
+    } else if (!_isOnline && _core.relayClient.isConnected) {
+       await _core.relayClient.disconnect();
     }
   }
 }
