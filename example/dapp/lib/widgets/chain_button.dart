@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:walletconnect_flutter_v2_dapp/models/chain_metadata.dart';
 import 'package:walletconnect_flutter_v2_dapp/utils/constants.dart';
@@ -17,7 +19,10 @@ class ChainButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      width: (MediaQuery.of(context).size.width / 2) - 14.0,
+      width: (min(Constants.smallScreen - 78.0,
+                  MediaQuery.of(context).size.width) /
+              2) -
+          14.0,
       height: StyleConstants.linear48,
       margin: const EdgeInsets.symmetric(
         vertical: StyleConstants.linear8,

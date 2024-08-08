@@ -1,4 +1,6 @@
 import 'package:logger/logger.dart';
+import 'package:walletconnect_flutter_v2/apis/core/connectivity/connectivity.dart';
+import 'package:walletconnect_flutter_v2/apis/core/connectivity/i_connectivity.dart';
 import 'package:walletconnect_flutter_v2/apis/core/crypto/crypto.dart';
 import 'package:walletconnect_flutter_v2/apis/core/crypto/i_crypto.dart';
 import 'package:walletconnect_flutter_v2/apis/core/echo/echo.dart';
@@ -64,6 +66,9 @@ class Core implements ICore {
 
   @override
   late IVerify verify;
+
+  @override
+  late IConnectivity connectivity;
 
   Logger _logger = Logger(
     level: Level.off,
@@ -169,6 +174,9 @@ class Core implements ICore {
       core: this,
       httpClient: httpClient,
     );
+    connectivity = ConnectivityState(
+      core: this,
+    );
   }
 
   @override
@@ -178,6 +186,7 @@ class Core implements ICore {
     await relayClient.init();
     await expirer.init();
     await pairing.init();
+    await connectivity.init();
     heartbeat.init();
   }
 }

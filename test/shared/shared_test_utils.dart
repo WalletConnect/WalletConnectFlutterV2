@@ -1,8 +1,11 @@
 // ignore_for_file: no_leading_underscores_for_local_identifiers
 
+import 'package:flutter/services.dart';
+import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:walletconnect_flutter_v2/apis/core/core.dart';
 import 'package:walletconnect_flutter_v2/apis/core/crypto/crypto.dart';
 import 'package:walletconnect_flutter_v2/apis/core/crypto/crypto_utils.dart';
@@ -82,3 +85,39 @@ MockHttpWrapper getHttpWrapper() {
 
   return httpWrapper;
 }
+
+mockPackageInfo() {
+  PackageInfo.setMockInitialValues(
+    appName: _mockInitialValues['appName'],
+    packageName: _mockInitialValues['packageName'],
+    version: _mockInitialValues['version'],
+    buildNumber: _mockInitialValues['buildNumber'],
+    buildSignature: _mockInitialValues['buildSignature'],
+  );
+}
+
+mockConnectivity([List<dynamic> values = const ['wifi']]) {
+  const channel = MethodChannel('dev.fluttercommunity.plus/connectivity');
+  TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+      .setMockMessageHandler(
+    channel.name,
+    (data) async {
+      final call = channel.codec.decodeMethodCall(data);
+      if (call.method == 'getAll') {
+        return channel.codec.encodeSuccessEnvelope(_mockInitialValues);
+      }
+      if (call.method == 'check') {
+        return channel.codec.encodeSuccessEnvelope(values);
+      }
+      return null;
+    },
+  );
+}
+
+Map<String, dynamic> get _mockInitialValues => {
+      'appName': 'walletconnect_flutter_v2',
+      'packageName': 'com.walletconnect.flutterdapp',
+      'version': '1.0',
+      'buildNumber': '2',
+      'buildSignature': 'buildSignature',
+    };

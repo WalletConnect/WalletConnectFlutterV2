@@ -2,17 +2,8 @@ class DartDefines {
   static const String projectId = String.fromEnvironment(
     'PROJECT_ID',
   );
-  //
-  static const eip155PrivateKey = String.fromEnvironment(
-    'EIP155_PRIVATE_KEY',
-    defaultValue:
-        '5754463bdfbd6e081ca1d6df965927feb1066a0df86d010ac4125eb4bc4c0082',
-  );
-  static const eip155Address = String.fromEnvironment(
-    'EIP155_ADDRESS',
-    defaultValue: '0xf3c95b1a8cabf3d5151912377aeadd84aa41c27c',
-  );
-  //
+  // HARDCODED TEST KEYS
+  // KADENA
   static const kadenaSecretKey = String.fromEnvironment(
     'KADENA_SECRET_KEY',
     defaultValue:
@@ -23,7 +14,7 @@ class DartDefines {
     defaultValue:
         '3a527a1af7713cde04a4ce8b6c95b3806b7582f2423d740fc16eaa5b7a235d42',
   );
-  //
+  // SOLANA
   static const solanaSecretKey = String.fromEnvironment(
     'SOLANA_SECRET_KEY',
     defaultValue:
@@ -33,7 +24,7 @@ class DartDefines {
     'SOLANA_ADDRESS',
     defaultValue: 'EbdEmCpKGvEwfwV4ACmVYHFRkwvXdogJhMZeEekDFVVJ',
   );
-  //
+  // POLKADOT
   static const polkadotMnemonic = String.fromEnvironment(
     'POLKADOT_MNEMONIC',
     defaultValue:

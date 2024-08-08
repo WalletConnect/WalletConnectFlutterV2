@@ -836,6 +836,9 @@ class SignEngine implements ISignEngine {
     if (!_initialized) {
       throw Errors.getInternalError(Errors.NOT_INITIALIZED);
     }
+    if (!core.connectivity.isOnline) {
+      throw WalletConnectError(code: -1, message: 'No internet connection');
+    }
   }
 
   String _getRegisterKey(String chainId, String value) {
@@ -1866,10 +1869,11 @@ class SignEngine implements ISignEngine {
     );
 
     final walletAddress = AddressUtils.getDidAddress(payload.iss);
+    final ethAddress = EthereumAddress.fromHex(walletAddress);
     final chainId = AddressUtils.getDidChainId(payload.iss);
 
     final isValid = await AuthSignature.verifySignature(
-      walletAddress,
+      ethAddress.hexEip55,
       reconstructed,
       signature,
       chainId,
@@ -1888,6 +1892,7 @@ class SignEngine implements ISignEngine {
     final header =
         '${cacaoPayload.domain} wants you to sign in with your Ethereum account:';
     final walletAddress = AddressUtils.getDidAddress(iss);
+    final ethAddress = EthereumAddress.fromHex(walletAddress);
 
     if (cacaoPayload.aud.isEmpty) {
       throw WalletConnectError(code: -1, message: 'aud is required');
@@ -1924,7 +1929,7 @@ class SignEngine implements ISignEngine {
 
     final message = [
       header,
-      walletAddress,
+      ethAddress.hexEip55,
       '',
       statement,
       '',
@@ -1962,11 +1967,11 @@ class SignEngine implements ISignEngine {
   // FORMER AUTH ENGINE PROPERTY
   @override
   Map<int, PendingAuthRequest> getPendingAuthRequests() {
-    Map<int, PendingAuthRequest> pendingRequests = {};
+    Map<int, PendingAuthRequest> pendingAuthRequests = {};
     authRequests.getAll().forEach((key) {
-      pendingRequests[key.id] = key;
+      pendingAuthRequests[key.id] = key;
     });
-    return pendingRequests;
+    return pendingAuthRequests;
   }
 
   // FORMER AUTH ENGINE PROPERTY
@@ -2128,11 +2133,11 @@ class SignEngine implements ISignEngine {
   // NEW ONE-CLICK AUTH METHOD FOR DAPPS
   @override
   Map<int, PendingSessionAuthRequest> getPendingSessionAuthRequests() {
-    Map<int, PendingSessionAuthRequest> pendingRequests = {};
+    Map<int, PendingSessionAuthRequest> pendingSessionAuthRequests = {};
     sessionAuthRequests.getAll().forEach((key) {
-      pendingRequests[key.id] = key;
+      pendingSessionAuthRequests[key.id] = key;
     });
-    return pendingRequests;
+    return pendingSessionAuthRequests;
   }
 
   @override

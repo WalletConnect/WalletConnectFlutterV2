@@ -1,4 +1,5 @@
 import 'package:logger/logger.dart';
+import 'package:walletconnect_flutter_v2/apis/core/connectivity/i_connectivity.dart';
 import 'package:walletconnect_flutter_v2/apis/core/crypto/i_crypto.dart';
 import 'package:walletconnect_flutter_v2/apis/core/echo/i_echo.dart';
 import 'package:walletconnect_flutter_v2/apis/core/heartbit/i_heartbeat.dart';
@@ -21,6 +22,7 @@ abstract class ICore {
   abstract IRelayClient relayClient;
   abstract IStore<Map<String, dynamic>> storage;
 
+  abstract IConnectivity connectivity;
   abstract IExpirer expirer;
   abstract IPairing pairing;
   abstract IEcho echo;

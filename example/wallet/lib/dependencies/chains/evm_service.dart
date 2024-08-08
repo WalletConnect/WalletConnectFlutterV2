@@ -7,6 +7,7 @@ import 'package:get_it/get_it.dart';
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/bottom_sheet/i_bottom_sheet_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/chains/common.dart';
+import 'package:walletconnect_flutter_v2_wallet/dependencies/deep_link_handler.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/i_web3wallet_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/key_service/i_key_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/models/chain_metadata.dart';
@@ -140,12 +141,19 @@ class EVMService {
       );
     }
 
-    await _web3Wallet.respondSessionRequest(
-      topic: topic,
-      response: response,
-    );
-
-    CommonMethods.goBackToDapp(topic, response.result ?? response.error);
+    try {
+      await _web3Wallet.respondSessionRequest(
+        topic: topic,
+        response: response,
+      );
+      CommonMethods.goBackToDapp(topic, response.result ?? response.error);
+    } on WalletConnectError catch (error) {
+      DeepLinkHandler.goBackModal(
+        title: 'Error',
+        message: error.message,
+        success: false,
+      );
+    }
   }
 
   Future<void> ethSign(String topic, dynamic parameters) async {
@@ -187,12 +195,19 @@ class EVMService {
       );
     }
 
-    await _web3Wallet.respondSessionRequest(
-      topic: topic,
-      response: response,
-    );
-
-    CommonMethods.goBackToDapp(topic, response.result ?? response.error);
+    try {
+      await _web3Wallet.respondSessionRequest(
+        topic: topic,
+        response: response,
+      );
+      CommonMethods.goBackToDapp(topic, response.result ?? response.error);
+    } on WalletConnectError catch (error) {
+      DeepLinkHandler.goBackModal(
+        title: 'Error',
+        message: error.message,
+        success: false,
+      );
+    }
   }
 
   Future<void> ethSignTypedData(String topic, dynamic parameters) async {
@@ -229,12 +244,19 @@ class EVMService {
       );
     }
 
-    await _web3Wallet.respondSessionRequest(
-      topic: topic,
-      response: response,
-    );
-
-    CommonMethods.goBackToDapp(topic, response.result ?? response.error);
+    try {
+      await _web3Wallet.respondSessionRequest(
+        topic: topic,
+        response: response,
+      );
+      CommonMethods.goBackToDapp(topic, response.result ?? response.error);
+    } on WalletConnectError catch (error) {
+      DeepLinkHandler.goBackModal(
+        title: 'Error',
+        message: error.message,
+        success: false,
+      );
+    }
   }
 
   Future<void> ethSignTypedDataV4(String topic, dynamic parameters) async {
@@ -271,12 +293,19 @@ class EVMService {
       );
     }
 
-    await _web3Wallet.respondSessionRequest(
-      topic: topic,
-      response: response,
-    );
-
-    CommonMethods.goBackToDapp(topic, response.result ?? response.error);
+    try {
+      await _web3Wallet.respondSessionRequest(
+        topic: topic,
+        response: response,
+      );
+      CommonMethods.goBackToDapp(topic, response.result ?? response.error);
+    } on WalletConnectError catch (error) {
+      DeepLinkHandler.goBackModal(
+        title: 'Error',
+        message: error.message,
+        success: false,
+      );
+    }
   }
 
   Future<void> ethSignTransaction(String topic, dynamic parameters) async {
@@ -331,12 +360,19 @@ class EVMService {
       response = response.copyWith(error: transaction as JsonRpcError);
     }
 
-    await _web3Wallet.respondSessionRequest(
-      topic: topic,
-      response: response,
-    );
-
-    CommonMethods.goBackToDapp(topic, response.result ?? response.error);
+    try {
+      await _web3Wallet.respondSessionRequest(
+        topic: topic,
+        response: response,
+      );
+      CommonMethods.goBackToDapp(topic, response.result ?? response.error);
+    } on WalletConnectError catch (error) {
+      DeepLinkHandler.goBackModal(
+        title: 'Error',
+        message: error.message,
+        success: false,
+      );
+    }
   }
 
   Future<void> ethSendTransaction(String topic, dynamic parameters) async {
@@ -389,12 +425,19 @@ class EVMService {
       response = response.copyWith(error: transaction as JsonRpcError);
     }
 
-    await _web3Wallet.respondSessionRequest(
-      topic: topic,
-      response: response,
-    );
-
-    CommonMethods.goBackToDapp(topic, response.result ?? response.error);
+    try {
+      await _web3Wallet.respondSessionRequest(
+        topic: topic,
+        response: response,
+      );
+      CommonMethods.goBackToDapp(topic, response.result ?? response.error);
+    } on WalletConnectError catch (error) {
+      DeepLinkHandler.goBackModal(
+        title: 'Error',
+        message: error.message,
+        success: false,
+      );
+    }
   }
 
   Future<void> switchChain(String topic, dynamic parameters) async {
@@ -426,12 +469,19 @@ class EVMService {
       );
     }
 
-    await _web3Wallet.respondSessionRequest(
-      topic: topic,
-      response: response,
-    );
-
-    CommonMethods.goBackToDapp(topic, true);
+    try {
+      await _web3Wallet.respondSessionRequest(
+        topic: topic,
+        response: response,
+      );
+      CommonMethods.goBackToDapp(topic, true);
+    } on WalletConnectError catch (error) {
+      DeepLinkHandler.goBackModal(
+        title: 'Error',
+        message: error.message,
+        success: false,
+      );
+    }
   }
 
   // Future<void> addChain(String topic, dynamic parameters) async {

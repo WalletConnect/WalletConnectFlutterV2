@@ -6,7 +6,7 @@ publish_to: "none"
 version: 1.0.0+1
 
 environment:
-  sdk: ">=2.18.6 <3.0.0"
+  sdk: ">=2.19.0 <4.0.0"
 
 dependencies:
   flutter:
@@ -23,10 +23,13 @@ dependencies:
   package_info_plus: ^7.0.0
   convert: ^3.0.1
   url_launcher: ^6.2.2
+  
+  # CHECK WEB SUPPORT
   kadena_dart_sdk: ^2.3.2
   solana: ^0.30.4
   polkadart_keyring: ^0.4.3
-  polkadart: ^0.4.3
+  polkadart: ^0.4.6
+  #
   walletconnect_flutter_v2:
     path: ../..
 
