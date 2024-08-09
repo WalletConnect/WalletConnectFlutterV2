@@ -60,12 +60,13 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> initialize() async {
-    const flavor = String.fromEnvironment('FLUTTER_APP_FLAVOR');
+    String flavor = '-${const String.fromEnvironment('FLUTTER_APP_FLAVOR')}';
+    flavor = flavor.replaceAll('-production', '');
     _web3App = Web3App(
       core: Core(
         projectId: DartDefines.projectId,
       ),
-      metadata: const PairingMetadata(
+      metadata: PairingMetadata(
         name: 'Sample dApp Flutter',
         description: 'WalletConnect\'s sample dapp with Flutter',
         url: 'https://walletconnect.com/',
@@ -73,7 +74,7 @@ class _MyHomePageState extends State<MyHomePage> {
           'https://images.prismic.io/wallet-connect/65785a56531ac2845a260732_WalletConnect-App-Logo-1024X1024.png'
         ],
         redirect: Redirect(
-          native: 'wcflutterdapp-$flavor://',
+          native: 'wcflutterdapp$flavor://',
           // universal: 'https://walletconnect.com',
         ),
       ),

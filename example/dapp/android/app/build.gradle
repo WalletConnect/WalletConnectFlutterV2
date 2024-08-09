@@ -60,9 +60,17 @@ android {
         internal {
             dimension "version"
             applicationIdSuffix ".internal"
+            manifestPlaceholders = [
+                    appIcon: "@mipmap/ic_launcher_internal",
+                    applicationLabel: "FL Dapp (internal)",
+            ]
         }
         production {
             dimension "version"
+            manifestPlaceholders = [
+                    appIcon: "@mipmap/ic_launcher",
+                    applicationLabel: "FL Dapp",
+            ]
         }
     }
 

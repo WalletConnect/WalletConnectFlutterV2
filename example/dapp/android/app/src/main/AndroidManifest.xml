@@ -10,9 +10,9 @@
         <package android:name="com.walletconnect.flutterwallet.internal"/>
     </queries>
    <application
-        android:label="Web3Dapp Flutter"
-        android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+       android:label="${applicationLabel}"
+       android:name="${applicationName}"
+       android:icon="${appIcon}">
         <activity
             android:name="com.example.dapp.MainActivity"
             android:exported="true"
@@ -45,12 +45,6 @@
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
                 <data android:scheme="wcflutterdapp-internal" />
-            </intent-filter>
-            <intent-filter>
-                <action android:name="android.intent.action.VIEW" />
-                <category android:name="android.intent.category.DEFAULT" />
-                <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="wcflutterdapp-production" />
             </intent-filter>
         </activity>
         <!-- Don't delete the meta-data below.

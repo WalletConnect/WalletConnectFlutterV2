@@ -34,16 +34,6 @@
                 <string>wcflutterwallet-internal</string>
             </array>
         </dict>
-        <dict>
-            <key>CFBundleTypeRole</key>
-            <string>Editor</string>
-            <key>CFBundleURLName</key>
-            <string>com.walletconnect.flutterwallet.internal</string>
-            <key>CFBundleURLSchemes</key>
-            <array>
-                <string>wcflutterwallet</string>
-            </array>
-        </dict>
     </array>
     <key>CFBundleVersion</key>
     <string>$(FLUTTER_BUILD_NUMBER)</string>

@@ -345,8 +345,9 @@ class ConnectPageState extends State<ConnectPage> {
     );
 
     final encodedUri = Uri.encodeComponent(connectResponse.uri.toString());
-    const flavor = String.fromEnvironment('FLUTTER_APP_FLAVOR');
-    final uri = 'wcflutterwallet-$flavor://wc?uri=$encodedUri';
+    String flavor = '-${const String.fromEnvironment('FLUTTER_APP_FLAVOR')}';
+    flavor = flavor.replaceAll('-production', '');
+    final uri = 'wcflutterwallet$flavor://wc?uri=$encodedUri';
     if (await canLaunchUrlString(uri)) {
       final openApp = await showDialog(
         // ignore: use_build_context_synchronously
@@ -473,9 +474,10 @@ class ConnectPageState extends State<ConnectPage> {
       );
 
       final scheme = event?.session.peer.metadata.redirect?.native;
-      const flavor = String.fromEnvironment('FLUTTER_APP_FLAVOR');
+      String flavor = '-${const String.fromEnvironment('FLUTTER_APP_FLAVOR')}';
+      flavor = flavor.replaceAll('-production', '');
       launchUrlString(
-        scheme ?? 'wcflutterwallet-$flavor://',
+        scheme ?? 'wcflutterwallet$flavor://',
         mode: LaunchMode.externalApplication,
       );
 
@@ -499,11 +501,12 @@ class ConnectPageState extends State<ConnectPage> {
   }) async {
     final methods1 = requiredNamespaces['eip155']?.methods ?? [];
     final methods2 = optionalNamespaces['eip155']?.methods ?? [];
-    const flavor = String.fromEnvironment('FLUTTER_APP_FLAVOR');
+    String flavor = '-${const String.fromEnvironment('FLUTTER_APP_FLAVOR')}';
+    flavor = flavor.replaceAll('-production', '');
     final authResponse = await widget.web3App.authenticate(
       params: SessionAuthRequestParams(
         chains: _selectedChains.map((e) => e.chainId).toList(),
-        domain: 'wcflutterdapp-$flavor://',
+        domain: 'wcflutterdapp$flavor://',
         nonce: AuthUtils.generateNonce(),
         uri: Constants.aud,
         statement: 'Welcome to example flutter app',
@@ -512,7 +515,7 @@ class ConnectPageState extends State<ConnectPage> {
     );
 
     final encodedUri = Uri.encodeComponent(authResponse.uri.toString());
-    final uri = 'wcflutterwallet-$flavor://wc?uri=$encodedUri';
+    final uri = 'wcflutterwallet$flavor://wc?uri=$encodedUri';
 
     if (await canLaunchUrlString(uri)) {
       final openApp = await showDialog(
