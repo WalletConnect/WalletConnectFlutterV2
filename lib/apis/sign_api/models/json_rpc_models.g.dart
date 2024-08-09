@@ -9,7 +9,7 @@ part of 'json_rpc_models.dart';
 _$WcPairingDeleteRequestImpl _$$WcPairingDeleteRequestImplFromJson(
         Map<String, dynamic> json) =>
     _$WcPairingDeleteRequestImpl(
-      code: json['code'] as int,
+      code: (json['code'] as num).toInt(),
       message: json['message'] as String,
     );
 
@@ -112,7 +112,7 @@ _$WcSessionSettleRequestImpl _$$WcSessionSettleRequestImplFromJson(
           (json['sessionProperties'] as Map<String, dynamic>?)?.map(
         (k, e) => MapEntry(k, e as String),
       ),
-      expiry: json['expiry'] as int,
+      expiry: (json['expiry'] as num).toInt(),
       controller: ConnectionMetadata.fromJson(
           json['controller'] as Map<String, dynamic>),
     );
@@ -177,7 +177,7 @@ Map<String, dynamic> _$$WcSessionExtendRequestImplToJson(
 _$WcSessionDeleteRequestImpl _$$WcSessionDeleteRequestImplFromJson(
         Map<String, dynamic> json) =>
     _$WcSessionDeleteRequestImpl(
-      code: json['code'] as int,
+      code: (json['code'] as num).toInt(),
       message: json['message'] as String,
       data: json['data'] as String?,
     );
@@ -311,7 +311,7 @@ _$WcSessionAuthRequestParamsImpl _$$WcSessionAuthRequestParamsImplFromJson(
           json['authPayload'] as Map<String, dynamic>),
       requester: ConnectionMetadata.fromJson(
           json['requester'] as Map<String, dynamic>),
-      expiryTimestamp: json['expiryTimestamp'] as int,
+      expiryTimestamp: (json['expiryTimestamp'] as num).toInt(),
     );
 
 Map<String, dynamic> _$$WcSessionAuthRequestParamsImplToJson(

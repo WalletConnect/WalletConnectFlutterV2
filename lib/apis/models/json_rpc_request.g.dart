@@ -8,7 +8,7 @@ part of 'json_rpc_request.dart';
 
 _$JsonRpcRequestImpl _$$JsonRpcRequestImplFromJson(Map<String, dynamic> json) =>
     _$JsonRpcRequestImpl(
-      id: json['id'] as int,
+      id: (json['id'] as num).toInt(),
       jsonrpc: json['jsonrpc'] as String? ?? '2.0',
       method: json['method'] as String,
       params: json['params'],

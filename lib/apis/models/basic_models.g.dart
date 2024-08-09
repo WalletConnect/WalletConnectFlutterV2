@@ -9,7 +9,7 @@ part of 'basic_models.dart';
 _$WalletConnectErrorImpl _$$WalletConnectErrorImplFromJson(
         Map<String, dynamic> json) =>
     _$WalletConnectErrorImpl(
-      code: json['code'] as int,
+      code: (json['code'] as num).toInt(),
       message: json['message'] as String,
       data: json['data'] as String?,
     );

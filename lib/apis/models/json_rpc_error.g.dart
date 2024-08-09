@@ -8,7 +8,7 @@ part of 'json_rpc_error.dart';
 
 _$JsonRpcErrorImpl _$$JsonRpcErrorImplFromJson(Map<String, dynamic> json) =>
     _$JsonRpcErrorImpl(
-      code: json['code'] as int?,
+      code: (json['code'] as num?)?.toInt(),
       message: json['message'] as String?,
     );
 

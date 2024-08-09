@@ -24,7 +24,7 @@ _$SessionAuthRequestParamsImpl _$$SessionAuthRequestParamsImplFromJson(
       resources: (json['resources'] as List<dynamic>?)
           ?.map((e) => e as String)
           .toList(),
-      expiry: json['expiry'] as int?,
+      expiry: (json['expiry'] as num?)?.toInt(),
       methods: (json['methods'] as List<dynamic>?)
               ?.map((e) => e as String)
               .toList() ??
@@ -106,11 +106,11 @@ Map<String, dynamic> _$$SessionAuthPayloadImplToJson(
 _$PendingSessionAuthRequestImpl _$$PendingSessionAuthRequestImplFromJson(
         Map<String, dynamic> json) =>
     _$PendingSessionAuthRequestImpl(
-      id: json['id'] as int,
+      id: (json['id'] as num).toInt(),
       pairingTopic: json['pairingTopic'] as String,
       requester: ConnectionMetadata.fromJson(
           json['requester'] as Map<String, dynamic>),
-      expiryTimestamp: json['expiryTimestamp'] as int,
+      expiryTimestamp: (json['expiryTimestamp'] as num).toInt(),
       authPayload: CacaoRequestPayload.fromJson(
           json['authPayload'] as Map<String, dynamic>),
       verifyContext:

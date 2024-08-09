@@ -11,7 +11,7 @@ _$JsonRpcResponseImpl<T> _$$JsonRpcResponseImplFromJson<T>(
   T Function(Object? json) fromJsonT,
 ) =>
     _$JsonRpcResponseImpl<T>(
-      id: json['id'] as int,
+      id: (json['id'] as num).toInt(),
       jsonrpc: json['jsonrpc'] as String? ?? '2.0',
       error: json['error'] == null
           ? null
