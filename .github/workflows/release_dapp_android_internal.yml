@@ -1,4 +1,4 @@
-name: Android Web3Dapp (internal) deploy
+name: Android Dapp (internal) deploy
 
 on:
   workflow_dispatch:

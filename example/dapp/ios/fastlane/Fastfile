@@ -121,7 +121,7 @@ platform :ios do
     )
 
     slack(
-      message: "📱 Web3Dapp Flutter #{options[:app_version]}-#{_flavor} (#{new_build_number}) for 🍎 iOS successfully released!\n\n",
+      message: "📱 Flutter Dapp #{options[:app_version]}-#{_flavor} (#{new_build_number}) for 🍎 iOS successfully released!\n\n",
       default_payloads: [],
       attachment_properties: {
         fields: [

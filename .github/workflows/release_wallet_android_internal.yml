@@ -1,4 +1,4 @@
-name: Android Web3Wallet (internal) deploy
+name: Android Wallet (internal) deploy
 
 on:
   workflow_dispatch:

@@ -1,4 +1,4 @@
-name: iOS Web3Dapp (internal) deploy
+name: iOS Dapp (internal) deploy
 
 on:
   workflow_dispatch:

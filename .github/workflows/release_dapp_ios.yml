@@ -1,4 +1,4 @@
-name: iOS Web3Dapp (production) deploy
+name: iOS Dapp (production) deploy
 
 on:
   workflow_dispatch:

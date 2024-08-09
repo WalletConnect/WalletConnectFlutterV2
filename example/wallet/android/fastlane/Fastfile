@@ -78,7 +78,7 @@ platform :android do
     )
 
     slack(
-      message: "🔐 Web3Wallet Flutter #{_app_version}-#{_flavor} (#{_new_build_number}) for 🤖 Android successfully released!\n\n",
+      message: "🔐 Flutter Wallet #{_app_version}-#{_flavor} (#{_new_build_number}) for 🤖 Android successfully released!\n\n",
       default_payloads: [],
       attachment_properties: {
         fields: [

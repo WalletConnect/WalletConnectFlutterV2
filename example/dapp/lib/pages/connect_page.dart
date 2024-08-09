@@ -354,7 +354,7 @@ class ConnectPageState extends State<ConnectPage> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            content: const Text('Do you want to open with Web3Wallet Flutter'),
+            content: const Text('Do you want to open with Flutter Wallet'),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(context).pop(false),
@@ -523,7 +523,7 @@ class ConnectPageState extends State<ConnectPage> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            content: const Text('Do you want to open with Web3Wallet Flutter'),
+            content: const Text('Do you want to open with Flutter Wallet'),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(context).pop(false),

@@ -1,4 +1,4 @@
-name: Android Web3Dapp (production) deploy
+name: Android Dapp (production) deploy
 
 on:
   workflow_dispatch:
