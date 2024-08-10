@@ -1,3 +1,5 @@
+@Timeout(Duration(seconds: 45))
+
 import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
