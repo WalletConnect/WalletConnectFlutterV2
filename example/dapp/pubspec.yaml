@@ -20,8 +20,10 @@ dependencies:
   # intl: ^0.19.0
   package_info_plus: ^7.0.0
   walletconnect_modal_flutter: ^2.1.20
-  # walletconnect_flutter_v2:
-  #   path: ../..
+
+dependency_overrides:
+  walletconnect_flutter_v2:
+    path: ../..
 
 dev_dependencies:
   flutter_test:

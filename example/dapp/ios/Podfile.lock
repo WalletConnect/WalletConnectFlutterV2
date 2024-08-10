@@ -1,6 +1,9 @@
 PODS:
   - appcheck (1.0.3):
     - Flutter
+  - connectivity_plus (0.0.1):
+    - Flutter
+    - FlutterMacOS
   - Flutter (1.0.0)
   - flutter_keyboard_visibility (0.0.1):
     - Flutter
@@ -14,6 +17,7 @@ PODS:
 
 DEPENDENCIES:
   - appcheck (from `.symlinks/plugins/appcheck/ios`)
+  - connectivity_plus (from `.symlinks/plugins/connectivity_plus/darwin`)
   - Flutter (from `Flutter`)
   - flutter_keyboard_visibility (from `.symlinks/plugins/flutter_keyboard_visibility/ios`)
   - package_info_plus (from `.symlinks/plugins/package_info_plus/ios`)
@@ -23,6 +27,8 @@ DEPENDENCIES:
 EXTERNAL SOURCES:
   appcheck:
     :path: ".symlinks/plugins/appcheck/ios"
+  connectivity_plus:
+    :path: ".symlinks/plugins/connectivity_plus/darwin"
   Flutter:
     :path: Flutter
   flutter_keyboard_visibility:
@@ -36,6 +42,7 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   appcheck: e1ab9d4e03736f03e0401554a134d1ed502d7629
+  connectivity_plus: ddd7f30999e1faaef5967c23d5b6d503d10434db
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
   flutter_keyboard_visibility: 0339d06371254c3eb25eeb90ba8d17dca8f9c069
   package_info_plus: 58f0028419748fad15bf008b270aaa8e54380b1c
