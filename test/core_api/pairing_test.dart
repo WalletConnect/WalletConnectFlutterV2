@@ -265,18 +265,18 @@ void main() {
     });
 
     test('clients can ping each other', () async {
-      final CreateResponse response = await coreA.pairing.create();
-      // await coreB.pairing.pair(uri: response.uri);
+      // TODO more logs to check any fails in the future.
+      final pairingInfo = await coreA.pairing.create();
 
-      Completer completer = Completer();
+      final completer = Completer();
       coreB.pairing.onPairingPing.subscribe((args) {
         expect(args != null, true);
         completer.complete();
       });
+      await coreB.pairing.pair(uri: pairingInfo.uri, activatePairing: true);
 
-      await coreB.pairing.pair(uri: response.uri, activatePairing: true);
-      await coreA.pairing.activate(topic: response.topic);
-      await coreA.pairing.ping(topic: response.topic);
+      await coreA.pairing.activate(topic: pairingInfo.topic);
+      await coreA.pairing.ping(topic: pairingInfo.topic);
 
       await completer.future;
     });

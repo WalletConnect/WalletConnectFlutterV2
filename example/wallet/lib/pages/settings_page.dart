@@ -616,8 +616,11 @@ class __DataContainerState extends State<_DataContainer> {
               ],
             ),
             ImageFiltered(
-              imageFilter:
-                  ImageFilter.blur(sigmaX: blurValue, sigmaY: blurValue),
+              imageFilter: ImageFilter.blur(
+                sigmaX: blurValue,
+                sigmaY: blurValue,
+                tileMode: TileMode.decal,
+              ),
               child: Text(
                 widget.data,
                 style: const TextStyle(

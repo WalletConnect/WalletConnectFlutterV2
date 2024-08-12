@@ -1885,11 +1885,10 @@ class SignEngine implements ISignEngine {
     );
 
     final walletAddress = AddressUtils.getDidAddress(payload.iss);
-    final ethAddress = EthereumAddress.fromHex(walletAddress);
     final chainId = AddressUtils.getDidChainId(payload.iss);
 
     final isValid = await AuthSignature.verifySignature(
-      ethAddress.hexEip55,
+      walletAddress.toEIP55(),
       reconstructed,
       signature,
       chainId,
@@ -1908,7 +1907,6 @@ class SignEngine implements ISignEngine {
     final header =
         '${cacaoPayload.domain} wants you to sign in with your Ethereum account:';
     final walletAddress = AddressUtils.getDidAddress(iss);
-    final ethAddress = EthereumAddress.fromHex(walletAddress);
 
     if (cacaoPayload.aud.isEmpty) {
       throw WalletConnectError(code: -1, message: 'aud is required');
@@ -1945,7 +1943,7 @@ class SignEngine implements ISignEngine {
 
     final message = [
       header,
-      ethAddress.hexEip55,
+      walletAddress.toEIP55(),
       '',
       statement,
       '',
@@ -2406,7 +2404,7 @@ class SignEngine implements ISignEngine {
 
         final parsedAddress = AddressUtils.getDidAddress(payload.iss);
         for (var chain in approvedChains.toSet()) {
-          approvedAccounts.add('$chain:$parsedAddress');
+          approvedAccounts.add('$chain:${parsedAddress.toEIP55()}');
         }
       }
     } on WalletConnectError catch (e) {
@@ -2605,7 +2603,7 @@ class SignEngine implements ISignEngine {
 
       final parsedAddress = AddressUtils.getDidAddress(payload.iss);
       for (var chain in approvedChains.toSet()) {
-        approvedAccounts.add('$chain:$parsedAddress');
+        approvedAccounts.add('$chain:${parsedAddress.toEIP55()}');
       }
     }
 
