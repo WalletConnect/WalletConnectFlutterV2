@@ -6,7 +6,6 @@ import 'package:http/http.dart' as http;
 import 'package:walletconnect_flutter_v2/apis/core/pairing/utils/json_rpc_utils.dart';
 import 'package:walletconnect_flutter_v2/apis/core/store/i_generic_store.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/i_sessions.dart';
-import 'package:walletconnect_flutter_v2/apis/sign_api/utils/custom_credentials.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/utils/sign_api_validator_utils.dart';
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/utils/auth/recaps_utils.dart';
@@ -543,27 +542,20 @@ class SignEngine implements ISignEngine {
   Future<dynamic> requestWriteContract({
     required String topic,
     required String chainId,
-    required String rpcUrl,
     required DeployedContract deployedContract,
     required String functionName,
     required Transaction transaction,
-    String? method,
     List<dynamic> parameters = const [],
+    String? method,
   }) async {
     if (transaction.from == null) {
       throw Exception('Transaction must include `from` value');
     }
-    final credentials = CustomCredentials(
-      signEngine: this,
-      topic: topic,
-      chainId: chainId,
-      address: transaction.from!,
-      method: method,
-    );
+
     final trx = Transaction.callContract(
       contract: deployedContract,
       function: deployedContract.function(functionName),
-      from: credentials.address,
+      from: transaction.from!,
       value: transaction.value,
       maxGas: transaction.maxGas,
       gasPrice: transaction.gasPrice,
@@ -573,13 +565,13 @@ class SignEngine implements ISignEngine {
       parameters: parameters,
     );
 
-    if (chainId.contains(':')) {
-      chainId = chainId.split(':').last;
-    }
-    return await Web3Client(rpcUrl, http.Client()).sendTransaction(
-      credentials,
-      trx,
-      chainId: int.parse(chainId),
+    return await request(
+      topic: topic,
+      chainId: chainId,
+      request: SessionRequestParams(
+        method: method ?? MethodsConstants.ethSendTransaction,
+        params: [trx.toJson()],
+      ),
     );
   }
 
@@ -835,6 +827,9 @@ class SignEngine implements ISignEngine {
   void _checkInitialized() {
     if (!_initialized) {
       throw Errors.getInternalError(Errors.NOT_INITIALIZED);
+    }
+    if (!core.connectivity.isOnline) {
+      throw WalletConnectError(code: -1, message: 'No internet connection');
     }
   }
 
@@ -1869,7 +1864,7 @@ class SignEngine implements ISignEngine {
     final chainId = AddressUtils.getDidChainId(payload.iss);
 
     final isValid = await AuthSignature.verifySignature(
-      walletAddress,
+      walletAddress.toEIP55(),
       reconstructed,
       signature,
       chainId,
@@ -1924,7 +1919,7 @@ class SignEngine implements ISignEngine {
 
     final message = [
       header,
-      walletAddress,
+      walletAddress.toEIP55(),
       '',
       statement,
       '',
@@ -1962,11 +1957,11 @@ class SignEngine implements ISignEngine {
   // FORMER AUTH ENGINE PROPERTY
   @override
   Map<int, PendingAuthRequest> getPendingAuthRequests() {
-    Map<int, PendingAuthRequest> pendingRequests = {};
+    Map<int, PendingAuthRequest> pendingAuthRequests = {};
     authRequests.getAll().forEach((key) {
-      pendingRequests[key.id] = key;
+      pendingAuthRequests[key.id] = key;
     });
-    return pendingRequests;
+    return pendingAuthRequests;
   }
 
   // FORMER AUTH ENGINE PROPERTY
@@ -2128,11 +2123,11 @@ class SignEngine implements ISignEngine {
   // NEW ONE-CLICK AUTH METHOD FOR DAPPS
   @override
   Map<int, PendingSessionAuthRequest> getPendingSessionAuthRequests() {
-    Map<int, PendingSessionAuthRequest> pendingRequests = {};
+    Map<int, PendingSessionAuthRequest> pendingSessionAuthRequests = {};
     sessionAuthRequests.getAll().forEach((key) {
-      pendingRequests[key.id] = key;
+      pendingSessionAuthRequests[key.id] = key;
     });
-    return pendingRequests;
+    return pendingSessionAuthRequests;
   }
 
   @override
@@ -2385,7 +2380,7 @@ class SignEngine implements ISignEngine {
 
         final parsedAddress = AddressUtils.getDidAddress(payload.iss);
         for (var chain in approvedChains.toSet()) {
-          approvedAccounts.add('$chain:$parsedAddress');
+          approvedAccounts.add('$chain:${parsedAddress.toEIP55()}');
         }
       }
     } on WalletConnectError catch (e) {
@@ -2584,7 +2579,7 @@ class SignEngine implements ISignEngine {
 
       final parsedAddress = AddressUtils.getDidAddress(payload.iss);
       for (var chain in approvedChains.toSet()) {
-        approvedAccounts.add('$chain:$parsedAddress');
+        approvedAccounts.add('$chain:${parsedAddress.toEIP55()}');
       }
     }
 

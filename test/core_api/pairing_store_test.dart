@@ -1,5 +1,4 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:package_info_plus/package_info_plus.dart';
 import 'package:walletconnect_flutter_v2/apis/core/core.dart';
 import 'package:walletconnect_flutter_v2/apis/core/i_core.dart';
 import 'package:walletconnect_flutter_v2/apis/core/pairing/i_json_rpc_history.dart';
@@ -18,13 +17,8 @@ import '../shared/shared_test_values.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
-  PackageInfo.setMockInitialValues(
-    appName: 'walletconnect_flutter_v2',
-    packageName: 'com.walletconnect.flutterdapp',
-    version: '1.0',
-    buildNumber: '2',
-    buildSignature: 'buildSignature',
-  );
+  mockPackageInfo();
+  mockConnectivity();
 
   group('Pairing store', () {
     late ICore coreA;

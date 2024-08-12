@@ -36,7 +36,7 @@ Map<String, dynamic> _$$RequiredNamespaceImplToJson(
 _$SessionProposalImpl _$$SessionProposalImplFromJson(
         Map<String, dynamic> json) =>
     _$SessionProposalImpl(
-      id: json['id'] as int,
+      id: (json['id'] as num).toInt(),
       params: ProposalData.fromJson(json['params'] as Map<String, dynamic>),
     );
 
@@ -49,8 +49,8 @@ Map<String, dynamic> _$$SessionProposalImplToJson(
 
 _$ProposalDataImpl _$$ProposalDataImplFromJson(Map<String, dynamic> json) =>
     _$ProposalDataImpl(
-      id: json['id'] as int,
-      expiry: json['expiry'] as int,
+      id: (json['id'] as num).toInt(),
+      expiry: (json['expiry'] as num).toInt(),
       relays: (json['relays'] as List<dynamic>)
           .map((e) => Relay.fromJson(e as Map<String, dynamic>))
           .toList(),

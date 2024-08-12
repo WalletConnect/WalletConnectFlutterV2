@@ -54,7 +54,7 @@ Map<String, dynamic> _$$AuthPayloadParamsImplToJson(
 _$PendingAuthRequestImpl _$$PendingAuthRequestImplFromJson(
         Map<String, dynamic> json) =>
     _$PendingAuthRequestImpl(
-      id: json['id'] as int,
+      id: (json['id'] as num).toInt(),
       pairingTopic: json['pairingTopic'] as String,
       metadata:
           ConnectionMetadata.fromJson(json['metadata'] as Map<String, dynamic>),

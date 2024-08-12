@@ -1,4 +1,4 @@
-name: iOS Web3Wallet (production) deploy
+name: iOS Wallet (production) deploy
 
 on:
   workflow_dispatch:

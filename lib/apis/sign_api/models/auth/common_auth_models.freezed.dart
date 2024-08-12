@@ -12,7 +12,7 @@ part of 'common_auth_models.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 AuthPublicKey _$AuthPublicKeyFromJson(Map<String, dynamic> json) {
   return _AuthPublicKey.fromJson(json);
@@ -112,7 +112,7 @@ class _$AuthPublicKeyImpl implements _AuthPublicKey {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$AuthPublicKeyImpl &&
@@ -406,7 +406,7 @@ class _$CacaoRequestPayloadImpl implements _CacaoRequestPayload {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$CacaoRequestPayloadImpl &&
@@ -766,7 +766,7 @@ class _$CacaoPayloadImpl implements _CacaoPayload {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$CacaoPayloadImpl &&
@@ -960,7 +960,7 @@ class _$CacaoHeaderImpl implements _CacaoHeader {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$CacaoHeaderImpl &&
@@ -1123,7 +1123,7 @@ class _$CacaoSignatureImpl implements _CacaoSignature {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$CacaoSignatureImpl &&
@@ -1328,7 +1328,7 @@ class _$CacaoImpl implements _Cacao {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$CacaoImpl &&
@@ -1575,7 +1575,7 @@ class _$StoredCacaoImpl implements _StoredCacao {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$StoredCacaoImpl &&

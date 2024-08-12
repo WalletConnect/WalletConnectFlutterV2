@@ -17,8 +17,11 @@ dependencies:
   json_annotation: ^4.8.1
   fl_toast: ^3.1.0
   url_launcher: ^6.2.2
-  intl: ^0.19.0
+  # intl: ^0.19.0
   package_info_plus: ^7.0.0
+  walletconnect_modal_flutter: ^2.1.20
+
+dependency_overrides:
   walletconnect_flutter_v2:
     path: ../..
 

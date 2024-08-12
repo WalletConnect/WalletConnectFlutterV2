@@ -9,7 +9,7 @@ part of 'pairing_models.dart';
 _$PairingInfoImpl _$$PairingInfoImplFromJson(Map<String, dynamic> json) =>
     _$PairingInfoImpl(
       topic: json['topic'] as String,
-      expiry: json['expiry'] as int,
+      expiry: (json['expiry'] as num).toInt(),
       relay: Relay.fromJson(json['relay'] as Map<String, dynamic>),
       active: json['active'] as bool,
       methods:
@@ -77,12 +77,12 @@ Map<String, dynamic> _$$RedirectImplToJson(_$RedirectImpl instance) =>
 
 _$JsonRpcRecordImpl _$$JsonRpcRecordImplFromJson(Map<String, dynamic> json) =>
     _$JsonRpcRecordImpl(
-      id: json['id'] as int,
+      id: (json['id'] as num).toInt(),
       topic: json['topic'] as String,
       method: json['method'] as String,
       params: json['params'],
       chainId: json['chainId'] as String?,
-      expiry: json['expiry'] as int?,
+      expiry: (json['expiry'] as num?)?.toInt(),
       response: json['response'],
     );
 
@@ -111,7 +111,7 @@ _$ReceiverPublicKeyImpl _$$ReceiverPublicKeyImplFromJson(
     _$ReceiverPublicKeyImpl(
       topic: json['topic'] as String,
       publicKey: json['publicKey'] as String,
-      expiry: json['expiry'] as int,
+      expiry: (json['expiry'] as num).toInt(),
     );
 
 Map<String, dynamic> _$$ReceiverPublicKeyImplToJson(

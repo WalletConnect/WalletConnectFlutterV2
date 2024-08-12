@@ -1,4 +1,4 @@
-name: Android Web3Dapp (internal) deploy
+name: Android Dapp (internal) deploy
 
 on:
   workflow_dispatch:
@@ -60,4 +60,4 @@ jobs:
         fastlane release_firebase project_id:$PROJECT_ID app_version:$VERSION_NUMBER
 
 # Launch locally
-# act -j build --container-architecture linux/amd64 -P macos-latest-xlarge=-self-hosted --secret-file .github/workflows/.env.secret -W .github/workflows/release_dapp_android.yml
+# act -j build --container-architecture linux/amd64 -P macos-latest-xlarge=-self-hosted --secret-file .github/workflows/.env.secret -W .github/workflows/release_dapp_android_internal.yml

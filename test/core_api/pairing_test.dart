@@ -1,7 +1,8 @@
+@Timeout(Duration(seconds: 45))
+
 import 'dart:async';
 
 import 'package:flutter_test/flutter_test.dart';
-import 'package:package_info_plus/package_info_plus.dart';
 import 'package:walletconnect_flutter_v2/apis/core/core.dart';
 import 'package:walletconnect_flutter_v2/apis/core/i_core.dart';
 import 'package:walletconnect_flutter_v2/apis/core/pairing/utils/pairing_models.dart';
@@ -18,13 +19,8 @@ import '../shared/shared_test_values.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
-  PackageInfo.setMockInitialValues(
-    appName: 'walletconnect_flutter_v2',
-    packageName: 'com.walletconnect.flutterdapp',
-    version: '1.0',
-    buildNumber: '2',
-    buildSignature: 'buildSignature',
-  );
+  mockPackageInfo();
+  mockConnectivity();
 
   test('Format and parses URI correctly', () {
     Uri response = WalletConnectUtils.formatUri(
@@ -271,18 +267,18 @@ void main() {
     });
 
     test('clients can ping each other', () async {
-      final CreateResponse response = await coreA.pairing.create();
-      // await coreB.pairing.pair(uri: response.uri);
+      // TODO more logs to check any fails in the future.
+      final pairingInfo = await coreA.pairing.create();
 
-      Completer completer = Completer();
+      final completer = Completer();
       coreB.pairing.onPairingPing.subscribe((args) {
         expect(args != null, true);
         completer.complete();
       });
+      await coreB.pairing.pair(uri: pairingInfo.uri, activatePairing: true);
 
-      await coreB.pairing.pair(uri: response.uri, activatePairing: true);
-      await coreA.pairing.activate(topic: response.topic);
-      await coreA.pairing.ping(topic: response.topic);
+      await coreA.pairing.activate(topic: pairingInfo.topic);
+      await coreA.pairing.ping(topic: pairingInfo.topic);
 
       await completer.future;
     });

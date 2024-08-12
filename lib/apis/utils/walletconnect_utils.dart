@@ -3,9 +3,7 @@ import 'dart:io';
 
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
-import 'package:walletconnect_flutter_v2/apis/core/relay_client/relay_client_models.dart';
-import 'package:walletconnect_flutter_v2/apis/models/basic_models.dart';
-import 'package:walletconnect_flutter_v2/apis/models/uri_parse_result.dart';
+import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 
 class WalletConnectUtils {
   static bool isExpired(int expiry) {
@@ -91,14 +89,31 @@ class WalletConnectUtils {
   }) {
     final Uri uri = Uri.parse(relayUrl);
     final Map<String, String> queryParams = Uri.splitQueryString(uri.query);
-    String ua = formatUA(protocol, version, sdkVersion);
+    final userAgent = formatUA(protocol, version, sdkVersion);
 
+    // Add basic query params
     final Map<String, String> relayParams = {
       'auth': auth,
-      if ((projectId ?? '').isNotEmpty) 'projectId': projectId!,
-      'ua': ua,
-      if ((packageName ?? '').isNotEmpty) 'origin': packageName!,
+      'ua': userAgent,
     };
+
+    // Add projectId query param
+    if ((projectId ?? '').isNotEmpty) {
+      relayParams['projectId'] = projectId!;
+    }
+
+    // Add bundleId, packageName or origin query param based on platform
+    if ((packageName ?? '').isNotEmpty) {
+      final platform = getId();
+      if (platform == 'ios') {
+        relayParams['bundleId'] = packageName!;
+      } else if (platform == 'android') {
+        relayParams['packageName'] = packageName!;
+      } else {
+        relayParams['origin'] = packageName!;
+      }
+    }
+
     queryParams.addAll(relayParams);
     return uri.replace(queryParameters: queryParams).toString();
   }

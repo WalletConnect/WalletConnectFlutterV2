@@ -88,7 +88,7 @@ class AppDetailPageState extends State<AppDetailPage> {
                   );
                   setState(() {});
                 } catch (e) {
-                  debugPrint('[WALLET] ${e.toString()}');
+                  debugPrint('[SampleWallet] ${e.toString()}');
                 }
               },
               child: const Center(
@@ -187,7 +187,7 @@ class AppDetailPageState extends State<AppDetailPage> {
                       }
                       _back();
                     } catch (e) {
-                      debugPrint('[WALLET] ${e.toString()}');
+                      debugPrint('[SampleWallet] ${e.toString()}');
                     }
                   },
                   child: const Center(

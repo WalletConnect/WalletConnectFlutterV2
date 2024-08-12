@@ -8,7 +8,7 @@ import 'package:flutter/services.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:qr_flutter/qr_flutter.dart';
 import 'package:url_launcher/url_launcher_string.dart';
-import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
+
 import 'package:walletconnect_flutter_v2_dapp/models/chain_metadata.dart';
 import 'package:walletconnect_flutter_v2_dapp/utils/constants.dart';
 import 'package:walletconnect_flutter_v2_dapp/utils/crypto/chain_data.dart';
@@ -17,6 +17,8 @@ import 'package:walletconnect_flutter_v2_dapp/utils/crypto/polkadot.dart';
 import 'package:walletconnect_flutter_v2_dapp/utils/crypto/solana.dart';
 import 'package:walletconnect_flutter_v2_dapp/utils/string_constants.dart';
 import 'package:walletconnect_flutter_v2_dapp/widgets/chain_button.dart';
+import 'package:walletconnect_flutter_v2_dapp/imports.dart';
+import 'package:walletconnect_modal_flutter/walletconnect_modal_flutter.dart';
 
 class ConnectPage extends StatefulWidget {
   const ConnectPage({
@@ -34,10 +36,24 @@ class ConnectPageState extends State<ConnectPage> {
   bool _testnetOnly = false;
   final List<ChainMetadata> _selectedChains = [];
   bool _shouldDismissQrCode = true;
+  bool _initialized = false;
+  late IWalletConnectModalService _walletConnectModalService;
 
   @override
   void initState() {
     super.initState();
+    _initializeWCM();
+  }
+
+  Future<void> _initializeWCM() async {
+    _walletConnectModalService = WalletConnectModalService(
+      web3App: widget.web3App,
+    );
+
+    await _walletConnectModalService.init();
+
+    setState(() => _initialized = true);
+
     widget.web3App.onSessionConnect.subscribe(_onSessionConnect);
   }
 
@@ -62,11 +78,10 @@ class ConnectPageState extends State<ConnectPage> {
         _selectedChains.add(chain);
       }
       _updateNamespaces();
-
-      debugPrint('[SampleDapp] ${jsonEncode(optionalNamespaces)}');
     });
   }
 
+  Map<String, RequiredNamespace> requiredNamespaces = {};
   Map<String, RequiredNamespace> optionalNamespaces = {};
 
   void _updateNamespaces() {
@@ -101,6 +116,31 @@ class ConnectPageState extends State<ConnectPage> {
         events: Polkadot.events.values.toList(),
       );
     }
+
+    if (optionalNamespaces.isEmpty) {
+      requiredNamespaces = {};
+    } else {
+      // WalletConnectModal still requires to have requiredNamespaces
+      // this has to be changed in that SDK
+      requiredNamespaces = {
+        'eip155': const RequiredNamespace(
+          chains: ['eip155:1'],
+          methods: ['personal_sign', 'eth_signTransaction'],
+          events: ['chainChanged'],
+        ),
+      };
+    }
+
+    _walletConnectModalService.setRequiredNamespaces(
+      requiredNamespaces: requiredNamespaces,
+    );
+    debugPrint(
+        '[SampleDapp] requiredNamespaces ${jsonEncode(requiredNamespaces)}');
+    _walletConnectModalService.setOptionalNamespaces(
+      optionalNamespaces: optionalNamespaces,
+    );
+    debugPrint(
+        '[SampleDapp] optionalNamespaces ${jsonEncode(optionalNamespaces)}');
   }
 
   @override
@@ -110,11 +150,15 @@ class ConnectPageState extends State<ConnectPage> {
     final mainChains = ChainData.allChains.where((e) => !e.isTestnet).toList();
     final List<ChainMetadata> chains = _testnetOnly ? testChains : mainChains;
 
-    List<Widget> children = [];
+    final List<Widget> evmChainButtons = [];
+    final List<Widget> nonEvmChainButtons = [];
 
-    for (final ChainMetadata chain in chains) {
+    final evmChains = chains.where((e) => e.type == ChainType.eip155);
+    final nonEvmChains = chains.where((e) => e.type != ChainType.eip155);
+
+    for (final ChainMetadata chain in evmChains) {
       // Build the button
-      children.add(
+      evmChainButtons.add(
         ChainButton(
           chain: chain,
           onPressed: () => _selectChain(chain),
@@ -123,165 +167,154 @@ class ConnectPageState extends State<ConnectPage> {
       );
     }
 
-    children.add(const SizedBox.square(dimension: 12.0));
+    for (final ChainMetadata chain in nonEvmChains) {
+      // Build the button
+      nonEvmChainButtons.add(
+        ChainButton(
+          chain: chain,
+          onPressed: () => _selectChain(chain),
+          selected: _selectedChains.contains(chain),
+        ),
+      );
+    }
 
-    // Add a connect button
-    children.add(
-      ElevatedButton(
-        onPressed: _selectedChains.isEmpty
-            ? null
-            : () => _onConnect(showToast: (m) async {
-                  await showPlatformToast(child: Text(m), context: context);
-                }, closeModal: () {
-                  if (Navigator.canPop(context)) {
-                    Navigator.of(context).pop();
-                  }
-                }),
-        style: ButtonStyle(
-          backgroundColor: MaterialStateProperty.resolveWith<Color>(
-            (states) {
-              if (states.contains(MaterialState.disabled)) {
-                return StyleConstants.grayColor;
-              }
-              return StyleConstants.primaryColor;
-            },
-          ),
-          minimumSize: MaterialStateProperty.all<Size>(const Size(
-            1000.0,
-            StyleConstants.linear48,
-          )),
-          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-            RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(
-                StyleConstants.linear8,
-              ),
-            ),
-          ),
-        ),
-        child: const Text(
-          StringConstants.connect,
-          style: StyleConstants.buttonText,
-        ),
-      ),
-    );
-
-    children.add(const SizedBox(height: 16.0));
-
-    children.add(
-      ElevatedButton(
-        onPressed: _selectedChains.isEmpty
-            ? null
-            : () => _oneClickAuth(
-                  closeModal: () {
-                    if (Navigator.canPop(context)) {
-                      Navigator.of(context).pop();
-                    }
-                  },
-                  showToast: (message) {
-                    showPlatformToast(child: Text(message), context: context);
-                  },
-                ),
-        style: ButtonStyle(
-          backgroundColor: MaterialStateProperty.resolveWith<Color>(
-            (states) {
-              if (states.contains(MaterialState.disabled)) {
-                return StyleConstants.grayColor;
-              }
-              return StyleConstants.primaryColor;
-            },
-          ),
-          minimumSize: MaterialStateProperty.all<Size>(const Size(
-            1000.0,
-            StyleConstants.linear48,
-          )),
-          shape: MaterialStateProperty.all<RoundedRectangleBorder>(
-            RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(
-                StyleConstants.linear8,
-              ),
-            ),
-          ),
-        ),
-        child: const Text(
-          'One-Click Auth',
-          style: StyleConstants.buttonText,
-        ),
-      ),
-    );
-
-    children.add(const SizedBox.square(dimension: 12.0));
-
-    return Center(
-      child: Container(
-        padding: const EdgeInsets.all(
-          StyleConstants.linear8,
-        ),
-        constraints: const BoxConstraints(
-          maxWidth: StyleConstants.maxWidth,
-        ),
-        child: ListView(
-          children: <Widget>[
-            Column(
-              children: [
-                const Text(
-                  'Flutter Dapp',
-                  style: StyleConstants.subtitleText,
-                  textAlign: TextAlign.center,
-                ),
-                FutureBuilder<PackageInfo>(
-                  future: PackageInfo.fromPlatform(),
-                  builder: (context, snapshot) {
-                    if (!snapshot.hasData) {
-                      return const SizedBox.shrink();
-                    }
-                    final v = snapshot.data!.version;
-                    final b = snapshot.data!.buildNumber;
-                    const f = String.fromEnvironment('FLUTTER_APP_FLAVOR');
-                    return Text('$v-$f ($b) - SDK v$packageVersion');
-                  },
-                ),
-              ],
-            ),
-            const SizedBox(
-              height: StyleConstants.linear16,
-            ),
+    return ListView(
+      padding: const EdgeInsets.symmetric(horizontal: StyleConstants.linear8),
+      children: <Widget>[
+        Column(
+          children: [
             const Text(
-              StringConstants.selectChains,
-              style: StyleConstants.paragraph,
+              'Flutter Dapp',
+              style: StyleConstants.subtitleText,
               textAlign: TextAlign.center,
             ),
-            const SizedBox(
-              height: StyleConstants.linear8,
-            ),
-            SizedBox(
-              height: StyleConstants.linear48,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Text(
-                    StringConstants.testnetsOnly,
-                    style: StyleConstants.buttonText,
-                  ),
-                  Switch(
-                    value: _testnetOnly,
-                    onChanged: (value) {
-                      setState(() {
-                        _selectedChains.clear();
-                        _testnetOnly = value;
-                      });
-                    },
-                  ),
-                ],
-              ),
-            ),
-            Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: children,
+            FutureBuilder<PackageInfo>(
+              future: PackageInfo.fromPlatform(),
+              builder: (context, snapshot) {
+                if (!snapshot.hasData) {
+                  return const SizedBox.shrink();
+                }
+                final v = snapshot.data!.version;
+                final b = snapshot.data!.buildNumber;
+                const f = String.fromEnvironment('FLUTTER_APP_FLAVOR');
+                return Text('$v-$f ($b) - SDK v$packageVersion');
+              },
             ),
           ],
         ),
-      ),
+        SizedBox(
+          height: StyleConstants.linear48,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              const Text(
+                StringConstants.testnetsOnly,
+                style: StyleConstants.buttonText,
+              ),
+              Switch(
+                value: _testnetOnly,
+                onChanged: (value) {
+                  setState(() {
+                    _selectedChains.clear();
+                    _testnetOnly = value;
+                  });
+                },
+              ),
+            ],
+          ),
+        ),
+        const Text('EVM Chains:', style: StyleConstants.buttonText),
+        const SizedBox(height: StyleConstants.linear8),
+        Wrap(
+          spacing: 10.0,
+          children: evmChainButtons,
+        ),
+        const Divider(),
+        const Text('Non EVM Chains:', style: StyleConstants.buttonText),
+        Wrap(
+          spacing: 10.0,
+          children: nonEvmChainButtons,
+        ),
+        const Divider(),
+        if (_initialized)
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              const SizedBox(height: StyleConstants.linear8),
+              const Text(
+                'Use WalletConnectModal:',
+                style: StyleConstants.buttonText,
+              ),
+              const SizedBox(height: StyleConstants.linear8),
+              WalletConnectModalConnect(
+                service: _walletConnectModalService,
+                width: double.infinity,
+                height: 50.0,
+              ),
+            ],
+          ),
+        const SizedBox(height: StyleConstants.linear8),
+        const Divider(),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: StyleConstants.linear8),
+            const Text(
+              'Use custom connection:',
+              style: StyleConstants.buttonText,
+            ),
+            const SizedBox(height: StyleConstants.linear8),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                style: _buttonStyle,
+                onPressed: _selectedChains.isEmpty
+                    ? null
+                    : () => _onConnect(
+                          showToast: (m) async {
+                            await showPlatformToast(
+                                child: Text(m), context: context);
+                          },
+                          closeModal: () {
+                            if (Navigator.canPop(context)) {
+                              Navigator.of(context).pop();
+                            }
+                          },
+                        ),
+                child: const Text(
+                  StringConstants.connect,
+                  style: StyleConstants.buttonText,
+                ),
+              ),
+            ),
+            const SizedBox(height: StyleConstants.linear8),
+            SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                style: _buttonStyle,
+                onPressed: _selectedChains.isEmpty
+                    ? null
+                    : () => _oneClickAuth(
+                          closeModal: () {
+                            if (Navigator.canPop(context)) {
+                              Navigator.of(context).pop();
+                            }
+                          },
+                          showToast: (message) {
+                            showPlatformToast(
+                                child: Text(message), context: context);
+                          },
+                        ),
+                child: const Text(
+                  'One-Click Auth',
+                  style: StyleConstants.buttonText,
+                ),
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: StyleConstants.linear16),
+      ],
     );
   }
 
@@ -307,20 +340,21 @@ class ConnectPageState extends State<ConnectPage> {
     // It is currently safer to send chains approvals on optionalNamespaces
     // but depending on Wallet implementation you may need to send some (for innstance eip155:1) as required
     final connectResponse = await widget.web3App.connect(
+      requiredNamespaces: requiredNamespaces,
       optionalNamespaces: optionalNamespaces,
     );
 
     final encodedUri = Uri.encodeComponent(connectResponse.uri.toString());
-    const flavor = String.fromEnvironment('FLUTTER_APP_FLAVOR');
-    final uri = 'wcflutterwallet-$flavor://wc?uri=$encodedUri';
-    // final uri = 'metamask://wc?uri=$encodedUri';
+    String flavor = '-${const String.fromEnvironment('FLUTTER_APP_FLAVOR')}';
+    flavor = flavor.replaceAll('-production', '');
+    final uri = 'wcflutterwallet$flavor://wc?uri=$encodedUri';
     if (await canLaunchUrlString(uri)) {
       final openApp = await showDialog(
         // ignore: use_build_context_synchronously
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            content: const Text('Do you want to open with Web3Wallet Flutter'),
+            content: const Text('Do you want to open with Flutter Wallet'),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(context).pop(false),
@@ -432,7 +466,7 @@ class ConnectPageState extends State<ConnectPage> {
       final authResponse = await widget.web3App.requestAuth(
         pairingTopic: pairingTopic,
         params: AuthRequestParams(
-          chainId: _selectedChains[0].chainId,
+          chainId: 'eip155:1',
           domain: Constants.domain,
           aud: Constants.aud,
           statement: 'Welcome to example flutter app',
@@ -440,9 +474,10 @@ class ConnectPageState extends State<ConnectPage> {
       );
 
       final scheme = event?.session.peer.metadata.redirect?.native;
-      const flavor = String.fromEnvironment('FLUTTER_APP_FLAVOR');
+      String flavor = '-${const String.fromEnvironment('FLUTTER_APP_FLAVOR')}';
+      flavor = flavor.replaceAll('-production', '');
       launchUrlString(
-        scheme ?? 'wcflutterwallet-$flavor://',
+        scheme ?? 'wcflutterwallet$flavor://',
         mode: LaunchMode.externalApplication,
       );
 
@@ -464,21 +499,23 @@ class ConnectPageState extends State<ConnectPage> {
     VoidCallback? closeModal,
     Function(String message)? showToast,
   }) async {
-    final methods = optionalNamespaces['eip155']?.methods ?? [];
-    const flavor = String.fromEnvironment('FLUTTER_APP_FLAVOR');
+    final methods1 = requiredNamespaces['eip155']?.methods ?? [];
+    final methods2 = optionalNamespaces['eip155']?.methods ?? [];
+    String flavor = '-${const String.fromEnvironment('FLUTTER_APP_FLAVOR')}';
+    flavor = flavor.replaceAll('-production', '');
     final authResponse = await widget.web3App.authenticate(
       params: SessionAuthRequestParams(
         chains: _selectedChains.map((e) => e.chainId).toList(),
-        domain: 'wcflutterdapp-$flavor://',
+        domain: 'wcflutterdapp$flavor://',
         nonce: AuthUtils.generateNonce(),
         uri: Constants.aud,
         statement: 'Welcome to example flutter app',
-        methods: methods,
+        methods: <String>{...methods1, ...methods2}.toList(),
       ),
     );
 
     final encodedUri = Uri.encodeComponent(authResponse.uri.toString());
-    final uri = 'wcflutterwallet-$flavor://wc?uri=$encodedUri';
+    final uri = 'wcflutterwallet$flavor://wc?uri=$encodedUri';
 
     if (await canLaunchUrlString(uri)) {
       final openApp = await showDialog(
@@ -486,7 +523,7 @@ class ConnectPageState extends State<ConnectPage> {
         context: context,
         builder: (BuildContext context) {
           return AlertDialog(
-            content: const Text('Do you want to open with Web3Wallet Flutter'),
+            content: const Text('Do you want to open with Flutter Wallet'),
             actions: [
               TextButton(
                 onPressed: () => Navigator.of(context).pop(false),
@@ -531,6 +568,10 @@ class ConnectPageState extends State<ConnectPage> {
   void _onSessionConnect(SessionConnect? event) async {
     if (event == null) return;
 
+    setState(() {
+      _selectedChains.clear();
+    });
+
     if (_shouldDismissQrCode && Navigator.canPop(context)) {
       _shouldDismissQrCode = false;
       Navigator.pop(context);
@@ -543,6 +584,28 @@ class ConnectPageState extends State<ConnectPage> {
       },
     );
   }
+
+  ButtonStyle get _buttonStyle => ButtonStyle(
+        backgroundColor: MaterialStateProperty.resolveWith<Color>(
+          (states) {
+            if (states.contains(MaterialState.disabled)) {
+              return StyleConstants.grayColor;
+            }
+            return StyleConstants.primaryColor;
+          },
+        ),
+        minimumSize: MaterialStateProperty.all<Size>(const Size(
+          1000.0,
+          StyleConstants.linear48,
+        )),
+        shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+          RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(
+              StyleConstants.linear8,
+            ),
+          ),
+        ),
+      );
 }
 
 class QRCodeScreen extends StatefulWidget {

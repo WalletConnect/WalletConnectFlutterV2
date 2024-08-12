@@ -1,5 +1,4 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:package_info_plus/package_info_plus.dart';
 import 'package:walletconnect_flutter_v2/apis/core/store/generic_store.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/sign_engine.dart';
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
@@ -10,13 +9,8 @@ import 'tests/sign_common.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
-  PackageInfo.setMockInitialValues(
-    appName: 'walletconnect_flutter_v2',
-    packageName: 'com.walletconnect.flutterdapp',
-    version: '1.0',
-    buildNumber: '2',
-    buildSignature: 'buildSignature',
-  );
+  mockPackageInfo();
+  mockConnectivity();
 
   signEngineTests(
     context: 'SignEngine',

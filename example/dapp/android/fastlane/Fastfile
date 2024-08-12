@@ -55,7 +55,12 @@ platform :android do
     _latest_release = firebase_app_distribution_get_latest_release(
       app: "#{firebase_dapp_id}",
     )
-    _new_build_number = _latest_release[:buildVersion].to_i + 1
+    if _latest_release && _latest_release[:buildVersion] && !_latest_release[:buildVersion].empty?
+      _new_build_number = _latest_release[:buildVersion].to_i + 1
+    else
+      _new_build_number = 1
+    end
+
     _app_version = "#{options[:app_version]}"
     _project_id = "#{options[:project_id]}"
 
@@ -73,7 +78,7 @@ platform :android do
     )
 
     slack(
-      message: "📱 Web3Dapp Flutter #{_app_version}-#{_flavor} (#{_new_build_number}) for 🤖 Android successfully released!\n\n",
+      message: "📱 Flutter Dapp #{_app_version}-#{_flavor} (#{_new_build_number}) for 🤖 Android successfully released!\n\n",
       default_payloads: [],
       attachment_properties: {
         fields: [

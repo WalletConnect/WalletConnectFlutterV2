@@ -44,7 +44,7 @@ class PolkadotService {
   }
 
   Future<void> polkadotSignMessage(String topic, dynamic parameters) async {
-    debugPrint('[WALLET] polkadotSignMessage: $parameters');
+    debugPrint('[SampleWallet] polkadotSignMessage: $parameters');
     const method = 'polkadot_signMessage';
     final pRequest = _web3Wallet.pendingRequests.getAll().last;
     var response = JsonRpcResponse(
@@ -55,7 +55,7 @@ class PolkadotService {
     try {
       final params = parameters as Map<String, dynamic>;
       final message = params['message'].toString();
-      debugPrint('[WALLET] polkadotSignMessage message: $message');
+      debugPrint('[SampleWallet] polkadotSignMessage message: $message');
 
       // code
       final keys = GetIt.I<IKeyService>().getKeysForChain(
@@ -86,7 +86,7 @@ class PolkadotService {
         );
       }
     } catch (e) {
-      debugPrint('[WALLET] polkadotSignMessage error $e');
+      debugPrint('[SampleWallet] polkadotSignMessage error $e');
       response = response.copyWith(
         error: JsonRpcError(code: 0, message: e.toString()),
       );
@@ -101,7 +101,8 @@ class PolkadotService {
   }
 
   Future<void> polkadotSignTransaction(String topic, dynamic parameters) async {
-    debugPrint('[WALLET] polkadotSignTransaction: ${jsonEncode(parameters)}');
+    debugPrint(
+        '[SampleWallet] polkadotSignTransaction: ${jsonEncode(parameters)}');
     const method = 'polkadot_signTransaction';
     final pRequest = _web3Wallet.pendingRequests.getAll().last;
     var response = JsonRpcResponse(
@@ -144,7 +145,7 @@ class PolkadotService {
           },
         );
       } catch (e) {
-        debugPrint('[WALLET] polkadotSignTransaction error $e');
+        debugPrint('[SampleWallet] polkadotSignTransaction error $e');
         response = response.copyWith(
           error: JsonRpcError(code: 0, message: e.toString()),
         );
@@ -165,7 +166,7 @@ class PolkadotService {
 
   void _onSessionRequest(SessionRequestEvent? args) async {
     if (args != null && args.chainId == chainSupported.chainId) {
-      debugPrint('[WALLET] _onSessionRequest ${args.toString()}');
+      debugPrint('[SampleWallet] _onSessionRequest ${args.toString()}');
       final handler = polkadotRequestHandlers[args.method];
       if (handler != null) {
         await handler(args.topic, args.params);

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:fl_toast/fl_toast.dart';
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
@@ -215,29 +217,48 @@ class AppsPageState extends State<AppsPage> with GetItStateMixin {
       DeepLinkHandler.waiting.value = true;
       final Uri uriData = Uri.parse(uri!);
       await _web3Wallet.pair(uri: uriData);
-    } catch (e) {
-      DeepLinkHandler.waiting.value = false;
-      showPlatformToast(
-        child: Container(
-          padding: const EdgeInsets.all(StyleConstants.linear8),
-          margin: const EdgeInsets.only(
-            bottom: StyleConstants.magic40,
-          ),
-          decoration: BoxDecoration(
-            color: StyleConstants.errorColor,
-            borderRadius: BorderRadius.circular(
-              StyleConstants.linear16,
-            ),
-          ),
-          child: const Text(
-            StringConstants.invalidUri,
-            style: StyleConstants.bodyTextBold,
-          ),
-        ),
-        // ignore: use_build_context_synchronously
-        context: context,
-      );
+    } on WalletConnectError catch (e) {
+      _showErrorDialog('${e.code}: ${e.message}');
+    } on TimeoutException catch (_) {
+      _showErrorDialog('Time out error. Check your connection.');
     }
+  }
+
+  void _showErrorDialog(String message) {
+    DeepLinkHandler.waiting.value = false;
+    showDialog(
+        context: context,
+        builder: (BuildContext context) {
+          return AlertDialog(
+            title: const Text(
+              'Error',
+              style: TextStyle(
+                color: Colors.black,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            content: Text(
+              message,
+              style: const TextStyle(
+                color: Colors.black,
+              ),
+            ),
+            actions: [
+              TextButton(
+                onPressed: () {
+                  Navigator.of(context).pop();
+                },
+                child: const Text(
+                  'Close',
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              )
+            ],
+          );
+        });
   }
 
   void _onListItemTap(PairingInfo pairing) {

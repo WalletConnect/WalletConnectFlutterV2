@@ -228,7 +228,7 @@ class Web3App implements IWeb3App {
     required String functionName,
     required String rpcUrl,
     EthereumAddress? sender,
-    List parameters = const [],
+    List<dynamic> parameters = const [],
   }) async {
     try {
       return await signEngine.requestReadContract(
@@ -247,7 +247,6 @@ class Web3App implements IWeb3App {
   Future<dynamic> requestWriteContract({
     required String topic,
     required String chainId,
-    required String rpcUrl,
     required DeployedContract deployedContract,
     required String functionName,
     required Transaction transaction,
@@ -258,7 +257,6 @@ class Web3App implements IWeb3App {
       return await signEngine.requestWriteContract(
         topic: topic,
         chainId: chainId,
-        rpcUrl: rpcUrl,
         deployedContract: deployedContract,
         functionName: functionName,
         transaction: transaction,

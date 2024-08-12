@@ -147,7 +147,7 @@ Map<String, dynamic> _$$CacaoImplToJson(_$CacaoImpl instance) =>
 
 _$StoredCacaoImpl _$$StoredCacaoImplFromJson(Map<String, dynamic> json) =>
     _$StoredCacaoImpl(
-      id: json['id'] as int,
+      id: (json['id'] as num).toInt(),
       pairingTopic: json['pairingTopic'] as String,
       h: CacaoHeader.fromJson(json['h'] as Map<String, dynamic>),
       p: CacaoPayload.fromJson(json['p'] as Map<String, dynamic>),

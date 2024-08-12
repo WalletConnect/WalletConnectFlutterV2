@@ -7,8 +7,8 @@ import 'package:web3dart/crypto.dart' as crypto;
 extension TransactionExtension on Transaction {
   Map<String, dynamic> toJson() {
     return {
-      if (from != null) 'from': from!.hex,
-      if (to != null) 'to': to!.hex,
+      if (from != null) 'from': from!.hexEip55,
+      if (to != null) 'to': to!.hexEip55,
       if (maxGas != null) 'gas': '0x${maxGas!.toRadixString(16)}',
       if (gasPrice != null)
         'gasPrice': '0x${gasPrice!.getInWei.toRadixString(16)}',
@@ -57,7 +57,7 @@ extension EtheraAmountExtension on String? {
       final hexValue = this!.replaceFirst('0x', '');
       return EtherAmount.fromBigInt(
         EtherUnit.wei,
-        BigInt.from(int.parse(hexValue, radix: 16)),
+        BigInt.parse(hexValue, radix: 16),
       );
     }
     return null;

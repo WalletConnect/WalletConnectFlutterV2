@@ -63,7 +63,7 @@ class _MyHomePageState extends State<MyHomePage> with GetItStateMixin {
     GetIt.I.registerSingleton<IBottomSheetService>(BottomSheetService());
     GetIt.I.registerSingleton<IKeyService>(KeyService());
 
-    final IWeb3WalletService web3WalletService = Web3WalletService();
+    final web3WalletService = Web3WalletService();
     await web3WalletService.create();
     GetIt.I.registerSingleton<IWeb3WalletService>(web3WalletService);
 
@@ -109,6 +109,15 @@ class _MyHomePageState extends State<MyHomePage> with GetItStateMixin {
 
     await web3WalletService.init();
 
+    web3WalletService.web3wallet.core.relayClient.onRelayClientConnect
+        .subscribe(
+      _setState,
+    );
+    web3WalletService.web3wallet.core.relayClient.onRelayClientDisconnect
+        .subscribe(
+      _setState,
+    );
+
     setState(() {
       _pageDatas = [
         PageData(
@@ -137,6 +146,8 @@ class _MyHomePageState extends State<MyHomePage> with GetItStateMixin {
     });
   }
 
+  void _setState(dynamic args) => setState(() {});
+
   @override
   Widget build(BuildContext context) {
     if (_initializing) {
@@ -159,12 +170,23 @@ class _MyHomePageState extends State<MyHomePage> with GetItStateMixin {
       ),
     );
 
+    final web3Wallet = GetIt.I<IWeb3WalletService>().web3wallet;
     return Scaffold(
       appBar: AppBar(
         title: Text(
           _pageDatas[_selectedIndex].title,
           style: const TextStyle(color: Colors.black),
         ),
+        actions: [
+          const Text('Relay '),
+          CircleAvatar(
+            radius: 6.0,
+            backgroundColor: web3Wallet.core.relayClient.isConnected
+                ? Colors.green
+                : Colors.red,
+          ),
+          const SizedBox(width: 16.0),
+        ],
       ),
       body: BottomSheetListener(
         child: Row(

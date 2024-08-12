@@ -39,7 +39,7 @@ _$SessionDataImpl _$$SessionDataImplFromJson(Map<String, dynamic> json) =>
       topic: json['topic'] as String,
       pairingTopic: json['pairingTopic'] as String,
       relay: Relay.fromJson(json['relay'] as Map<String, dynamic>),
-      expiry: json['expiry'] as int,
+      expiry: (json['expiry'] as num).toInt(),
       acknowledged: json['acknowledged'] as bool,
       controller: json['controller'] as String,
       namespaces: (json['namespaces'] as Map<String, dynamic>).map(
@@ -92,7 +92,7 @@ Map<String, dynamic> _$$SessionDataImplToJson(_$SessionDataImpl instance) {
 
 _$SessionRequestImpl _$$SessionRequestImplFromJson(Map<String, dynamic> json) =>
     _$SessionRequestImpl(
-      id: json['id'] as int,
+      id: (json['id'] as num).toInt(),
       topic: json['topic'] as String,
       method: json['method'] as String,
       chainId: json['chainId'] as String,

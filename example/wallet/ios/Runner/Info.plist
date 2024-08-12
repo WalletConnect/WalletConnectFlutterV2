@@ -11,7 +11,7 @@
 	<key>CFBundleExecutable</key>
 	<string>$(EXECUTABLE_NAME)</string>
 	<key>CFBundleIdentifier</key>
-	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+	<string>com.walletconnect.flutterwallet</string>
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleName</key>
@@ -25,14 +25,14 @@
 	<key>CFBundleURLTypes</key>
 	<array>
 		<dict>
-			<key>CFBundleTypeRole</key>
-			<string>Editor</string>
-			<key>CFBundleURLName</key>
-			<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
-			<key>CFBundleURLSchemes</key>
-			<array>
-				<string>wcflutterwallet-production</string>
-			</array>
+				<key>CFBundleTypeRole</key>
+				<string>Editor</string>
+				<key>CFBundleURLName</key>
+				<string>com.walletconnect.flutterwallet</string>
+				<key>CFBundleURLSchemes</key>
+				<array>
+						<string>wcflutterwallet</string>
+				</array>
 		</dict>
 	</array>
 	<key>CFBundleVersion</key>

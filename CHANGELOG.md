@@ -1,3 +1,9 @@
+## 2.3.1
+
+- Added Connectivity check to core and throw exceptions when internet connection is gone
+- Fix for https://github.com/WalletConnect/WalletConnectFlutterV2/issues/303 (EIP-55 validation for SIWE)
+- Minor improvements
+
 ## 2.3.0
 
 - One-Click Auth support

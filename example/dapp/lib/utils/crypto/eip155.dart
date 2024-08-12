@@ -2,12 +2,12 @@ import 'dart:convert';
 // ignore: depend_on_referenced_packages
 import 'package:convert/convert.dart';
 
-import 'package:intl/intl.dart';
-import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 import 'package:walletconnect_flutter_v2_dapp/models/chain_metadata.dart';
 import 'package:walletconnect_flutter_v2_dapp/utils/crypto/chain_data.dart';
 import 'package:walletconnect_flutter_v2_dapp/utils/smart_contracts.dart';
 import 'package:walletconnect_flutter_v2_dapp/utils/test_data.dart';
+
+import 'package:walletconnect_flutter_v2_dapp/imports.dart';
 
 enum EIP155Methods {
   personalSign,
@@ -129,7 +129,6 @@ class EIP155 {
         return web3App.requestWriteContract(
           topic: topic,
           chainId: sepolia.chainId,
-          rpcUrl: sepolia.rpc.first,
           deployedContract: deployedContract,
           functionName: 'transfer',
           transaction: Transaction(

@@ -1,8 +1,9 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-permission android:name="android.permission.INTERNET"/>
    <application
-        android:label="Web3Wallet Flutter"
+        android:label="${applicationLabel}"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="${appIcon}">
         <activity
             android:name="com.walletconnect.flutterwallet.MainActivity"
             android:exported="true"
@@ -24,11 +25,18 @@
                 <action android:name="android.intent.action.MAIN"/>
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+            <!-- LEGACY -->
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="wcflutterwallet-production" />
+                <data android:scheme="wc" />
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="wcflutterwallet" />
             </intent-filter>
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />

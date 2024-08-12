@@ -12,7 +12,7 @@ part of 'pairing_models.dart';
 T _$identity<T>(T value) => value;
 
 final _privateConstructorUsedError = UnsupportedError(
-    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#custom-getters-and-methods');
+    'It seems like you constructed your class using `MyClass._()`. This constructor is only meant to be used by freezed and you are not supposed to need it nor use it.\nPlease check the documentation here for more information: https://github.com/rrousselGit/freezed#adding-getters-and-methods-to-our-models');
 
 PairingInfo _$PairingInfoFromJson(Map<String, dynamic> json) {
   return _PairingInfo.fromJson(json);
@@ -221,7 +221,7 @@ class _$PairingInfoImpl implements _PairingInfo {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$PairingInfoImpl &&
@@ -488,7 +488,7 @@ class _$PairingMetadataImpl implements _PairingMetadata {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$PairingMetadataImpl &&
@@ -663,7 +663,7 @@ class _$RedirectImpl implements _Redirect {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$RedirectImpl &&
@@ -904,7 +904,7 @@ class _$JsonRpcRecordImpl implements _JsonRpcRecord {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$JsonRpcRecordImpl &&
@@ -1101,7 +1101,7 @@ class _$ReceiverPublicKeyImpl implements _ReceiverPublicKey {
   }
 
   @override
-  bool operator ==(dynamic other) {
+  bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$ReceiverPublicKeyImpl &&

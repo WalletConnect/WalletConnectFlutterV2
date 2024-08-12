@@ -26,7 +26,7 @@ class CosmosService {
   }
 
   Future<void> cosmosSignDirect(String topic, dynamic parameters) async {
-    debugPrint('[WALLET] cosmosSignDirect request: $parameters');
+    debugPrint('[SampleWallet] cosmosSignDirect request: $parameters');
     final pRequest = _web3Wallet.pendingRequests.getAll().last;
     final response = JsonRpcResponse(
       id: pRequest.id,
@@ -45,7 +45,7 @@ class CosmosService {
   }
 
   Future<void> cosmosSignAmino(String topic, dynamic parameters) async {
-    debugPrint('[WALLET] cosmosSignAmino request: $parameters');
+    debugPrint('[SampleWallet] cosmosSignAmino request: $parameters');
     final pRequest = _web3Wallet.pendingRequests.getAll().last;
     final response = JsonRpcResponse(
       id: pRequest.id,
