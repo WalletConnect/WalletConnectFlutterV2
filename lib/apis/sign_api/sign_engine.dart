@@ -524,30 +524,6 @@ class SignEngine implements ISignEngine {
     EthereumAddress? sender,
     List<dynamic> parameters = const [],
   }) async {
-    // final contractAddress = deployedContract.address;
-    // final function = deployedContract.function(functionName);
-
-    // final results = await request(
-    //   topic: topic,
-    //   chainId: chainId,
-    //   request: SessionRequestParams(
-    //     method: 'eth_call',
-    //     params: [
-    //       {
-    //         'to': contractAddress.hex,
-    //         'data': bytesToHex(
-    //           function.encodeCall(parameters),
-    //           include0x: true,
-    //           padToEvenLength: true,
-    //         ),
-    //         if (sender != null) 'from': sender.hex,
-    //       }
-    //     ],
-    //   ),
-    // );
-
-    // return function.decodeReturnValues(results);
-
     try {
       final results = await Web3Client(rpcUrl, http.Client()).call(
         sender: sender,
