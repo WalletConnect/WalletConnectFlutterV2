@@ -8,6 +8,7 @@ import 'package:walletconnect_flutter_v2/apis/core/pairing/utils/json_rpc_utils.
 import 'package:walletconnect_flutter_v2/apis/models/basic_models.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/models/auth/common_auth_models.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/models/auth/session_auth_models.dart';
+import 'package:walletconnect_flutter_v2/apis/sign_api/utils/auth/address_utils.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/utils/auth/auth_constants.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/utils/auth/recaps_utils.dart';
 import 'package:web3dart/crypto.dart' as crypto;
@@ -199,6 +200,8 @@ class AuthSignature {
     if (!iss.contains('did:pkh:')) {
       iss = 'did:pkh:$iss';
     }
+    final address = AddressUtils.getDidAddress(iss);
+    iss = iss.replaceAll(address, address.toEIP55());
     return Cacao(
       h: const CacaoHeader(t: CacaoHeader.CAIP122),
       p: CacaoPayload.fromRequestPayload(

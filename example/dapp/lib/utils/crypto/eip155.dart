@@ -129,7 +129,6 @@ class EIP155 {
         return web3App.requestWriteContract(
           topic: topic,
           chainId: sepolia.chainId,
-          rpcUrl: sepolia.rpc.first,
           deployedContract: deployedContract,
           functionName: 'transfer',
           transaction: Transaction(

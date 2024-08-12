@@ -33,7 +33,6 @@ abstract class ISignEngineApp extends ISignEngineCommon {
   Future<dynamic> requestWriteContract({
     required String topic,
     required String chainId,
-    required String rpcUrl,
     required DeployedContract deployedContract,
     required String functionName,
     required Transaction transaction,

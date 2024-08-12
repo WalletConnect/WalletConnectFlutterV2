@@ -293,7 +293,7 @@ class SignClient implements ISignClient {
     required String functionName,
     required String rpcUrl,
     EthereumAddress? sender,
-    List parameters = const [],
+    List<dynamic> parameters = const [],
   }) async {
     try {
       return await engine.requestReadContract(
@@ -312,18 +312,16 @@ class SignClient implements ISignClient {
   Future<dynamic> requestWriteContract({
     required String topic,
     required String chainId,
-    required String rpcUrl,
     required DeployedContract deployedContract,
     required String functionName,
     required Transaction transaction,
-    String? method,
     List parameters = const [],
+    String? method,
   }) async {
     try {
       return await engine.requestWriteContract(
         topic: topic,
         chainId: chainId,
-        rpcUrl: rpcUrl,
         deployedContract: deployedContract,
         functionName: functionName,
         transaction: transaction,
