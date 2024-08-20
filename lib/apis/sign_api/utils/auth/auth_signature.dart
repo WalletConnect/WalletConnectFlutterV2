@@ -137,7 +137,7 @@ class AuthSignature {
           nonPrefixedSignature;
 
       final Uri url = Uri.parse(
-        '${AuthConstants.AUTH_DEFAULT_URL}/?chainId=$chainId&projectId=$projectId',
+        '${StringConstants.AUTH_DEFAULT_URL}/?chainId=$chainId&projectId=$projectId',
       );
       final Map<String, dynamic> body = JsonRpcUtils.formatJsonRpcRequest(
         'eth_call',

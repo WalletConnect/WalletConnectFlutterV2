@@ -29,13 +29,13 @@ extension TransactionExtension2 on Map<String, dynamic> {
     return Transaction(
       from: EthereumAddress.fromHex(this['from']),
       to: EthereumAddress.fromHex(this['to']),
-      value: (this['value'] as String?).toEthereAmount(),
-      gasPrice: (this['gasPrice'] as String?).toEthereAmount(),
-      maxFeePerGas: (this['maxFeePerGas'] as String?).toEthereAmount(),
+      value: (this['value'] as String?)?.toEthereAmount(),
+      gasPrice: (this['gasPrice'] as String?)?.toEthereAmount(),
+      maxFeePerGas: (this['maxFeePerGas'] as String?)?.toEthereAmount(),
       maxPriorityFeePerGas:
-          (this['maxPriorityFeePerGas'] as String?).toEthereAmount(),
-      maxGas: (this['maxGas'] as String?).toIntFromHex(),
-      nonce: this['nonce']?.toInt(),
+          (this['maxPriorityFeePerGas'] as String?)?.toEthereAmount(),
+      maxGas: (this['maxGas'] as String?)?.toIntFromHex(),
+      nonce: (this['nonce'] as String?)?.toIntFromHex(),
       data: _parseTransactionData(this['data']),
     );
   }

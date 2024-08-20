@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:flutter/foundation.dart';
 import 'package:walletconnect_flutter_v2/apis/core/connectivity/i_connectivity.dart';
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 
@@ -10,9 +11,8 @@ class ConnectivityState implements IConnectivity {
 
   bool _initialized = false;
 
-  bool _isOnline = false;
   @override
-  bool get isOnline => _isOnline;
+  final isOnline = ValueNotifier<bool>(false);
 
   @override
   Future<void> init() async {
@@ -30,11 +30,11 @@ class ConnectivityState implements IConnectivity {
     final isMobileData = result.contains(ConnectivityResult.mobile);
     final isWifi = result.contains(ConnectivityResult.wifi);
 
-    _isOnline = isMobileData || isWifi;
+    isOnline.value = isMobileData || isWifi;
 
-    if (_isOnline && !_core.relayClient.isConnected) {
+    if (isOnline.value && !_core.relayClient.isConnected) {
       await _core.relayClient.connect();
-    } else if (!_isOnline && _core.relayClient.isConnected) {
+    } else if (!isOnline.value && _core.relayClient.isConnected) {
       await _core.relayClient.disconnect();
     }
   }

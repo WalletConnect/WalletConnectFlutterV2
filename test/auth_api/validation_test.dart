@@ -10,12 +10,12 @@ void main() {
   group('AuthValidators', () {
     test('isValidRequestExpiry', () {
       final List<int> expiries = [
-        AuthConstants.AUTH_REQUEST_EXPIRY_MIN - 1,
-        AuthConstants.AUTH_REQUEST_EXPIRY_MIN,
-        AuthConstants.AUTH_REQUEST_EXPIRY_MIN + 1,
-        AuthConstants.AUTH_REQUEST_EXPIRY_MAX - 1,
-        AuthConstants.AUTH_REQUEST_EXPIRY_MAX,
-        AuthConstants.AUTH_REQUEST_EXPIRY_MAX + 1,
+        StringConstants.AUTH_REQUEST_EXPIRY_MIN - 1,
+        StringConstants.AUTH_REQUEST_EXPIRY_MIN,
+        StringConstants.AUTH_REQUEST_EXPIRY_MIN + 1,
+        StringConstants.AUTH_REQUEST_EXPIRY_MAX - 1,
+        StringConstants.AUTH_REQUEST_EXPIRY_MAX,
+        StringConstants.AUTH_REQUEST_EXPIRY_MAX + 1,
       ];
       final List<bool> expiryResults = [
         false,
@@ -80,7 +80,7 @@ void main() {
           isA<WalletConnectError>().having(
             (e) => e.message,
             'message',
-            'Missing or invalid. requestAuth() expiry: ${testAuthRequestParamsInvalidExpiry.expiry}. Expiry must be a number (in seconds) between ${AuthConstants.AUTH_REQUEST_EXPIRY_MIN} and ${AuthConstants.AUTH_REQUEST_EXPIRY_MAX}',
+            'Missing or invalid. requestAuth() expiry: ${testAuthRequestParamsInvalidExpiry.expiry}. Expiry must be a number (in seconds) between ${StringConstants.AUTH_REQUEST_EXPIRY_MIN} and ${StringConstants.AUTH_REQUEST_EXPIRY_MAX}',
           ),
         ),
       );

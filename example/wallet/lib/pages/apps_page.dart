@@ -78,7 +78,7 @@ class AppsPageState extends State<AppsPage> with GetItStateMixin {
       final jsonObject = await EthUtils.decodeMessageEvent(event);
       if (!mounted) return;
       if (jsonObject is JsonRpcRequest &&
-          jsonObject.method == 'wc_sessionPing') {
+          jsonObject.method == MethodConstants.WC_SESSION_PING) {
         showPlatformToast(
           duration: const Duration(seconds: 1),
           child: Container(
@@ -141,6 +141,9 @@ class AppsPageState extends State<AppsPage> with GetItStateMixin {
   }
 
   Widget _buildNoPairingMessage() {
+    debugPrint('NO PAIRINGS');
+    final sessionsWithNoPairings = _web3Wallet.sessions.getAll();
+    debugPrint('${sessionsWithNoPairings.length} SESSIONS WITH NO PAIRINGS');
     return const Center(
       child: Text(
         StringConstants.noApps,
@@ -151,6 +154,7 @@ class AppsPageState extends State<AppsPage> with GetItStateMixin {
   }
 
   Widget _buildPairingList() {
+    debugPrint('${_pairings.length} PAIRINGS');
     final pairingItems = _pairings
         .map(
           (PairingInfo pairing) => PairingItem(
@@ -212,6 +216,7 @@ class AppsPageState extends State<AppsPage> with GetItStateMixin {
   }
 
   Future<void> _onFoundUri(String? uri) async {
+    debugPrint('[SampleWallet] _onFoundUri $uri');
     if ((uri ?? '').isEmpty) return;
     try {
       DeepLinkHandler.waiting.value = true;

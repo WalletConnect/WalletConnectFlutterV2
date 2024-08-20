@@ -3,8 +3,8 @@ import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 
 class AuthApiValidators {
   static bool isValidRequestExpiry(int expiry) {
-    return AuthConstants.AUTH_REQUEST_EXPIRY_MIN <= expiry &&
-        expiry <= AuthConstants.AUTH_REQUEST_EXPIRY_MAX;
+    return StringConstants.AUTH_REQUEST_EXPIRY_MIN <= expiry &&
+        expiry <= StringConstants.AUTH_REQUEST_EXPIRY_MAX;
   }
 
   static bool isValidRequest(AuthRequestParams params) {
@@ -35,8 +35,8 @@ class AuthApiValidators {
     if (expiry != null && !isValidRequestExpiry(expiry)) {
       throw Errors.getInternalError(
         Errors.MISSING_OR_INVALID,
-        context:
-            'requestAuth() expiry: $expiry. Expiry must be a number (in seconds) between ${AuthConstants.AUTH_REQUEST_EXPIRY_MIN} and ${AuthConstants.AUTH_REQUEST_EXPIRY_MAX}',
+        context: 'requestAuth() expiry: $expiry. '
+            'Expiry must be a number (in seconds) between ${StringConstants.AUTH_REQUEST_EXPIRY_MIN} and ${StringConstants.AUTH_REQUEST_EXPIRY_MAX}',
       );
     }
 

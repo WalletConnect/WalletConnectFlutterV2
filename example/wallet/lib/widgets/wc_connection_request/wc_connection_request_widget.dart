@@ -16,22 +16,24 @@ class WCConnectionRequestWidget extends StatelessWidget {
     this.authPayloadParams,
     this.sessionAuthPayload,
     this.proposalData,
-    this.metadata,
+    this.requester,
     this.verifyContext,
   }) : super(key: key);
 
   final AuthPayloadParams? authPayloadParams;
   final SessionAuthPayload? sessionAuthPayload;
   final ProposalData? proposalData;
-  final ConnectionMetadata? metadata;
+  final ConnectionMetadata? requester;
   final VerifyContext? verifyContext;
 
   @override
   Widget build(BuildContext context) {
-    if (metadata == null) {
+    if (requester == null) {
       return const Text('ERROR');
     }
 
+    // final web3wallet = GetIt.I<IWeb3WalletService>().web3wallet;
+    // final linkMode = web3wallet.isTransportTypeLinkMode(requester?.metadata);
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -42,13 +44,30 @@ class WCConnectionRequestWidget extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            '${metadata!.metadata.name}\n${StringConstants.wouldLikeToConnect}',
+            '${requester!.metadata.name} ${StringConstants.wouldLikeToConnect}',
             style: StyleConstants.subtitleText.copyWith(
               fontSize: 18,
               color: Colors.black,
             ),
             textAlign: TextAlign.center,
           ),
+          // RichText(
+          //   text: TextSpan(
+          //     style: StyleConstants.bodyText.copyWith(
+          //       color: Colors.black,
+          //     ),
+          //     children: [
+          //       const TextSpan(text: 'Transport Type: '),
+          //       TextSpan(
+          //         text: linkMode ? 'LinkMode' : 'Relay',
+          //         style: StyleConstants.bodyText.copyWith(
+          //           color: linkMode ? Colors.blue : Colors.green,
+          //           fontWeight: FontWeight.bold,
+          //         ),
+          //       ),
+          //     ],
+          //   ),
+          // ),
           const SizedBox(height: StyleConstants.linear8),
           VerifyContextWidget(
             verifyContext: verifyContext,

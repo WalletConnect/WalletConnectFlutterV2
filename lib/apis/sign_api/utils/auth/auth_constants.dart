@@ -1,6 +1,6 @@
 import 'package:walletconnect_flutter_v2/apis/utils/constants.dart';
 
-class AuthConstants {
+class StringConstants {
   static const AUTH_REQUEST_EXPIRY_MIN = WalletConnectConstants.FIVE_MINUTES;
   static const AUTH_REQUEST_EXPIRY_MAX = WalletConnectConstants.SEVEN_DAYS;
 
@@ -16,4 +16,6 @@ class AuthConstants {
 
   static const OCAUTH_CLIENT_PUBLIC_KEY_NAME =
       '$AUTH_STORAGE_PREFIX:$AUTH_CLIENT_PUBLIC_KEY_NAME';
+
+  static const WALLETCONNECT_LINK_MODE_APPS = 'WALLETCONNECT_LINK_MODE_APPS';
 }

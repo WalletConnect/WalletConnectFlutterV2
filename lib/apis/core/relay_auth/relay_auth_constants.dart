@@ -1,3 +1,3 @@
-class RelayAuthConstants {
-  static const String JWT_ENCODING = 'base64url';
-}
+// class RelayAuthConstants {
+//   static const String JWT_ENCODING = 'base64url';
+// }

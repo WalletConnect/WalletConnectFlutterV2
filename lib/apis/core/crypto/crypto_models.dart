@@ -64,6 +64,7 @@ class EncodingValidation {
 class EncodeOptions {
   static const TYPE_0 = 0;
   static const TYPE_1 = 1;
+  static const TYPE_2 = 2;
 
   int? type;
   String? senderPublicKey;

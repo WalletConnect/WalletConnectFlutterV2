@@ -1,4 +1,6 @@
+import 'package:flutter/foundation.dart';
+
 abstract class IConnectivity {
-  bool get isOnline;
+  ValueNotifier<bool> get isOnline;
   Future<void> init();
 }

@@ -72,6 +72,9 @@ class _SettingsPageState extends State<SettingsPage> {
                 _DeviceData(),
                 const SizedBox(height: 20.0),
                 const Divider(height: 1.0),
+                _Metadata(),
+                const SizedBox(height: 20.0),
+                const Divider(height: 1.0),
                 _Buttons(
                   onRestoreFromSeed: () async {
                     final mnemonic =
@@ -116,6 +119,30 @@ class _SettingsPageState extends State<SettingsPage> {
           ),
         ),
       ],
+    );
+  }
+}
+
+class _Metadata extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final web3Wallet = GetIt.I<IWeb3WalletService>().web3wallet;
+    final nativeLink = web3Wallet.metadata.redirect?.native;
+    final universalLink = web3Wallet.metadata.redirect?.universal;
+    final linkMode = web3Wallet.metadata.redirect?.linkMode;
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox.square(dimension: 20.0),
+          _DataContainer(
+            title: 'Redirect',
+            data:
+                'Native: $nativeLink\nUniversal: $universalLink\nLink Mode: $linkMode',
+          ),
+        ],
+      ),
     );
   }
 }

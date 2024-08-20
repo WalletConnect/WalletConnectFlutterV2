@@ -1,8 +1,5 @@
-import 'package:fl_toast/fl_toast.dart';
 import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
-import 'package:walletconnect_flutter_v2_wallet/dependencies/i_web3wallet_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/utils/string_constants.dart';
 import 'package:walletconnect_flutter_v2_wallet/widgets/wc_connection_widget/wc_connection_model.dart';
 import 'package:walletconnect_flutter_v2_wallet/widgets/wc_connection_widget/wc_connection_widget.dart';
@@ -72,31 +69,11 @@ class ConnectionWidgetBuilder {
         ),
       );
 
-      Map<String, void Function()> actions = {};
-      for (final String event in ns.events) {
-        actions[event] = () async {
-          final chainId = NamespaceUtils.getChainFromAccount(ns.accounts.first);
-          await GetIt.I<IWeb3WalletService>().web3wallet.emitSessionEvent(
-                topic: topic,
-                chainId: chainId,
-                event: SessionEventParams(
-                  name: event,
-                  data: int.tryParse(chainId.split(':').last),
-                ),
-              );
-          showPlatformToast(
-            child: Text('Event $event sent to dapp'),
-            // ignore: use_build_context_synchronously
-            context: context,
-          );
-        };
-      }
       if (ns.events.isNotEmpty) {
         models.add(
           WCConnectionModel(
-            title: '${StringConstants.events} (Tap to send)',
+            title: StringConstants.events,
             elements: ns.events,
-            elementActions: actions,
           ),
         );
       }
