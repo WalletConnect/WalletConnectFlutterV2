@@ -7,15 +7,15 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/bottom_sheet/i_bottom_sheet_service.dart';
-import 'package:walletconnect_flutter_v2_wallet/dependencies/chains/evm_service.dart';
+import 'package:walletconnect_flutter_v2_wallet/dependencies/chain_services/evm_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/deep_link_handler.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/i_web3wallet_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/key_service/chain_key.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/key_service/i_key_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/models/chain_data.dart';
-import 'package:walletconnect_flutter_v2_wallet/utils/constants.dart';
 import 'package:walletconnect_flutter_v2_wallet/utils/dart_defines.dart';
 import 'package:walletconnect_flutter_v2_wallet/utils/eth_utils.dart';
+import 'package:walletconnect_flutter_v2_wallet/utils/methods_utils.dart';
 import 'package:walletconnect_flutter_v2_wallet/widgets/wc_connection_request/wc_connection_request_widget.dart';
 import 'package:walletconnect_flutter_v2_wallet/widgets/wc_request_widget.dart/wc_request_widget.dart';
 import 'package:walletconnect_flutter_v2_wallet/widgets/wc_request_widget.dart/wc_session_auth_request_widget.dart';
@@ -24,14 +24,39 @@ class Web3WalletService extends IWeb3WalletService {
   final _bottomSheetHandler = GetIt.I<IBottomSheetService>();
   Web3Wallet? _web3Wallet;
 
+  String get _flavor {
+    String flavor = '-${const String.fromEnvironment('FLUTTER_APP_FLAVOR')}';
+    return flavor.replaceAll('-production', '');
+  }
+
+  String _universalLink() {
+    Uri link = Uri.parse('https://lab.web3modal.com/flutter_walletkit');
+    if (_flavor.isNotEmpty) {
+      return link
+          .replace(path: '${link.path}_internal')
+          .replace(host: 'dev.${link.host}')
+          .toString();
+    }
+    return link.toString();
+  }
+
+  Redirect _constructRedirect() {
+    return Redirect(
+      native: 'wcflutterwallet$_flavor://',
+      universal: _universalLink(),
+      // enable linkMode on Wallet so Dapps can use relay-less connection
+      // universal: value must be set on cloud config as well
+      linkMode: true,
+    );
+  }
+
   @override
   Future<void> create() async {
     // Create the web3wallet
-    String flavor = '-${const String.fromEnvironment('FLUTTER_APP_FLAVOR')}';
-    flavor = flavor.replaceAll('-production', '');
     _web3Wallet = Web3Wallet(
       core: Core(
         projectId: DartDefines.projectId,
+        logLevel: LogLevel.error,
       ),
       metadata: PairingMetadata(
         name: 'Sample Wallet Flutter',
@@ -40,10 +65,7 @@ class Web3WalletService extends IWeb3WalletService {
         icons: [
           'https://docs.walletconnect.com/assets/images/web3walletLogo-54d3b546146931ceaf47a3500868a73a.png'
         ],
-        redirect: Redirect(
-          native: 'wcflutterwallet$flavor://',
-          // universal: 'https://walletconnect.com',
-        ),
+        redirect: _constructRedirect(),
       ),
     );
 
@@ -98,24 +120,27 @@ class Web3WalletService extends IWeb3WalletService {
   Future<void> init() async {
     // Await the initialization of the web3wallet
     await _web3Wallet!.init();
-
-    final sessions = _web3Wallet!.sessions.getAll();
-    final chainKeys = GetIt.I<IKeyService>().getKeysForChain('eip155');
-    for (var session in sessions) {
-      try {
-        final chainIds = NamespaceUtils.getChainIdsFromNamespaces(
-          namespaces: session.namespaces,
-        );
-        _web3Wallet!.emitSessionEvent(
-          topic: session.topic,
-          chainId: chainIds.first,
-          event: SessionEventParams(
-            name: 'accountsChanged',
-            data: [chainKeys.first.address],
-          ),
-        );
-      } catch (_) {}
-    }
+    _web3Wallet!.core.connectivity.isOnline.addListener(() {
+      if (_web3Wallet!.core.connectivity.isOnline.value) {
+        final sessions = _web3Wallet!.sessions.getAll();
+        final chainKeys = GetIt.I<IKeyService>().getKeysForChain('eip155');
+        for (var session in sessions) {
+          try {
+            final chainIds = NamespaceUtils.getChainIdsFromNamespaces(
+              namespaces: session.namespaces,
+            );
+            _web3Wallet!.emitSessionEvent(
+              topic: session.topic,
+              chainId: chainIds.first,
+              event: SessionEventParams(
+                name: 'accountsChanged',
+                data: ['${chainIds.first}:${chainKeys.first.address}'],
+              ),
+            );
+          } catch (_) {}
+        }
+      }
+    });
   }
 
   void _logListener(LogEvent event) {
@@ -149,9 +174,9 @@ class Web3WalletService extends IWeb3WalletService {
   Web3Wallet get web3wallet => _web3Wallet!;
 
   List<String> get _loaderMethods => [
-        'wc_sessionPropose',
-        'wc_sessionRequest',
-        'wc_sessionAuthenticate',
+        MethodConstants.WC_SESSION_PROPOSE,
+        MethodConstants.WC_SESSION_REQUEST,
+        MethodConstants.WC_SESSION_AUTHENTICATE,
       ];
 
   void _onRelayClientMessage(MessageEvent? event) async {
@@ -174,7 +199,7 @@ class Web3WalletService extends IWeb3WalletService {
               child: WCConnectionRequestWidget(
                 proposalData: args.params,
                 verifyContext: args.verifyContext,
-                metadata: args.params.proposer,
+                requester: args.params.proposer,
               ),
             ),
           )) ??
@@ -184,15 +209,16 @@ class Web3WalletService extends IWeb3WalletService {
         // generatedNamespaces is constructed based on registered methods handlers
         // so if you want to handle requests using onSessionRequest event then you would need to manually add that method in the approved namespaces
         try {
-          await _web3Wallet!.approveSession(
+          final response = await _web3Wallet!.approveSession(
             id: args.id,
             namespaces: NamespaceUtils.regenerateNamespacesWithChains(
               args.params.generatedNamespaces!,
             ),
             sessionProperties: args.params.sessionProperties,
           );
+          MethodsUtils.goBackToDapp(response.topic, 'success');
         } on WalletConnectError catch (error) {
-          DeepLinkHandler.goBackModal(
+          MethodsUtils.goBackModal(
             title: 'Error',
             message: error.message,
             success: false,
@@ -204,14 +230,13 @@ class Web3WalletService extends IWeb3WalletService {
         await _web3Wallet!.core.pairing.disconnect(
           topic: args.params.pairingTopic,
         );
-
-        final scheme = args.params.proposer.metadata.redirect?.native ?? '';
-        DeepLinkHandler.goTo(
-          scheme,
-          modalTitle: 'Error',
-          modalMessage: error.message,
-          success: false,
-        );
+        MethodsUtils.openApp(args.params.proposer.metadata, onFail: ([error]) {
+          MethodsUtils.goBackModal(
+            title: 'Error',
+            message: 'User rejected',
+            success: false,
+          );
+        });
       }
     }
   }
@@ -227,29 +252,10 @@ class Web3WalletService extends IWeb3WalletService {
         errorMessage =
             errorMessage.replaceFirst('Supported:', '\n\nSupported:');
       }
-      GetIt.I<IBottomSheetService>().queueBottomSheet(
-        widget: Container(
-          color: Colors.white,
-          width: double.infinity,
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            children: [
-              Icon(
-                Icons.error_outline_sharp,
-                color: Colors.red[100],
-                size: 80.0,
-              ),
-              Text(
-                'Error',
-                style: StyleConstants.subtitleText.copyWith(
-                  color: Colors.black,
-                  fontSize: 18.0,
-                ),
-              ),
-              Text(errorMessage),
-            ],
-          ),
-        ),
+      MethodsUtils.goBackModal(
+        title: 'Error',
+        message: errorMessage,
+        success: false,
       );
     }
   }
@@ -257,8 +263,7 @@ class Web3WalletService extends IWeb3WalletService {
   void _onSessionConnect(SessionConnect? args) {
     if (args != null) {
       log('[SampleWallet] _onSessionConnect ${jsonEncode(args.session.toJson())}');
-      final scheme = args.session.peer.metadata.redirect?.native ?? '';
-      DeepLinkHandler.goTo(scheme);
+      MethodsUtils.goBackToDapp(args.session.topic, 'success');
     }
   }
 
@@ -305,7 +310,7 @@ class Web3WalletService extends IWeb3WalletService {
                   child: WCConnectionRequestWidget(
                     sessionAuthPayload: newAuthPayload,
                     verifyContext: args.verifyContext,
-                    metadata: args.requester,
+                    requester: args.requester,
                   ),
                 ),
               )) ??
@@ -340,14 +345,13 @@ class Web3WalletService extends IWeb3WalletService {
         }
         //
         try {
-          await _web3Wallet!.approveSessionAuthenticate(
+          final response = await _web3Wallet!.approveSessionAuthenticate(
             id: args.id,
             auths: cacaos,
           );
-          final scheme = args.requester.metadata.redirect?.native ?? '';
-          DeepLinkHandler.goTo(scheme);
+          MethodsUtils.goBackToDapp(response.session!.topic, 'success');
         } on WalletConnectError catch (error) {
-          DeepLinkHandler.goBackModal(
+          MethodsUtils.goBackModal(
             title: 'Error',
             message: error.message,
             success: false,
@@ -358,13 +362,13 @@ class Web3WalletService extends IWeb3WalletService {
           id: args.id,
           reason: Errors.getSdkError(Errors.USER_REJECTED_AUTH),
         );
-        final scheme = args.requester.metadata.redirect?.native ?? '';
-        DeepLinkHandler.goTo(
-          scheme,
-          modalTitle: 'Error',
-          modalMessage: 'User rejected',
-          success: false,
-        );
+        MethodsUtils.openApp(args.requester.metadata, onFail: ([error]) {
+          MethodsUtils.goBackModal(
+            title: 'Error',
+            message: 'User rejected',
+            success: false,
+          );
+        });
       }
     }
   }
@@ -378,7 +382,7 @@ class Web3WalletService extends IWeb3WalletService {
                 widget: WCRequestWidget(
                   child: WCConnectionRequestWidget(
                     authPayloadParams: args.payloadParams,
-                    metadata: args.requester,
+                    requester: args.requester,
                   ),
                 ),
               )) ??
@@ -404,30 +408,42 @@ class Web3WalletService extends IWeb3WalletService {
         );
         final hexSignature = bytesToHex(signature, include0x: true);
 
-        await _web3Wallet!.respondAuthRequest(
-          id: args.id,
-          iss: iss,
-          signature: CacaoSignature(
-            t: CacaoSignature.EIP191,
-            s: hexSignature,
-          ),
-        );
-        final scheme = args.requester.metadata.redirect?.native ?? '';
-        DeepLinkHandler.goTo(scheme);
+        try {
+          await _web3Wallet!.respondAuthRequest(
+            id: args.id,
+            iss: iss,
+            signature: CacaoSignature(
+              t: CacaoSignature.EIP191,
+              s: hexSignature,
+            ),
+          );
+          MethodsUtils.openApp(args.requester.metadata, onFail: ([error]) {
+            MethodsUtils.goBackModal(
+              title: 'Success',
+              message: 'You can go back to ${args.requester.metadata.name}',
+              success: true,
+            );
+          });
+        } on WalletConnectError catch (error) {
+          MethodsUtils.goBackModal(
+            title: 'Error',
+            message: error.message,
+            success: false,
+          );
+        }
       } else {
         await _web3Wallet!.respondAuthRequest(
           id: args.id,
           iss: iss,
           error: Errors.getSdkError(Errors.USER_REJECTED_AUTH),
         );
-        // TODO this should be triggered on _onRelayClientMessage
-        final scheme = args.requester.metadata.redirect?.native ?? '';
-        DeepLinkHandler.goTo(
-          scheme,
-          modalTitle: 'Error',
-          modalMessage: 'User rejected',
-          success: false,
-        );
+        MethodsUtils.openApp(args.requester.metadata, onFail: ([error]) {
+          MethodsUtils.goBackModal(
+            title: 'Error',
+            message: 'User rejected',
+            success: false,
+          );
+        });
       }
     }
   }

@@ -24,6 +24,7 @@ dependencies:
   shared_preferences: ^2.2.2
   stack_trace: ^1.10.0
   stream_channel: ^2.1.0
+  url_launcher: ^6.3.0
   web3dart: ^2.7.3
   web_socket_channel: ^2.4.4
   x25519: ^0.1.1

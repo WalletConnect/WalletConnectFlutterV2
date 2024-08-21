@@ -45,6 +45,8 @@ class StoreVersions {
   static const CONTEXT_TOPIC_TO_RECEIVER_PUBLIC_KEY =
       'topicToReceiverPublicKey';
   static const VERSION_TOPIC_TO_RECEIVER_PUBLIC_KEY = '1.1';
+  static const CONTEXT_LINKMODE = 'linkmode';
+  static const VERSION_LINKMODE = '1.0';
 
   // Sign
   static const CONTEXT_PROPOSALS = 'proposals';

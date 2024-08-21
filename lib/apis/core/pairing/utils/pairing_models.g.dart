@@ -67,12 +67,14 @@ _$RedirectImpl _$$RedirectImplFromJson(Map<String, dynamic> json) =>
     _$RedirectImpl(
       native: json['native'] as String?,
       universal: json['universal'] as String?,
+      linkMode: json['linkMode'] as bool? ?? false,
     );
 
 Map<String, dynamic> _$$RedirectImplToJson(_$RedirectImpl instance) =>
     <String, dynamic>{
       'native': instance.native,
       'universal': instance.universal,
+      'linkMode': instance.linkMode,
     };
 
 _$JsonRpcRecordImpl _$$JsonRpcRecordImplFromJson(Map<String, dynamic> json) =>

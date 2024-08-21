@@ -115,6 +115,9 @@ _$PendingSessionAuthRequestImpl _$$PendingSessionAuthRequestImplFromJson(
           json['authPayload'] as Map<String, dynamic>),
       verifyContext:
           VerifyContext.fromJson(json['verifyContext'] as Map<String, dynamic>),
+      transportType:
+          $enumDecodeNullable(_$TransportTypeEnumMap, json['transportType']) ??
+              TransportType.relay,
     );
 
 Map<String, dynamic> _$$PendingSessionAuthRequestImplToJson(
@@ -126,4 +129,10 @@ Map<String, dynamic> _$$PendingSessionAuthRequestImplToJson(
       'expiryTimestamp': instance.expiryTimestamp,
       'authPayload': instance.authPayload.toJson(),
       'verifyContext': instance.verifyContext.toJson(),
+      'transportType': _$TransportTypeEnumMap[instance.transportType]!,
     };
+
+const _$TransportTypeEnumMap = {
+  TransportType.relay: 'relay',
+  TransportType.linkMode: 'linkMode',
+};

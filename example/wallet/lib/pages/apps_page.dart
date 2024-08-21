@@ -38,7 +38,7 @@ class AppsPageState extends State<AppsPage> with GetItStateMixin {
     //
     _registerListeners();
     // TODO web3Wallet.core.echo.register(firebaseAccessToken);
-    DeepLinkHandler.onLink.listen(_onFoundUri);
+    // DeepLinkHandler.onLink.listen(_onFoundUri);
     DeepLinkHandler.checkInitialLink();
   }
 

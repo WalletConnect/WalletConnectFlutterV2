@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
-import 'package:walletconnect_flutter_v2_wallet/dependencies/chains/common.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/i_web3wallet_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/models/chain_metadata.dart';
+import 'package:walletconnect_flutter_v2_wallet/utils/methods_utils.dart';
 
 class CosmosService {
   final _web3Wallet = GetIt.I<IWeb3WalletService>().web3wallet;
@@ -41,7 +41,7 @@ class CosmosService {
       response: response,
     );
 
-    CommonMethods.goBackToDapp(topic, response.result ?? response.error);
+    MethodsUtils.goBackToDapp(topic, response.result ?? response.error);
   }
 
   Future<void> cosmosSignAmino(String topic, dynamic parameters) async {
@@ -60,6 +60,6 @@ class CosmosService {
       response: response,
     );
 
-    CommonMethods.goBackToDapp(topic, response.result ?? response.error);
+    MethodsUtils.goBackToDapp(topic, response.result ?? response.error);
   }
 }

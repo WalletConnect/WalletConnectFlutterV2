@@ -6,13 +6,13 @@ import 'package:get_it/get_it.dart';
 import 'package:polkadart/scale_codec.dart';
 
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
-import 'package:walletconnect_flutter_v2_wallet/dependencies/chains/common.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/i_web3wallet_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/key_service/i_key_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/models/chain_metadata.dart';
 
 import 'package:polkadart/polkadart.dart';
 import 'package:polkadart_keyring/polkadart_keyring.dart';
+import 'package:walletconnect_flutter_v2_wallet/utils/methods_utils.dart';
 
 class PolkadotService {
   // final _bottomSheetService = GetIt.I<IBottomSheetService>();
@@ -67,7 +67,11 @@ class PolkadotService {
       // adjust the default ss58Format for Kusama
       // keyPair.ss58Format = 2;
 
-      if (await CommonMethods.requestApproval(message, title: method)) {
+      if (await MethodsUtils.requestApproval(
+        message,
+        title: method,
+        transportType: pRequest.transportType.name,
+      )) {
         final encodedMessage = utf8.encode(message);
         final signature = keyPair.sign(encodedMessage);
 
@@ -97,7 +101,7 @@ class PolkadotService {
       response: response,
     );
 
-    CommonMethods.goBackToDapp(topic, response.result ?? response.error);
+    MethodsUtils.goBackToDapp(topic, response.result ?? response.error);
   }
 
   Future<void> polkadotSignTransaction(String topic, dynamic parameters) async {
@@ -117,7 +121,11 @@ class PolkadotService {
 
     const encoder = JsonEncoder.withIndent('  ');
     final message = encoder.convert(trxPayload);
-    if (await CommonMethods.requestApproval(message, title: method)) {
+    if (await MethodsUtils.requestApproval(
+      message,
+      title: method,
+      transportType: pRequest.transportType.name,
+    )) {
       try {
         final keyPair = await keyring.fromUri(keys[0].privateKey);
         // adjust the default ss58Format for Polkadot
@@ -161,7 +169,7 @@ class PolkadotService {
       response: response,
     );
 
-    CommonMethods.goBackToDapp(topic, response.result ?? response.error);
+    MethodsUtils.goBackToDapp(topic, response.result ?? response.error);
   }
 
   void _onSessionRequest(SessionRequestEvent? args) async {

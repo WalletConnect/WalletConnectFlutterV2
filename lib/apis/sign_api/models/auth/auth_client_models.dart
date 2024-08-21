@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:walletconnect_flutter_v2/apis/core/relay_client/relay_client_models.dart';
 import 'package:walletconnect_flutter_v2/apis/models/basic_models.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/models/auth/auth_client_events.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/models/auth/common_auth_models.dart';
@@ -131,6 +132,7 @@ class PendingAuthRequest with _$PendingAuthRequest {
     required String pairingTopic,
     required ConnectionMetadata metadata,
     required CacaoRequestPayload cacaoPayload,
+    @Default(TransportType.relay) TransportType transportType,
   }) = _PendingAuthRequest;
 
   factory PendingAuthRequest.fromJson(Map<String, dynamic> json) =>

@@ -129,6 +129,7 @@ class WcSessionRequestRequest with _$WcSessionRequestRequest {
   const factory WcSessionRequestRequest({
     required String chainId,
     required SessionRequestParams request,
+    @Default(TransportType.relay) TransportType transportType,
   }) = _WcSessionRequestRequest;
 
   factory WcSessionRequestRequest.fromJson(Map<String, dynamic> json) =>
@@ -179,6 +180,7 @@ class WcAuthRequestRequest with _$WcAuthRequestRequest {
   const factory WcAuthRequestRequest({
     required AuthPayloadParams payloadParams,
     required ConnectionMetadata requester,
+    @Default(TransportType.relay) TransportType transportType,
   }) = _WcAuthRequestRequest;
 
   factory WcAuthRequestRequest.fromJson(Map<String, dynamic> json) =>
@@ -203,6 +205,7 @@ class WcSessionAuthRequestParams with _$WcSessionAuthRequestParams {
     required SessionAuthPayload authPayload,
     required ConnectionMetadata requester,
     required int expiryTimestamp,
+    @Default(TransportType.relay) TransportType transportType,
   }) = _WcSessionAuthRequestParams;
 
   factory WcSessionAuthRequestParams.fromJson(Map<String, dynamic> json) =>

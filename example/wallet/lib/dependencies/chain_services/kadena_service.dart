@@ -5,11 +5,11 @@ import 'package:get_it/get_it.dart';
 
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/bottom_sheet/i_bottom_sheet_service.dart';
-import 'package:walletconnect_flutter_v2_wallet/dependencies/chains/common.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/i_web3wallet_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/key_service/i_key_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/models/chain_data.dart';
 import 'package:walletconnect_flutter_v2_wallet/models/chain_metadata.dart';
+import 'package:walletconnect_flutter_v2_wallet/utils/methods_utils.dart';
 import 'package:walletconnect_flutter_v2_wallet/widgets/kadena_request_widget/kadena_request_widget.dart';
 
 import 'package:kadena_dart_sdk/kadena_dart_sdk.dart';
@@ -100,7 +100,7 @@ class KadenaService {
       response: response,
     );
 
-    CommonMethods.goBackToDapp(topic, response.result ?? response.error);
+    MethodsUtils.goBackToDapp(topic, response.result ?? response.error);
   }
 
   Future<void> kadenaSignV1(String topic, dynamic parameters) async {
@@ -168,7 +168,7 @@ class KadenaService {
       response: response,
     );
 
-    CommonMethods.goBackToDapp(topic, response.result ?? response.error);
+    MethodsUtils.goBackToDapp(topic, response.result ?? response.error);
   }
 
   Future<void> kadenaQuicksignV1(String topic, dynamic parameters) async {
@@ -255,7 +255,7 @@ class KadenaService {
       response: response,
     );
 
-    CommonMethods.goBackToDapp(topic, response.result ?? response.error);
+    MethodsUtils.goBackToDapp(topic, response.result ?? response.error);
   }
 
   void _onSessionRequest(SessionRequestEvent? args) async {

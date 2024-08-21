@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'package:walletconnect_flutter_v2/apis/core/relay_client/relay_client_models.dart';
 import 'package:walletconnect_flutter_v2/apis/core/verify/models/verify_context.dart';
 import 'package:walletconnect_flutter_v2/apis/models/basic_models.dart';
 
@@ -110,6 +111,7 @@ class PendingSessionAuthRequest with _$PendingSessionAuthRequest {
     required int expiryTimestamp,
     required CacaoRequestPayload authPayload,
     required VerifyContext verifyContext,
+    @Default(TransportType.relay) TransportType transportType,
   }) = _PendingSessionAuthRequest;
 
   factory PendingSessionAuthRequest.fromJson(Map<String, dynamic> json) =>

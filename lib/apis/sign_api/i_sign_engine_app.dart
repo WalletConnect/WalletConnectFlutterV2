@@ -59,7 +59,10 @@ abstract class ISignEngineApp extends ISignEngineCommon {
   // NEW 1-CA METHOD
   Future<SessionAuthRequestResponse> authenticate({
     required SessionAuthRequestParams params,
+    String? walletUniversalLink,
     String? pairingTopic,
     List<List<String>>? methods,
   });
+
+  Future<bool> redirectToWallet(PairingMetadata? metadata);
 }

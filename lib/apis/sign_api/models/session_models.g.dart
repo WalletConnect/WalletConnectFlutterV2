@@ -45,6 +45,8 @@ _$SessionDataImpl _$$SessionDataImplFromJson(Map<String, dynamic> json) =>
       namespaces: (json['namespaces'] as Map<String, dynamic>).map(
         (k, e) => MapEntry(k, Namespace.fromJson(e as Map<String, dynamic>)),
       ),
+      self: ConnectionMetadata.fromJson(json['self'] as Map<String, dynamic>),
+      peer: ConnectionMetadata.fromJson(json['peer'] as Map<String, dynamic>),
       requiredNamespaces:
           (json['requiredNamespaces'] as Map<String, dynamic>?)?.map(
         (k, e) =>
@@ -59,8 +61,12 @@ _$SessionDataImpl _$$SessionDataImplFromJson(Map<String, dynamic> json) =>
           (json['sessionProperties'] as Map<String, dynamic>?)?.map(
         (k, e) => MapEntry(k, e as String),
       ),
-      self: ConnectionMetadata.fromJson(json['self'] as Map<String, dynamic>),
-      peer: ConnectionMetadata.fromJson(json['peer'] as Map<String, dynamic>),
+      authentication: (json['authentication'] as List<dynamic>?)
+          ?.map((e) => Cacao.fromJson(e as Map<String, dynamic>))
+          .toList(),
+      transportType:
+          $enumDecodeNullable(_$TransportTypeEnumMap, json['transportType']) ??
+              TransportType.relay,
     );
 
 Map<String, dynamic> _$$SessionDataImplToJson(_$SessionDataImpl instance) {
@@ -72,6 +78,8 @@ Map<String, dynamic> _$$SessionDataImplToJson(_$SessionDataImpl instance) {
     'acknowledged': instance.acknowledged,
     'controller': instance.controller,
     'namespaces': instance.namespaces.map((k, e) => MapEntry(k, e.toJson())),
+    'self': instance.self.toJson(),
+    'peer': instance.peer.toJson(),
   };
 
   void writeNotNull(String key, dynamic value) {
@@ -85,10 +93,16 @@ Map<String, dynamic> _$$SessionDataImplToJson(_$SessionDataImpl instance) {
   writeNotNull('optionalNamespaces',
       instance.optionalNamespaces?.map((k, e) => MapEntry(k, e.toJson())));
   writeNotNull('sessionProperties', instance.sessionProperties);
-  val['self'] = instance.self.toJson();
-  val['peer'] = instance.peer.toJson();
+  writeNotNull('authentication',
+      instance.authentication?.map((e) => e.toJson()).toList());
+  val['transportType'] = _$TransportTypeEnumMap[instance.transportType]!;
   return val;
 }
+
+const _$TransportTypeEnumMap = {
+  TransportType.relay: 'relay',
+  TransportType.linkMode: 'linkMode',
+};
 
 _$SessionRequestImpl _$$SessionRequestImplFromJson(Map<String, dynamic> json) =>
     _$SessionRequestImpl(
@@ -99,6 +113,9 @@ _$SessionRequestImpl _$$SessionRequestImplFromJson(Map<String, dynamic> json) =>
       params: json['params'],
       verifyContext:
           VerifyContext.fromJson(json['verifyContext'] as Map<String, dynamic>),
+      transportType:
+          $enumDecodeNullable(_$TransportTypeEnumMap, json['transportType']) ??
+              TransportType.relay,
     );
 
 Map<String, dynamic> _$$SessionRequestImplToJson(
@@ -110,4 +127,5 @@ Map<String, dynamic> _$$SessionRequestImplToJson(
       'chainId': instance.chainId,
       'params': instance.params,
       'verifyContext': instance.verifyContext.toJson(),
+      'transportType': _$TransportTypeEnumMap[instance.transportType]!,
     };
