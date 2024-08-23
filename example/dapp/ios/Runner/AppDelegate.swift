@@ -4,8 +4,8 @@ import Flutter
 @UIApplicationMain
 @objc class AppDelegate: FlutterAppDelegate {
     
-    private static let EVENTS_CHANNEL = "com.walletconnect.flutterwallet/events"
-    private static let METHODS_CHANNEL = "com.walletconnect.flutterwallet/methods"
+    private static let EVENTS_CHANNEL = "com.walletconnect.flutterdapp/events"
+    private static let METHODS_CHANNEL = "com.walletconnect.flutterdapp/methods"
     
     private var eventsChannel: FlutterEventChannel?
     private var methodsChannel: FlutterMethodChannel?

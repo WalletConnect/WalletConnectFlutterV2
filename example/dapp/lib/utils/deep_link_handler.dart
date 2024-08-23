@@ -4,20 +4,24 @@ import 'package:walletconnect_flutter_v2_dapp/imports.dart';
 
 class DeepLinkHandler {
   static const _methodChannel = MethodChannel(
-    'com.walletconnect.flutterwallet/methods',
+    'com.walletconnect.flutterdapp/methods',
   );
   static const _eventChannel = EventChannel(
-    'com.walletconnect.flutterwallet/events',
+    'com.walletconnect.flutterdapp/events',
   );
   static final waiting = ValueNotifier<bool>(false);
   static late IWeb3App _web3app;
 
   static void initListener() {
     if (kIsWeb) return;
-    _eventChannel.receiveBroadcastStream().listen(
-          _onLink,
-          onError: _onError,
-        );
+    try {
+      _eventChannel.receiveBroadcastStream().listen(
+            _onLink,
+            onError: _onError,
+          );
+    } catch (e) {
+      debugPrint('[SampleWallet] [DeepLinkHandler] checkInitialLink $e');
+    }
   }
 
   static void init(IWeb3App web3app) {

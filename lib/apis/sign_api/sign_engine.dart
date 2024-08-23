@@ -505,7 +505,7 @@ class SignEngine implements ISignEngine {
   }
 
   @override
-  Future request({
+  Future<dynamic> request({
     required String topic,
     required String chainId,
     required SessionRequestParams request,

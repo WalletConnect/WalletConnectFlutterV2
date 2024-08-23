@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:math';
 import 'dart:ui';
 
@@ -37,7 +39,6 @@ class _SettingsPageState extends State<SettingsPage> {
                   onCreateAddress: () async {
                     await keysService.createAddressFromSeed();
                     await keysService.loadKeys();
-                    // ignore: use_build_context_synchronously
                     Navigator.of(context).pop();
                     setState(() {});
                   },
@@ -87,7 +88,6 @@ class _SettingsPageState extends State<SettingsPage> {
                       );
                       await keysService.loadKeys();
                       await showDialog(
-                        // ignore: use_build_context_synchronously
                         context: context,
                         builder: (BuildContext context) {
                           return const AlertDialog(
@@ -102,7 +102,6 @@ class _SettingsPageState extends State<SettingsPage> {
                     await keysService.loadDefaultWallet();
                     await keysService.loadKeys();
                     await showDialog(
-                      // ignore: use_build_context_synchronously
                       context: context,
                       builder: (BuildContext context) {
                         return const AlertDialog(

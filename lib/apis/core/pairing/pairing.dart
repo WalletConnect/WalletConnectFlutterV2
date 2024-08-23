@@ -435,15 +435,15 @@ class Pairing implements IPairing {
 
     if ((appLink ?? '').isNotEmpty) {
       // during wc_sessionAuthenticate we don't need to openURL as it will be done by the host dapp
+      core.logger.t(
+        'pairing sendRequest LinkMode, '
+        'id: $id topic: $topic, method: $method, params: $params, ttl: $ttl',
+      );
       if (openUrl) {
         final redirectURL = WalletConnectUtils.getLinkModeURL(
           appLink!,
           topic,
           message,
-        );
-        core.logger.t(
-          'pairing sendRequest LinkMode, '
-          'id: $id topic: $topic, method: $method, params: $params, ttl: $ttl',
         );
         await WalletConnectUtils.openURL(redirectURL);
       }

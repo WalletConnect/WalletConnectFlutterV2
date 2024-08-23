@@ -22,7 +22,6 @@ dependencies:
   get_it_mixin: ^4.0.0
   package_info_plus: ^7.0.0
   convert: ^3.0.1
-  # url_launcher: ^6.2.2
   
   # CHECK WEB SUPPORT
   kadena_dart_sdk: ^2.3.2

@@ -67,7 +67,6 @@ class _MyHomePageState extends State<MyHomePage> {
     return flavor.replaceAll('-production', '');
   }
 
-  // ignore: unused_element
   String _universalLink() {
     Uri link = Uri.parse('https://lab.web3modal.com/flutter_appkit');
     if (_flavor.isNotEmpty) {

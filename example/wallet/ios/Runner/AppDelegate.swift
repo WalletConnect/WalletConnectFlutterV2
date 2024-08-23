@@ -25,8 +25,9 @@ import Flutter
             if (call.method == "initialLink") {
                 if let link = self?.initialLink {
                     self?.initialLink = nil
-                    let _ = self?.linkStreamHandler.handleLink(link)
-                    return
+                    result(link)
+                } else {
+                    result("")
                 }
             }
         })

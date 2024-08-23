@@ -59,7 +59,7 @@ class Web3WalletService extends IWeb3WalletService {
         logLevel: LogLevel.error,
       ),
       metadata: PairingMetadata(
-        name: 'Sample Wallet Flutter',
+        name: 'Flutter Wallet Sample',
         description: 'WalletConnect\'s sample wallet with Flutter',
         url: 'https://walletconnect.com/',
         icons: [
