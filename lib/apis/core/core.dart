@@ -25,8 +25,10 @@ import 'package:walletconnect_flutter_v2/apis/core/store/i_store.dart';
 import 'package:walletconnect_flutter_v2/apis/core/relay_client/i_relay_client.dart';
 import 'package:walletconnect_flutter_v2/apis/core/pairing/i_pairing.dart';
 import 'package:walletconnect_flutter_v2/apis/core/store/shared_prefs_store.dart';
+import 'package:walletconnect_flutter_v2/apis/core/store/supported_linkmode_store.dart';
 import 'package:walletconnect_flutter_v2/apis/core/verify/i_verify.dart';
 import 'package:walletconnect_flutter_v2/apis/core/verify/verify.dart';
+import 'package:walletconnect_flutter_v2/apis/models/basic_models.dart';
 import 'package:walletconnect_flutter_v2/apis/utils/constants.dart';
 import 'package:walletconnect_flutter_v2/apis/utils/log_level.dart';
 import 'package:walletconnect_flutter_v2/apis/utils/walletconnect_utils.dart';
@@ -69,6 +71,9 @@ class Core implements ICore {
 
   @override
   late IConnectivity connectivity;
+
+  @override
+  late ILinkModeStore linkModeStore;
 
   Logger _logger = Logger(
     level: Level.off,
@@ -177,6 +182,12 @@ class Core implements ICore {
     connectivity = ConnectivityState(
       core: this,
     );
+    linkModeStore = LinkModeStore(
+      storage: storage,
+      context: StoreVersions.CONTEXT_LINKMODE,
+      version: StoreVersions.VERSION_LINKMODE,
+      fromJson: (dynamic value) => value as List<String>,
+    );
   }
 
   @override
@@ -187,6 +198,24 @@ class Core implements ICore {
     await expirer.init();
     await pairing.init();
     await connectivity.init();
+    await linkModeStore.init();
     heartbeat.init();
+  }
+
+  @override
+  Future<void> addLinkModeSupportedApp(String universalLink) async {
+    return await linkModeStore.update(universalLink);
+  }
+
+  @override
+  List<String> getLinkModeSupportedApps() {
+    return linkModeStore.getList();
+  }
+
+  @override
+  void confirmOnlineStateOrThrow() {
+    if (!connectivity.isOnline.value) {
+      throw WalletConnectError(code: -1, message: 'No internet connection');
+    }
   }
 }

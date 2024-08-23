@@ -13,12 +13,15 @@ import 'package:walletconnect_flutter_v2_dapp/utils/constants.dart';
 import 'package:walletconnect_flutter_v2_dapp/utils/crypto/chain_data.dart';
 import 'package:walletconnect_flutter_v2_dapp/utils/crypto/helpers.dart';
 import 'package:walletconnect_flutter_v2_dapp/utils/dart_defines.dart';
+import 'package:walletconnect_flutter_v2_dapp/utils/deep_link_handler.dart';
 import 'package:walletconnect_flutter_v2_dapp/utils/string_constants.dart';
 import 'package:walletconnect_flutter_v2_dapp/widgets/event_widget.dart';
 
 import 'package:walletconnect_flutter_v2_dapp/imports.dart';
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  DeepLinkHandler.initListener();
   runApp(const MyApp());
 }
 
@@ -59,12 +62,38 @@ class _MyHomePageState extends State<MyHomePage> {
     initialize();
   }
 
-  Future<void> initialize() async {
+  String get _flavor {
     String flavor = '-${const String.fromEnvironment('FLUTTER_APP_FLAVOR')}';
-    flavor = flavor.replaceAll('-production', '');
+    return flavor.replaceAll('-production', '');
+  }
+
+  // ignore: unused_element
+  String _universalLink() {
+    Uri link = Uri.parse('https://lab.web3modal.com/flutter_appkit');
+    if (_flavor.isNotEmpty) {
+      return link
+          .replace(path: '${link.path}_internal')
+          .replace(host: 'dev.${link.host}')
+          .toString();
+    }
+    return link.toString();
+  }
+
+  Redirect _constructRedirect() {
+    return Redirect(
+      native: 'wcflutterdapp$_flavor://',
+      universal: _universalLink(),
+      // enable linkMode on Wallet so Dapps can use relay-less connection
+      // universal: value must be set on cloud config as well
+      linkMode: true,
+    );
+  }
+
+  Future<void> initialize() async {
     _web3App = Web3App(
       core: Core(
         projectId: DartDefines.projectId,
+        logLevel: LogLevel.error,
       ),
       metadata: PairingMetadata(
         name: 'Sample dApp Flutter',
@@ -73,10 +102,7 @@ class _MyHomePageState extends State<MyHomePage> {
         icons: [
           'https://images.prismic.io/wallet-connect/65785a56531ac2845a260732_WalletConnect-App-Logo-1024X1024.png'
         ],
-        redirect: Redirect(
-          native: 'wcflutterdapp$flavor://',
-          // universal: 'https://walletconnect.com',
-        ),
+        redirect: _constructRedirect(),
       ),
     );
 
@@ -99,6 +125,9 @@ class _MyHomePageState extends State<MyHomePage> {
     _web3App!.onSessionAuthResponse.subscribe(_onSessionAuthResponse);
 
     await _web3App!.init();
+
+    DeepLinkHandler.init(_web3App!);
+    DeepLinkHandler.checkInitialLink();
 
     // Loop through all the chain data
     for (final ChainMetadata chain in ChainData.allChains) {
@@ -140,11 +169,19 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   void _onSessionConnect(SessionConnect? event) {
-    log('[SampleDapp] _onSessionConnect $event');
+    debugPrint('[SampleDapp] _onSessionConnect $event');
+    Future.delayed(const Duration(milliseconds: 500), () {
+      setState(() => _selectedIndex = 2);
+    });
   }
 
   void _onSessionAuthResponse(SessionAuthResponse? response) {
-    log('[SampleDapp] _onSessionAuthResponse $response');
+    debugPrint('[SampleDapp] _onSessionAuthResponse $response');
+    if (response?.session != null) {
+      Future.delayed(const Duration(milliseconds: 500), () {
+        setState(() => _selectedIndex = 2);
+      });
+    }
   }
 
   void _setState(dynamic args) => setState(() {});
@@ -180,9 +217,9 @@ class _MyHomePageState extends State<MyHomePage> {
   void _logListener(LogEvent event) {
     if (event.level == Level.debug) {
       // TODO send to mixpanel
-      log('[Mixpanel] ${event.message}');
+      log('${event.message}');
     } else {
-      debugPrint('[Logger] ${event.level.name}: ${event.message}');
+      debugPrint('${event.message}');
     }
   }
 
@@ -246,11 +283,7 @@ class _MyHomePageState extends State<MyHomePage> {
       showUnselectedLabels: true,
       type: BottomNavigationBarType.fixed,
       // called when one tab is selected
-      onTap: (int index) {
-        setState(() {
-          _selectedIndex = index;
-        });
-      },
+      onTap: (index) => setState(() => _selectedIndex = index),
       // bottom tab items
       items: _pageDatas
           .map(
@@ -266,11 +299,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget _buildNavigationRail() {
     return NavigationRail(
       selectedIndex: _selectedIndex,
-      onDestinationSelected: (int index) {
-        setState(() {
-          _selectedIndex = index;
-        });
-      },
+      onDestinationSelected: (index) => setState(() => _selectedIndex = index),
       labelType: NavigationRailLabelType.selected,
       destinations: _pageDatas
           .map(

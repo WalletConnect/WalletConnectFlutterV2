@@ -7,10 +7,15 @@ class WalletConnectConstants {
   static const CORE_VERSION = 2;
   static const CORE_CONTEXT = 'core';
 
-  static const DEFAULT_RELAY_URL = 'wss://relay.walletconnect.org';
-
   static const CORE_STORAGE_PREFIX =
       '$CORE_PROTOCOL@$CORE_VERSION:$CORE_CONTEXT:';
+
+  static const DEFAULT_RELAY_URL = 'wss://relay.walletconnect.org';
+  static const DEFAULT_PUSH_URL = 'https://echo.walletconnect.org';
+  static const VERIFY_SERVER = 'https://verify.walletconnect.org';
+  static const TRUSTED_VERIFY_URLS = [VERIFY_SERVER];
+
+  static const RELAYER_DEFAULT_PROTOCOL = 'irn';
 
   static const THIRTY_SECONDS = 30;
   static const ONE_MINUTE = 60;
@@ -20,12 +25,7 @@ class WalletConnectConstants {
   static const SEVEN_DAYS = ONE_DAY * 7;
   static const THIRTY_DAYS = ONE_DAY * 30;
 
-  static const RELAYER_DEFAULT_PROTOCOL = 'irn';
-
-  static const DEFAULT_PUSH_URL = 'https://echo.walletconnect.org';
-
-  static const VERIFY_SERVER = 'https://verify.walletconnect.org';
-  static const TRUSTED_VERIFY_URLS = [VERIFY_SERVER];
+  static const WALLETCONNECT_LINK_MODE_APPS = 'WALLETCONNECT_LINK_MODE_APPS';
 }
 
 class StoreVersions {
@@ -45,7 +45,7 @@ class StoreVersions {
   static const CONTEXT_TOPIC_TO_RECEIVER_PUBLIC_KEY =
       'topicToReceiverPublicKey';
   static const VERSION_TOPIC_TO_RECEIVER_PUBLIC_KEY = '1.1';
-  static const CONTEXT_LINKMODE = 'linkmode';
+  static const CONTEXT_LINKMODE = 'linkMode';
   static const VERSION_LINKMODE = '1.0';
 
   // Sign

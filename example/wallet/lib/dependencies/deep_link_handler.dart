@@ -1,6 +1,4 @@
 // import 'dart:async';
-import 'dart:developer';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
@@ -14,8 +12,6 @@ class DeepLinkHandler {
   static const _eventChannel = EventChannel(
     'com.walletconnect.flutterwallet/events',
   );
-  // static final _linksController = StreamController<String>.broadcast();
-  // static Stream<String> get onLink => _linksController.stream;
   static final waiting = ValueNotifier<bool>(false);
 
   static void initListener() {
@@ -47,17 +43,15 @@ class DeepLinkHandler {
   static String get host => universalUri.host;
 
   static void _onLink(Object? event) async {
-    log('[SampleWallet] _onLink $event');
     final ev = WalletConnectUtils.getSearchParamFromURL('$event', 'wc_ev');
     if (ev.isNotEmpty) {
-      log('[SampleWallet] is linkMode $event');
+      debugPrint('[SampleWallet] is linkMode $event');
       await _web3wallet.dispatchEnvelope('$event');
     } else {
       final decodedUri = Uri.parse(Uri.decodeFull(event.toString()));
       if (decodedUri.isScheme('wc')) {
-        log('[SampleWallet] is legacy uri $decodedUri');
+        debugPrint('[SampleWallet] is legacy uri $decodedUri');
         waiting.value = true;
-        // _linksController.sink.add(decodedUri.toString());
         await _web3wallet.pair(uri: decodedUri);
       } else {
         final uriParam = WalletConnectUtils.getSearchParamFromURL(
@@ -65,10 +59,9 @@ class DeepLinkHandler {
           'uri',
         );
         if (decodedUri.isScheme(nativeUri.scheme) && uriParam.isNotEmpty) {
-          log('[SampleWallet] is custom uri $decodedUri');
+          debugPrint('[SampleWallet] is custom uri $decodedUri');
           waiting.value = true;
           final pairingUri = decodedUri.query.replaceFirst('uri=', '');
-          // _linksController.sink.add(pairingUri);
           await _web3wallet.pair(uri: Uri.parse(pairingUri));
         }
       }

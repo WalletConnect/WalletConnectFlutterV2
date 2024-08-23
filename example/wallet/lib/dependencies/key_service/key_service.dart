@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:developer';
 
 import 'package:convert/convert.dart';
 import 'package:flutter/foundation.dart';
@@ -33,7 +32,7 @@ class KeyService extends IKeyService {
       debugPrint(s.toString());
     }
 
-    log('[$runtimeType] _keys $_keys');
+    debugPrint('[$runtimeType] _keys $_keys');
     return _keys;
   }
 

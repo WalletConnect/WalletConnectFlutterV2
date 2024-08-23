@@ -144,9 +144,11 @@ class Web3WalletService extends IWeb3WalletService {
   }
 
   void _logListener(LogEvent event) {
-    debugPrint('[Logger] ${event.level.name}: ${event.message}');
-    if (event.level == Level.error) {
+    if (event.level == Level.debug) {
       // TODO send to mixpanel
+      log('${event.message}');
+    } else {
+      debugPrint('${event.message}');
     }
   }
 
@@ -182,7 +184,7 @@ class Web3WalletService extends IWeb3WalletService {
   void _onRelayClientMessage(MessageEvent? event) async {
     if (event != null) {
       final jsonObject = await EthUtils.decodeMessageEvent(event);
-      log('[SampleWallet] _onRelayClientMessage $jsonObject');
+      debugPrint('[SampleWallet] _onRelayClientMessage $jsonObject');
       if (jsonObject is JsonRpcRequest) {
         DeepLinkHandler.waiting.value = _loaderMethods.contains(
           jsonObject.method,
@@ -192,8 +194,8 @@ class Web3WalletService extends IWeb3WalletService {
   }
 
   void _onSessionProposal(SessionProposalEvent? args) async {
+    debugPrint('[SampleWallet] _onSessionProposal ${jsonEncode(args?.params)}');
     if (args != null) {
-      log('[SampleWallet] _onSessionProposal ${jsonEncode(args.params)}');
       final result = (await _bottomSheetHandler.queueBottomSheet(
             widget: WCRequestWidget(
               child: WCConnectionRequestWidget(
@@ -242,7 +244,7 @@ class Web3WalletService extends IWeb3WalletService {
   }
 
   void _onSessionProposalError(SessionProposalErrorEvent? args) async {
-    log('[SampleWallet] _onSessionProposalError $args');
+    debugPrint('[SampleWallet] _onSessionProposalError $args');
     DeepLinkHandler.waiting.value = false;
     if (args != null) {
       String errorMessage = args.error.message;
@@ -262,7 +264,8 @@ class Web3WalletService extends IWeb3WalletService {
 
   void _onSessionConnect(SessionConnect? args) {
     if (args != null) {
-      log('[SampleWallet] _onSessionConnect ${jsonEncode(args.session.toJson())}');
+      final session = jsonEncode(args.session.toJson());
+      debugPrint('[SampleWallet] _onSessionConnect $session');
       MethodsUtils.goBackToDapp(args.session.topic, 'success');
     }
   }
@@ -280,9 +283,10 @@ class Web3WalletService extends IWeb3WalletService {
   }
 
   void _onSessionAuthRequest(SessionAuthRequest? args) async {
-    log('[SampleWallet] _onSessionAuthRequest ${jsonEncode(args?.authPayload.toJson())}');
     if (args != null) {
       final SessionAuthPayload authPayload = args.authPayload;
+      final jsonPyaload = jsonEncode(authPayload.toJson());
+      debugPrint('[SampleWallet] _onSessionAuthRequest $jsonPyaload');
       final supportedChains = ChainData.eip155Chains.map((e) => e.chainId);
       final supportedMethods = SupportedEVMMethods.values.map((e) => e.name);
       final newAuthPayload = AuthSignature.populateAuthPayload(
@@ -374,9 +378,8 @@ class Web3WalletService extends IWeb3WalletService {
   }
 
   Future<void> _onAuthRequest(AuthRequest? args) async {
-    log('[SampleWallet] _onAuthRequest $args');
     if (args != null) {
-      //
+      debugPrint('[SampleWallet] _onAuthRequest $args');
       final WCBottomSheetResult rs =
           (await _bottomSheetHandler.queueBottomSheet(
                 widget: WCRequestWidget(

@@ -5,6 +5,8 @@ import 'package:walletconnect_flutter_v2/apis/core/relay_client/relay_client_mod
 import 'package:walletconnect_flutter_v2/apis/core/verify/models/verify_context.dart';
 import 'package:walletconnect_flutter_v2/apis/models/basic_models.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/models/auth/common_auth_models.dart';
+import 'package:walletconnect_flutter_v2/apis/sign_api/models/auth/session_auth_events.dart';
+import 'package:walletconnect_flutter_v2/apis/sign_api/models/json_rpc_models.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/models/proposal_models.dart';
 
 part 'session_models.g.dart';
@@ -33,6 +35,26 @@ class SessionProposalCompleter {
   String toString() {
     return 'SessionProposalCompleter(id: $id, selfPublicKey: $selfPublicKey, pairingTopic: $pairingTopic, requiredNamespaces: $requiredNamespaces, optionalNamespaces: $optionalNamespaces, sessionProperties: $sessionProperties, completer: $completer)';
   }
+}
+
+class SessionAuthenticateCompleter {
+  final int id;
+  final String pairingTopic;
+  final String responseTopic;
+  final String selfPublicKey;
+  final String? walletUniversalLink;
+  final WcSessionAuthRequestParams request;
+  final Completer<SessionAuthResponse> completer;
+
+  SessionAuthenticateCompleter({
+    required this.id,
+    required this.pairingTopic,
+    required this.responseTopic,
+    required this.selfPublicKey,
+    required this.walletUniversalLink,
+    required this.request,
+    required this.completer,
+  });
 }
 
 @freezed

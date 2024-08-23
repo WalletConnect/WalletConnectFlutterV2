@@ -36,5 +36,7 @@ abstract class ICrypto {
   Future<String> signJWT(String aud);
   int getPayloadType(String encoded);
 
+  String? getPayloadSenderPublicKey(String encoded);
+
   ICryptoUtils getUtils();
 }

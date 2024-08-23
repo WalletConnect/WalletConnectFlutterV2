@@ -7,8 +7,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:qr_flutter/qr_flutter.dart';
-import 'package:url_launcher/url_launcher_string.dart';
-
 import 'package:walletconnect_flutter_v2_dapp/models/chain_metadata.dart';
 import 'package:walletconnect_flutter_v2_dapp/utils/constants.dart';
 import 'package:walletconnect_flutter_v2_dapp/utils/crypto/chain_data.dart';
@@ -181,27 +179,12 @@ class ConnectPageState extends State<ConnectPage> {
     return ListView(
       padding: const EdgeInsets.symmetric(horizontal: StyleConstants.linear8),
       children: <Widget>[
-        Column(
-          children: [
-            const Text(
-              'Flutter Dapp',
-              style: StyleConstants.subtitleText,
-              textAlign: TextAlign.center,
-            ),
-            FutureBuilder<PackageInfo>(
-              future: PackageInfo.fromPlatform(),
-              builder: (context, snapshot) {
-                if (!snapshot.hasData) {
-                  return const SizedBox.shrink();
-                }
-                final v = snapshot.data!.version;
-                final b = snapshot.data!.buildNumber;
-                const f = String.fromEnvironment('FLUTTER_APP_FLAVOR');
-                return Text('$v-$f ($b) - SDK v$packageVersion');
-              },
-            ),
-          ],
+        const Text(
+          'Flutter Dapp',
+          style: StyleConstants.subtitleText,
+          textAlign: TextAlign.center,
         ),
+        const SizedBox(height: StyleConstants.linear8),
         SizedBox(
           height: StyleConstants.linear48,
           child: Row(
@@ -294,7 +277,7 @@ class ConnectPageState extends State<ConnectPage> {
                 style: _buttonStyle,
                 onPressed: _selectedChains.isEmpty
                     ? null
-                    : () => _oneClickAuth(
+                    : () => _sessionAuthenticate(
                           closeModal: () {
                             if (Navigator.canPop(context)) {
                               Navigator.of(context).pop();
@@ -312,6 +295,74 @@ class ConnectPageState extends State<ConnectPage> {
               ),
             ),
           ],
+        ),
+        const SizedBox(height: StyleConstants.linear16),
+        const Divider(height: 1.0),
+        const SizedBox(height: StyleConstants.linear16),
+        const Text(
+          'Redirect:',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('Native: '),
+            Expanded(
+              child: Text(
+                '${widget.web3App.metadata.redirect?.native}',
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ),
+          ],
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('Universal: '),
+            Expanded(
+              child: Text(
+                '${widget.web3App.metadata.redirect?.universal}',
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ),
+          ],
+        ),
+        Row(
+          children: [
+            const Text('Link Mode: '),
+            Text(
+              '${widget.web3App.metadata.redirect?.linkMode}',
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+        const SizedBox(height: StyleConstants.linear8),
+        FutureBuilder<PackageInfo>(
+          future: PackageInfo.fromPlatform(),
+          builder: (context, snapshot) {
+            if (!snapshot.hasData) {
+              return const SizedBox.shrink();
+            }
+            final v = snapshot.data!.version;
+            final b = snapshot.data!.buildNumber;
+            const f = String.fromEnvironment('FLUTTER_APP_FLAVOR');
+            // return Text('App Version: $v-$f ($b) - SDK v$packageVersion');
+            return Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('App Version: '),
+                Expanded(
+                  child: Text(
+                    '$v-$f ($b) - SDK v$packageVersion',
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ],
+            );
+          },
         ),
         const SizedBox(height: StyleConstants.linear16),
       ],
@@ -344,36 +395,11 @@ class ConnectPageState extends State<ConnectPage> {
       optionalNamespaces: optionalNamespaces,
     );
 
-    final encodedUri = Uri.encodeComponent(connectResponse.uri.toString());
-    String flavor = '-${const String.fromEnvironment('FLUTTER_APP_FLAVOR')}';
-    flavor = flavor.replaceAll('-production', '');
-    final uri = 'wcflutterwallet$flavor://wc?uri=$encodedUri';
-    if (await canLaunchUrlString(uri)) {
-      final openApp = await showDialog(
-        // ignore: use_build_context_synchronously
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            content: const Text('Do you want to open with Flutter Wallet'),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(false),
-                child: const Text('Show QR'),
-              ),
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(true),
-                child: const Text('Open'),
-              ),
-            ],
-          );
-        },
-      );
-      if (openApp) {
-        launchUrlString(uri, mode: LaunchMode.externalApplication);
-      } else {
-        _showQrCode(connectResponse.uri.toString());
-      }
-    } else {
+    try {
+      final encodedUri = Uri.encodeComponent(connectResponse.uri.toString());
+      final uri = '$_testWalletScheme?uri=$encodedUri';
+      await WalletConnectUtils.openURL(uri);
+    } catch (e) {
       _showQrCode(connectResponse.uri.toString());
     }
 
@@ -384,7 +410,7 @@ class ConnectPageState extends State<ConnectPage> {
     closeModal?.call();
   }
 
-  Future<void> _showQrCode(String uri) async {
+  Future<void> _showQrCode(String uri, {String walletScheme = ''}) async {
     // Show the QR code
     debugPrint('[SampleDapp] Showing QR Code: $uri');
     _shouldDismissQrCode = true;
@@ -425,7 +451,10 @@ class ConnectPageState extends State<ConnectPage> {
       context,
       MaterialPageRoute(
         fullscreenDialog: true,
-        builder: (context) => QRCodeScreen(uri: uri),
+        builder: (context) => QRCodeScreen(
+          uri: uri,
+          walletScheme: walletScheme,
+        ),
       ),
     );
   }
@@ -467,20 +496,13 @@ class ConnectPageState extends State<ConnectPage> {
         pairingTopic: pairingTopic,
         params: AuthRequestParams(
           chainId: 'eip155:1',
-          domain: Constants.domain,
-          aud: Constants.aud,
+          domain: Uri.parse(widget.web3App.metadata.url).authority,
+          aud: widget.web3App.metadata.url,
           statement: 'Welcome to example flutter app',
         ),
       );
 
-      final scheme = event?.session.peer.metadata.redirect?.native;
-      String flavor = '-${const String.fromEnvironment('FLUTTER_APP_FLAVOR')}';
-      flavor = flavor.replaceAll('-production', '');
-      launchUrlString(
-        scheme ?? 'wcflutterwallet$flavor://',
-        mode: LaunchMode.externalApplication,
-      );
-
+      widget.web3App.redirectToWallet(event?.session.peer.metadata);
       debugPrint('[SampleDapp] Awaiting authentication response');
       final response = await authResponse.completer.future;
       if (response.result != null) {
@@ -495,55 +517,55 @@ class ConnectPageState extends State<ConnectPage> {
     }
   }
 
-  void _oneClickAuth({
+  String? _testWalletLink() {
+    if (widget.web3App.metadata.redirect?.linkMode == true) {
+      return 'https://lab.web3modal.com/wallet';
+      // Uri link = Uri.parse('https://lab.web3modal.com/flutter_walletkit');
+      // if (_flavor.isNotEmpty) {
+      //   return link
+      //       .replace(path: '${link.path}_internal')
+      //       .replace(host: 'dev.${link.host}')
+      //       .toString();
+      // }
+      // return link.toString();
+    }
+    return null;
+  }
+
+  String get _testWalletScheme {
+    return 'walletapp://wc';
+    // return 'wcflutterwallet$_flavor://wc';
+  }
+
+  void _sessionAuthenticate({
     VoidCallback? closeModal,
     Function(String message)? showToast,
   }) async {
     final methods1 = requiredNamespaces['eip155']?.methods ?? [];
     final methods2 = optionalNamespaces['eip155']?.methods ?? [];
-    String flavor = '-${const String.fromEnvironment('FLUTTER_APP_FLAVOR')}';
-    flavor = flavor.replaceAll('-production', '');
+    final walletUniversalLink = _testWalletLink();
     final authResponse = await widget.web3App.authenticate(
       params: SessionAuthRequestParams(
         chains: _selectedChains.map((e) => e.chainId).toList(),
-        domain: 'wcflutterdapp$flavor://',
+        domain: Uri.parse(widget.web3App.metadata.url).authority,
         nonce: AuthUtils.generateNonce(),
-        uri: Constants.aud,
+        uri: widget.web3App.metadata.url,
         statement: 'Welcome to example flutter app',
         methods: <String>{...methods1, ...methods2}.toList(),
       ),
+      walletUniversalLink: walletUniversalLink,
     );
 
-    final encodedUri = Uri.encodeComponent(authResponse.uri.toString());
-    final uri = 'wcflutterwallet$flavor://wc?uri=$encodedUri';
-
-    if (await canLaunchUrlString(uri)) {
-      final openApp = await showDialog(
-        // ignore: use_build_context_synchronously
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            content: const Text('Do you want to open with Flutter Wallet'),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(false),
-                child: const Text('Show QR'),
-              ),
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(true),
-                child: const Text('Open'),
-              ),
-            ],
-          );
-        },
+    try {
+      debugPrint('[SampleDapp] authResponse.uri ${authResponse.uri}');
+      await WalletConnectUtils.openURL(authResponse.uri.toString());
+    } catch (e) {
+      // final encodedUri = Uri.encodeComponent(uri);
+      // await WalletConnectUtils.openURL('$_testWalletScheme?uri=$encodedUri');
+      _showQrCode(
+        authResponse.uri.toString(),
+        walletScheme: _testWalletScheme,
       );
-      if (openApp) {
-        launchUrlString(uri, mode: LaunchMode.externalApplication);
-      } else {
-        _showQrCode(authResponse.uri.toString());
-      }
-    } else {
-      _showQrCode(authResponse.uri.toString());
     }
 
     try {
@@ -568,9 +590,7 @@ class ConnectPageState extends State<ConnectPage> {
   void _onSessionConnect(SessionConnect? event) async {
     if (event == null) return;
 
-    setState(() {
-      _selectedChains.clear();
-    });
+    setState(() => _selectedChains.clear());
 
     if (_shouldDismissQrCode && Navigator.canPop(context)) {
       _shouldDismissQrCode = false;
@@ -583,6 +603,12 @@ class ConnectPageState extends State<ConnectPage> {
         showPlatformToast(child: Text(message), context: context);
       },
     );
+  }
+
+  // ignore: unused_element
+  String get _flavor {
+    String flavor = '-${const String.fromEnvironment('FLUTTER_APP_FLAVOR')}';
+    return flavor.replaceAll('-production', '');
   }
 
   ButtonStyle get _buttonStyle => ButtonStyle(
@@ -609,8 +635,13 @@ class ConnectPageState extends State<ConnectPage> {
 }
 
 class QRCodeScreen extends StatefulWidget {
-  const QRCodeScreen({super.key, required this.uri});
+  const QRCodeScreen({
+    super.key,
+    required this.uri,
+    this.walletScheme = '',
+  });
   final String uri;
+  final String walletScheme;
 
   @override
   State<QRCodeScreen> createState() => _QRCodeScreenState();
@@ -624,6 +655,7 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
         appBar: AppBar(title: const Text(StringConstants.scanQrCode)),
         body: _QRCodeView(
           uri: widget.uri,
+          walletScheme: widget.walletScheme,
         ),
       ),
     );
@@ -631,8 +663,12 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
 }
 
 class _QRCodeView extends StatelessWidget {
-  const _QRCodeView({required this.uri});
+  const _QRCodeView({
+    required this.uri,
+    this.walletScheme = '',
+  });
   final String uri;
+  final String walletScheme;
 
   @override
   Widget build(BuildContext context) {
@@ -655,6 +691,16 @@ class _QRCodeView extends StatelessWidget {
             );
           },
           child: const Text('Copy URL to Clipboard'),
+        ),
+        Visibility(
+          visible: walletScheme.isNotEmpty,
+          child: ElevatedButton(
+            onPressed: () async {
+              final encodedUri = Uri.encodeComponent(uri);
+              await WalletConnectUtils.openURL('$walletScheme?uri=$encodedUri');
+            },
+            child: const Text('Open Test Wallet'),
+          ),
         ),
       ],
     );

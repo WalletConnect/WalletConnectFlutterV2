@@ -78,3 +78,7 @@ extension EtheraAmountExtension on String? {
     return null;
   }
 }
+
+extension UriExtension on String {
+  Uri get toLinkMode => Uri.parse(Uri.decodeFull(this));
+}

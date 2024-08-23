@@ -249,9 +249,9 @@ class _FakeIConnectivity_17 extends _i1.SmartFake
         );
 }
 
-class _FakeISupportedLinkModeStore_18 extends _i1.SmartFake
-    implements _i18.ISupportedLinkModeStore {
-  _FakeISupportedLinkModeStore_18(
+class _FakeILinkModeStore_18 extends _i1.SmartFake
+    implements _i18.ILinkModeStore {
+  _FakeILinkModeStore_18(
     Object parent,
     Invocation parentInvocation,
   ) : super(
@@ -1407,20 +1407,19 @@ class MockCore extends _i1.Mock implements _i28.Core {
       );
 
   @override
-  _i18.ISupportedLinkModeStore get linkModeApps => (super.noSuchMethod(
-        Invocation.getter(#linkModeApps),
-        returnValue: _FakeISupportedLinkModeStore_18(
+  _i18.ILinkModeStore get linkModeStore => (super.noSuchMethod(
+        Invocation.getter(#linkModeStore),
+        returnValue: _FakeILinkModeStore_18(
           this,
-          Invocation.getter(#linkModeApps),
+          Invocation.getter(#linkModeStore),
         ),
-      ) as _i18.ISupportedLinkModeStore);
+      ) as _i18.ILinkModeStore);
 
   @override
-  set linkModeApps(_i18.ISupportedLinkModeStore? _linkModeApps) =>
-      super.noSuchMethod(
+  set linkModeStore(_i18.ILinkModeStore? _linkModeStore) => super.noSuchMethod(
         Invocation.setter(
-          #linkModeApps,
-          _linkModeApps,
+          #linkModeStore,
+          _linkModeStore,
         ),
         returnValueForMissingStub: null,
       );
