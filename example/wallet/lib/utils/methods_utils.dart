@@ -12,30 +12,6 @@ import 'package:walletconnect_flutter_v2_wallet/widgets/wc_request_widget.dart/w
 class MethodsUtils {
   static final web3Wallet = GetIt.I<IWeb3WalletService>().web3wallet;
 
-  static void goBackToDapp(String topic, dynamic result) {
-    try {
-      if (result is String) {
-        final session = web3Wallet.sessions.get(topic);
-        openApp(session?.peer.metadata, onFail: ([error]) {
-          debugPrint('[SampleWallet] MethodsUtils: goBackToDapp $error');
-          goBackModal(
-            title: 'Success',
-            message: 'You can go back to ${session?.peer.metadata.name}',
-            success: true,
-          );
-        });
-      } else {
-        goBackModal(
-          title: 'Error',
-          message: result.toString(),
-          success: false,
-        );
-      }
-    } catch (e) {
-      debugPrint('[SampleWallet] MethodsUtils: goBackToDapp ${e.toString()}');
-    }
-  }
-
   static Future<bool> requestApproval(
     String text, {
     String? title,
@@ -71,15 +47,31 @@ class MethodsUtils {
     return rs != WCBottomSheetResult.reject;
   }
 
+  static void handleRedirect(
+    String topic,
+    Redirect? redirect, [
+    String? error,
+  ]) {
+    debugPrint(
+        '[SampleWallet] handleRedirect topic: $topic, redirect: $redirect, error: $error');
+    openApp(topic, redirect, onFail: (e) {
+      goBackModal(title: 'Error', message: e!.message, success: false);
+    });
+  }
+
   static void openApp(
-    PairingMetadata? metadata, {
+    String topic,
+    Redirect? redirect, {
     int delay = 100,
-    Function([WalletConnectError? error])? onFail,
+    Function(WalletConnectError? error)? onFail,
   }) async {
     await Future.delayed(Duration(milliseconds: delay));
     DeepLinkHandler.waiting.value = false;
     try {
-      await web3Wallet.redirectToDapp(metadata);
+      await web3Wallet.redirectToDapp(
+        topic: topic,
+        redirect: redirect,
+      );
     } on WalletConnectError catch (e) {
       onFail?.call(e);
     }

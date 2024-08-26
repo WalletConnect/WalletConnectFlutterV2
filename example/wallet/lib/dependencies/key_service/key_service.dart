@@ -27,10 +27,7 @@ class KeyService extends IKeyService {
       //
       final extraKeys = await _extraChainKeys();
       _keys.addAll(extraKeys);
-    } catch (e, s) {
-      debugPrint('[$runtimeType] loadKeys() error: $e');
-      debugPrint(s.toString());
-    }
+    } catch (_) {}
 
     debugPrint('[$runtimeType] _keys $_keys');
     return _keys;

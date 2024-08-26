@@ -209,7 +209,13 @@ abstract class ISignClient {
 
   Future<void> dispatchEnvelope(String url);
 
-  Future<bool> redirectToDapp(PairingMetadata? metadata);
+  Future<bool> redirectToDapp({
+    required String topic,
+    required Redirect? redirect,
+  });
 
-  Future<bool> redirectToWallet(PairingMetadata? metadata);
+  Future<bool> redirectToWallet({
+    required String topic,
+    required Redirect? redirect,
+  });
 }

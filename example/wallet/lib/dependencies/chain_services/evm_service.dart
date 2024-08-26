@@ -136,19 +136,7 @@ class EVMService {
       );
     }
 
-    try {
-      await _web3Wallet.respondSessionRequest(
-        topic: topic,
-        response: response,
-      );
-      MethodsUtils.goBackToDapp(topic, response.result ?? response.error);
-    } on WalletConnectError catch (error) {
-      MethodsUtils.goBackModal(
-        title: 'Error',
-        message: error.message,
-        success: false,
-      );
-    }
+    _handleResponseForTopic(topic, response);
   }
 
   Future<void> ethSign(String topic, dynamic parameters) async {
@@ -193,19 +181,7 @@ class EVMService {
       );
     }
 
-    try {
-      await _web3Wallet.respondSessionRequest(
-        topic: topic,
-        response: response,
-      );
-      MethodsUtils.goBackToDapp(topic, response.result ?? response.error);
-    } on WalletConnectError catch (error) {
-      MethodsUtils.goBackModal(
-        title: 'Error',
-        message: error.message,
-        success: false,
-      );
-    }
+    _handleResponseForTopic(topic, response);
   }
 
   Future<void> ethSignTypedData(String topic, dynamic parameters) async {
@@ -245,19 +221,7 @@ class EVMService {
       );
     }
 
-    try {
-      await _web3Wallet.respondSessionRequest(
-        topic: topic,
-        response: response,
-      );
-      MethodsUtils.goBackToDapp(topic, response.result ?? response.error);
-    } on WalletConnectError catch (error) {
-      MethodsUtils.goBackModal(
-        title: 'Error',
-        message: error.message,
-        success: false,
-      );
-    }
+    _handleResponseForTopic(topic, response);
   }
 
   Future<void> ethSignTypedDataV4(String topic, dynamic parameters) async {
@@ -297,19 +261,7 @@ class EVMService {
       );
     }
 
-    try {
-      await _web3Wallet.respondSessionRequest(
-        topic: topic,
-        response: response,
-      );
-      MethodsUtils.goBackToDapp(topic, response.result ?? response.error);
-    } on WalletConnectError catch (error) {
-      MethodsUtils.goBackModal(
-        title: 'Error',
-        message: error.message,
-        success: false,
-      );
-    }
+    _handleResponseForTopic(topic, response);
   }
 
   Future<void> ethSignTransaction(String topic, dynamic parameters) async {
@@ -365,19 +317,7 @@ class EVMService {
       response = response.copyWith(error: transaction as JsonRpcError);
     }
 
-    try {
-      await _web3Wallet.respondSessionRequest(
-        topic: topic,
-        response: response,
-      );
-      MethodsUtils.goBackToDapp(topic, response.result ?? response.error);
-    } on WalletConnectError catch (error) {
-      MethodsUtils.goBackModal(
-        title: 'Error',
-        message: error.message,
-        success: false,
-      );
-    }
+    _handleResponseForTopic(topic, response);
   }
 
   Future<void> ethSendTransaction(String topic, dynamic parameters) async {
@@ -431,19 +371,7 @@ class EVMService {
       response = response.copyWith(error: transaction as JsonRpcError);
     }
 
-    try {
-      await _web3Wallet.respondSessionRequest(
-        topic: topic,
-        response: response,
-      );
-      MethodsUtils.goBackToDapp(topic, response.result ?? response.error);
-    } on WalletConnectError catch (error) {
-      MethodsUtils.goBackModal(
-        title: 'Error',
-        message: error.message,
-        success: false,
-      );
-    }
+    _handleResponseForTopic(topic, response);
   }
 
   Future<void> switchChain(String topic, dynamic parameters) async {
@@ -475,17 +403,27 @@ class EVMService {
       );
     }
 
+    _handleResponseForTopic(topic, response);
+  }
+
+  void _handleResponseForTopic(String topic, JsonRpcResponse response) async {
+    final session = _web3Wallet.sessions.get(topic);
+
     try {
       await _web3Wallet.respondSessionRequest(
         topic: topic,
         response: response,
       );
-      MethodsUtils.goBackToDapp(topic, true);
+      MethodsUtils.handleRedirect(
+        topic,
+        session!.peer.metadata.redirect,
+        response.error?.message,
+      );
     } on WalletConnectError catch (error) {
-      MethodsUtils.goBackModal(
-        title: 'Error',
-        message: error.message,
-        success: false,
+      MethodsUtils.handleRedirect(
+        topic,
+        session!.peer.metadata.redirect,
+        error.message,
       );
     }
   }
@@ -535,33 +473,7 @@ class EVMService {
 
     const encoder = JsonEncoder.withIndent('  ');
     final trx = encoder.convert(tJson);
-    // final WCBottomSheetResult rs = (await _bottomSheetService.queueBottomSheet(
-    //       widget: WCRequestWidget(
-    //         // TODO
-    //         child: WCConnectionWidget(
-    //           title: title ?? 'Approve Transaction',
-    //           info: [
-    //             WCConnectionModel(
-    //               title: 'Method: $method\n'
-    //                   'Chain ID: $chainId\n\n'
-    //                   'Transaction:',
-    //               elements: [
-    //                 trx,
-    //               ],
-    //             ),
-    //             WCConnectionModel(
-    //               title: 'Gas price',
-    //               elements: ['${gweiGasPrice.toStringAsFixed(2)} GWEI'],
-    //             ),
-    //           ],
-    //         ),
-    //       ),
-    //     )) ??
-    //     WCBottomSheetResult.reject;
 
-    // if (rs != WCBottomSheetResult.reject) {
-    //   return transaction;
-    // }
     if (await MethodsUtils.requestApproval(
       trx,
       title: title,

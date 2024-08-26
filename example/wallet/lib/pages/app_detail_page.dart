@@ -116,7 +116,10 @@ class AppDetailPageState extends State<AppDetailPage> {
                 Icons.open_in_new_rounded,
               ),
               onPressed: () {
-                MethodsUtils.openApp(metadata);
+                MethodsUtils.openApp(
+                  sessions.first.topic,
+                  sessions.first.peer.metadata.redirect,
+                );
               },
             ),
           )

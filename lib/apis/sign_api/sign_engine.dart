@@ -532,6 +532,8 @@ class SignEngine implements ISignEngine {
         transportType: session?.transportType ?? TransportType.relay,
       ),
       appLink: isLinkMode ? session?.peer.metadata.redirect?.universal : null,
+      encodeOptions:
+          isLinkMode ? EncodeOptions(type: EncodeOptions.TYPE_2) : null,
     );
   }
 
@@ -2431,6 +2433,8 @@ class SignEngine implements ISignEngine {
         request.toJson(),
         id: id,
         ttl: expiry,
+        encodeOptions:
+            isLinkMode ? EncodeOptions(type: EncodeOptions.TYPE_2) : null,
         appLink: isLinkMode ? walletUniversalLink : null,
         // We don't want to open the appLink in this case as it will be opened by the host app
         openUrl: false,
@@ -3028,22 +3032,33 @@ class SignEngine implements ISignEngine {
   }
 
   @override
-  Future<bool> redirectToDapp(PairingMetadata? metadata) {
-    return _callRedirect(metadata);
+  Future<bool> redirectToDapp({
+    required String topic,
+    required Redirect? redirect,
+  }) {
+    return _callRedirect(topic, redirect);
   }
 
   @override
-  Future<bool> redirectToWallet(PairingMetadata? metadata) {
-    return _callRedirect(metadata);
+  Future<bool> redirectToWallet({
+    required String topic,
+    required Redirect? redirect,
+  }) {
+    return _callRedirect(topic, redirect);
   }
 
-  Future<bool> _callRedirect(PairingMetadata? metadata) async {
-    if (_isLinkModeEnabled(metadata)) {
-      // linkMode redirection is already handled in the engine
-      return false;
+  Future<bool> _callRedirect(String topic, Redirect? redirect) async {
+    final hasSession = topic.isNotEmpty && sessions.has(topic);
+    if (hasSession) {
+      final session = sessions.get(topic)!;
+      final isLinkMode = session.transportType.isLinkMode;
+      final isEnabled = _isLinkModeEnabled(session.peer.metadata);
+      if (isLinkMode && isEnabled) {
+        // linkMode redirection is already handled in the requests
+        return false;
+      }
     }
 
-    final redirect = metadata?.redirect;
     final scheme = redirect?.native;
     try {
       if (scheme == null) {

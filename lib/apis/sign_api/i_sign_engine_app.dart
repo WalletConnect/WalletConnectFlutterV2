@@ -64,5 +64,8 @@ abstract class ISignEngineApp extends ISignEngineCommon {
     List<List<String>>? methods,
   });
 
-  Future<bool> redirectToWallet(PairingMetadata? metadata);
+  Future<bool> redirectToWallet({
+    required String topic,
+    required Redirect? redirect,
+  });
 }

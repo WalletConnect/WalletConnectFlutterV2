@@ -246,87 +246,83 @@ class ConnectPageState extends State<ConnectPage> {
           children: [
             const SizedBox(height: StyleConstants.linear8),
             const Text(
-              'Use custom connection with:',
+              'Connect Session Propose:',
               style: StyleConstants.buttonText,
             ),
-            Column(
+            const SizedBox(height: StyleConstants.linear8),
+            Wrap(
+              spacing: 8.0,
+              runSpacing: 8.0,
               children: WCSampleWallets.getSampleWallets().map((wallet) {
-                return Column(
-                  children: [
-                    const SizedBox(height: StyleConstants.linear8),
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        style: _buttonStyle,
-                        onPressed: _selectedChains.isEmpty
-                            ? null
-                            : () {
-                                _onConnect(
-                                  nativeLink: '${wallet['schema']}',
-                                  closeModal: () {
-                                    if (Navigator.canPop(context)) {
-                                      Navigator.of(context).pop();
-                                    }
-                                  },
-                                  showToast: (m) async {
-                                    showPlatformToast(
-                                      child: Text(m),
-                                      context: context,
-                                    );
-                                  },
+                return SizedBox(
+                  width: (MediaQuery.of(context).size.width / 2) - 16,
+                  child: ElevatedButton(
+                    style: _buttonStyle,
+                    onPressed: _selectedChains.isEmpty
+                        ? null
+                        : () {
+                            _onConnect(
+                              nativeLink: '${wallet['schema']}',
+                              closeModal: () {
+                                if (Navigator.canPop(context)) {
+                                  Navigator.of(context).pop();
+                                }
+                              },
+                              showToast: (m) async {
+                                showPlatformToast(
+                                  child: Text(m),
+                                  context: context,
                                 );
                               },
-                        child: Text(
-                          '${wallet['name']}',
-                          style: StyleConstants.buttonText,
-                        ),
-                      ),
+                            );
+                          },
+                    child: Text(
+                      '${wallet['name']}',
+                      style: StyleConstants.buttonText,
                     ),
-                  ],
+                  ),
                 );
               }).toList(),
             ),
             const SizedBox(height: StyleConstants.linear8),
             const Divider(),
             const Text(
-              'Use One-Click Auth with:',
+              '1-Click Auth with LinkMode:',
               style: StyleConstants.buttonText,
             ),
-            Column(
+            const SizedBox(height: StyleConstants.linear8),
+            Wrap(
+              spacing: 8.0,
+              runSpacing: 8.0,
               children: WCSampleWallets.getSampleWallets().map((wallet) {
-                return Column(
-                  children: [
-                    const SizedBox(height: StyleConstants.linear8),
-                    SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        style: _buttonStyle,
-                        onPressed: _selectedChains.isEmpty
-                            ? null
-                            : () {
-                                _sessionAuthenticate(
-                                  nativeLink: '${wallet['schema']}',
-                                  universalLink: '${wallet['universal']}',
-                                  closeModal: () {
-                                    if (Navigator.canPop(context)) {
-                                      Navigator.of(context).pop();
-                                    }
-                                  },
-                                  showToast: (message) {
-                                    showPlatformToast(
-                                      child: Text(message),
-                                      context: context,
-                                    );
-                                  },
+                return SizedBox(
+                  width: (MediaQuery.of(context).size.width / 2) - 16,
+                  child: ElevatedButton(
+                    style: _buttonStyle,
+                    onPressed: _selectedChains.isEmpty
+                        ? null
+                        : () {
+                            _sessionAuthenticate(
+                              nativeLink: '${wallet['schema']}',
+                              universalLink: '${wallet['universal']}',
+                              closeModal: () {
+                                if (Navigator.canPop(context)) {
+                                  Navigator.of(context).pop();
+                                }
+                              },
+                              showToast: (message) {
+                                showPlatformToast(
+                                  child: Text(message),
+                                  context: context,
                                 );
                               },
-                        child: Text(
-                          '${wallet['name']}',
-                          style: StyleConstants.buttonText,
-                        ),
-                      ),
+                            );
+                          },
+                    child: Text(
+                      '${wallet['name']}',
+                      style: StyleConstants.buttonText,
                     ),
-                  ],
+                  ),
                 );
               }).toList(),
             ),
@@ -410,7 +406,7 @@ class ConnectPageState extends State<ConnectPage> {
     VoidCallback? closeModal,
     Function(String message)? showToast,
   }) async {
-    debugPrint('[SampleDapp] Creating connection and session');
+    debugPrint('[SampleDapp] Creating connection with $nativeLink');
     // It is currently safer to send chains approvals on optionalNamespaces
     // but depending on Wallet implementation you may need to send some (for innstance eip155:1) as required
     final connectResponse = await widget.web3App.connect(
@@ -427,9 +423,12 @@ class ConnectPageState extends State<ConnectPage> {
     }
 
     debugPrint('[SampleDapp] Awaiting session proposal settlement');
-    final _ = await connectResponse.session.future;
-
-    showToast?.call(StringConstants.connectionEstablished);
+    try {
+      await connectResponse.session.future;
+      showToast?.call(StringConstants.connectionEstablished);
+    } on JsonRpcError catch (e) {
+      showToast?.call(e.message.toString());
+    }
     closeModal?.call();
   }
 
@@ -439,6 +438,8 @@ class ConnectPageState extends State<ConnectPage> {
     VoidCallback? closeModal,
     Function(String message)? showToast,
   }) async {
+    debugPrint(
+        '[SampleDapp] Creating authenticate with $nativeLink, $universalLink');
     final methods1 = requiredNamespaces['eip155']?.methods ?? [];
     final methods2 = optionalNamespaces['eip155']?.methods ?? [];
     final authResponse = await widget.web3App.authenticate(

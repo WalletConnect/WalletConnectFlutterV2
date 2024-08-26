@@ -677,13 +677,25 @@ class SignClient implements ISignClient {
   }
 
   @override
-  Future<bool> redirectToDapp(PairingMetadata? metadata) {
-    return engine.redirectToDapp(metadata);
+  Future<bool> redirectToDapp({
+    required String topic,
+    required Redirect? redirect,
+  }) {
+    return engine.redirectToDapp(
+      topic: topic,
+      redirect: redirect,
+    );
   }
 
   @override
-  Future<bool> redirectToWallet(PairingMetadata? metadata) {
-    return engine.redirectToWallet(metadata);
+  Future<bool> redirectToWallet({
+    required String topic,
+    required Redirect? redirect,
+  }) {
+    return engine.redirectToWallet(
+      topic: topic,
+      redirect: redirect,
+    );
   }
 
   @override

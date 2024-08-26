@@ -264,7 +264,10 @@ class SessionWidgetState extends State<SessionWidget> {
 
   void _launchWallet() {
     if (kIsWeb) return;
-    widget.web3App.redirectToWallet(widget.session.peer.metadata);
+    widget.web3App.redirectToWallet(
+      topic: widget.session.topic,
+      redirect: widget.session.peer.metadata.redirect,
+    );
   }
 
   List<Widget> _buildSepoliaButtons(String address, String chainId) {

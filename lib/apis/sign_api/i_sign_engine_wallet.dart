@@ -116,5 +116,8 @@ abstract class ISignEngineWallet extends ISignEngineCommon {
 
   Map<int, PendingSessionAuthRequest> getPendingSessionAuthRequests();
 
-  Future<bool> redirectToDapp(PairingMetadata? metadata);
+  Future<bool> redirectToDapp({
+    required String topic,
+    required Redirect? redirect,
+  });
 }

@@ -430,13 +430,25 @@ class SignClientTestWrapper implements ISignEngine {
   }
 
   @override
-  Future<bool> redirectToDapp(PairingMetadata? metadata) {
-    return client.redirectToDapp(metadata);
+  Future<bool> redirectToDapp({
+    required String topic,
+    required Redirect? redirect,
+  }) {
+    return client.redirectToDapp(
+      topic: topic,
+      redirect: redirect,
+    );
   }
 
   @override
-  Future<bool> redirectToWallet(PairingMetadata? metadata) {
-    return client.redirectToWallet(metadata);
+  Future<bool> redirectToWallet({
+    required String topic,
+    required Redirect? redirect,
+  }) {
+    return client.redirectToWallet(
+      topic: topic,
+      redirect: redirect,
+    );
   }
 
   @override

@@ -404,8 +404,14 @@ class Web3Wallet implements IWeb3Wallet {
   }
 
   @override
-  Future<bool> redirectToDapp(PairingMetadata? metadata) {
-    return signEngine.redirectToDapp(metadata);
+  Future<bool> redirectToDapp({
+    required String topic,
+    required Redirect? redirect,
+  }) {
+    return signEngine.redirectToDapp(
+      topic: topic,
+      redirect: redirect,
+    );
   }
 
   @override

@@ -196,12 +196,13 @@ class Web3WalletService extends IWeb3WalletService {
   void _onSessionProposal(SessionProposalEvent? args) async {
     debugPrint('[SampleWallet] _onSessionProposal ${jsonEncode(args?.params)}');
     if (args != null) {
+      final proposer = args.params.proposer;
       final result = (await _bottomSheetHandler.queueBottomSheet(
             widget: WCRequestWidget(
               child: WCConnectionRequestWidget(
                 proposalData: args.params,
                 verifyContext: args.verifyContext,
-                requester: args.params.proposer,
+                requester: proposer,
               ),
             ),
           )) ??
@@ -211,19 +212,22 @@ class Web3WalletService extends IWeb3WalletService {
         // generatedNamespaces is constructed based on registered methods handlers
         // so if you want to handle requests using onSessionRequest event then you would need to manually add that method in the approved namespaces
         try {
-          final response = await _web3Wallet!.approveSession(
+          final session = await _web3Wallet!.approveSession(
             id: args.id,
             namespaces: NamespaceUtils.regenerateNamespacesWithChains(
               args.params.generatedNamespaces!,
             ),
             sessionProperties: args.params.sessionProperties,
           );
-          MethodsUtils.goBackToDapp(response.topic, 'success');
+          MethodsUtils.handleRedirect(
+            session.topic,
+            session.session!.peer.metadata.redirect,
+          );
         } on WalletConnectError catch (error) {
-          MethodsUtils.goBackModal(
-            title: 'Error',
-            message: error.message,
-            success: false,
+          MethodsUtils.handleRedirect(
+            '',
+            proposer.metadata.redirect,
+            error.message,
           );
         }
       } else {
@@ -232,13 +236,11 @@ class Web3WalletService extends IWeb3WalletService {
         await _web3Wallet!.core.pairing.disconnect(
           topic: args.params.pairingTopic,
         );
-        MethodsUtils.openApp(args.params.proposer.metadata, onFail: ([error]) {
-          MethodsUtils.goBackModal(
-            title: 'Error',
-            message: 'User rejected',
-            success: false,
-          );
-        });
+        MethodsUtils.handleRedirect(
+          '',
+          proposer.metadata.redirect,
+          error.message,
+        );
       }
     }
   }
@@ -266,7 +268,10 @@ class Web3WalletService extends IWeb3WalletService {
     if (args != null) {
       final session = jsonEncode(args.session.toJson());
       debugPrint('[SampleWallet] _onSessionConnect $session');
-      MethodsUtils.goBackToDapp(args.session.topic, 'success');
+      // MethodsUtils.handleRedirect(
+      //   args.session.topic,
+      //   args.session.peer.metadata.redirect,
+      // );
     }
   }
 
@@ -349,30 +354,32 @@ class Web3WalletService extends IWeb3WalletService {
         }
         //
         try {
-          final response = await _web3Wallet!.approveSessionAuthenticate(
+          final session = await _web3Wallet!.approveSessionAuthenticate(
             id: args.id,
             auths: cacaos,
           );
-          MethodsUtils.goBackToDapp(response.session!.topic, 'success');
+          MethodsUtils.handleRedirect(
+            session.topic,
+            session.session?.peer.metadata.redirect,
+          );
         } on WalletConnectError catch (error) {
-          MethodsUtils.goBackModal(
-            title: 'Error',
-            message: error.message,
-            success: false,
+          MethodsUtils.handleRedirect(
+            args.topic,
+            args.requester.metadata.redirect,
+            error.message,
           );
         }
       } else {
+        final error = Errors.getSdkError(Errors.USER_REJECTED_AUTH);
         await _web3Wallet!.rejectSessionAuthenticate(
           id: args.id,
-          reason: Errors.getSdkError(Errors.USER_REJECTED_AUTH),
+          reason: error,
         );
-        MethodsUtils.openApp(args.requester.metadata, onFail: ([error]) {
-          MethodsUtils.goBackModal(
-            title: 'Error',
-            message: 'User rejected',
-            success: false,
-          );
-        });
+        MethodsUtils.handleRedirect(
+          args.topic,
+          args.requester.metadata.redirect,
+          error.message,
+        );
       }
     }
   }
@@ -420,33 +427,29 @@ class Web3WalletService extends IWeb3WalletService {
               s: hexSignature,
             ),
           );
-          MethodsUtils.openApp(args.requester.metadata, onFail: ([error]) {
-            MethodsUtils.goBackModal(
-              title: 'Success',
-              message: 'You can go back to ${args.requester.metadata.name}',
-              success: true,
-            );
-          });
+          MethodsUtils.handleRedirect(
+            args.topic,
+            args.requester.metadata.redirect,
+          );
         } on WalletConnectError catch (error) {
-          MethodsUtils.goBackModal(
-            title: 'Error',
-            message: error.message,
-            success: false,
+          MethodsUtils.handleRedirect(
+            args.topic,
+            args.requester.metadata.redirect,
+            error.message,
           );
         }
       } else {
+        final error = Errors.getSdkError(Errors.USER_REJECTED_AUTH);
         await _web3Wallet!.respondAuthRequest(
           id: args.id,
           iss: iss,
-          error: Errors.getSdkError(Errors.USER_REJECTED_AUTH),
+          error: error,
         );
-        MethodsUtils.openApp(args.requester.metadata, onFail: ([error]) {
-          MethodsUtils.goBackModal(
-            title: 'Error',
-            message: 'User rejected',
-            success: false,
-          );
-        });
+        MethodsUtils.handleRedirect(
+          args.topic,
+          args.requester.metadata.redirect,
+          error.message,
+        );
       }
     }
   }

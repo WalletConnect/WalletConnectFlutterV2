@@ -96,12 +96,7 @@ class PolkadotService {
       );
     }
 
-    await _web3Wallet.respondSessionRequest(
-      topic: topic,
-      response: response,
-    );
-
-    MethodsUtils.goBackToDapp(topic, response.result ?? response.error);
+    _handleResponseForTopic(topic, response);
   }
 
   Future<void> polkadotSignTransaction(String topic, dynamic parameters) async {
@@ -164,12 +159,29 @@ class PolkadotService {
       );
     }
 
-    await _web3Wallet.respondSessionRequest(
-      topic: topic,
-      response: response,
-    );
+    _handleResponseForTopic(topic, response);
+  }
 
-    MethodsUtils.goBackToDapp(topic, response.result ?? response.error);
+  void _handleResponseForTopic(String topic, JsonRpcResponse response) async {
+    final session = _web3Wallet.sessions.get(topic);
+
+    try {
+      await _web3Wallet.respondSessionRequest(
+        topic: topic,
+        response: response,
+      );
+      MethodsUtils.handleRedirect(
+        topic,
+        session!.peer.metadata.redirect,
+        response.error?.message,
+      );
+    } on WalletConnectError catch (error) {
+      MethodsUtils.handleRedirect(
+        topic,
+        session!.peer.metadata.redirect,
+        error.message,
+      );
+    }
   }
 
   void _onSessionRequest(SessionRequestEvent? args) async {
