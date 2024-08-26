@@ -3002,7 +3002,6 @@ class SignEngine implements ISignEngine {
     core.pairing.dispatchEnvelope(
       topic: topic,
       envelope: envelope,
-      sessionExists: (session != null),
     );
   }
 

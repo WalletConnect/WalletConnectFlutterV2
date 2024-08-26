@@ -873,7 +873,6 @@ class Pairing implements IPairing {
   void dispatchEnvelope({
     required String topic,
     required String envelope,
-    required bool sessionExists,
   }) async {
     core.logger.i('[$runtimeType] dispatchEnvelope $topic, $envelope');
 

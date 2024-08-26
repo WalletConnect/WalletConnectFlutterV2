@@ -87,6 +87,5 @@ abstract class IPairing {
   void dispatchEnvelope({
     required String topic,
     required String envelope,
-    required bool sessionExists,
   });
 }
