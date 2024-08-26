@@ -38,7 +38,6 @@ class AppsPageState extends State<AppsPage> with GetItStateMixin {
     //
     _registerListeners();
     // TODO web3Wallet.core.echo.register(firebaseAccessToken);
-    // DeepLinkHandler.onLink.listen(_onFoundUri);
     DeepLinkHandler.checkInitialLink();
   }
 
@@ -141,9 +140,6 @@ class AppsPageState extends State<AppsPage> with GetItStateMixin {
   }
 
   Widget _buildNoPairingMessage() {
-    debugPrint('NO PAIRINGS');
-    final sessionsWithNoPairings = _web3Wallet.sessions.getAll();
-    debugPrint('${sessionsWithNoPairings.length} SESSIONS WITH NO PAIRINGS');
     return const Center(
       child: Text(
         StringConstants.noApps,
@@ -154,7 +150,6 @@ class AppsPageState extends State<AppsPage> with GetItStateMixin {
   }
 
   Widget _buildPairingList() {
-    debugPrint('${_pairings.length} PAIRINGS');
     final pairingItems = _pairings
         .map(
           (PairingInfo pairing) => PairingItem(
@@ -216,12 +211,10 @@ class AppsPageState extends State<AppsPage> with GetItStateMixin {
   }
 
   Future<void> _onFoundUri(String? uri) async {
-    debugPrint('[SampleWallet] _onFoundUri $uri');
     if ((uri ?? '').isEmpty) return;
     try {
       DeepLinkHandler.waiting.value = true;
-      final Uri uriData = Uri.parse(uri!);
-      await _web3Wallet.pair(uri: uriData);
+      await _web3Wallet.pair(uri: Uri.parse(uri!));
     } on WalletConnectError catch (e) {
       _showErrorDialog('${e.code}: ${e.message}');
     } on TimeoutException catch (_) {

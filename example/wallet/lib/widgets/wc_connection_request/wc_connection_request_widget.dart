@@ -32,8 +32,6 @@ class WCConnectionRequestWidget extends StatelessWidget {
       return const Text('ERROR');
     }
 
-    // final web3wallet = GetIt.I<IWeb3WalletService>().web3wallet;
-    // final linkMode = web3wallet.isTransportTypeLinkMode(requester?.metadata);
     return Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -51,23 +49,6 @@ class WCConnectionRequestWidget extends StatelessWidget {
             ),
             textAlign: TextAlign.center,
           ),
-          // RichText(
-          //   text: TextSpan(
-          //     style: StyleConstants.bodyText.copyWith(
-          //       color: Colors.black,
-          //     ),
-          //     children: [
-          //       const TextSpan(text: 'Transport Type: '),
-          //       TextSpan(
-          //         text: linkMode ? 'LinkMode' : 'Relay',
-          //         style: StyleConstants.bodyText.copyWith(
-          //           color: linkMode ? Colors.blue : Colors.green,
-          //           fontWeight: FontWeight.bold,
-          //         ),
-          //       ),
-          //     ],
-          //   ),
-          // ),
           const SizedBox(height: StyleConstants.linear8),
           VerifyContextWidget(
             verifyContext: verifyContext,

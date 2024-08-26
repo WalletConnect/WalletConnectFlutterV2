@@ -618,8 +618,9 @@ class SignEngine implements ISignEngine {
 
     final appLink = _getAppLinkIfEnabled(session?.peer.metadata);
 
-    // final SessionRequest req = pendingRequests.get(response.id.toString())!;
-    // print('respondSessionRequest: ${req.toJson()}');
+    final EncodeOptions? encodeOptions =
+        isLinkModeSession ? EncodeOptions(type: EncodeOptions.TYPE_2) : null;
+
     if (response.result != null) {
       await core.pairing.sendResult(
         response.id,
@@ -627,6 +628,7 @@ class SignEngine implements ISignEngine {
         MethodConstants.WC_SESSION_REQUEST,
         response.result,
         appLink: appLink,
+        encodeOptions: encodeOptions,
       );
     } else {
       await core.pairing.sendError(
@@ -635,6 +637,7 @@ class SignEngine implements ISignEngine {
         MethodConstants.WC_SESSION_REQUEST,
         response.error!,
         appLink: appLink,
+        encodeOptions: encodeOptions,
       );
     }
 
@@ -1025,11 +1028,11 @@ class SignEngine implements ISignEngine {
       type: ProtocolType.sign,
     );
     // FORMER AUTH ENGINE PROPERTY
-    // core.pairing.register(
-    //   method: MethodConstants.WC_AUTH_REQUEST,
-    //   function: _onAuthRequest,
-    //   type: ProtocolType.sign,
-    // );
+    core.pairing.register(
+      method: MethodConstants.WC_AUTH_REQUEST,
+      function: _onAuthRequest,
+      type: ProtocolType.sign,
+    );
   }
 
   bool _shouldIgnoreSessionPropose(String topic) {
@@ -2293,7 +2296,7 @@ class SignEngine implements ISignEngine {
         metadata: metadata,
       ),
       expiryTimestamp: expiryTimestamp.millisecondsSinceEpoch,
-      transportType: transportType, // TODO LinkMode remove? Ask Nacho
+      transportType: transportType, // TODO LinkMode remove? Ask Nacho or Gancho
     );
 
     // Set the one time use receiver public key for decoding the Type 1 envelope
@@ -2304,18 +2307,6 @@ class SignEngine implements ISignEngine {
     );
 
     Completer<SessionAuthResponse> completer = Completer();
-
-    // pendingSessionAuthRequests.add(
-    //   SessionAuthenticateCompleter(
-    //     id: id,
-    //     pairingTopic: pTopic,
-    //     responseTopic: responseTopic,
-    //     selfPublicKey: publicKey,
-    //     request: request,
-    //     walletUniversalLink: walletUniversalLink,
-    //     completer: completer,
-    //   ),
-    // );
 
     // ----- build fallback session proposal request ----- //
 
@@ -2692,7 +2683,9 @@ class SignEngine implements ISignEngine {
     final responseTopic = core.crypto.getUtils().hashKey(receiverPublicKey);
 
     final encodeOpts = EncodeOptions(
-      type: EncodeOptions.TYPE_1,
+      type: pendingRequest.transportType.isLinkMode
+          ? EncodeOptions.TYPE_2
+          : EncodeOptions.TYPE_1,
       receiverPublicKey: receiverPublicKey,
       senderPublicKey: senderPublicKey,
     );
@@ -2828,7 +2821,9 @@ class SignEngine implements ISignEngine {
     final responseTopic = core.crypto.getUtils().hashKey(receiverPublicKey);
 
     final encodeOpts = EncodeOptions(
-      type: EncodeOptions.TYPE_1,
+      type: pendingRequest.transportType.isLinkMode
+          ? EncodeOptions.TYPE_2
+          : EncodeOptions.TYPE_1,
       receiverPublicKey: receiverPublicKey,
       senderPublicKey: senderPublicKey,
     );
@@ -2850,12 +2845,11 @@ class SignEngine implements ISignEngine {
   }
 
   // FORMER AUTH ENGINE PROPERTY
-  // ignore: unused_element
   void _onAuthRequest(
     String topic,
-    JsonRpcRequest payload, {
+    JsonRpcRequest payload, [
     TransportType transportType = TransportType.relay,
-  }) async {
+  ]) async {
     try {
       final request = WcAuthRequestRequest.fromJson(payload.params);
 

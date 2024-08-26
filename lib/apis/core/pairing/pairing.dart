@@ -679,37 +679,11 @@ class Pairing implements IPairing {
     await _resubscribeAll();
   }
 
-  // Future<Map<String, dynamic>?> _decodeMessageEvent(MessageEvent event) async {
-  //   // If we have a reciever public key for the topic, use it
-  //   ReceiverPublicKey? receiverPublicKey =
-  //       topicToReceiverPublicKey.get(event.topic);
-  //   // If there was a public key, delete it. One use.
-  //   if (receiverPublicKey != null) {
-  //     await topicToReceiverPublicKey.delete(event.topic);
-  //   }
-
-  //   // Decode the message
-  //   String? payloadString = await core.crypto.decode(
-  //     event.topic,
-  //     event.message,
-  //     options: DecodeOptions(
-  //       receiverPublicKey: receiverPublicKey?.publicKey,
-  //     ),
-  //   );
-
-  //   if (payloadString == null) {
-  //     return null;
-  //   }
-
-  //   return jsonDecode(payloadString) as Map<String, dynamic>;
-  // }
-
   void _onMessageEvent(MessageEvent? event) async {
     if (event == null) {
       return;
     }
 
-    // Map<String, dynamic>? data = await _decodeMessageEvent(event);
     // If we have a reciever public key for the topic, use it
     ReceiverPublicKey? receiverPublicKey =
         topicToReceiverPublicKey.get(event.topic);
@@ -762,56 +736,9 @@ class Pairing implements IPairing {
           pendingRequests[response.id]!.response = response.result;
           pendingRequests[response.id]!.completer.complete(response.result);
         }
-      } else {
-        // LinkMode's wc_sessionAuthenticate responsed will land here. It's ok.
       }
     }
   }
-
-  // void _onLinkModeEvent(MessageEvent? event) async {
-  //   if (event == null) {
-  //     return;
-  //   }
-
-  //   Map<String, dynamic>? data = await _decodeMessageEvent(event);
-
-  //   if (data == null) {
-  //     return;
-  //   }
-
-  //   core.logger.i('Pairing _onLinkModeEvent, Received data: $data');
-
-  //   // If it's an rpc request, handle it
-  //   if (data.containsKey('method')) {
-  //     final request = JsonRpcRequest.fromJson(data);
-
-  //     if (routerMapRequest.containsKey(request.method)) {
-  //       routerMapRequest[request.method]!.function(
-  //         event.topic,
-  //         request,
-  //         event.transportType,
-  //       );
-  //     } else {
-  //       _onUnkownRpcMethodRequest(event.topic, request);
-  //     }
-  //     // Otherwise handle it as a response
-  //   } else {
-  //     final response = JsonRpcResponse.fromJson(data);
-  //     core.logger.d('[$runtimeType] linkMode event response $response');
-
-  //     if (pendingRequests.containsKey(response.id)) {
-  //       if (response.error != null) {
-  //         pendingRequests[response.id]!.error = response.error;
-  //         pendingRequests[response.id]!.completer.completeError(
-  //               response.error!,
-  //             );
-  //       } else {
-  //         pendingRequests[response.id]!.response = response.result;
-  //         pendingRequests[response.id]!.completer.complete(response.result);
-  //       }
-  //     }
-  //   }
-  // }
 
   Future<void> _onPairingPingRequest(
     String topic,

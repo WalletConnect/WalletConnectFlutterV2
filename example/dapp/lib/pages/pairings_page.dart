@@ -39,7 +39,6 @@ class PairingsPageState extends State<PairingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    debugPrint('[$runtimeType] _pairings ${_pairings.length}');
     final List<PairingItem> pairingItems = _pairings
         .map(
           (PairingInfo pairing) => PairingItem(

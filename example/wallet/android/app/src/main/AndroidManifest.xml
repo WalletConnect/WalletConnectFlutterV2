@@ -50,7 +50,7 @@
 
                 <data android:scheme="wcflutterwallet-internal" />
             </intent-filter>
-            <intent-filter>
+            <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
 
                 <category android:name="android.intent.category.DEFAULT" />
@@ -60,7 +60,7 @@
                 <data android:host="lab.web3modal.com" />
                 <data android:pathPattern="/flutter_walletkit" />
             </intent-filter>
-            <intent-filter>
+            <intent-filter android:autoVerify="true">
                 <action android:name="android.intent.action.VIEW" />
 
                 <category android:name="android.intent.category.DEFAULT" />

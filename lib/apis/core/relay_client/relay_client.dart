@@ -356,14 +356,12 @@ class RelayClient implements IRelayClient {
     return '${WalletConnectConstants.RELAYER_DEFAULT_PROTOCOL}_$method';
   }
 
-  // This method could be directly in pairings API
-  // but it's place here for consistency with onRelayClientMessage
+  // This method could be placed directly into pairings API but it's place here for consistency with onRelayClientMessage
   @override
   Future<bool> handleLinkModeMessage(String topic, String message) async {
     core.logger.t('[$runtimeType]: handleLinkModeMessage: $topic, $message');
 
     // Record a message event
-    // TODO LinkMode probably not needed
     await messageTracker.recordMessageEvent(topic, message);
 
     // Broadcast the message

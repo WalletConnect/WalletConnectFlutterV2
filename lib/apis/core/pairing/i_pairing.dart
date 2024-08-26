@@ -89,9 +89,4 @@ abstract class IPairing {
     required String envelope,
     required bool sessionExists,
   });
-
-  // bool isTransportTypeLinkMode({
-  //   required Redirect? self,
-  //   required Redirect? peer,
-  // });
 }
