@@ -1,9 +1,8 @@
 import 'dart:async';
 import 'dart:convert';
 import 'dart:developer';
-import 'dart:typed_data';
 
-import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import 'package:get_it/get_it.dart';
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/bottom_sheet/i_bottom_sheet_service.dart';
@@ -56,7 +55,7 @@ class Web3WalletService extends IWeb3WalletService {
   @override
   Future<void> create() async {
     final prefs = await SharedPreferences.getInstance();
-    final fromMR = prefs.getBool('_LM_from_MR') ?? false;
+    final fromMR = prefs.getBool('_LM_from_MR') ?? true;
     // Create the web3wallet
     _web3Wallet = Web3Wallet(
       core: Core(

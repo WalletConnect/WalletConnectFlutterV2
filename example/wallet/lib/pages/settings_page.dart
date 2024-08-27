@@ -89,7 +89,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         const SizedBox(width: 20.0),
                         const Text('LM from MR '),
                         Switch(
-                          value: prefs.getBool('_LM_from_MR') ?? false,
+                          value: prefs.getBool('_LM_from_MR') ?? true,
                           onChanged: (value) async {
                             await prefs.setBool('_LM_from_MR', value);
                             exit(0);

@@ -93,7 +93,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   Future<void> initialize() async {
     final prefs = await SharedPreferences.getInstance();
-    final fromMR = prefs.getBool('_LM_from_MR') ?? false;
+    final fromMR = prefs.getBool('_LM_from_MR') ?? true;
     _web3App = Web3App(
       core: Core(
         projectId: DartDefines.projectId,

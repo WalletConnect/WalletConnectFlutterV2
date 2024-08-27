@@ -56,7 +56,7 @@ class ConnectPageState extends State<ConnectPage> {
     await _walletConnectModalService.init();
 
     final prefs = await SharedPreferences.getInstance();
-    _testFromMR = prefs.getBool('_LM_from_MR') ?? false;
+    _testFromMR = prefs.getBool('_LM_from_MR') ?? true;
 
     setState(() => _initialized = true);
 
