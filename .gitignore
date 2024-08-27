@@ -47,6 +47,9 @@ app.*.map.json
 /android/app/profile
 /android/app/release
 
+**/secrets.properties
+**/*.keystore
+
 # fvm
 .fvm/
 

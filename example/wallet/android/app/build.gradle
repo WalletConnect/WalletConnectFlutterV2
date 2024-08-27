@@ -75,6 +75,15 @@ android {
         }
     }
 
+    signingConfigs {
+        debug {
+            storeFile file(secretsProperties['WC_FILENAME'])
+            storePassword secretsProperties['WC_STORE_PASSWORD']
+            keyAlias secretsProperties['WC_KEYSTORE_ALIAS']
+            keyPassword secretsProperties['WC_KEY_PASSWORD']
+        }
+    }
+
     buildTypes {
         release {
             // TODO: Add your own signing config for the release build.

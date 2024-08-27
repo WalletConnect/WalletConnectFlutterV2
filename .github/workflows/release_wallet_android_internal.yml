@@ -38,6 +38,14 @@ jobs:
     
     # Install Flutter and Dependencies
     - uses: ./.github/actions/dependencies
+
+    - name: Add Secrets file
+      working-directory: example/wallet/android
+      run: touch secrets.properties && echo "${{ secrets.SECRETS_FILE }}" >> secrets.properties
+
+    - name: Add Keystore file
+      working-directory: example/wallet/android
+      run: echo ${{ secrets.KEYSTORE }} | base64 --decode >> app/debug.keystore
     
     # Fastlane
     - name: Fastlane
