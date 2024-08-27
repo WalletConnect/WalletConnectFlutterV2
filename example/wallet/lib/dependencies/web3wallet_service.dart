@@ -29,21 +29,24 @@ class Web3WalletService extends IWeb3WalletService {
     return flavor.replaceAll('-production', '');
   }
 
-  String _universalLink() {
-    Uri link = Uri.parse('https://lab.web3modal.com/flutter_walletkit');
+  String _universalLink(fromMR) {
+    Uri link = fromMR
+        ? Uri.parse(
+            'https://web3modal-laboratory-git-chores-addedmore-3e0f2b-walletconnect1.vercel.app/flutter_walletkit')
+        : Uri.parse('https://lab.web3modal.com/flutter_walletkit');
     if (_flavor.isNotEmpty) {
-      return link
-          .replace(path: '${link.path}_internal')
-          .replace(host: 'dev.${link.host}')
-          .toString();
+      if (!fromMR) {
+        link = link.replace(host: 'dev.${link.host}');
+      }
+      return link.replace(path: '${link.path}_internal').toString();
     }
     return link.toString();
   }
 
-  Redirect _constructRedirect() {
+  Redirect _constructRedirect(bool fromMR) {
     return Redirect(
       native: 'wcflutterwallet$_flavor://',
-      universal: _universalLink(),
+      universal: _universalLink(fromMR),
       // enable linkMode on Wallet so Dapps can use relay-less connection
       // universal: value must be set on cloud config as well
       linkMode: true,
@@ -52,6 +55,8 @@ class Web3WalletService extends IWeb3WalletService {
 
   @override
   Future<void> create() async {
+    final prefs = await SharedPreferences.getInstance();
+    final fromMR = prefs.getBool('_LM_from_MR') ?? false;
     // Create the web3wallet
     _web3Wallet = Web3Wallet(
       core: Core(
@@ -65,7 +70,7 @@ class Web3WalletService extends IWeb3WalletService {
         icons: [
           'https://docs.walletconnect.com/assets/images/web3walletLogo-54d3b546146931ceaf47a3500868a73a.png'
         ],
-        redirect: _constructRedirect(),
+        redirect: _constructRedirect(fromMR),
       ),
     );
 

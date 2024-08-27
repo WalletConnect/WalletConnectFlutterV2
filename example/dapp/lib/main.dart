@@ -67,21 +67,24 @@ class _MyHomePageState extends State<MyHomePage> {
     return flavor.replaceAll('-production', '');
   }
 
-  String _universalLink() {
-    Uri link = Uri.parse('https://lab.web3modal.com/flutter_appkit');
+  String _universalLink(bool fromMR) {
+    Uri link = fromMR
+        ? Uri.parse(
+            'https://web3modal-laboratory-git-chores-addedmore-3e0f2b-walletconnect1.vercel.app/flutter_appkit')
+        : Uri.parse('https://lab.web3modal.com/flutter_appkit');
     if (_flavor.isNotEmpty) {
-      return link
-          .replace(path: '${link.path}_internal')
-          .replace(host: 'dev.${link.host}')
-          .toString();
+      if (!fromMR) {
+        link = link.replace(host: 'dev.${link.host}');
+      }
+      return link.replace(path: '${link.path}_internal').toString();
     }
     return link.toString();
   }
 
-  Redirect _constructRedirect() {
+  Redirect _constructRedirect(bool fromMR) {
     return Redirect(
       native: 'wcflutterdapp$_flavor://',
-      universal: _universalLink(),
+      universal: _universalLink(fromMR),
       // enable linkMode on Wallet so Dapps can use relay-less connection
       // universal: value must be set on cloud config as well
       linkMode: true,
@@ -89,6 +92,8 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future<void> initialize() async {
+    final prefs = await SharedPreferences.getInstance();
+    final fromMR = prefs.getBool('_LM_from_MR') ?? false;
     _web3App = Web3App(
       core: Core(
         projectId: DartDefines.projectId,
@@ -101,7 +106,7 @@ class _MyHomePageState extends State<MyHomePage> {
         icons: [
           'https://images.prismic.io/wallet-connect/65785a56531ac2845a260732_WalletConnect-App-Logo-1024X1024.png'
         ],
-        redirect: _constructRedirect(),
+        redirect: _constructRedirect(fromMR),
       ),
     );
 

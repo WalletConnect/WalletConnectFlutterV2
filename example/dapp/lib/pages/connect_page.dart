@@ -2,6 +2,7 @@
 
 import 'dart:async';
 import 'dart:convert';
+import 'dart:io';
 
 import 'package:fl_toast/fl_toast.dart';
 import 'package:flutter/foundation.dart';
@@ -35,6 +36,7 @@ class ConnectPage extends StatefulWidget {
 
 class ConnectPageState extends State<ConnectPage> {
   bool _testnetOnly = false;
+  bool _testFromMR = true;
   final List<ChainMetadata> _selectedChains = [];
   bool _shouldDismissQrCode = true;
   bool _initialized = false;
@@ -53,6 +55,9 @@ class ConnectPageState extends State<ConnectPage> {
 
     await _walletConnectModalService.init();
 
+    final prefs = await SharedPreferences.getInstance();
+    _testFromMR = prefs.getBool('_LM_from_MR') ?? false;
+
     setState(() => _initialized = true);
 
     widget.web3App.onSessionConnect.subscribe(_onSessionConnect);
@@ -62,13 +67,6 @@ class ConnectPageState extends State<ConnectPage> {
   void dispose() {
     widget.web3App.onSessionConnect.unsubscribe(_onSessionConnect);
     super.dispose();
-  }
-
-  void setTestnet(bool value) {
-    if (value != _testnetOnly) {
-      _selectedChains.clear();
-    }
-    _testnetOnly = value;
   }
 
   void _selectChain(ChainMetadata chain) {
@@ -206,6 +204,19 @@ class ConnectPageState extends State<ConnectPage> {
                   });
                 },
               ),
+              const Expanded(child: SizedBox()),
+              const Text(
+                'LM from MR',
+                style: StyleConstants.buttonText,
+              ),
+              Switch(
+                value: _testFromMR,
+                onChanged: (value) async {
+                  final prefs = await SharedPreferences.getInstance();
+                  await prefs.setBool('_LM_from_MR', value);
+                  exit(0);
+                },
+              ),
             ],
           ),
         ),
@@ -253,7 +264,8 @@ class ConnectPageState extends State<ConnectPage> {
             Wrap(
               spacing: 8.0,
               runSpacing: 8.0,
-              children: WCSampleWallets.getSampleWallets().map((wallet) {
+              children:
+                  WCSampleWallets.getSampleWallets(_testFromMR).map((wallet) {
                 return SizedBox(
                   width: (MediaQuery.of(context).size.width / 2) - 16,
                   child: ElevatedButton(
@@ -294,7 +306,8 @@ class ConnectPageState extends State<ConnectPage> {
             Wrap(
               spacing: 8.0,
               runSpacing: 8.0,
-              children: WCSampleWallets.getSampleWallets().map((wallet) {
+              children:
+                  WCSampleWallets.getSampleWallets(_testFromMR).map((wallet) {
                 return SizedBox(
                   width: (MediaQuery.of(context).size.width / 2) - 16,
                   child: ElevatedButton(
