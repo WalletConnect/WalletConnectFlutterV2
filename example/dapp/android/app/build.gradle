@@ -74,6 +74,9 @@ android {
         }
     }
 
+    def secretsProperties = new Properties()
+    secretsProperties.load(new FileInputStream(rootProject.file("secrets.properties")))
+    
     signingConfigs {
         debug {
             storeFile file(secretsProperties['WC_FILENAME'])
