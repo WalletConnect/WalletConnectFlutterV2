@@ -28,6 +28,7 @@ class Solana {
     required String method,
     required ChainMetadata chainData,
     required String address,
+    bool isV0 = false,
   }) {
     final bytes = utf8.encode(
       'This is an example message to be signed - ${DateTime.now()}',
@@ -47,7 +48,40 @@ class Solana {
           ),
         );
       case 'solana_signTransaction':
-        return web3App.request(
+        if (isV0) {
+          return web3App.request(
+            topic: topic,
+            chainId: chainData.chainId,
+            request: SessionRequestParams(
+              method: method,
+              params: {
+                "version": 0,
+                "message": {
+                  "header": {
+                    "numRequiredSignatures": 1,
+                    "numReadonlySignedAccounts": 0,
+                    "numReadonlyUnsignedAccounts": 1
+                  },
+                  "recentBlockhash":
+                      "H32Ss1hxpP2ZJM4whREVNyUWRgzFLVA97UXJUjBrEsgx",
+                  "accountKeys": [
+                    "EbdEmCpKGvEwfwV4ACmVYHFRkwvXdogJhMZeEekDFVVJ",
+                    "4SzUq9NNYSYGp41ED5NgSDoCrEh9MoD7zSvmtkwseW8s",
+                    "11111111111111111111111111111111"
+                  ],
+                  "instructions": [
+                    {
+                      "programIdIndex": 2,
+                      "accounts": [0, 1],
+                      "data": "AgAAAEAAABAAAAAA"
+                    }
+                  ]
+                }
+              },
+            ),
+          );
+        }
+        return web3App.signEngine.request(
           topic: topic,
           chainId: chainData.chainId,
           request: SessionRequestParams(

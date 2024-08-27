@@ -249,6 +249,7 @@ class SessionWidgetState extends State<SessionWidget> {
           method: method,
           chainData: chainMetadata,
           address: address,
+          isV0: true,
         );
       // case ChainType.kadena:
       //   return Kadena.callMethod(

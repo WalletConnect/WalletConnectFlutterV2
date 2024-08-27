@@ -98,22 +98,34 @@ class Web3WalletService extends IWeb3WalletService {
   Future<void> init() async {
     // Await the initialization of the web3wallet
     await _web3Wallet!.init();
+    await _emitEvent();
+  }
+
+  Future<void> _emitEvent() async {
+    if (!_web3Wallet!.core.connectivity.isOnline) {
+      await Future.delayed(const Duration(milliseconds: 500));
+      _emitEvent();
+      return;
+    }
 
     final sessions = _web3Wallet!.sessions.getAll();
-    final chainKeys = GetIt.I<IKeyService>().getKeysForChain('eip155');
     for (var session in sessions) {
       try {
-        final chainIds = NamespaceUtils.getChainIdsFromNamespaces(
+        final events = NamespaceUtils.getNamespacesEventsForChain(
+          chainId: 'eip155:1',
           namespaces: session.namespaces,
         );
-        _web3Wallet!.emitSessionEvent(
-          topic: session.topic,
-          chainId: chainIds.first,
-          event: SessionEventParams(
-            name: 'accountsChanged',
-            data: [chainKeys.first.address],
-          ),
-        );
+        if (events.contains('accountsChanged')) {
+          final chainKeys = GetIt.I<IKeyService>().getKeysForChain('eip155');
+          _web3Wallet!.emitSessionEvent(
+            topic: session.topic,
+            chainId: 'eip155:1',
+            event: SessionEventParams(
+              name: 'accountsChanged',
+              data: [chainKeys.first.address],
+            ),
+          );
+        }
       } catch (_) {}
     }
   }
