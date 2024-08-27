@@ -467,14 +467,17 @@ class ConnectPageState extends State<ConnectPage> {
       walletUniversalLink: universalLink,
     );
 
+    debugPrint('[SampleDapp] authResponse.uri ${authResponse.uri}');
     try {
-      debugPrint('[SampleDapp] authResponse.uri ${authResponse.uri}');
-      await WalletConnectUtils.openURL(authResponse.uri.toString());
+      // If response uri is not universalLink show QR Code
+      if (authResponse.uri?.authority != Uri.parse(universalLink).authority) {
+        _showQrCode('${authResponse.uri}', walletScheme: nativeLink);
+      } else {
+        await WalletConnectUtils.openURL(authResponse.uri.toString());
+      }
     } catch (e) {
-      _showQrCode(
-        authResponse.uri.toString(),
-        walletScheme: nativeLink,
-      );
+      debugPrint('[SampleDapp] authResponse error $e');
+      _showQrCode('${authResponse.uri}', walletScheme: nativeLink);
     }
 
     try {
