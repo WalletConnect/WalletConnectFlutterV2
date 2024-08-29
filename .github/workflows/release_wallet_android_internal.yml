@@ -68,4 +68,5 @@ jobs:
         fastlane release_firebase project_id:$PROJECT_ID app_version:$VERSION_NUMBER
 
 # Launch locally
+# Remove build: if:
 # act -j build --container-architecture linux/amd64 -P macos-latest-xlarge=-self-hosted --secret-file .github/workflows/.env.secret -W .github/workflows/release_wallet_android.yml
