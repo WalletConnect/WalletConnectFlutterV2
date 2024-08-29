@@ -72,7 +72,7 @@ class DeepLinkHandler {
       closeAfter: success ? 3 : 0,
       widget: Container(
         color: Colors.white,
-        height: 210.0,
+        height: 250.0,
         width: double.infinity,
         padding: const EdgeInsets.all(20.0),
         child: Column(

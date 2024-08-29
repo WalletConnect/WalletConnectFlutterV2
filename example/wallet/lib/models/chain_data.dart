@@ -98,25 +98,19 @@ class ChainData {
   static final List<ChainMetadata> solanaChains = [
     const ChainMetadata(
       type: ChainType.solana,
-      chainId: 'solana:4sGjMW1sUnHzSxGspuhpqLDx6wiyjNtZ',
-      name: 'Solana Mainnet 1',
+      chainId: 'solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp',
+      name: 'Solana Mainnet',
       logo: '/chain-logos/solana.png',
       color: Color.fromARGB(255, 247, 0, 255),
-      rpc: [
-        'https://rpc.ankr.com/solana',
-        'https://api.tatum.io/v3/blockchain/node/solana-mainnet',
-      ],
+      rpc: ['https://api.mainnet-beta.solana.com'],
     ),
     const ChainMetadata(
       type: ChainType.solana,
-      chainId: 'solana:5eykt4UsFv8P8NJdTREpY1vzqKqZKvdp',
-      name: 'Solana Mainnet 2',
+      chainId: 'solana:EtWTRABZaYq6iMfeYKouRu166VU2xqa1',
+      name: 'Solana Devnet',
       logo: '/chain-logos/solana.png',
       color: Color.fromARGB(255, 247, 0, 255),
-      rpc: [
-        'https://rpc.ankr.com/solana',
-        'https://api.tatum.io/v3/blockchain/node/solana-mainnet',
-      ],
+      rpc: ['https://api.devnet.solana.com'],
     ),
     const ChainMetadata(
       type: ChainType.solana,
@@ -125,9 +119,7 @@ class ChainData {
       logo: '/chain-logos/solana.png',
       color: Colors.black,
       isTestnet: true,
-      rpc: [
-        'https://api.testnet.solana.com',
-      ],
+      rpc: ['https://api.testnet.solana.com'],
     ),
   ];
 
