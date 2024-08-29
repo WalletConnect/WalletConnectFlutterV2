@@ -15,6 +15,9 @@ import 'package:solana/encoder.dart' as solana_encoder;
 // ignore: depend_on_referenced_packages
 import 'package:bs58/bs58.dart';
 
+///
+/// Uses solana: ^0.30.4
+///
 class SolanaService {
   Map<String, dynamic Function(String, dynamic)> get solanaRequestHandlers => {
         'solana_signMessage': solanaSignMessage,
@@ -36,7 +39,6 @@ class SolanaService {
 
   Future<void> solanaSignMessage(String topic, dynamic parameters) async {
     debugPrint('[SampleWallet] solanaSignMessage request: $parameters');
-    const method = 'solana_signMessage';
     final pRequest = _web3Wallet.pendingRequests.getAll().last;
     var response = JsonRpcResponse(id: pRequest.id, jsonrpc: '2.0');
 
@@ -44,21 +46,14 @@ class SolanaService {
       final params = parameters as Map<String, dynamic>;
       final message = params['message'].toString();
 
-      final keys = GetIt.I<IKeyService>().getKeysForChain(
-        chainSupported.chainId,
-      );
-      final secKeyBytes = keys[0].privateKey.parse32Bytes();
-
-      final keyPair = await solana.Ed25519HDKeyPair.fromPrivateKeyBytes(
-        privateKey: secKeyBytes,
-      );
+      final keyPair = await _getKeyPair();
 
       // it's being sent encoded from dapp
       final base58Decoded = base58.decode(message);
       final decodedMessage = utf8.decode(base58Decoded);
       if (await CommonMethods.requestApproval(
         decodedMessage,
-        method: method,
+        method: pRequest.method,
         chainId: pRequest.chainId,
         address: keyPair.address,
       )) {
@@ -90,6 +85,18 @@ class SolanaService {
     CommonMethods.goBackToDapp(topic, response.result ?? response.error);
   }
 
+  Future<solana.Ed25519HDKeyPair> _getKeyPair() async {
+    final keys = GetIt.I<IKeyService>().getKeysForChain(
+      chainSupported.chainId,
+    );
+    final secKeyBytes = keys[0].privateKey.parse32Bytes();
+
+    final keyPair = await solana.Ed25519HDKeyPair.fromPrivateKeyBytes(
+      privateKey: secKeyBytes,
+    );
+    return keyPair;
+  }
+
   Future<void> solanaSignTransaction(String topic, dynamic parameters) async {
     debugPrint(
         '[SampleWallet] solanaSignTransaction: ${jsonEncode(parameters)}');
@@ -98,29 +105,20 @@ class SolanaService {
 
     try {
       final params = parameters as Map<String, dynamic>;
+      final beautifiedTrx = const JsonEncoder.withIndent('  ').convert(params);
 
-      final keys = GetIt.I<IKeyService>().getKeysForChain(
-        chainSupported.chainId,
-      );
-      final secKeyBytes = keys[0].privateKey.parse32Bytes();
+      final keyPair = await _getKeyPair();
 
-      final keyPair = await solana.Ed25519HDKeyPair.fromPrivateKeyBytes(
-        privateKey: secKeyBytes,
-      );
-
-      const encoder = JsonEncoder.withIndent('  ');
-      final transaction = encoder.convert(params);
       if (await CommonMethods.requestApproval(
-        transaction,
-        method: 'solana_signTransaction',
+        // Show Approval Modal
+        beautifiedTrx,
+        method: pRequest.method,
         chainId: pRequest.chainId,
         address: keyPair.address,
       )) {
         // Sign the transaction.
         // if params contains `transaction` key we should parse that one and disregard the rest
         if (params.containsKey('transaction')) {
-          debugPrint('[SampleWallet] sign transaction 1 ${jsonEncode(params)}');
-
           final transaction = params['transaction'] as String;
           final transactionBytes = base64.decode(transaction);
           final signedTx = solana_encoder.SignedTx.fromBytes(
@@ -139,7 +137,6 @@ class SolanaService {
           );
         } else {
           // else we parse the other key/values, see https://docs.walletconnect.com/advanced/multichain/rpc-reference/solana-rpc#solana_signtransaction
-          debugPrint('[SampleWallet] sign transaction 2 ${jsonEncode(params)}');
           final feePayer = params['feePayer'].toString();
           final recentBlockHash = params['recentBlockhash'].toString();
           final instructionsList = params['instructions'] as List<dynamic>;

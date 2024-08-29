@@ -27,6 +27,7 @@ dependencies:
   # CHECK WEB SUPPORT
   kadena_dart_sdk: ^2.3.2
   solana: ^0.30.4
+  solana_web3: ^0.1.3
   polkadart_keyring: ^0.4.3
   polkadart: ^0.4.6
   #

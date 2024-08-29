@@ -64,7 +64,7 @@ class Solana {
         final blockhash = await connection.getLatestBlockhash();
 
         // Create a System Program instruction to transfer 0.5 SOL from [address1] to [address2].
-        final transactionv0 = solana.Transaction.legacy(
+        final transactionv0 = solana.Transaction.v0(
           payer: solana.Pubkey.fromBase58(address),
           recentBlockhash: blockhash.blockhash,
           instructions: [

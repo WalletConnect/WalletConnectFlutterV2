@@ -7,7 +7,9 @@ import 'package:walletconnect_flutter_v2_wallet/dependencies/chains/cosmos_servi
 import 'package:walletconnect_flutter_v2_wallet/dependencies/chains/evm_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/chains/kadena_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/chains/polkadot_service.dart';
+// ignore: unused_import
 import 'package:walletconnect_flutter_v2_wallet/dependencies/chains/solana_service.dart';
+import 'package:walletconnect_flutter_v2_wallet/dependencies/chains/solana_service_2.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/deep_link_handler.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/i_web3wallet_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/key_service/i_key_service.dart';
@@ -92,9 +94,10 @@ class _MyHomePageState extends State<MyHomePage> with GetItStateMixin {
     }
 
     // Support Solana Chains
+    // Change SolanaService2 to SolanaService to switch between solana_web3: ^0.1.3 to solana: ^0.30.4
     for (final chainData in ChainData.solanaChains) {
-      GetIt.I.registerSingleton<SolanaService>(
-        SolanaService(chainSupported: chainData),
+      GetIt.I.registerSingleton<SolanaService2>(
+        SolanaService2(chainSupported: chainData),
         instanceName: chainData.chainId,
       );
     }
