@@ -45,7 +45,7 @@ jobs:
 
     - name: Add Keystore file
       working-directory: example/dapp/android
-      run: echo ${{ secrets.KEYSTORE }} | base64 --decode >> app/debug.keystore
+      run: echo "${{ secrets.KEYSTORE }}" | base64 --decode >> app/debug.keystore
     
     # Fastlane
     - name: Fastlane
