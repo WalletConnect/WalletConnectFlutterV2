@@ -1,6 +1,5 @@
 // ignore_for_file: use_build_context_synchronously
 
-import 'dart:io';
 import 'dart:math';
 import 'dart:ui';
 
@@ -77,28 +76,6 @@ class _SettingsPageState extends State<SettingsPage> {
                 _Metadata(),
                 const SizedBox(height: 20.0),
                 const Divider(height: 1.0),
-                FutureBuilder<SharedPreferences>(
-                  future: SharedPreferences.getInstance(),
-                  builder: (context, snapshot) {
-                    if (!snapshot.hasData) {
-                      return const SizedBox.shrink();
-                    }
-                    final prefs = snapshot.data as SharedPreferences;
-                    return Row(
-                      children: [
-                        const SizedBox(width: 20.0),
-                        const Text('LM from MR '),
-                        Switch(
-                          value: prefs.getBool('_LM_from_MR') ?? true,
-                          onChanged: (value) async {
-                            await prefs.setBool('_LM_from_MR', value);
-                            exit(0);
-                          },
-                        ),
-                      ],
-                    );
-                  },
-                ),
                 _Buttons(
                   onRestoreFromSeed: () async {
                     final mnemonic =

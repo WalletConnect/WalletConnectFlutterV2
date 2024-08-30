@@ -2,7 +2,6 @@
 
 import 'dart:async';
 import 'dart:convert';
-import 'dart:io';
 
 import 'package:fl_toast/fl_toast.dart';
 import 'package:flutter/foundation.dart';
@@ -36,7 +35,6 @@ class ConnectPage extends StatefulWidget {
 
 class ConnectPageState extends State<ConnectPage> {
   bool _testnetOnly = false;
-  bool _testFromMR = true;
   final List<ChainMetadata> _selectedChains = [];
   bool _shouldDismissQrCode = true;
   bool _initialized = false;
@@ -54,9 +52,6 @@ class ConnectPageState extends State<ConnectPage> {
     );
 
     await _walletConnectModalService.init();
-
-    final prefs = await SharedPreferences.getInstance();
-    _testFromMR = prefs.getBool('_LM_from_MR') ?? true;
 
     setState(() => _initialized = true);
 
@@ -186,39 +181,23 @@ class ConnectPageState extends State<ConnectPage> {
           textAlign: TextAlign.center,
         ),
         const SizedBox(height: StyleConstants.linear8),
-        SizedBox(
-          height: StyleConstants.linear48,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text(
-                StringConstants.testnetsOnly,
-                style: StyleConstants.buttonText,
-              ),
-              Switch(
-                value: _testnetOnly,
-                onChanged: (value) {
-                  setState(() {
-                    _selectedChains.clear();
-                    _testnetOnly = value;
-                  });
-                },
-              ),
-              const Expanded(child: SizedBox()),
-              const Text(
-                'LM from MR',
-                style: StyleConstants.buttonText,
-              ),
-              Switch(
-                value: _testFromMR,
-                onChanged: (value) async {
-                  final prefs = await SharedPreferences.getInstance();
-                  await prefs.setBool('_LM_from_MR', value);
-                  exit(0);
-                },
-              ),
-            ],
-          ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text(
+              StringConstants.testnetsOnly,
+              style: StyleConstants.buttonText,
+            ),
+            Switch(
+              value: _testnetOnly,
+              onChanged: (value) {
+                setState(() {
+                  _selectedChains.clear();
+                  _testnetOnly = value;
+                });
+              },
+            ),
+          ],
         ),
         const Text('EVM Chains:', style: StyleConstants.buttonText),
         const SizedBox(height: StyleConstants.linear8),
@@ -261,13 +240,10 @@ class ConnectPageState extends State<ConnectPage> {
               style: StyleConstants.buttonText,
             ),
             const SizedBox(height: StyleConstants.linear8),
-            Wrap(
-              spacing: 8.0,
-              runSpacing: 8.0,
-              children:
-                  WCSampleWallets.getSampleWallets(_testFromMR).map((wallet) {
-                return SizedBox(
-                  width: (MediaQuery.of(context).size.width / 2) - 16,
+            Column(
+              children: WCSampleWallets.getSampleWallets().map((wallet) {
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 8.0),
                   child: ElevatedButton(
                     style: _buttonStyle,
                     onPressed: _selectedChains.isEmpty
@@ -303,13 +279,10 @@ class ConnectPageState extends State<ConnectPage> {
               style: StyleConstants.buttonText,
             ),
             const SizedBox(height: StyleConstants.linear8),
-            Wrap(
-              spacing: 8.0,
-              runSpacing: 8.0,
-              children:
-                  WCSampleWallets.getSampleWallets(_testFromMR).map((wallet) {
-                return SizedBox(
-                  width: (MediaQuery.of(context).size.width / 2) - 16,
+            Column(
+              children: WCSampleWallets.getSampleWallets().map((wallet) {
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 8.0),
                   child: ElevatedButton(
                     style: _buttonStyle,
                     onPressed: _selectedChains.isEmpty

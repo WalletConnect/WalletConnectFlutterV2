@@ -22,10 +22,11 @@ import Flutter
         
         methodsChannel = FlutterMethodChannel(name: AppDelegate.METHODS_CHANNEL, binaryMessenger: controller.binaryMessenger)
         methodsChannel?.setMethodCallHandler({ [weak self] (call: FlutterMethodCall, result: FlutterResult) -> Void in
-            if (call.method == "initialLink") {
+           if (call.method == "initialLink") {
                 if let link = self?.initialLink {
                     self?.initialLink = nil
-                    result(link)
+                    let _ = self?.linkStreamHandler.handleLink(link)
+                    return
                 } else {
                     result("")
                 }
@@ -46,10 +47,9 @@ import Flutter
     
     override func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
         // Handle universal links
-        if userActivity.activityType == NSUserActivityTypeBrowsingWeb {
-            if let url = userActivity.webpageURL {
-                return linkStreamHandler.handleLink(url.absoluteString)
-            }
+        if let url = userActivity.webpageURL {
+            self.initialLink = url.absoluteString
+            return linkStreamHandler.handleLink(self.initialLink!)
         }
         return false
     }

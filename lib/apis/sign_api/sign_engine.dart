@@ -2296,7 +2296,7 @@ class SignEngine implements ISignEngine {
         metadata: metadata,
       ),
       expiryTimestamp: expiryTimestamp.millisecondsSinceEpoch,
-      transportType: transportType, // TODO LinkMode remove? Ask Nacho or Gancho
+      // transportType: transportType, // TODO LinkMode remove? Ask Nacho or Gancho
     );
 
     // Set the one time use receiver public key for decoding the Type 1 envelope
