@@ -571,6 +571,7 @@ class SignClientTestWrapper implements ISignEngine {
     try {
       return await client.authenticate(
         params: params,
+        walletUniversalLink: walletUniversalLink,
         pairingTopic: pairingTopic,
         methods: methods,
       );
