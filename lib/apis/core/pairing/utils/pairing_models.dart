@@ -58,6 +58,7 @@ class Redirect with _$Redirect {
   const factory Redirect({
     String? native,
     String? universal,
+    @Default(false) bool linkMode,
   }) = _Redirect;
 
   factory Redirect.fromJson(Map<String, dynamic> json) =>
@@ -184,7 +185,7 @@ class ReceiverPublicKey with _$ReceiverPublicKey {
 
 class RegisteredFunction {
   String method;
-  Function(String, JsonRpcRequest) function;
+  Function(String, JsonRpcRequest, [TransportType]) function;
   ProtocolType type;
 
   RegisteredFunction({

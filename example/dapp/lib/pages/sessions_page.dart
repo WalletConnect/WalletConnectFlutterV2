@@ -41,7 +41,6 @@ class SessionsPageState extends State<SessionsPage> {
   @override
   Widget build(BuildContext context) {
     final List<SessionData> sessions = _activeSessions.values.toList();
-
     return Center(
       child: Container(
         constraints: const BoxConstraints(

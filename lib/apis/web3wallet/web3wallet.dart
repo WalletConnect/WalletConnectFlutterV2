@@ -395,6 +395,26 @@ class Web3Wallet implements IWeb3Wallet {
   }
 
   @override
+  Future<void> dispatchEnvelope(String url) async {
+    try {
+      return await signEngine.dispatchEnvelope(url);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<bool> redirectToDapp({
+    required String topic,
+    required Redirect? redirect,
+  }) {
+    return signEngine.redirectToDapp(
+      topic: topic,
+      redirect: redirect,
+    );
+  }
+
+  @override
   IPairingStore get pairings => core.pairing.getStore();
 
   ///---------- (DEPRECATED) AUTH ENGINE ----------///

@@ -1,6 +1,5 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:url_launcher/url_launcher_string.dart';
 
 import 'package:walletconnect_flutter_v2_dapp/models/chain_metadata.dart';
 import 'package:walletconnect_flutter_v2_dapp/utils/constants.dart';
@@ -265,13 +264,10 @@ class SessionWidgetState extends State<SessionWidget> {
 
   void _launchWallet() {
     if (kIsWeb) return;
-    final walletUrl = widget.session.peer.metadata.redirect?.native;
-    if ((walletUrl ?? '').isNotEmpty) {
-      launchUrlString(
-        walletUrl!,
-        mode: LaunchMode.externalApplication,
-      );
-    }
+    widget.web3App.redirectToWallet(
+      topic: widget.session.topic,
+      redirect: widget.session.peer.metadata.redirect,
+    );
   }
 
   List<Widget> _buildSepoliaButtons(String address, String chainId) {

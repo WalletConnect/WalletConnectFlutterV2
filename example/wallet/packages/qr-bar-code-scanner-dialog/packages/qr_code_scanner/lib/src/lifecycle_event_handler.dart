@@ -18,7 +18,6 @@ class LifecycleEventHandler extends WidgetsBindingObserver {
       case AppLifecycleState.paused:
       case AppLifecycleState.detached:
       case AppLifecycleState.hidden:
-        // TODO: Handle this case.
         break;
     }
   }

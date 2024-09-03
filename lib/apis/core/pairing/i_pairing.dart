@@ -3,6 +3,7 @@ import 'package:walletconnect_flutter_v2/apis/core/crypto/crypto_models.dart';
 
 import 'package:walletconnect_flutter_v2/apis/core/pairing/i_pairing_store.dart';
 import 'package:walletconnect_flutter_v2/apis/core/pairing/utils/pairing_models.dart';
+import 'package:walletconnect_flutter_v2/apis/core/relay_client/relay_client_models.dart';
 import 'package:walletconnect_flutter_v2/apis/models/basic_models.dart';
 import 'package:walletconnect_flutter_v2/apis/models/json_rpc_error.dart';
 import 'package:walletconnect_flutter_v2/apis/models/json_rpc_request.dart';
@@ -26,7 +27,7 @@ abstract class IPairing {
   Future<void> activate({required String topic});
   void register({
     required String method,
-    required Function(String, JsonRpcRequest) function,
+    required Function(String, JsonRpcRequest, [TransportType]) function,
     required ProtocolType type,
   });
   Future<void> setReceiverPublicKey({
@@ -56,14 +57,19 @@ abstract class IPairing {
     int? id,
     int? ttl,
     EncodeOptions? encodeOptions,
+    String? appLink,
+    bool openUrl = true,
   });
+
   Future<void> sendResult(
     int id,
     String topic,
     String method,
     dynamic result, {
     EncodeOptions? encodeOptions,
+    String? appLink,
   });
+
   Future<void> sendError(
     int id,
     String topic,
@@ -71,9 +77,15 @@ abstract class IPairing {
     JsonRpcError error, {
     EncodeOptions? encodeOptions,
     RpcOptions? rpcOptions,
+    String? appLink,
   });
 
   Future<void> isValidPairingTopic({
     required String topic,
+  });
+
+  void dispatchEnvelope({
+    required String topic,
+    required String envelope,
   });
 }

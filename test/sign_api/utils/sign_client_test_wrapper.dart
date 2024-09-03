@@ -421,6 +421,37 @@ class SignClientTestWrapper implements ISignEngine {
   }
 
   @override
+  Future<void> dispatchEnvelope(String url) {
+    try {
+      return client.dispatchEnvelope(url);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<bool> redirectToDapp({
+    required String topic,
+    required Redirect? redirect,
+  }) {
+    return client.redirectToDapp(
+      topic: topic,
+      redirect: redirect,
+    );
+  }
+
+  @override
+  Future<bool> redirectToWallet({
+    required String topic,
+    required Redirect? redirect,
+  }) {
+    return client.redirectToWallet(
+      topic: topic,
+      redirect: redirect,
+    );
+  }
+
+  @override
   IPairingStore get pairings => core.pairing.getStore();
 
   @override
@@ -533,12 +564,14 @@ class SignClientTestWrapper implements ISignEngine {
   @override
   Future<SessionAuthRequestResponse> authenticate({
     required SessionAuthRequestParams params,
+    String? walletUniversalLink,
     String? pairingTopic,
     List<List<String>>? methods,
   }) async {
     try {
       return await client.authenticate(
         params: params,
+        walletUniversalLink: walletUniversalLink,
         pairingTopic: pairingTopic,
         methods: methods,
       );

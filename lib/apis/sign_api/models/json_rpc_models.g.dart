@@ -225,6 +225,9 @@ _$WcSessionRequestRequestImpl _$$WcSessionRequestRequestImplFromJson(
       chainId: json['chainId'] as String,
       request: SessionRequestParams.fromJson(
           json['request'] as Map<String, dynamic>),
+      transportType:
+          $enumDecodeNullable(_$TransportTypeEnumMap, json['transportType']) ??
+              TransportType.relay,
     );
 
 Map<String, dynamic> _$$WcSessionRequestRequestImplToJson(
@@ -232,7 +235,13 @@ Map<String, dynamic> _$$WcSessionRequestRequestImplToJson(
     <String, dynamic>{
       'chainId': instance.chainId,
       'request': instance.request.toJson(),
+      'transportType': _$TransportTypeEnumMap[instance.transportType]!,
     };
+
+const _$TransportTypeEnumMap = {
+  TransportType.relay: 'relay',
+  TransportType.linkMode: 'linkMode',
+};
 
 _$SessionRequestParamsImpl _$$SessionRequestParamsImplFromJson(
         Map<String, dynamic> json) =>
@@ -283,6 +292,9 @@ _$WcAuthRequestRequestImpl _$$WcAuthRequestRequestImplFromJson(
           json['payloadParams'] as Map<String, dynamic>),
       requester: ConnectionMetadata.fromJson(
           json['requester'] as Map<String, dynamic>),
+      transportType:
+          $enumDecodeNullable(_$TransportTypeEnumMap, json['transportType']) ??
+              TransportType.relay,
     );
 
 Map<String, dynamic> _$$WcAuthRequestRequestImplToJson(
@@ -290,6 +302,7 @@ Map<String, dynamic> _$$WcAuthRequestRequestImplToJson(
     <String, dynamic>{
       'payloadParams': instance.payloadParams.toJson(),
       'requester': instance.requester.toJson(),
+      'transportType': _$TransportTypeEnumMap[instance.transportType]!,
     };
 
 _$WcAuthRequestResultImpl _$$WcAuthRequestResultImplFromJson(
@@ -312,6 +325,9 @@ _$WcSessionAuthRequestParamsImpl _$$WcSessionAuthRequestParamsImplFromJson(
       requester: ConnectionMetadata.fromJson(
           json['requester'] as Map<String, dynamic>),
       expiryTimestamp: (json['expiryTimestamp'] as num).toInt(),
+      transportType:
+          $enumDecodeNullable(_$TransportTypeEnumMap, json['transportType']) ??
+              TransportType.relay,
     );
 
 Map<String, dynamic> _$$WcSessionAuthRequestParamsImplToJson(
@@ -320,6 +336,7 @@ Map<String, dynamic> _$$WcSessionAuthRequestParamsImplToJson(
       'authPayload': instance.authPayload.toJson(),
       'requester': instance.requester.toJson(),
       'expiryTimestamp': instance.expiryTimestamp,
+      'transportType': _$TransportTypeEnumMap[instance.transportType]!,
     };
 
 _$WcSessionAuthRequestResultImpl _$$WcSessionAuthRequestResultImplFromJson(

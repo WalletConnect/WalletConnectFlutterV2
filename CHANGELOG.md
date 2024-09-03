@@ -1,3 +1,7 @@
+## 2.4.0-beta01
+
+- Link Mode! https://docs.walletconnect.com/walletkit/flutter/link-mode
+
 ## 2.3.1
 
 - Added Connectivity check to core and throw exceptions when internet connection is gone

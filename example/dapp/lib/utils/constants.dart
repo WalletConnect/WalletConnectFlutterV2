@@ -2,9 +2,6 @@ import 'package:flutter/material.dart';
 
 class Constants {
   static const smallScreen = 640;
-
-  static const String aud = 'https://walletconnect.org/login';
-  static const String domain = 'walletconnect.org';
 }
 
 class StyleConstants {

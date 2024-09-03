@@ -12,10 +12,13 @@ class PublishOptions {
 
 abstract class IRelayClient {
   /// Relay Client Events
-  abstract final Event<MessageEvent> onRelayClientMessage;
   abstract final Event onRelayClientConnect;
   abstract final Event onRelayClientDisconnect;
   abstract final Event<ErrorEvent> onRelayClientError;
+  abstract final Event<MessageEvent> onRelayClientMessage;
+
+  /// LinkMode Events
+  abstract final Event<MessageEvent> onLinkModeMessage;
 
   /// JSON RPC Events
   // Event<EventArgs> onJsonRpcPayload();
@@ -35,14 +38,21 @@ abstract class IRelayClient {
   bool get isConnected;
 
   Future<void> init();
+
   Future<void> publish({
     required String topic,
     required String message,
     required int ttl,
     required int tag,
   });
+
   Future<String> subscribe({required String topic});
+
   Future<void> unsubscribe({required String topic});
+
   Future<void> connect({String? relayUrl});
+
+  Future<bool> handleLinkModeMessage(String topic, String message);
+
   Future<void> disconnect();
 }

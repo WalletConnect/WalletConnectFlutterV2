@@ -5,11 +5,11 @@ import 'package:get_it/get_it.dart';
 
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/bottom_sheet/i_bottom_sheet_service.dart';
-import 'package:walletconnect_flutter_v2_wallet/dependencies/chains/common.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/i_web3wallet_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/key_service/i_key_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/models/chain_data.dart';
 import 'package:walletconnect_flutter_v2_wallet/models/chain_metadata.dart';
+import 'package:walletconnect_flutter_v2_wallet/utils/methods_utils.dart';
 import 'package:walletconnect_flutter_v2_wallet/widgets/kadena_request_widget/kadena_request_widget.dart';
 
 import 'package:kadena_dart_sdk/kadena_dart_sdk.dart';
@@ -95,12 +95,7 @@ class KadenaService {
       );
     }
 
-    await _web3Wallet.respondSessionRequest(
-      topic: topic,
-      response: response,
-    );
-
-    CommonMethods.goBackToDapp(topic, response.result ?? response.error);
+    _handleResponseForTopic(topic, response);
   }
 
   Future<void> kadenaSignV1(String topic, dynamic parameters) async {
@@ -168,7 +163,7 @@ class KadenaService {
       response: response,
     );
 
-    CommonMethods.goBackToDapp(topic, response.result ?? response.error);
+    _handleResponseForTopic(topic, response);
   }
 
   Future<void> kadenaQuicksignV1(String topic, dynamic parameters) async {
@@ -250,12 +245,29 @@ class KadenaService {
       );
     }
 
-    await _web3Wallet.respondSessionRequest(
-      topic: topic,
-      response: response,
-    );
+    _handleResponseForTopic(topic, response);
+  }
 
-    CommonMethods.goBackToDapp(topic, response.result ?? response.error);
+  void _handleResponseForTopic(String topic, JsonRpcResponse response) async {
+    final session = _web3Wallet.sessions.get(topic);
+
+    try {
+      await _web3Wallet.respondSessionRequest(
+        topic: topic,
+        response: response,
+      );
+      MethodsUtils.handleRedirect(
+        topic,
+        session!.peer.metadata.redirect,
+        response.error?.message,
+      );
+    } on WalletConnectError catch (error) {
+      MethodsUtils.handleRedirect(
+        topic,
+        session!.peer.metadata.redirect,
+        error.message,
+      );
+    }
   }
 
   void _onSessionRequest(SessionRequestEvent? args) async {

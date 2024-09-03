@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:event/event.dart';
+import 'package:walletconnect_flutter_v2/apis/core/relay_client/relay_client_models.dart';
 import 'package:walletconnect_flutter_v2/apis/models/basic_models.dart';
 import 'package:walletconnect_flutter_v2/apis/models/json_rpc_error.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/models/auth/auth_client_models.dart';
@@ -11,17 +12,19 @@ class AuthRequest extends EventArgs {
   final String topic;
   final AuthPayloadParams payloadParams;
   final ConnectionMetadata requester;
+  TransportType transportType;
 
   AuthRequest({
     required this.id,
     required this.topic,
     required this.payloadParams,
     required this.requester,
+    this.transportType = TransportType.relay,
   });
 
   @override
   String toString() {
-    return 'AuthRequest(id: $id, topic: $topic, payloadParams: $payloadParams, requester: $requester)';
+    return 'AuthRequest(id: $id, topic: $topic, payloadParams: $payloadParams, requester: $requester, transportType: $transportType)';
   }
 }
 

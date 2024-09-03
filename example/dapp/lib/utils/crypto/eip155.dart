@@ -1,6 +1,4 @@
 import 'dart:convert';
-// ignore: depend_on_referenced_packages
-import 'package:convert/convert.dart';
 
 import 'package:walletconnect_flutter_v2_dapp/models/chain_metadata.dart';
 import 'package:walletconnect_flutter_v2_dapp/utils/crypto/chain_data.dart';
@@ -156,7 +154,7 @@ class EIP155 {
     required String message,
   }) async {
     final bytes = utf8.encode(message);
-    final encoded = '0x${hex.encode(bytes)}';
+    final encoded = bytesToHex(bytes);
 
     return await web3App.request(
       topic: topic,

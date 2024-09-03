@@ -5,17 +5,12 @@ import 'package:http/http.dart' as http;
 import 'package:eth_sig_util/eth_sig_util.dart';
 import 'package:get_it/get_it.dart';
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
-import 'package:walletconnect_flutter_v2_wallet/dependencies/bottom_sheet/i_bottom_sheet_service.dart';
-import 'package:walletconnect_flutter_v2_wallet/dependencies/chains/common.dart';
-import 'package:walletconnect_flutter_v2_wallet/dependencies/deep_link_handler.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/i_web3wallet_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/key_service/i_key_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/models/chain_metadata.dart';
-import 'package:walletconnect_flutter_v2_wallet/utils/constants.dart';
 import 'package:walletconnect_flutter_v2_wallet/utils/eth_utils.dart';
+import 'package:walletconnect_flutter_v2_wallet/utils/methods_utils.dart';
 import 'package:walletconnect_flutter_v2_wallet/widgets/wc_connection_widget/wc_connection_model.dart';
-import 'package:walletconnect_flutter_v2_wallet/widgets/wc_connection_widget/wc_connection_widget.dart';
-import 'package:walletconnect_flutter_v2_wallet/widgets/wc_request_widget.dart/wc_request_widget.dart';
 
 enum SupportedEVMMethods {
   ethSign,
@@ -47,7 +42,6 @@ enum SupportedEVMMethods {
 }
 
 class EVMService {
-  final _bottomSheetService = GetIt.I<IBottomSheetService>();
   final _web3Wallet = GetIt.I<IWeb3WalletService>().web3wallet;
 
   final ChainMetadata chainSupported;
@@ -107,11 +101,13 @@ class EVMService {
       jsonrpc: '2.0',
     );
 
-    if (await CommonMethods.requestApproval(
+    if (await MethodsUtils.requestApproval(
       message,
       method: pRequest.method,
       chainId: pRequest.chainId,
       address: address,
+      transportType: pRequest.transportType.name,
+      verifyContext: pRequest.verifyContext,
     )) {
       try {
         // Load the private key
@@ -141,19 +137,7 @@ class EVMService {
       );
     }
 
-    try {
-      await _web3Wallet.respondSessionRequest(
-        topic: topic,
-        response: response,
-      );
-      CommonMethods.goBackToDapp(topic, response.result ?? response.error);
-    } on WalletConnectError catch (error) {
-      DeepLinkHandler.goBackModal(
-        title: 'Error',
-        message: error.message,
-        success: false,
-      );
-    }
+    _handleResponseForTopic(topic, response);
   }
 
   Future<void> ethSign(String topic, dynamic parameters) async {
@@ -166,7 +150,11 @@ class EVMService {
       jsonrpc: '2.0',
     );
 
-    if (await CommonMethods.requestApproval(message)) {
+    if (await MethodsUtils.requestApproval(
+      message,
+      transportType: pRequest.transportType.name,
+      verifyContext: pRequest.verifyContext,
+    )) {
       try {
         // Load the private key
         final keys = GetIt.I<IKeyService>().getKeysForChain(
@@ -195,19 +183,7 @@ class EVMService {
       );
     }
 
-    try {
-      await _web3Wallet.respondSessionRequest(
-        topic: topic,
-        response: response,
-      );
-      CommonMethods.goBackToDapp(topic, response.result ?? response.error);
-    } on WalletConnectError catch (error) {
-      DeepLinkHandler.goBackModal(
-        title: 'Error',
-        message: error.message,
-        success: false,
-      );
-    }
+    _handleResponseForTopic(topic, response);
   }
 
   Future<void> ethSignTypedData(String topic, dynamic parameters) async {
@@ -219,7 +195,11 @@ class EVMService {
       jsonrpc: '2.0',
     );
 
-    if (await CommonMethods.requestApproval(data)) {
+    if (await MethodsUtils.requestApproval(
+      data,
+      transportType: pRequest.transportType.name,
+      verifyContext: pRequest.verifyContext,
+    )) {
       try {
         final keys = GetIt.I<IKeyService>().getKeysForChain(
           chainSupported.chainId,
@@ -244,19 +224,7 @@ class EVMService {
       );
     }
 
-    try {
-      await _web3Wallet.respondSessionRequest(
-        topic: topic,
-        response: response,
-      );
-      CommonMethods.goBackToDapp(topic, response.result ?? response.error);
-    } on WalletConnectError catch (error) {
-      DeepLinkHandler.goBackModal(
-        title: 'Error',
-        message: error.message,
-        success: false,
-      );
-    }
+    _handleResponseForTopic(topic, response);
   }
 
   Future<void> ethSignTypedDataV4(String topic, dynamic parameters) async {
@@ -268,7 +236,11 @@ class EVMService {
       jsonrpc: '2.0',
     );
 
-    if (await CommonMethods.requestApproval(data)) {
+    if (await MethodsUtils.requestApproval(
+      data,
+      transportType: pRequest.transportType.name,
+      verifyContext: pRequest.verifyContext,
+    )) {
       try {
         final keys = GetIt.I<IKeyService>().getKeysForChain(
           chainSupported.chainId,
@@ -293,19 +265,7 @@ class EVMService {
       );
     }
 
-    try {
-      await _web3Wallet.respondSessionRequest(
-        topic: topic,
-        response: response,
-      );
-      CommonMethods.goBackToDapp(topic, response.result ?? response.error);
-    } on WalletConnectError catch (error) {
-      DeepLinkHandler.goBackModal(
-        title: 'Error',
-        message: error.message,
-        success: false,
-      );
-    }
+    _handleResponseForTopic(topic, response);
   }
 
   Future<void> ethSignTransaction(String topic, dynamic parameters) async {
@@ -324,6 +284,8 @@ class EVMService {
       data,
       method: pRequest.method,
       chainId: pRequest.chainId,
+      transportType: pRequest.transportType.name,
+      verifyContext: pRequest.verifyContext,
     );
     if (transaction is Transaction) {
       try {
@@ -360,19 +322,7 @@ class EVMService {
       response = response.copyWith(error: transaction as JsonRpcError);
     }
 
-    try {
-      await _web3Wallet.respondSessionRequest(
-        topic: topic,
-        response: response,
-      );
-      CommonMethods.goBackToDapp(topic, response.result ?? response.error);
-    } on WalletConnectError catch (error) {
-      DeepLinkHandler.goBackModal(
-        title: 'Error',
-        message: error.message,
-        success: false,
-      );
-    }
+    _handleResponseForTopic(topic, response);
   }
 
   Future<void> ethSendTransaction(String topic, dynamic parameters) async {
@@ -391,6 +341,8 @@ class EVMService {
       data,
       method: pRequest.method,
       chainId: pRequest.chainId,
+      transportType: pRequest.transportType.name,
+      verifyContext: pRequest.verifyContext,
     );
     if (transaction is Transaction) {
       try {
@@ -425,19 +377,7 @@ class EVMService {
       response = response.copyWith(error: transaction as JsonRpcError);
     }
 
-    try {
-      await _web3Wallet.respondSessionRequest(
-        topic: topic,
-        response: response,
-      );
-      CommonMethods.goBackToDapp(topic, response.result ?? response.error);
-    } on WalletConnectError catch (error) {
-      DeepLinkHandler.goBackModal(
-        title: 'Error',
-        message: error.message,
-        success: false,
-      );
-    }
+    _handleResponseForTopic(topic, response);
   }
 
   Future<void> switchChain(String topic, dynamic parameters) async {
@@ -469,17 +409,27 @@ class EVMService {
       );
     }
 
+    _handleResponseForTopic(topic, response);
+  }
+
+  void _handleResponseForTopic(String topic, JsonRpcResponse response) async {
+    final session = _web3Wallet.sessions.get(topic);
+
     try {
       await _web3Wallet.respondSessionRequest(
         topic: topic,
         response: response,
       );
-      CommonMethods.goBackToDapp(topic, true);
+      MethodsUtils.handleRedirect(
+        topic,
+        session!.peer.metadata.redirect,
+        response.error?.message,
+      );
     } on WalletConnectError catch (error) {
-      DeepLinkHandler.goBackModal(
-        title: 'Error',
-        message: error.message,
-        success: false,
+      MethodsUtils.handleRedirect(
+        topic,
+        session!.peer.metadata.redirect,
+        error.message,
       );
     }
   }
@@ -502,6 +452,8 @@ class EVMService {
     String? title,
     String? method,
     String? chainId,
+    VerifyContext? verifyContext,
+    required String transportType,
   }) async {
     Transaction transaction = tJson.toTransaction();
 
@@ -520,32 +472,6 @@ class EVMService {
         maxGas: gasLimit.toInt(),
       );
     } on RPCError catch (e) {
-      await _bottomSheetService.queueBottomSheet(
-        widget: Container(
-          color: Colors.white,
-          height: 210.0,
-          width: double.infinity,
-          padding: const EdgeInsets.all(20.0),
-          child: Column(
-            children: [
-              Icon(
-                Icons.error_outline_sharp,
-                color: Colors.red[100],
-                size: 80.0,
-              ),
-              Text(
-                'Error',
-                style: StyleConstants.subtitleText.copyWith(
-                  color: Colors.black,
-                  fontSize: 18.0,
-                ),
-              ),
-              Text(e.message),
-            ],
-          ),
-        ),
-      );
-
       return JsonRpcError(code: e.errorCode, message: e.message);
     }
 
@@ -554,30 +480,21 @@ class EVMService {
 
     const encoder = JsonEncoder.withIndent('  ');
     final trx = encoder.convert(tJson);
-    final WCBottomSheetResult rs = (await _bottomSheetService.queueBottomSheet(
-          widget: WCRequestWidget(
-            child: WCConnectionWidget(
-              title: title ?? 'Approve Transaction',
-              info: [
-                WCConnectionModel(
-                  title: 'Method: $method\n'
-                      'Chain ID: $chainId\n\n'
-                      'Transaction:',
-                  elements: [
-                    trx,
-                  ],
-                ),
-                WCConnectionModel(
-                  title: 'Gas price',
-                  elements: ['${gweiGasPrice.toStringAsFixed(2)} GWEI'],
-                ),
-              ],
-            ),
-          ),
-        )) ??
-        WCBottomSheetResult.reject;
 
-    if (rs != WCBottomSheetResult.reject) {
+    if (await MethodsUtils.requestApproval(
+      trx,
+      title: title,
+      method: method,
+      chainId: chainId,
+      transportType: transportType,
+      verifyContext: verifyContext,
+      extraModels: [
+        WCConnectionModel(
+          title: 'Gas price',
+          elements: ['${gweiGasPrice.toStringAsFixed(2)} GWEI'],
+        ),
+      ],
+    )) {
       return transaction;
     }
 

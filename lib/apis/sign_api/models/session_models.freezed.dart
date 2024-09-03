@@ -261,14 +261,16 @@ mixin _$SessionData {
   bool get acknowledged => throw _privateConstructorUsedError;
   String get controller => throw _privateConstructorUsedError;
   Map<String, Namespace> get namespaces => throw _privateConstructorUsedError;
+  ConnectionMetadata get self => throw _privateConstructorUsedError;
+  ConnectionMetadata get peer => throw _privateConstructorUsedError;
   Map<String, RequiredNamespace>? get requiredNamespaces =>
       throw _privateConstructorUsedError;
   Map<String, RequiredNamespace>? get optionalNamespaces =>
       throw _privateConstructorUsedError;
   Map<String, String>? get sessionProperties =>
       throw _privateConstructorUsedError;
-  ConnectionMetadata get self => throw _privateConstructorUsedError;
-  ConnectionMetadata get peer => throw _privateConstructorUsedError;
+  List<Cacao>? get authentication => throw _privateConstructorUsedError;
+  TransportType get transportType => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -290,11 +292,13 @@ abstract class $SessionDataCopyWith<$Res> {
       bool acknowledged,
       String controller,
       Map<String, Namespace> namespaces,
+      ConnectionMetadata self,
+      ConnectionMetadata peer,
       Map<String, RequiredNamespace>? requiredNamespaces,
       Map<String, RequiredNamespace>? optionalNamespaces,
       Map<String, String>? sessionProperties,
-      ConnectionMetadata self,
-      ConnectionMetadata peer});
+      List<Cacao>? authentication,
+      TransportType transportType});
 
   $ConnectionMetadataCopyWith<$Res> get self;
   $ConnectionMetadataCopyWith<$Res> get peer;
@@ -320,11 +324,13 @@ class _$SessionDataCopyWithImpl<$Res, $Val extends SessionData>
     Object? acknowledged = null,
     Object? controller = null,
     Object? namespaces = null,
+    Object? self = null,
+    Object? peer = null,
     Object? requiredNamespaces = freezed,
     Object? optionalNamespaces = freezed,
     Object? sessionProperties = freezed,
-    Object? self = null,
-    Object? peer = null,
+    Object? authentication = freezed,
+    Object? transportType = null,
   }) {
     return _then(_value.copyWith(
       topic: null == topic
@@ -355,6 +361,14 @@ class _$SessionDataCopyWithImpl<$Res, $Val extends SessionData>
           ? _value.namespaces
           : namespaces // ignore: cast_nullable_to_non_nullable
               as Map<String, Namespace>,
+      self: null == self
+          ? _value.self
+          : self // ignore: cast_nullable_to_non_nullable
+              as ConnectionMetadata,
+      peer: null == peer
+          ? _value.peer
+          : peer // ignore: cast_nullable_to_non_nullable
+              as ConnectionMetadata,
       requiredNamespaces: freezed == requiredNamespaces
           ? _value.requiredNamespaces
           : requiredNamespaces // ignore: cast_nullable_to_non_nullable
@@ -367,14 +381,14 @@ class _$SessionDataCopyWithImpl<$Res, $Val extends SessionData>
           ? _value.sessionProperties
           : sessionProperties // ignore: cast_nullable_to_non_nullable
               as Map<String, String>?,
-      self: null == self
-          ? _value.self
-          : self // ignore: cast_nullable_to_non_nullable
-              as ConnectionMetadata,
-      peer: null == peer
-          ? _value.peer
-          : peer // ignore: cast_nullable_to_non_nullable
-              as ConnectionMetadata,
+      authentication: freezed == authentication
+          ? _value.authentication
+          : authentication // ignore: cast_nullable_to_non_nullable
+              as List<Cacao>?,
+      transportType: null == transportType
+          ? _value.transportType
+          : transportType // ignore: cast_nullable_to_non_nullable
+              as TransportType,
     ) as $Val);
   }
 
@@ -411,11 +425,13 @@ abstract class _$$SessionDataImplCopyWith<$Res>
       bool acknowledged,
       String controller,
       Map<String, Namespace> namespaces,
+      ConnectionMetadata self,
+      ConnectionMetadata peer,
       Map<String, RequiredNamespace>? requiredNamespaces,
       Map<String, RequiredNamespace>? optionalNamespaces,
       Map<String, String>? sessionProperties,
-      ConnectionMetadata self,
-      ConnectionMetadata peer});
+      List<Cacao>? authentication,
+      TransportType transportType});
 
   @override
   $ConnectionMetadataCopyWith<$Res> get self;
@@ -441,11 +457,13 @@ class __$$SessionDataImplCopyWithImpl<$Res>
     Object? acknowledged = null,
     Object? controller = null,
     Object? namespaces = null,
+    Object? self = null,
+    Object? peer = null,
     Object? requiredNamespaces = freezed,
     Object? optionalNamespaces = freezed,
     Object? sessionProperties = freezed,
-    Object? self = null,
-    Object? peer = null,
+    Object? authentication = freezed,
+    Object? transportType = null,
   }) {
     return _then(_$SessionDataImpl(
       topic: null == topic
@@ -476,6 +494,14 @@ class __$$SessionDataImplCopyWithImpl<$Res>
           ? _value._namespaces
           : namespaces // ignore: cast_nullable_to_non_nullable
               as Map<String, Namespace>,
+      self: null == self
+          ? _value.self
+          : self // ignore: cast_nullable_to_non_nullable
+              as ConnectionMetadata,
+      peer: null == peer
+          ? _value.peer
+          : peer // ignore: cast_nullable_to_non_nullable
+              as ConnectionMetadata,
       requiredNamespaces: freezed == requiredNamespaces
           ? _value._requiredNamespaces
           : requiredNamespaces // ignore: cast_nullable_to_non_nullable
@@ -488,14 +514,14 @@ class __$$SessionDataImplCopyWithImpl<$Res>
           ? _value._sessionProperties
           : sessionProperties // ignore: cast_nullable_to_non_nullable
               as Map<String, String>?,
-      self: null == self
-          ? _value.self
-          : self // ignore: cast_nullable_to_non_nullable
-              as ConnectionMetadata,
-      peer: null == peer
-          ? _value.peer
-          : peer // ignore: cast_nullable_to_non_nullable
-              as ConnectionMetadata,
+      authentication: freezed == authentication
+          ? _value._authentication
+          : authentication // ignore: cast_nullable_to_non_nullable
+              as List<Cacao>?,
+      transportType: null == transportType
+          ? _value.transportType
+          : transportType // ignore: cast_nullable_to_non_nullable
+              as TransportType,
     ));
   }
 }
@@ -512,15 +538,18 @@ class _$SessionDataImpl implements _SessionData {
       required this.acknowledged,
       required this.controller,
       required final Map<String, Namespace> namespaces,
+      required this.self,
+      required this.peer,
       final Map<String, RequiredNamespace>? requiredNamespaces,
       final Map<String, RequiredNamespace>? optionalNamespaces,
       final Map<String, String>? sessionProperties,
-      required this.self,
-      required this.peer})
+      final List<Cacao>? authentication,
+      this.transportType = TransportType.relay})
       : _namespaces = namespaces,
         _requiredNamespaces = requiredNamespaces,
         _optionalNamespaces = optionalNamespaces,
-        _sessionProperties = sessionProperties;
+        _sessionProperties = sessionProperties,
+        _authentication = authentication;
 
   factory _$SessionDataImpl.fromJson(Map<String, dynamic> json) =>
       _$$SessionDataImplFromJson(json);
@@ -545,6 +574,10 @@ class _$SessionDataImpl implements _SessionData {
     return EqualUnmodifiableMapView(_namespaces);
   }
 
+  @override
+  final ConnectionMetadata self;
+  @override
+  final ConnectionMetadata peer;
   final Map<String, RequiredNamespace>? _requiredNamespaces;
   @override
   Map<String, RequiredNamespace>? get requiredNamespaces {
@@ -578,14 +611,23 @@ class _$SessionDataImpl implements _SessionData {
     return EqualUnmodifiableMapView(value);
   }
 
+  final List<Cacao>? _authentication;
   @override
-  final ConnectionMetadata self;
+  List<Cacao>? get authentication {
+    final value = _authentication;
+    if (value == null) return null;
+    if (_authentication is EqualUnmodifiableListView) return _authentication;
+    // ignore: implicit_dynamic_type
+    return EqualUnmodifiableListView(value);
+  }
+
   @override
-  final ConnectionMetadata peer;
+  @JsonKey()
+  final TransportType transportType;
 
   @override
   String toString() {
-    return 'SessionData(topic: $topic, pairingTopic: $pairingTopic, relay: $relay, expiry: $expiry, acknowledged: $acknowledged, controller: $controller, namespaces: $namespaces, requiredNamespaces: $requiredNamespaces, optionalNamespaces: $optionalNamespaces, sessionProperties: $sessionProperties, self: $self, peer: $peer)';
+    return 'SessionData(topic: $topic, pairingTopic: $pairingTopic, relay: $relay, expiry: $expiry, acknowledged: $acknowledged, controller: $controller, namespaces: $namespaces, self: $self, peer: $peer, requiredNamespaces: $requiredNamespaces, optionalNamespaces: $optionalNamespaces, sessionProperties: $sessionProperties, authentication: $authentication, transportType: $transportType)';
   }
 
   @override
@@ -604,14 +646,18 @@ class _$SessionDataImpl implements _SessionData {
                 other.controller == controller) &&
             const DeepCollectionEquality()
                 .equals(other._namespaces, _namespaces) &&
+            (identical(other.self, self) || other.self == self) &&
+            (identical(other.peer, peer) || other.peer == peer) &&
             const DeepCollectionEquality()
                 .equals(other._requiredNamespaces, _requiredNamespaces) &&
             const DeepCollectionEquality()
                 .equals(other._optionalNamespaces, _optionalNamespaces) &&
             const DeepCollectionEquality()
                 .equals(other._sessionProperties, _sessionProperties) &&
-            (identical(other.self, self) || other.self == self) &&
-            (identical(other.peer, peer) || other.peer == peer));
+            const DeepCollectionEquality()
+                .equals(other._authentication, _authentication) &&
+            (identical(other.transportType, transportType) ||
+                other.transportType == transportType));
   }
 
   @JsonKey(ignore: true)
@@ -625,11 +671,13 @@ class _$SessionDataImpl implements _SessionData {
       acknowledged,
       controller,
       const DeepCollectionEquality().hash(_namespaces),
+      self,
+      peer,
       const DeepCollectionEquality().hash(_requiredNamespaces),
       const DeepCollectionEquality().hash(_optionalNamespaces),
       const DeepCollectionEquality().hash(_sessionProperties),
-      self,
-      peer);
+      const DeepCollectionEquality().hash(_authentication),
+      transportType);
 
   @JsonKey(ignore: true)
   @override
@@ -654,11 +702,13 @@ abstract class _SessionData implements SessionData {
       required final bool acknowledged,
       required final String controller,
       required final Map<String, Namespace> namespaces,
+      required final ConnectionMetadata self,
+      required final ConnectionMetadata peer,
       final Map<String, RequiredNamespace>? requiredNamespaces,
       final Map<String, RequiredNamespace>? optionalNamespaces,
       final Map<String, String>? sessionProperties,
-      required final ConnectionMetadata self,
-      required final ConnectionMetadata peer}) = _$SessionDataImpl;
+      final List<Cacao>? authentication,
+      final TransportType transportType}) = _$SessionDataImpl;
 
   factory _SessionData.fromJson(Map<String, dynamic> json) =
       _$SessionDataImpl.fromJson;
@@ -678,15 +728,19 @@ abstract class _SessionData implements SessionData {
   @override
   Map<String, Namespace> get namespaces;
   @override
+  ConnectionMetadata get self;
+  @override
+  ConnectionMetadata get peer;
+  @override
   Map<String, RequiredNamespace>? get requiredNamespaces;
   @override
   Map<String, RequiredNamespace>? get optionalNamespaces;
   @override
   Map<String, String>? get sessionProperties;
   @override
-  ConnectionMetadata get self;
+  List<Cacao>? get authentication;
   @override
-  ConnectionMetadata get peer;
+  TransportType get transportType;
   @override
   @JsonKey(ignore: true)
   _$$SessionDataImplCopyWith<_$SessionDataImpl> get copyWith =>
@@ -705,6 +759,7 @@ mixin _$SessionRequest {
   String get chainId => throw _privateConstructorUsedError;
   dynamic get params => throw _privateConstructorUsedError;
   VerifyContext get verifyContext => throw _privateConstructorUsedError;
+  TransportType get transportType => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -724,7 +779,8 @@ abstract class $SessionRequestCopyWith<$Res> {
       String method,
       String chainId,
       dynamic params,
-      VerifyContext verifyContext});
+      VerifyContext verifyContext,
+      TransportType transportType});
 
   $VerifyContextCopyWith<$Res> get verifyContext;
 }
@@ -748,6 +804,7 @@ class _$SessionRequestCopyWithImpl<$Res, $Val extends SessionRequest>
     Object? chainId = null,
     Object? params = freezed,
     Object? verifyContext = null,
+    Object? transportType = null,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -774,6 +831,10 @@ class _$SessionRequestCopyWithImpl<$Res, $Val extends SessionRequest>
           ? _value.verifyContext
           : verifyContext // ignore: cast_nullable_to_non_nullable
               as VerifyContext,
+      transportType: null == transportType
+          ? _value.transportType
+          : transportType // ignore: cast_nullable_to_non_nullable
+              as TransportType,
     ) as $Val);
   }
 
@@ -800,7 +861,8 @@ abstract class _$$SessionRequestImplCopyWith<$Res>
       String method,
       String chainId,
       dynamic params,
-      VerifyContext verifyContext});
+      VerifyContext verifyContext,
+      TransportType transportType});
 
   @override
   $VerifyContextCopyWith<$Res> get verifyContext;
@@ -823,6 +885,7 @@ class __$$SessionRequestImplCopyWithImpl<$Res>
     Object? chainId = null,
     Object? params = freezed,
     Object? verifyContext = null,
+    Object? transportType = null,
   }) {
     return _then(_$SessionRequestImpl(
       id: null == id
@@ -849,6 +912,10 @@ class __$$SessionRequestImplCopyWithImpl<$Res>
           ? _value.verifyContext
           : verifyContext // ignore: cast_nullable_to_non_nullable
               as VerifyContext,
+      transportType: null == transportType
+          ? _value.transportType
+          : transportType // ignore: cast_nullable_to_non_nullable
+              as TransportType,
     ));
   }
 }
@@ -863,7 +930,8 @@ class _$SessionRequestImpl implements _SessionRequest {
       required this.method,
       required this.chainId,
       required this.params,
-      required this.verifyContext});
+      required this.verifyContext,
+      this.transportType = TransportType.relay});
 
   factory _$SessionRequestImpl.fromJson(Map<String, dynamic> json) =>
       _$$SessionRequestImplFromJson(json);
@@ -880,10 +948,13 @@ class _$SessionRequestImpl implements _SessionRequest {
   final dynamic params;
   @override
   final VerifyContext verifyContext;
+  @override
+  @JsonKey()
+  final TransportType transportType;
 
   @override
   String toString() {
-    return 'SessionRequest(id: $id, topic: $topic, method: $method, chainId: $chainId, params: $params, verifyContext: $verifyContext)';
+    return 'SessionRequest(id: $id, topic: $topic, method: $method, chainId: $chainId, params: $params, verifyContext: $verifyContext, transportType: $transportType)';
   }
 
   @override
@@ -897,13 +968,22 @@ class _$SessionRequestImpl implements _SessionRequest {
             (identical(other.chainId, chainId) || other.chainId == chainId) &&
             const DeepCollectionEquality().equals(other.params, params) &&
             (identical(other.verifyContext, verifyContext) ||
-                other.verifyContext == verifyContext));
+                other.verifyContext == verifyContext) &&
+            (identical(other.transportType, transportType) ||
+                other.transportType == transportType));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, id, topic, method, chainId,
-      const DeepCollectionEquality().hash(params), verifyContext);
+  int get hashCode => Object.hash(
+      runtimeType,
+      id,
+      topic,
+      method,
+      chainId,
+      const DeepCollectionEquality().hash(params),
+      verifyContext,
+      transportType);
 
   @JsonKey(ignore: true)
   @override
@@ -927,7 +1007,8 @@ abstract class _SessionRequest implements SessionRequest {
       required final String method,
       required final String chainId,
       required final dynamic params,
-      required final VerifyContext verifyContext}) = _$SessionRequestImpl;
+      required final VerifyContext verifyContext,
+      final TransportType transportType}) = _$SessionRequestImpl;
 
   factory _SessionRequest.fromJson(Map<String, dynamic> json) =
       _$SessionRequestImpl.fromJson;
@@ -944,6 +1025,8 @@ abstract class _SessionRequest implements SessionRequest {
   dynamic get params;
   @override
   VerifyContext get verifyContext;
+  @override
+  TransportType get transportType;
   @override
   @JsonKey(ignore: true)
   _$$SessionRequestImplCopyWith<_$SessionRequestImpl> get copyWith =>

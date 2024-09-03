@@ -1756,6 +1756,7 @@ WcSessionRequestRequest _$WcSessionRequestRequestFromJson(
 mixin _$WcSessionRequestRequest {
   String get chainId => throw _privateConstructorUsedError;
   SessionRequestParams get request => throw _privateConstructorUsedError;
+  TransportType get transportType => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -1769,7 +1770,10 @@ abstract class $WcSessionRequestRequestCopyWith<$Res> {
           $Res Function(WcSessionRequestRequest) then) =
       _$WcSessionRequestRequestCopyWithImpl<$Res, WcSessionRequestRequest>;
   @useResult
-  $Res call({String chainId, SessionRequestParams request});
+  $Res call(
+      {String chainId,
+      SessionRequestParams request,
+      TransportType transportType});
 
   $SessionRequestParamsCopyWith<$Res> get request;
 }
@@ -1790,6 +1794,7 @@ class _$WcSessionRequestRequestCopyWithImpl<$Res,
   $Res call({
     Object? chainId = null,
     Object? request = null,
+    Object? transportType = null,
   }) {
     return _then(_value.copyWith(
       chainId: null == chainId
@@ -1800,6 +1805,10 @@ class _$WcSessionRequestRequestCopyWithImpl<$Res,
           ? _value.request
           : request // ignore: cast_nullable_to_non_nullable
               as SessionRequestParams,
+      transportType: null == transportType
+          ? _value.transportType
+          : transportType // ignore: cast_nullable_to_non_nullable
+              as TransportType,
     ) as $Val);
   }
 
@@ -1821,7 +1830,10 @@ abstract class _$$WcSessionRequestRequestImplCopyWith<$Res>
       __$$WcSessionRequestRequestImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String chainId, SessionRequestParams request});
+  $Res call(
+      {String chainId,
+      SessionRequestParams request,
+      TransportType transportType});
 
   @override
   $SessionRequestParamsCopyWith<$Res> get request;
@@ -1842,6 +1854,7 @@ class __$$WcSessionRequestRequestImplCopyWithImpl<$Res>
   $Res call({
     Object? chainId = null,
     Object? request = null,
+    Object? transportType = null,
   }) {
     return _then(_$WcSessionRequestRequestImpl(
       chainId: null == chainId
@@ -1852,6 +1865,10 @@ class __$$WcSessionRequestRequestImplCopyWithImpl<$Res>
           ? _value.request
           : request // ignore: cast_nullable_to_non_nullable
               as SessionRequestParams,
+      transportType: null == transportType
+          ? _value.transportType
+          : transportType // ignore: cast_nullable_to_non_nullable
+              as TransportType,
     ));
   }
 }
@@ -1861,7 +1878,9 @@ class __$$WcSessionRequestRequestImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$WcSessionRequestRequestImpl implements _WcSessionRequestRequest {
   const _$WcSessionRequestRequestImpl(
-      {required this.chainId, required this.request});
+      {required this.chainId,
+      required this.request,
+      this.transportType = TransportType.relay});
 
   factory _$WcSessionRequestRequestImpl.fromJson(Map<String, dynamic> json) =>
       _$$WcSessionRequestRequestImplFromJson(json);
@@ -1870,10 +1889,13 @@ class _$WcSessionRequestRequestImpl implements _WcSessionRequestRequest {
   final String chainId;
   @override
   final SessionRequestParams request;
+  @override
+  @JsonKey()
+  final TransportType transportType;
 
   @override
   String toString() {
-    return 'WcSessionRequestRequest(chainId: $chainId, request: $request)';
+    return 'WcSessionRequestRequest(chainId: $chainId, request: $request, transportType: $transportType)';
   }
 
   @override
@@ -1882,12 +1904,14 @@ class _$WcSessionRequestRequestImpl implements _WcSessionRequestRequest {
         (other.runtimeType == runtimeType &&
             other is _$WcSessionRequestRequestImpl &&
             (identical(other.chainId, chainId) || other.chainId == chainId) &&
-            (identical(other.request, request) || other.request == request));
+            (identical(other.request, request) || other.request == request) &&
+            (identical(other.transportType, transportType) ||
+                other.transportType == transportType));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, chainId, request);
+  int get hashCode => Object.hash(runtimeType, chainId, request, transportType);
 
   @JsonKey(ignore: true)
   @override
@@ -1906,9 +1930,9 @@ class _$WcSessionRequestRequestImpl implements _WcSessionRequestRequest {
 
 abstract class _WcSessionRequestRequest implements WcSessionRequestRequest {
   const factory _WcSessionRequestRequest(
-          {required final String chainId,
-          required final SessionRequestParams request}) =
-      _$WcSessionRequestRequestImpl;
+      {required final String chainId,
+      required final SessionRequestParams request,
+      final TransportType transportType}) = _$WcSessionRequestRequestImpl;
 
   factory _WcSessionRequestRequest.fromJson(Map<String, dynamic> json) =
       _$WcSessionRequestRequestImpl.fromJson;
@@ -1917,6 +1941,8 @@ abstract class _WcSessionRequestRequest implements WcSessionRequestRequest {
   String get chainId;
   @override
   SessionRequestParams get request;
+  @override
+  TransportType get transportType;
   @override
   @JsonKey(ignore: true)
   _$$WcSessionRequestRequestImplCopyWith<_$WcSessionRequestRequestImpl>
@@ -2422,6 +2448,7 @@ WcAuthRequestRequest _$WcAuthRequestRequestFromJson(Map<String, dynamic> json) {
 mixin _$WcAuthRequestRequest {
   AuthPayloadParams get payloadParams => throw _privateConstructorUsedError;
   ConnectionMetadata get requester => throw _privateConstructorUsedError;
+  TransportType get transportType => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -2435,7 +2462,10 @@ abstract class $WcAuthRequestRequestCopyWith<$Res> {
           $Res Function(WcAuthRequestRequest) then) =
       _$WcAuthRequestRequestCopyWithImpl<$Res, WcAuthRequestRequest>;
   @useResult
-  $Res call({AuthPayloadParams payloadParams, ConnectionMetadata requester});
+  $Res call(
+      {AuthPayloadParams payloadParams,
+      ConnectionMetadata requester,
+      TransportType transportType});
 
   $AuthPayloadParamsCopyWith<$Res> get payloadParams;
   $ConnectionMetadataCopyWith<$Res> get requester;
@@ -2457,6 +2487,7 @@ class _$WcAuthRequestRequestCopyWithImpl<$Res,
   $Res call({
     Object? payloadParams = null,
     Object? requester = null,
+    Object? transportType = null,
   }) {
     return _then(_value.copyWith(
       payloadParams: null == payloadParams
@@ -2467,6 +2498,10 @@ class _$WcAuthRequestRequestCopyWithImpl<$Res,
           ? _value.requester
           : requester // ignore: cast_nullable_to_non_nullable
               as ConnectionMetadata,
+      transportType: null == transportType
+          ? _value.transportType
+          : transportType // ignore: cast_nullable_to_non_nullable
+              as TransportType,
     ) as $Val);
   }
 
@@ -2495,7 +2530,10 @@ abstract class _$$WcAuthRequestRequestImplCopyWith<$Res>
       __$$WcAuthRequestRequestImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({AuthPayloadParams payloadParams, ConnectionMetadata requester});
+  $Res call(
+      {AuthPayloadParams payloadParams,
+      ConnectionMetadata requester,
+      TransportType transportType});
 
   @override
   $AuthPayloadParamsCopyWith<$Res> get payloadParams;
@@ -2516,6 +2554,7 @@ class __$$WcAuthRequestRequestImplCopyWithImpl<$Res>
   $Res call({
     Object? payloadParams = null,
     Object? requester = null,
+    Object? transportType = null,
   }) {
     return _then(_$WcAuthRequestRequestImpl(
       payloadParams: null == payloadParams
@@ -2526,6 +2565,10 @@ class __$$WcAuthRequestRequestImplCopyWithImpl<$Res>
           ? _value.requester
           : requester // ignore: cast_nullable_to_non_nullable
               as ConnectionMetadata,
+      transportType: null == transportType
+          ? _value.transportType
+          : transportType // ignore: cast_nullable_to_non_nullable
+              as TransportType,
     ));
   }
 }
@@ -2535,7 +2578,9 @@ class __$$WcAuthRequestRequestImplCopyWithImpl<$Res>
 @JsonSerializable()
 class _$WcAuthRequestRequestImpl implements _WcAuthRequestRequest {
   const _$WcAuthRequestRequestImpl(
-      {required this.payloadParams, required this.requester});
+      {required this.payloadParams,
+      required this.requester,
+      this.transportType = TransportType.relay});
 
   factory _$WcAuthRequestRequestImpl.fromJson(Map<String, dynamic> json) =>
       _$$WcAuthRequestRequestImplFromJson(json);
@@ -2544,10 +2589,13 @@ class _$WcAuthRequestRequestImpl implements _WcAuthRequestRequest {
   final AuthPayloadParams payloadParams;
   @override
   final ConnectionMetadata requester;
+  @override
+  @JsonKey()
+  final TransportType transportType;
 
   @override
   String toString() {
-    return 'WcAuthRequestRequest(payloadParams: $payloadParams, requester: $requester)';
+    return 'WcAuthRequestRequest(payloadParams: $payloadParams, requester: $requester, transportType: $transportType)';
   }
 
   @override
@@ -2558,12 +2606,15 @@ class _$WcAuthRequestRequestImpl implements _WcAuthRequestRequest {
             (identical(other.payloadParams, payloadParams) ||
                 other.payloadParams == payloadParams) &&
             (identical(other.requester, requester) ||
-                other.requester == requester));
+                other.requester == requester) &&
+            (identical(other.transportType, transportType) ||
+                other.transportType == transportType));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, payloadParams, requester);
+  int get hashCode =>
+      Object.hash(runtimeType, payloadParams, requester, transportType);
 
   @JsonKey(ignore: true)
   @override
@@ -2583,9 +2634,9 @@ class _$WcAuthRequestRequestImpl implements _WcAuthRequestRequest {
 
 abstract class _WcAuthRequestRequest implements WcAuthRequestRequest {
   const factory _WcAuthRequestRequest(
-          {required final AuthPayloadParams payloadParams,
-          required final ConnectionMetadata requester}) =
-      _$WcAuthRequestRequestImpl;
+      {required final AuthPayloadParams payloadParams,
+      required final ConnectionMetadata requester,
+      final TransportType transportType}) = _$WcAuthRequestRequestImpl;
 
   factory _WcAuthRequestRequest.fromJson(Map<String, dynamic> json) =
       _$WcAuthRequestRequestImpl.fromJson;
@@ -2594,6 +2645,8 @@ abstract class _WcAuthRequestRequest implements WcAuthRequestRequest {
   AuthPayloadParams get payloadParams;
   @override
   ConnectionMetadata get requester;
+  @override
+  TransportType get transportType;
   @override
   @JsonKey(ignore: true)
   _$$WcAuthRequestRequestImplCopyWith<_$WcAuthRequestRequestImpl>
@@ -2762,6 +2815,7 @@ mixin _$WcSessionAuthRequestParams {
   SessionAuthPayload get authPayload => throw _privateConstructorUsedError;
   ConnectionMetadata get requester => throw _privateConstructorUsedError;
   int get expiryTimestamp => throw _privateConstructorUsedError;
+  TransportType get transportType => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -2779,7 +2833,8 @@ abstract class $WcSessionAuthRequestParamsCopyWith<$Res> {
   $Res call(
       {SessionAuthPayload authPayload,
       ConnectionMetadata requester,
-      int expiryTimestamp});
+      int expiryTimestamp,
+      TransportType transportType});
 
   $SessionAuthPayloadCopyWith<$Res> get authPayload;
   $ConnectionMetadataCopyWith<$Res> get requester;
@@ -2802,6 +2857,7 @@ class _$WcSessionAuthRequestParamsCopyWithImpl<$Res,
     Object? authPayload = null,
     Object? requester = null,
     Object? expiryTimestamp = null,
+    Object? transportType = null,
   }) {
     return _then(_value.copyWith(
       authPayload: null == authPayload
@@ -2816,6 +2872,10 @@ class _$WcSessionAuthRequestParamsCopyWithImpl<$Res,
           ? _value.expiryTimestamp
           : expiryTimestamp // ignore: cast_nullable_to_non_nullable
               as int,
+      transportType: null == transportType
+          ? _value.transportType
+          : transportType // ignore: cast_nullable_to_non_nullable
+              as TransportType,
     ) as $Val);
   }
 
@@ -2848,7 +2908,8 @@ abstract class _$$WcSessionAuthRequestParamsImplCopyWith<$Res>
   $Res call(
       {SessionAuthPayload authPayload,
       ConnectionMetadata requester,
-      int expiryTimestamp});
+      int expiryTimestamp,
+      TransportType transportType});
 
   @override
   $SessionAuthPayloadCopyWith<$Res> get authPayload;
@@ -2872,6 +2933,7 @@ class __$$WcSessionAuthRequestParamsImplCopyWithImpl<$Res>
     Object? authPayload = null,
     Object? requester = null,
     Object? expiryTimestamp = null,
+    Object? transportType = null,
   }) {
     return _then(_$WcSessionAuthRequestParamsImpl(
       authPayload: null == authPayload
@@ -2886,6 +2948,10 @@ class __$$WcSessionAuthRequestParamsImplCopyWithImpl<$Res>
           ? _value.expiryTimestamp
           : expiryTimestamp // ignore: cast_nullable_to_non_nullable
               as int,
+      transportType: null == transportType
+          ? _value.transportType
+          : transportType // ignore: cast_nullable_to_non_nullable
+              as TransportType,
     ));
   }
 }
@@ -2897,7 +2963,8 @@ class _$WcSessionAuthRequestParamsImpl implements _WcSessionAuthRequestParams {
   const _$WcSessionAuthRequestParamsImpl(
       {required this.authPayload,
       required this.requester,
-      required this.expiryTimestamp});
+      required this.expiryTimestamp,
+      this.transportType = TransportType.relay});
 
   factory _$WcSessionAuthRequestParamsImpl.fromJson(
           Map<String, dynamic> json) =>
@@ -2909,10 +2976,13 @@ class _$WcSessionAuthRequestParamsImpl implements _WcSessionAuthRequestParams {
   final ConnectionMetadata requester;
   @override
   final int expiryTimestamp;
+  @override
+  @JsonKey()
+  final TransportType transportType;
 
   @override
   String toString() {
-    return 'WcSessionAuthRequestParams(authPayload: $authPayload, requester: $requester, expiryTimestamp: $expiryTimestamp)';
+    return 'WcSessionAuthRequestParams(authPayload: $authPayload, requester: $requester, expiryTimestamp: $expiryTimestamp, transportType: $transportType)';
   }
 
   @override
@@ -2925,13 +2995,15 @@ class _$WcSessionAuthRequestParamsImpl implements _WcSessionAuthRequestParams {
             (identical(other.requester, requester) ||
                 other.requester == requester) &&
             (identical(other.expiryTimestamp, expiryTimestamp) ||
-                other.expiryTimestamp == expiryTimestamp));
+                other.expiryTimestamp == expiryTimestamp) &&
+            (identical(other.transportType, transportType) ||
+                other.transportType == transportType));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, authPayload, requester, expiryTimestamp);
+  int get hashCode => Object.hash(
+      runtimeType, authPayload, requester, expiryTimestamp, transportType);
 
   @JsonKey(ignore: true)
   @override
@@ -2953,7 +3025,8 @@ abstract class _WcSessionAuthRequestParams
   const factory _WcSessionAuthRequestParams(
       {required final SessionAuthPayload authPayload,
       required final ConnectionMetadata requester,
-      required final int expiryTimestamp}) = _$WcSessionAuthRequestParamsImpl;
+      required final int expiryTimestamp,
+      final TransportType transportType}) = _$WcSessionAuthRequestParamsImpl;
 
   factory _WcSessionAuthRequestParams.fromJson(Map<String, dynamic> json) =
       _$WcSessionAuthRequestParamsImpl.fromJson;
@@ -2964,6 +3037,8 @@ abstract class _WcSessionAuthRequestParams
   ConnectionMetadata get requester;
   @override
   int get expiryTimestamp;
+  @override
+  TransportType get transportType;
   @override
   @JsonKey(ignore: true)
   _$$WcSessionAuthRequestParamsImplCopyWith<_$WcSessionAuthRequestParamsImpl>

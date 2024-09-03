@@ -38,7 +38,6 @@ class AppsPageState extends State<AppsPage> with GetItStateMixin {
     //
     _registerListeners();
     // TODO web3Wallet.core.echo.register(firebaseAccessToken);
-    DeepLinkHandler.onLink.listen(_onFoundUri);
     DeepLinkHandler.checkInitialLink();
   }
 
@@ -78,7 +77,7 @@ class AppsPageState extends State<AppsPage> with GetItStateMixin {
       final jsonObject = await EthUtils.decodeMessageEvent(event);
       if (!mounted) return;
       if (jsonObject is JsonRpcRequest &&
-          jsonObject.method == 'wc_sessionPing') {
+          jsonObject.method == MethodConstants.WC_SESSION_PING) {
         showPlatformToast(
           duration: const Duration(seconds: 1),
           child: Container(
@@ -215,10 +214,9 @@ class AppsPageState extends State<AppsPage> with GetItStateMixin {
     if ((uri ?? '').isEmpty) return;
     try {
       DeepLinkHandler.waiting.value = true;
-      final Uri uriData = Uri.parse(uri!);
-      await _web3Wallet.pair(uri: uriData);
+      await _web3Wallet.pair(uri: Uri.parse(uri!));
     } on WalletConnectError catch (e) {
-      _showErrorDialog('${e.code}: ${e.message}');
+      _showErrorDialog('${e.code}: ${e.message}\n$uri');
     } on TimeoutException catch (_) {
       _showErrorDialog('Time out error. Check your connection.');
     }

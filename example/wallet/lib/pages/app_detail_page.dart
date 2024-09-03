@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
-import 'package:walletconnect_flutter_v2_wallet/dependencies/deep_link_handler.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/i_web3wallet_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/utils/constants.dart';
+import 'package:walletconnect_flutter_v2_wallet/utils/methods_utils.dart';
 import 'package:walletconnect_flutter_v2_wallet/utils/namespace_model_builder.dart';
 import 'package:walletconnect_flutter_v2_wallet/widgets/custom_button.dart';
 
@@ -105,19 +105,21 @@ class AppDetailPageState extends State<AppDetailPage> {
         ),
       );
     }
-    final scheme = metadata?.redirect?.native ?? '';
     return Scaffold(
       appBar: AppBar(
         title: Text(metadata?.name ?? 'Unknown'),
         actions: [
           Visibility(
-            visible: scheme.isNotEmpty,
+            visible: metadata?.redirect?.native != null,
             child: IconButton(
               icon: const Icon(
                 Icons.open_in_new_rounded,
               ),
               onPressed: () {
-                DeepLinkHandler.goTo(scheme);
+                MethodsUtils.openApp(
+                  sessions.first.topic,
+                  sessions.first.peer.metadata.redirect,
+                );
               },
             ),
           )

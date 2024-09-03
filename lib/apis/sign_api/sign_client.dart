@@ -555,6 +555,7 @@ class SignClient implements ISignClient {
   @override
   Future<SessionAuthRequestResponse> authenticate({
     required SessionAuthRequestParams params,
+    String? walletUniversalLink,
     String? pairingTopic,
     List<List<String>>? methods = const [
       [MethodConstants.WC_SESSION_AUTHENTICATE]
@@ -563,6 +564,7 @@ class SignClient implements ISignClient {
     try {
       return engine.authenticate(
         params: params,
+        walletUniversalLink: walletUniversalLink,
         pairingTopic: pairingTopic,
         methods: methods,
       );
@@ -667,6 +669,33 @@ class SignClient implements ISignClient {
     } catch (e) {
       rethrow;
     }
+  }
+
+  @override
+  Future<void> dispatchEnvelope(String url) async {
+    return engine.dispatchEnvelope(url);
+  }
+
+  @override
+  Future<bool> redirectToDapp({
+    required String topic,
+    required Redirect? redirect,
+  }) {
+    return engine.redirectToDapp(
+      topic: topic,
+      redirect: redirect,
+    );
+  }
+
+  @override
+  Future<bool> redirectToWallet({
+    required String topic,
+    required Redirect? redirect,
+  }) {
+    return engine.redirectToWallet(
+      topic: topic,
+      redirect: redirect,
+    );
   }
 
   @override

@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:async';
 import 'dart:convert';
 
@@ -7,14 +9,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:qr_flutter/qr_flutter.dart';
-import 'package:url_launcher/url_launcher_string.dart';
-
 import 'package:walletconnect_flutter_v2_dapp/models/chain_metadata.dart';
 import 'package:walletconnect_flutter_v2_dapp/utils/constants.dart';
 import 'package:walletconnect_flutter_v2_dapp/utils/crypto/chain_data.dart';
 import 'package:walletconnect_flutter_v2_dapp/utils/crypto/eip155.dart';
 import 'package:walletconnect_flutter_v2_dapp/utils/crypto/polkadot.dart';
 import 'package:walletconnect_flutter_v2_dapp/utils/crypto/solana.dart';
+import 'package:walletconnect_flutter_v2_dapp/utils/sample_wallets.dart';
 import 'package:walletconnect_flutter_v2_dapp/utils/string_constants.dart';
 import 'package:walletconnect_flutter_v2_dapp/widgets/chain_button.dart';
 import 'package:walletconnect_flutter_v2_dapp/imports.dart';
@@ -61,13 +62,6 @@ class ConnectPageState extends State<ConnectPage> {
   void dispose() {
     widget.web3App.onSessionConnect.unsubscribe(_onSessionConnect);
     super.dispose();
-  }
-
-  void setTestnet(bool value) {
-    if (value != _testnetOnly) {
-      _selectedChains.clear();
-    }
-    _testnetOnly = value;
   }
 
   void _selectChain(ChainMetadata chain) {
@@ -181,47 +175,29 @@ class ConnectPageState extends State<ConnectPage> {
     return ListView(
       padding: const EdgeInsets.symmetric(horizontal: StyleConstants.linear8),
       children: <Widget>[
-        Column(
+        const Text(
+          'Flutter Dapp',
+          style: StyleConstants.subtitleText,
+          textAlign: TextAlign.center,
+        ),
+        const SizedBox(height: StyleConstants.linear8),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Text(
-              'Flutter Dapp',
-              style: StyleConstants.subtitleText,
-              textAlign: TextAlign.center,
+              StringConstants.testnetsOnly,
+              style: StyleConstants.buttonText,
             ),
-            FutureBuilder<PackageInfo>(
-              future: PackageInfo.fromPlatform(),
-              builder: (context, snapshot) {
-                if (!snapshot.hasData) {
-                  return const SizedBox.shrink();
-                }
-                final v = snapshot.data!.version;
-                final b = snapshot.data!.buildNumber;
-                const f = String.fromEnvironment('FLUTTER_APP_FLAVOR');
-                return Text('$v-$f ($b) - SDK v$packageVersion');
+            Switch(
+              value: _testnetOnly,
+              onChanged: (value) {
+                setState(() {
+                  _selectedChains.clear();
+                  _testnetOnly = value;
+                });
               },
             ),
           ],
-        ),
-        SizedBox(
-          height: StyleConstants.linear48,
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              const Text(
-                StringConstants.testnetsOnly,
-                style: StyleConstants.buttonText,
-              ),
-              Switch(
-                value: _testnetOnly,
-                onChanged: (value) {
-                  setState(() {
-                    _selectedChains.clear();
-                    _testnetOnly = value;
-                  });
-                },
-              ),
-            ],
-          ),
         ),
         const Text('EVM Chains:', style: StyleConstants.buttonText),
         const SizedBox(height: StyleConstants.linear8),
@@ -260,83 +236,163 @@ class ConnectPageState extends State<ConnectPage> {
           children: [
             const SizedBox(height: StyleConstants.linear8),
             const Text(
-              'Use custom connection:',
+              'Connect Session Propose:',
               style: StyleConstants.buttonText,
             ),
             const SizedBox(height: StyleConstants.linear8),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                style: _buttonStyle,
-                onPressed: _selectedChains.isEmpty
-                    ? null
-                    : () => _onConnect(
-                          showToast: (m) async {
-                            await showPlatformToast(
-                                child: Text(m), context: context);
+            Column(
+              children: WCSampleWallets.getSampleWallets().map((wallet) {
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 8.0),
+                  child: ElevatedButton(
+                    style: _buttonStyle,
+                    onPressed: _selectedChains.isEmpty
+                        ? null
+                        : () {
+                            _onConnect(
+                              nativeLink: '${wallet['schema']}',
+                              closeModal: () {
+                                if (Navigator.canPop(context)) {
+                                  Navigator.of(context).pop();
+                                }
+                              },
+                              showToast: (m) async {
+                                showPlatformToast(
+                                  child: Text(m),
+                                  context: context,
+                                );
+                              },
+                            );
                           },
-                          closeModal: () {
-                            if (Navigator.canPop(context)) {
-                              Navigator.of(context).pop();
-                            }
-                          },
-                        ),
-                child: const Text(
-                  StringConstants.connect,
-                  style: StyleConstants.buttonText,
-                ),
-              ),
+                    child: Text(
+                      '${wallet['name']}',
+                      style: StyleConstants.buttonText,
+                    ),
+                  ),
+                );
+              }).toList(),
             ),
             const SizedBox(height: StyleConstants.linear8),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                style: _buttonStyle,
-                onPressed: _selectedChains.isEmpty
-                    ? null
-                    : () => _oneClickAuth(
-                          closeModal: () {
-                            if (Navigator.canPop(context)) {
-                              Navigator.of(context).pop();
-                            }
+            const Divider(),
+            const Text(
+              '1-Click Auth with LinkMode:',
+              style: StyleConstants.buttonText,
+            ),
+            const SizedBox(height: StyleConstants.linear8),
+            Column(
+              children: WCSampleWallets.getSampleWallets().map((wallet) {
+                return Padding(
+                  padding: const EdgeInsets.only(bottom: 8.0),
+                  child: ElevatedButton(
+                    style: _buttonStyle,
+                    onPressed: _selectedChains.isEmpty
+                        ? null
+                        : () {
+                            _sessionAuthenticate(
+                              nativeLink: '${wallet['schema']}',
+                              universalLink: '${wallet['universal']}',
+                              closeModal: () {
+                                if (Navigator.canPop(context)) {
+                                  Navigator.of(context).pop();
+                                }
+                              },
+                              showToast: (message) {
+                                showPlatformToast(
+                                  child: Text(message),
+                                  context: context,
+                                );
+                              },
+                            );
                           },
-                          showToast: (message) {
-                            showPlatformToast(
-                                child: Text(message), context: context);
-                          },
-                        ),
-                child: const Text(
-                  'One-Click Auth',
-                  style: StyleConstants.buttonText,
-                ),
+                    child: Text(
+                      '${wallet['name']}',
+                      style: StyleConstants.buttonText,
+                    ),
+                  ),
+                );
+              }).toList(),
+            ),
+          ],
+        ),
+        const SizedBox(height: StyleConstants.linear16),
+        const Divider(height: 1.0),
+        const SizedBox(height: StyleConstants.linear16),
+        const Text(
+          'Redirect:',
+          style: TextStyle(fontWeight: FontWeight.bold),
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('Native: '),
+            Expanded(
+              child: Text(
+                '${widget.web3App.metadata.redirect?.native}',
+                style: const TextStyle(fontWeight: FontWeight.bold),
               ),
             ),
           ],
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.start,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const Text('Universal: '),
+            Expanded(
+              child: Text(
+                '${widget.web3App.metadata.redirect?.universal}',
+                style: const TextStyle(fontWeight: FontWeight.bold),
+              ),
+            ),
+          ],
+        ),
+        Row(
+          children: [
+            const Text('Link Mode: '),
+            Text(
+              '${widget.web3App.metadata.redirect?.linkMode}',
+              style: const TextStyle(fontWeight: FontWeight.bold),
+            ),
+          ],
+        ),
+        const SizedBox(height: StyleConstants.linear8),
+        FutureBuilder<PackageInfo>(
+          future: PackageInfo.fromPlatform(),
+          builder: (context, snapshot) {
+            if (!snapshot.hasData) {
+              return const SizedBox.shrink();
+            }
+            final v = snapshot.data!.version;
+            final b = snapshot.data!.buildNumber;
+            const f = String.fromEnvironment('FLUTTER_APP_FLAVOR');
+            // return Text('App Version: $v-$f ($b) - SDK v$packageVersion');
+            return Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text('App Version: '),
+                Expanded(
+                  child: Text(
+                    '$v-$f ($b) - SDK v$packageVersion',
+                    style: const TextStyle(fontWeight: FontWeight.bold),
+                  ),
+                ),
+              ],
+            );
+          },
         ),
         const SizedBox(height: StyleConstants.linear16),
       ],
     );
   }
 
-  // Future<void> _onConnectWeb() async {
-  //   // `Ethereum.isSupported` is the same as `ethereum != null`
-  //   if (ethereum != null) {
-  //     try {
-  //       // Prompt user to connect to the provider, i.e. confirm the connection modal
-  //       final accounts = await ethereum!.requestAccount();
-  //       // Get all accounts in node disposal
-  //       debugPrint('accounts ${accounts.join(', ')}');
-  //     } on EthereumUserRejected {
-  //       debugPrint('User rejected the modal');
-  //     }
-  //   }
-  // }
-
   Future<void> _onConnect({
-    Function(String message)? showToast,
+    required String nativeLink,
     VoidCallback? closeModal,
+    Function(String message)? showToast,
   }) async {
-    debugPrint('[SampleDapp] Creating connection and session');
+    debugPrint('[SampleDapp] Creating connection with $nativeLink');
     // It is currently safer to send chains approvals on optionalNamespaces
     // but depending on Wallet implementation you may need to send some (for innstance eip155:1) as required
     final connectResponse = await widget.web3App.connect(
@@ -344,47 +400,79 @@ class ConnectPageState extends State<ConnectPage> {
       optionalNamespaces: optionalNamespaces,
     );
 
-    final encodedUri = Uri.encodeComponent(connectResponse.uri.toString());
-    String flavor = '-${const String.fromEnvironment('FLUTTER_APP_FLAVOR')}';
-    flavor = flavor.replaceAll('-production', '');
-    final uri = 'wcflutterwallet$flavor://wc?uri=$encodedUri';
-    if (await canLaunchUrlString(uri)) {
-      final openApp = await showDialog(
-        // ignore: use_build_context_synchronously
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            content: const Text('Do you want to open with Flutter Wallet'),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(false),
-                child: const Text('Show QR'),
-              ),
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(true),
-                child: const Text('Open'),
-              ),
-            ],
-          );
-        },
-      );
-      if (openApp) {
-        launchUrlString(uri, mode: LaunchMode.externalApplication);
-      } else {
-        _showQrCode(connectResponse.uri.toString());
-      }
-    } else {
+    try {
+      final encodedUri = Uri.encodeComponent(connectResponse.uri.toString());
+      final uri = '$nativeLink?uri=$encodedUri';
+      await WalletConnectUtils.openURL(uri);
+    } catch (e) {
       _showQrCode(connectResponse.uri.toString());
     }
 
     debugPrint('[SampleDapp] Awaiting session proposal settlement');
-    final _ = await connectResponse.session.future;
-
-    showToast?.call(StringConstants.connectionEstablished);
+    try {
+      await connectResponse.session.future;
+      showToast?.call(StringConstants.connectionEstablished);
+    } on JsonRpcError catch (e) {
+      showToast?.call(e.message.toString());
+    }
     closeModal?.call();
   }
 
-  Future<void> _showQrCode(String uri) async {
+  void _sessionAuthenticate({
+    required String nativeLink,
+    required String universalLink,
+    VoidCallback? closeModal,
+    Function(String message)? showToast,
+  }) async {
+    debugPrint(
+        '[SampleDapp] Creating authenticate with $nativeLink, $universalLink');
+    final methods1 = requiredNamespaces['eip155']?.methods ?? [];
+    final methods2 = optionalNamespaces['eip155']?.methods ?? [];
+    final authResponse = await widget.web3App.authenticate(
+      params: SessionAuthRequestParams(
+        chains: _selectedChains.map((e) => e.chainId).toList(),
+        domain: Uri.parse(widget.web3App.metadata.url).authority,
+        nonce: AuthUtils.generateNonce(),
+        uri: widget.web3App.metadata.url,
+        statement: 'Welcome to example flutter app',
+        methods: <String>{...methods1, ...methods2}.toList(),
+      ),
+      walletUniversalLink: universalLink,
+    );
+
+    debugPrint('[SampleDapp] authResponse.uri ${authResponse.uri}');
+    try {
+      // If response uri is not universalLink show QR Code
+      if (authResponse.uri?.authority != Uri.parse(universalLink).authority) {
+        _showQrCode('${authResponse.uri}', walletScheme: nativeLink);
+      } else {
+        await WalletConnectUtils.openURL(authResponse.uri.toString());
+      }
+    } catch (e) {
+      debugPrint('[SampleDapp] authResponse error $e');
+      _showQrCode('${authResponse.uri}', walletScheme: nativeLink);
+    }
+
+    try {
+      debugPrint('[SampleDapp] Awaiting 1-CA session');
+      final response = await authResponse.completer.future;
+
+      if (response.session != null) {
+        showToast?.call(
+          '${StringConstants.authSucceeded} and ${StringConstants.connectionEstablished}',
+        );
+      } else {
+        final error = response.error ?? response.jsonRpcError;
+        showToast?.call(error.toString());
+      }
+    } catch (e) {
+      debugPrint('[SampleDapp] 1-CA $e');
+      showToast?.call(StringConstants.connectionFailed);
+    }
+    closeModal?.call();
+  }
+
+  Future<void> _showQrCode(String uri, {String walletScheme = ''}) async {
     // Show the QR code
     debugPrint('[SampleDapp] Showing QR Code: $uri');
     _shouldDismissQrCode = true;
@@ -425,164 +513,23 @@ class ConnectPageState extends State<ConnectPage> {
       context,
       MaterialPageRoute(
         fullscreenDialog: true,
-        builder: (context) => QRCodeScreen(uri: uri),
-      ),
-    );
-  }
-
-  void _requestAuth(
-    SessionConnect? event, {
-    Function(String message)? showToast,
-  }) async {
-    final shouldAuth = await showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return AlertDialog(
-          insetPadding: const EdgeInsets.all(0.0),
-          contentPadding: const EdgeInsets.all(0.0),
-          backgroundColor: Colors.white,
-          title: const Text('Request Auth?'),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context, false),
-              child: const Text('Cancel'),
-            ),
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context, true);
-              },
-              child: const Text('Yes!'),
-            ),
-          ],
-        );
-      },
-    );
-    if (shouldAuth != true) return;
-
-    try {
-      final pairingTopic = event?.session.pairingTopic;
-      // Send off an auth request now that the pairing/session is established
-      final authResponse = await widget.web3App.requestAuth(
-        pairingTopic: pairingTopic,
-        params: AuthRequestParams(
-          chainId: 'eip155:1',
-          domain: Constants.domain,
-          aud: Constants.aud,
-          statement: 'Welcome to example flutter app',
+        builder: (context) => QRCodeScreen(
+          uri: uri,
+          walletScheme: walletScheme,
         ),
-      );
-
-      final scheme = event?.session.peer.metadata.redirect?.native;
-      String flavor = '-${const String.fromEnvironment('FLUTTER_APP_FLAVOR')}';
-      flavor = flavor.replaceAll('-production', '');
-      launchUrlString(
-        scheme ?? 'wcflutterwallet$flavor://',
-        mode: LaunchMode.externalApplication,
-      );
-
-      debugPrint('[SampleDapp] Awaiting authentication response');
-      final response = await authResponse.completer.future;
-      if (response.result != null) {
-        showToast?.call(StringConstants.authSucceeded);
-      } else {
-        final error = response.error ?? response.jsonRpcError;
-        showToast?.call(error.toString());
-      }
-    } catch (e) {
-      debugPrint('[SampleDapp] auth $e');
-      showToast?.call(StringConstants.connectionFailed);
-    }
-  }
-
-  void _oneClickAuth({
-    VoidCallback? closeModal,
-    Function(String message)? showToast,
-  }) async {
-    final methods1 = requiredNamespaces['eip155']?.methods ?? [];
-    final methods2 = optionalNamespaces['eip155']?.methods ?? [];
-    String flavor = '-${const String.fromEnvironment('FLUTTER_APP_FLAVOR')}';
-    flavor = flavor.replaceAll('-production', '');
-    final authResponse = await widget.web3App.authenticate(
-      params: SessionAuthRequestParams(
-        chains: _selectedChains.map((e) => e.chainId).toList(),
-        domain: 'wcflutterdapp$flavor://',
-        nonce: AuthUtils.generateNonce(),
-        uri: Constants.aud,
-        statement: 'Welcome to example flutter app',
-        methods: <String>{...methods1, ...methods2}.toList(),
       ),
     );
-
-    final encodedUri = Uri.encodeComponent(authResponse.uri.toString());
-    final uri = 'wcflutterwallet$flavor://wc?uri=$encodedUri';
-
-    if (await canLaunchUrlString(uri)) {
-      final openApp = await showDialog(
-        // ignore: use_build_context_synchronously
-        context: context,
-        builder: (BuildContext context) {
-          return AlertDialog(
-            content: const Text('Do you want to open with Flutter Wallet'),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(false),
-                child: const Text('Show QR'),
-              ),
-              TextButton(
-                onPressed: () => Navigator.of(context).pop(true),
-                child: const Text('Open'),
-              ),
-            ],
-          );
-        },
-      );
-      if (openApp) {
-        launchUrlString(uri, mode: LaunchMode.externalApplication);
-      } else {
-        _showQrCode(authResponse.uri.toString());
-      }
-    } else {
-      _showQrCode(authResponse.uri.toString());
-    }
-
-    try {
-      debugPrint('[SampleDapp] Awaiting 1-CA session');
-      final response = await authResponse.completer.future;
-
-      if (response.session != null) {
-        showToast?.call(
-          '${StringConstants.authSucceeded} and ${StringConstants.connectionEstablished}',
-        );
-      } else {
-        final error = response.error ?? response.jsonRpcError;
-        showToast?.call(error.toString());
-      }
-    } catch (e) {
-      debugPrint('[SampleDapp] 1-CA $e');
-      showToast?.call(StringConstants.connectionFailed);
-    }
-    closeModal?.call();
   }
 
   void _onSessionConnect(SessionConnect? event) async {
     if (event == null) return;
 
-    setState(() {
-      _selectedChains.clear();
-    });
+    setState(() => _selectedChains.clear());
 
     if (_shouldDismissQrCode && Navigator.canPop(context)) {
       _shouldDismissQrCode = false;
       Navigator.pop(context);
     }
-
-    _requestAuth(
-      event,
-      showToast: (message) {
-        showPlatformToast(child: Text(message), context: context);
-      },
-    );
   }
 
   ButtonStyle get _buttonStyle => ButtonStyle(
@@ -609,8 +556,13 @@ class ConnectPageState extends State<ConnectPage> {
 }
 
 class QRCodeScreen extends StatefulWidget {
-  const QRCodeScreen({super.key, required this.uri});
+  const QRCodeScreen({
+    super.key,
+    required this.uri,
+    this.walletScheme = '',
+  });
   final String uri;
+  final String walletScheme;
 
   @override
   State<QRCodeScreen> createState() => _QRCodeScreenState();
@@ -624,6 +576,7 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
         appBar: AppBar(title: const Text(StringConstants.scanQrCode)),
         body: _QRCodeView(
           uri: widget.uri,
+          walletScheme: widget.walletScheme,
         ),
       ),
     );
@@ -631,8 +584,12 @@ class _QRCodeScreenState extends State<QRCodeScreen> {
 }
 
 class _QRCodeView extends StatelessWidget {
-  const _QRCodeView({required this.uri});
+  const _QRCodeView({
+    required this.uri,
+    this.walletScheme = '',
+  });
   final String uri;
+  final String walletScheme;
 
   @override
   Widget build(BuildContext context) {
@@ -655,6 +612,16 @@ class _QRCodeView extends StatelessWidget {
             );
           },
           child: const Text('Copy URL to Clipboard'),
+        ),
+        Visibility(
+          visible: walletScheme.isNotEmpty,
+          child: ElevatedButton(
+            onPressed: () async {
+              final encodedUri = Uri.encodeComponent(uri);
+              await WalletConnectUtils.openURL('$walletScheme?uri=$encodedUri');
+            },
+            child: const Text('Open Test Wallet'),
+          ),
         ),
       ],
     );

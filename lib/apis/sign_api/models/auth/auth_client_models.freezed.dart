@@ -412,6 +412,7 @@ mixin _$PendingAuthRequest {
   String get pairingTopic => throw _privateConstructorUsedError;
   ConnectionMetadata get metadata => throw _privateConstructorUsedError;
   CacaoRequestPayload get cacaoPayload => throw _privateConstructorUsedError;
+  TransportType get transportType => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -429,7 +430,8 @@ abstract class $PendingAuthRequestCopyWith<$Res> {
       {int id,
       String pairingTopic,
       ConnectionMetadata metadata,
-      CacaoRequestPayload cacaoPayload});
+      CacaoRequestPayload cacaoPayload,
+      TransportType transportType});
 
   $ConnectionMetadataCopyWith<$Res> get metadata;
   $CacaoRequestPayloadCopyWith<$Res> get cacaoPayload;
@@ -452,6 +454,7 @@ class _$PendingAuthRequestCopyWithImpl<$Res, $Val extends PendingAuthRequest>
     Object? pairingTopic = null,
     Object? metadata = null,
     Object? cacaoPayload = null,
+    Object? transportType = null,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -470,6 +473,10 @@ class _$PendingAuthRequestCopyWithImpl<$Res, $Val extends PendingAuthRequest>
           ? _value.cacaoPayload
           : cacaoPayload // ignore: cast_nullable_to_non_nullable
               as CacaoRequestPayload,
+      transportType: null == transportType
+          ? _value.transportType
+          : transportType // ignore: cast_nullable_to_non_nullable
+              as TransportType,
     ) as $Val);
   }
 
@@ -502,7 +509,8 @@ abstract class _$$PendingAuthRequestImplCopyWith<$Res>
       {int id,
       String pairingTopic,
       ConnectionMetadata metadata,
-      CacaoRequestPayload cacaoPayload});
+      CacaoRequestPayload cacaoPayload,
+      TransportType transportType});
 
   @override
   $ConnectionMetadataCopyWith<$Res> get metadata;
@@ -525,6 +533,7 @@ class __$$PendingAuthRequestImplCopyWithImpl<$Res>
     Object? pairingTopic = null,
     Object? metadata = null,
     Object? cacaoPayload = null,
+    Object? transportType = null,
   }) {
     return _then(_$PendingAuthRequestImpl(
       id: null == id
@@ -543,6 +552,10 @@ class __$$PendingAuthRequestImplCopyWithImpl<$Res>
           ? _value.cacaoPayload
           : cacaoPayload // ignore: cast_nullable_to_non_nullable
               as CacaoRequestPayload,
+      transportType: null == transportType
+          ? _value.transportType
+          : transportType // ignore: cast_nullable_to_non_nullable
+              as TransportType,
     ));
   }
 }
@@ -555,7 +568,8 @@ class _$PendingAuthRequestImpl implements _PendingAuthRequest {
       {required this.id,
       required this.pairingTopic,
       required this.metadata,
-      required this.cacaoPayload});
+      required this.cacaoPayload,
+      this.transportType = TransportType.relay});
 
   factory _$PendingAuthRequestImpl.fromJson(Map<String, dynamic> json) =>
       _$$PendingAuthRequestImplFromJson(json);
@@ -568,10 +582,13 @@ class _$PendingAuthRequestImpl implements _PendingAuthRequest {
   final ConnectionMetadata metadata;
   @override
   final CacaoRequestPayload cacaoPayload;
+  @override
+  @JsonKey()
+  final TransportType transportType;
 
   @override
   String toString() {
-    return 'PendingAuthRequest(id: $id, pairingTopic: $pairingTopic, metadata: $metadata, cacaoPayload: $cacaoPayload)';
+    return 'PendingAuthRequest(id: $id, pairingTopic: $pairingTopic, metadata: $metadata, cacaoPayload: $cacaoPayload, transportType: $transportType)';
   }
 
   @override
@@ -585,13 +602,15 @@ class _$PendingAuthRequestImpl implements _PendingAuthRequest {
             (identical(other.metadata, metadata) ||
                 other.metadata == metadata) &&
             (identical(other.cacaoPayload, cacaoPayload) ||
-                other.cacaoPayload == cacaoPayload));
+                other.cacaoPayload == cacaoPayload) &&
+            (identical(other.transportType, transportType) ||
+                other.transportType == transportType));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, id, pairingTopic, metadata, cacaoPayload);
+  int get hashCode => Object.hash(
+      runtimeType, id, pairingTopic, metadata, cacaoPayload, transportType);
 
   @JsonKey(ignore: true)
   @override
@@ -610,11 +629,11 @@ class _$PendingAuthRequestImpl implements _PendingAuthRequest {
 
 abstract class _PendingAuthRequest implements PendingAuthRequest {
   const factory _PendingAuthRequest(
-          {required final int id,
-          required final String pairingTopic,
-          required final ConnectionMetadata metadata,
-          required final CacaoRequestPayload cacaoPayload}) =
-      _$PendingAuthRequestImpl;
+      {required final int id,
+      required final String pairingTopic,
+      required final ConnectionMetadata metadata,
+      required final CacaoRequestPayload cacaoPayload,
+      final TransportType transportType}) = _$PendingAuthRequestImpl;
 
   factory _PendingAuthRequest.fromJson(Map<String, dynamic> json) =
       _$PendingAuthRequestImpl.fromJson;
@@ -627,6 +646,8 @@ abstract class _PendingAuthRequest implements PendingAuthRequest {
   ConnectionMetadata get metadata;
   @override
   CacaoRequestPayload get cacaoPayload;
+  @override
+  TransportType get transportType;
   @override
   @JsonKey(ignore: true)
   _$$PendingAuthRequestImplCopyWith<_$PendingAuthRequestImpl> get copyWith =>

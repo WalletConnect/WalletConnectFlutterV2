@@ -4,6 +4,9 @@ import 'package:freezed_annotation/freezed_annotation.dart';
 import 'package:walletconnect_flutter_v2/apis/core/relay_client/relay_client_models.dart';
 import 'package:walletconnect_flutter_v2/apis/core/verify/models/verify_context.dart';
 import 'package:walletconnect_flutter_v2/apis/models/basic_models.dart';
+import 'package:walletconnect_flutter_v2/apis/sign_api/models/auth/common_auth_models.dart';
+import 'package:walletconnect_flutter_v2/apis/sign_api/models/auth/session_auth_events.dart';
+import 'package:walletconnect_flutter_v2/apis/sign_api/models/json_rpc_models.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/models/proposal_models.dart';
 
 part 'session_models.g.dart';
@@ -34,6 +37,26 @@ class SessionProposalCompleter {
   }
 }
 
+class SessionAuthenticateCompleter {
+  final int id;
+  final String pairingTopic;
+  final String responseTopic;
+  final String selfPublicKey;
+  final String? walletUniversalLink;
+  final WcSessionAuthRequestParams request;
+  final Completer<SessionAuthResponse> completer;
+
+  SessionAuthenticateCompleter({
+    required this.id,
+    required this.pairingTopic,
+    required this.responseTopic,
+    required this.selfPublicKey,
+    required this.walletUniversalLink,
+    required this.request,
+    required this.completer,
+  });
+}
+
 @freezed
 class Namespace with _$Namespace {
   @JsonSerializable(includeIfNull: false)
@@ -59,11 +82,13 @@ class SessionData with _$SessionData {
     required bool acknowledged,
     required String controller,
     required Map<String, Namespace> namespaces,
+    required ConnectionMetadata self,
+    required ConnectionMetadata peer,
     Map<String, RequiredNamespace>? requiredNamespaces,
     Map<String, RequiredNamespace>? optionalNamespaces,
     Map<String, String>? sessionProperties,
-    required ConnectionMetadata self,
-    required ConnectionMetadata peer,
+    List<Cacao>? authentication,
+    @Default(TransportType.relay) TransportType transportType,
   }) = _SessionData;
 
   factory SessionData.fromJson(Map<String, dynamic> json) =>
@@ -80,6 +105,7 @@ class SessionRequest with _$SessionRequest {
     required String chainId,
     required dynamic params,
     required VerifyContext verifyContext,
+    @Default(TransportType.relay) TransportType transportType,
   }) = _SessionRequest;
 
   factory SessionRequest.fromJson(Map<String, dynamic> json) =>

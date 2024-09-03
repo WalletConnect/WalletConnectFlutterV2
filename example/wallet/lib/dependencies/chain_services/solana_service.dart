@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
-import 'package:walletconnect_flutter_v2_wallet/dependencies/chains/common.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/i_web3wallet_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/key_service/i_key_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/models/chain_metadata.dart';
@@ -14,6 +13,7 @@ import 'package:solana/solana.dart';
 import 'package:solana/encoder.dart';
 // ignore: depend_on_referenced_packages
 import 'package:bs58/bs58.dart';
+import 'package:walletconnect_flutter_v2_wallet/utils/methods_utils.dart';
 
 class SolanaService {
   Map<String, dynamic Function(String, dynamic)> get solanaRequestHandlers => {
@@ -56,7 +56,11 @@ class SolanaService {
       // it's being sent encoded from dapp
       final base58Decoded = base58.decode(message);
       final decodedMessage = utf8.decode(base58Decoded);
-      if (await CommonMethods.requestApproval(decodedMessage, title: method)) {
+      if (await MethodsUtils.requestApproval(
+        decodedMessage,
+        title: method,
+        transportType: pRequest.transportType.name,
+      )) {
         final signature = await keyPair.sign(base58Decoded.toList());
 
         response = response.copyWith(
@@ -77,12 +81,7 @@ class SolanaService {
       );
     }
 
-    await _web3Wallet.respondSessionRequest(
-      topic: topic,
-      response: response,
-    );
-
-    CommonMethods.goBackToDapp(topic, response.result ?? response.error);
+    _handleResponseForTopic(topic, response);
   }
 
   Future<void> solanaSignTransaction(String topic, dynamic parameters) async {
@@ -113,7 +112,11 @@ class SolanaService {
 
       const encoder = JsonEncoder.withIndent('  ');
       final transaction = encoder.convert(params);
-      if (await CommonMethods.requestApproval(transaction, title: method)) {
+      if (await MethodsUtils.requestApproval(
+        transaction,
+        title: method,
+        transportType: pRequest.transportType.name,
+      )) {
         // Sign the transaction.
         final instructions = instructionsList.map((json) {
           return (json as Map<String, dynamic>).toInstruction();
@@ -144,12 +147,29 @@ class SolanaService {
       );
     }
 
-    await _web3Wallet.respondSessionRequest(
-      topic: topic,
-      response: response,
-    );
+    _handleResponseForTopic(topic, response);
+  }
 
-    CommonMethods.goBackToDapp(topic, response.result ?? response.error);
+  void _handleResponseForTopic(String topic, JsonRpcResponse response) async {
+    final session = _web3Wallet.sessions.get(topic);
+
+    try {
+      await _web3Wallet.respondSessionRequest(
+        topic: topic,
+        response: response,
+      );
+      MethodsUtils.handleRedirect(
+        topic,
+        session!.peer.metadata.redirect,
+        response.error?.message,
+      );
+    } on WalletConnectError catch (error) {
+      MethodsUtils.handleRedirect(
+        topic,
+        session!.peer.metadata.redirect,
+        error.message,
+      );
+    }
   }
 }
 
