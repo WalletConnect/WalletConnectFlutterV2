@@ -17,6 +17,8 @@ class ConnectivityState implements IConnectivity {
   @override
   Future<void> init() async {
     if (_initialized) return;
+    final result = await Connectivity().checkConnectivity();
+    _updateConnectionStatus(result);
     Connectivity().onConnectivityChanged.listen(
           _updateConnectionStatus,
         );
