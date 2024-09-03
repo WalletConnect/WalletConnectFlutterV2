@@ -60,7 +60,7 @@ class Web3WalletService extends IWeb3WalletService {
       metadata: PairingMetadata(
         name: 'Flutter Wallet Sample',
         description: 'WalletConnect\'s sample wallet with Flutter',
-        url: 'https://walletconnect.com/',
+        url: _universalLink(),
         icons: [
           'https://docs.walletconnect.com/assets/images/web3walletLogo-54d3b546146931ceaf47a3500868a73a.png'
         ],
@@ -198,6 +198,7 @@ class Web3WalletService extends IWeb3WalletService {
       final proposer = args.params.proposer;
       final result = (await _bottomSheetHandler.queueBottomSheet(
             widget: WCRequestWidget(
+              verifyContext: args.verifyContext,
               child: WCConnectionRequestWidget(
                 proposalData: args.params,
                 verifyContext: args.verifyContext,
@@ -321,8 +322,8 @@ class Web3WalletService extends IWeb3WalletService {
               WCBottomSheetResult.reject;
 
       if (rs != WCBottomSheetResult.reject) {
-        final chainKeys = GetIt.I<IKeyService>().getKeysForChain('eip155:1');
-        final privateKey = '0x${chainKeys[0].privateKey}';
+        final chainKeys = GetIt.I<IKeyService>().getKeysForChain('eip155');
+        final privateKey = '0x${chainKeys.first.privateKey}';
         final credentials = EthPrivateKey.fromHex(privateKey);
         //
         final messageToSign = formattedMessages.length;

@@ -107,6 +107,7 @@ class EVMService {
       chainId: pRequest.chainId,
       address: address,
       transportType: pRequest.transportType.name,
+      verifyContext: pRequest.verifyContext,
     )) {
       try {
         // Load the private key
@@ -152,6 +153,7 @@ class EVMService {
     if (await MethodsUtils.requestApproval(
       message,
       transportType: pRequest.transportType.name,
+      verifyContext: pRequest.verifyContext,
     )) {
       try {
         // Load the private key
@@ -196,6 +198,7 @@ class EVMService {
     if (await MethodsUtils.requestApproval(
       data,
       transportType: pRequest.transportType.name,
+      verifyContext: pRequest.verifyContext,
     )) {
       try {
         final keys = GetIt.I<IKeyService>().getKeysForChain(
@@ -236,6 +239,7 @@ class EVMService {
     if (await MethodsUtils.requestApproval(
       data,
       transportType: pRequest.transportType.name,
+      verifyContext: pRequest.verifyContext,
     )) {
       try {
         final keys = GetIt.I<IKeyService>().getKeysForChain(
@@ -281,6 +285,7 @@ class EVMService {
       method: pRequest.method,
       chainId: pRequest.chainId,
       transportType: pRequest.transportType.name,
+      verifyContext: pRequest.verifyContext,
     );
     if (transaction is Transaction) {
       try {
@@ -337,6 +342,7 @@ class EVMService {
       method: pRequest.method,
       chainId: pRequest.chainId,
       transportType: pRequest.transportType.name,
+      verifyContext: pRequest.verifyContext,
     );
     if (transaction is Transaction) {
       try {
@@ -446,6 +452,7 @@ class EVMService {
     String? title,
     String? method,
     String? chainId,
+    VerifyContext? verifyContext,
     required String transportType,
   }) async {
     Transaction transaction = tJson.toTransaction();
@@ -480,6 +487,7 @@ class EVMService {
       method: method,
       chainId: chainId,
       transportType: transportType,
+      verifyContext: verifyContext,
       extraModels: [
         WCConnectionModel(
           title: 'Gas price',

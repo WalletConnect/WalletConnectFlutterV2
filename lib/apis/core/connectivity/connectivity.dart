@@ -17,8 +17,6 @@ class ConnectivityState implements IConnectivity {
   @override
   Future<void> init() async {
     if (_initialized) return;
-    final result = await Connectivity().checkConnectivity();
-    _updateConnectionStatus(result);
     Connectivity().onConnectivityChanged.listen(
           _updateConnectionStatus,
         );
@@ -26,16 +24,19 @@ class ConnectivityState implements IConnectivity {
   }
 
   Future<void> _updateConnectionStatus(List<ConnectivityResult> result) async {
-    _core.logger.i('[$runtimeType] Connectivity changed $result');
     final isMobileData = result.contains(ConnectivityResult.mobile);
     final isWifi = result.contains(ConnectivityResult.wifi);
+    final isOnlineStatus = isMobileData || isWifi;
 
-    isOnline.value = isMobileData || isWifi;
+    if (isOnline.value != isOnlineStatus) {
+      _core.logger.i('[$runtimeType] Connectivity changed $result');
+      isOnline.value = isOnlineStatus;
 
-    if (isOnline.value && !_core.relayClient.isConnected) {
-      await _core.relayClient.connect();
-    } else if (!isOnline.value && _core.relayClient.isConnected) {
-      await _core.relayClient.disconnect();
+      if (isOnline.value && !_core.relayClient.isConnected) {
+        await _core.relayClient.connect();
+      } else if (!isOnline.value && _core.relayClient.isConnected) {
+        await _core.relayClient.disconnect();
+      }
     }
   }
 }

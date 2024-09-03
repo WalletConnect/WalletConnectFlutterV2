@@ -97,7 +97,7 @@ class _MyHomePageState extends State<MyHomePage> {
       metadata: PairingMetadata(
         name: 'Sample dApp Flutter',
         description: 'WalletConnect\'s sample dapp with Flutter',
-        url: 'https://walletconnect.com/',
+        url: _universalLink(),
         icons: [
           'https://images.prismic.io/wallet-connect/65785a56531ac2845a260732_WalletConnect-App-Logo-1024X1024.png'
         ],

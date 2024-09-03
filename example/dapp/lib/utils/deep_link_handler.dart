@@ -29,13 +29,10 @@ class DeepLinkHandler {
     _web3app = web3app;
   }
 
-  static void checkInitialLink() {
+  static void checkInitialLink() async {
     if (kIsWeb) return;
     try {
-      _methodChannel.invokeMethod('initialLink').then(
-            _onLink,
-            onError: _onError,
-          );
+      _methodChannel.invokeMethod('initialLink');
     } catch (e) {
       debugPrint('[SampleWallet] [DeepLinkHandler] checkInitialLink $e');
     }

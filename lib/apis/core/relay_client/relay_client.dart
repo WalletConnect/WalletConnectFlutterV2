@@ -361,6 +361,10 @@ class RelayClient implements IRelayClient {
   Future<bool> handleLinkModeMessage(String topic, String message) async {
     core.logger.t('[$runtimeType]: handleLinkModeMessage: $topic, $message');
 
+    // if client calls dispatchEnvelope with the same message more than once we do nothing.
+    final recorded = messageTracker.messageIsRecorded(topic, message);
+    if (recorded) return true;
+
     // Record a message event
     await messageTracker.recordMessageEvent(topic, message);
 

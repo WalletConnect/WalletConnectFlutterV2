@@ -70,9 +70,8 @@ class WCConnectionRequestWidget extends StatelessWidget {
     final cacaoPayload = CacaoRequestPayload.fromPayloadParams(
       authPayloadParams!,
     );
-    const chain = 'eip155:1';
-    final chainKeys = GetIt.I<IKeyService>().getKeysForChain(chain);
-    final iss = 'did:pkh:$chain:${chainKeys.first.address}';
+    final chainKeys = GetIt.I<IKeyService>().getKeysForChain('eip155');
+    final iss = 'did:pkh:eip155:1:${chainKeys.first.address}';
     final message = web3Wallet.formatAuthMessage(
       iss: iss,
       cacaoPayload: cacaoPayload,

@@ -20,10 +20,12 @@ class MethodsUtils {
     String? address,
     required String transportType,
     List<WCConnectionModel> extraModels = const [],
+    VerifyContext? verifyContext,
   }) async {
     final bottomSheetService = GetIt.I<IBottomSheetService>();
     final WCBottomSheetResult rs = (await bottomSheetService.queueBottomSheet(
           widget: WCRequestWidget(
+            verifyContext: verifyContext,
             child: WCConnectionWidget(
               title: title ?? 'Approve Request',
               info: [
@@ -55,7 +57,11 @@ class MethodsUtils {
     debugPrint(
         '[SampleWallet] handleRedirect topic: $topic, redirect: $redirect, error: $error');
     openApp(topic, redirect, onFail: (e) {
-      goBackModal(title: 'Error', message: e!.message, success: false);
+      goBackModal(
+        title: 'Error',
+        message: error,
+        success: false,
+      );
     });
   }
 

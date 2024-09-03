@@ -216,7 +216,7 @@ class AppsPageState extends State<AppsPage> with GetItStateMixin {
       DeepLinkHandler.waiting.value = true;
       await _web3Wallet.pair(uri: Uri.parse(uri!));
     } on WalletConnectError catch (e) {
-      _showErrorDialog('${e.code}: ${e.message}');
+      _showErrorDialog('${e.code}: ${e.message}\n$uri');
     } on TimeoutException catch (_) {
       _showErrorDialog('Time out error. Check your connection.');
     }

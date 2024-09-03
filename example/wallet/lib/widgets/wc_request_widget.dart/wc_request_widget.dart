@@ -1,19 +1,23 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/bottom_sheet/i_bottom_sheet_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/utils/constants.dart';
 import 'package:walletconnect_flutter_v2_wallet/utils/string_constants.dart';
 import 'package:walletconnect_flutter_v2_wallet/widgets/custom_button.dart';
+import 'package:walletconnect_flutter_v2_wallet/widgets/wc_connection_request/wc_connection_request_widget.dart';
 
 class WCRequestWidget extends StatelessWidget {
   const WCRequestWidget({
     super.key,
     required this.child,
+    this.verifyContext,
     this.onAccept,
     this.onReject,
   });
 
   final Widget child;
+  final VerifyContext? verifyContext;
   final VoidCallback? onAccept;
   final VoidCallback? onReject;
 
@@ -22,6 +26,9 @@ class WCRequestWidget extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
+        VerifyContextWidget(
+          verifyContext: verifyContext,
+        ),
         Flexible(
           child: SingleChildScrollView(
             child: child,

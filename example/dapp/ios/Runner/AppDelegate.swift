@@ -22,13 +22,12 @@ import Flutter
         
         methodsChannel = FlutterMethodChannel(name: AppDelegate.METHODS_CHANNEL, binaryMessenger: controller.binaryMessenger)
         methodsChannel?.setMethodCallHandler({ [weak self] (call: FlutterMethodCall, result: FlutterResult) -> Void in
-           if (call.method == "initialLink") {
+            if (call.method == "initialLink") {
                 if let link = self?.initialLink {
-                    self?.initialLink = nil
-                    let _ = self?.linkStreamHandler.handleLink(link)
-                    return
-                } else {
-                    result("")
+                    let handled = self?.linkStreamHandler.handleLink(link)
+                    if (handled == true) {
+                        self?.initialLink = nil
+                    }
                 }
             }
         })
@@ -36,6 +35,13 @@ import Flutter
         // Add your deep link handling logic here
         if let url = launchOptions?[.url] as? URL {
             self.initialLink = url.absoluteString
+        }
+
+        if let userActivityDictionary = launchOptions?[.userActivityDictionary] as? [String: Any],
+           let userActivity = userActivityDictionary["UIApplicationLaunchOptionsUserActivityKey"] as? NSUserActivity,
+           userActivity.activityType == NSUserActivityTypeBrowsingWeb {
+            
+            handleIncomingUniversalLink(userActivity: userActivity)
         }
         
         return super.application(application, didFinishLaunchingWithOptions: launchOptions)
@@ -46,12 +52,22 @@ import Flutter
     }
     
     override func application(_ application: UIApplication, continue userActivity: NSUserActivity, restorationHandler: @escaping ([UIUserActivityRestoring]?) -> Void) -> Bool {
-        // Handle universal links
-        if let url = userActivity.webpageURL {
-            self.initialLink = url.absoluteString
-            return linkStreamHandler.handleLink(self.initialLink!)
+        if userActivity.activityType == NSUserActivityTypeBrowsingWeb {
+            handleIncomingUniversalLink(userActivity: userActivity)
+            return true
         }
         return false
+    }
+    
+    private func handleIncomingUniversalLink(userActivity: NSUserActivity) {
+        if let url = userActivity.webpageURL {
+            // Handle the URL, navigate to appropriate screen
+            print("App launched with Universal Link: \(url.absoluteString)")
+            let handled = linkStreamHandler.handleLink(url.absoluteString)
+            if (!handled){
+                self.initialLink = url.absoluteString
+            }
+        }
     }
 }
 

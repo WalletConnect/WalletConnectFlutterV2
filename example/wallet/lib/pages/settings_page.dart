@@ -99,6 +99,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     }
                   },
                   onRestoreDefault: () async {
+                    await keysService.clearAll();
                     await keysService.loadDefaultWallet();
                     await keysService.loadKeys();
                     await showDialog(
@@ -307,12 +308,12 @@ class _EVMAccountsState extends State<_EVMAccounts> {
         const SizedBox(height: 20.0),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12.0),
-          child: FutureBuilder<SharedPreferences>(
-            future: SharedPreferences.getInstance(),
+          child: FutureBuilder<String>(
+            future: keysService.getMnemonic(),
             builder: (context, snapshot) {
               return _DataContainer(
                 title: 'Seed phrase',
-                data: snapshot.data?.getString('w3w_mnemonic') ?? '',
+                data: snapshot.data ?? '',
                 blurred: true,
               );
             },

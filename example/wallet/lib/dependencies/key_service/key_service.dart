@@ -17,6 +17,17 @@ class KeyService extends IKeyService {
   List<ChainKey> _keys = [];
 
   @override
+  Future<void> clearAll() async {
+    final prefs = await SharedPreferences.getInstance();
+    final keys = prefs.getKeys();
+    for (var key in keys) {
+      if (key.startsWith('w3w_')) {
+        await prefs.remove(key);
+      }
+    }
+  }
+
+  @override
   Future<List<ChainKey>> loadKeys() async {
     // ⚠️ WARNING: SharedPreferences is not the best way to store your keys! This is just for example purposes!
     final prefs = await SharedPreferences.getInstance();
@@ -44,10 +55,11 @@ class KeyService extends IKeyService {
 
   @override
   List<ChainKey> getKeysForChain(String value) {
+    String namespace = value;
     if (value.contains(':')) {
-      return _keys.where((e) => e.chains.contains(value)).toList();
+      namespace = NamespaceUtils.getNamespaceFromChain(value);
     }
-    return _keys.where((e) => e.namespace == value).toList();
+    return _keys.where((e) => e.namespace == namespace).toList();
   }
 
   @override
@@ -59,6 +71,12 @@ class KeyService extends IKeyService {
       }
     }
     return accounts;
+  }
+
+  @override
+  Future<String> getMnemonic() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString('w3w_mnemonic') ?? '';
   }
 
   // ** bip39/bip32 - EIP155 **

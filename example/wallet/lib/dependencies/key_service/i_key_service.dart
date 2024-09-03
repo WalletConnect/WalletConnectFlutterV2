@@ -1,6 +1,8 @@
 import 'package:walletconnect_flutter_v2_wallet/dependencies/key_service/chain_key.dart';
 
 abstract class IKeyService {
+  Future<void> clearAll();
+
   /// Returns a list of all the keys.
   Future<List<ChainKey>> loadKeys();
 
@@ -18,6 +20,8 @@ abstract class IKeyService {
   Future<void> createAddressFromSeed();
 
   Future<void> loadDefaultWallet();
+
+  Future<String> getMnemonic();
 
   Future<void> restoreWalletFromSeed({required String mnemonic});
 }

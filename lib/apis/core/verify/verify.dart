@@ -45,6 +45,25 @@ class Verify implements IVerify {
     }
   }
 
+  @override
+  Validation getValidation(
+    AttestationResponse? attestation,
+    Uri? metadataUri,
+  ) {
+    if (attestation?.isScam == true) {
+      return Validation.SCAM;
+    }
+
+    if ((attestation?.origin ?? '').isEmpty ||
+        (metadataUri?.origin ?? '').isEmpty) {
+      return Validation.INVALID;
+    }
+
+    return attestation!.origin == metadataUri!.origin
+        ? Validation.VALID
+        : Validation.INVALID;
+  }
+
   String _setVerifyUrl({String? verifyUrl}) {
     String url = verifyUrl ?? WalletConnectConstants.VERIFY_SERVER;
 
