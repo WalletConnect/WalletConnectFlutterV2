@@ -94,8 +94,14 @@ class SolanaService2 {
     final keys = GetIt.I<IKeyService>().getKeysForChain(
       chainSupported.chainId,
     );
-    final secKeyBytes = keys[0].privateKey.parse32Bytes();
-    return solana.Keypair.fromSeedSync(secKeyBytes);
+    try {
+      final secKeyBytes = keys[0].privateKey.parse32Bytes();
+      return solana.Keypair.fromSeedSync(secKeyBytes);
+    } catch (e) {
+      final secKeyBytes = base58.decode(keys[0].privateKey);
+      // final bytes = Uint8List.fromList(secKeyBytes.sublist(0, 32));
+      return solana.Keypair.fromSeckeySync(secKeyBytes);
+    }
   }
 
   Future<void> solanaSignTransaction(String topic, dynamic parameters) async {
@@ -203,12 +209,8 @@ extension on Map<String, dynamic> {
 extension on String {
   // SigningKey used by solana package requires a 32 bytes key
   Uint8List parse32Bytes() {
-    try {
-      final List<int> secBytes = split(',').map((e) => int.parse(e)).toList();
-      return Uint8List.fromList(secBytes.sublist(0, 32));
-    } catch (e) {
-      rethrow;
-    }
+    final List<int> secBytes = split(',').map((e) => int.parse(e)).toList();
+    return Uint8List.fromList(secBytes.sublist(0, 32));
   }
 }
 

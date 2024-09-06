@@ -90,11 +90,9 @@ class SolanaService {
       chainSupported.chainId,
     );
     final secKeyBytes = keys[0].privateKey.parse32Bytes();
-
-    final keyPair = await solana.Ed25519HDKeyPair.fromPrivateKeyBytes(
+    return await solana.Ed25519HDKeyPair.fromPrivateKeyBytes(
       privateKey: secKeyBytes,
     );
-    return keyPair;
   }
 
   Future<void> solanaSignTransaction(String topic, dynamic parameters) async {
@@ -190,7 +188,8 @@ extension on String {
       final List<int> secBytes = split(',').map((e) => int.parse(e)).toList();
       return Uint8List.fromList(secBytes.sublist(0, 32));
     } catch (e) {
-      rethrow;
+      final secKeyBytes = base58.decode(this);
+      return Uint8List.fromList(secKeyBytes.sublist(0, 32));
     }
   }
 }

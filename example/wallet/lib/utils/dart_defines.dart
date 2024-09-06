@@ -1,7 +1,5 @@
 class DartDefines {
-  static const String projectId = String.fromEnvironment(
-    'PROJECT_ID',
-  );
+  static const projectId = String.fromEnvironment('PROJECT_ID');
   // HARDCODED TEST KEYS
   // KADENA
   static const kadenaSecretKey = String.fromEnvironment(
