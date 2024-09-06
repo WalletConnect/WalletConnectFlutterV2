@@ -39,45 +39,6 @@ class DeepLinkHandler {
       Uri.parse(_web3wallet.metadata.redirect?.universal ?? '');
   static String get host => universalUri.host;
 
-  static void goBackModal({
-    String? title,
-    String? message,
-    bool success = true,
-  }) async {
-    waiting.value = false;
-    await GetIt.I<IBottomSheetService>().queueBottomSheet(
-      closeAfter: success ? 3 : 0,
-      widget: Container(
-        color: Colors.white,
-        height: 250.0,
-        width: double.infinity,
-        padding: const EdgeInsets.all(20.0),
-        child: Column(
-          children: [
-            Icon(
-              success ? Icons.check_circle_sharp : Icons.error_outline_sharp,
-              color: success ? Colors.green[100] : Colors.red[100],
-              size: 80.0,
-            ),
-            Text(
-              title ?? 'Connected',
-              style: StyleConstants.subtitleText.copyWith(
-                color: Colors.black,
-                fontSize: 18.0,
-              ),
-            ),
-            Text(message ?? 'You can go back to your dApp now'),
-          ],
-        ),
-      ),
-    );
-  }
-
-  static void _onLink(Object? event) {
-    final decodedUri = Uri.parse(Uri.decodeFull(event.toString()));
-    if (decodedUri.isScheme('wc')) {
-      waiting.value = true;
-      _linksController.sink.add(decodedUri.toString());
   static void _onLink(Object? event) async {
     final ev = WalletConnectUtils.getSearchParamFromURL('$event', 'wc_ev');
     if (ev.isNotEmpty) {

@@ -24,12 +24,12 @@ class SolanaService {
         'solana_signTransaction': solanaSignTransaction,
       };
 
-  final _web3Wallet = GetIt.I<IWeb3WalletService>().web3wallet;
+  final _web3wallet = GetIt.I<IWeb3WalletService>().web3wallet;
   final ChainMetadata chainSupported;
 
   SolanaService({required this.chainSupported}) {
     for (var handler in solanaRequestHandlers.entries) {
-      _web3Wallet.registerRequestHandler(
+      _web3wallet.registerRequestHandler(
         chainId: chainSupported.chainId,
         method: handler.key,
         handler: handler.value,
@@ -39,7 +39,7 @@ class SolanaService {
 
   Future<void> solanaSignMessage(String topic, dynamic parameters) async {
     debugPrint('[SampleWallet] solanaSignMessage request: $parameters');
-    final pRequest = _web3Wallet.pendingRequests.getAll().last;
+    final pRequest = _web3wallet.pendingRequests.getAll().last;
     var response = JsonRpcResponse(id: pRequest.id, jsonrpc: '2.0');
 
     try {
@@ -51,14 +51,11 @@ class SolanaService {
       // it's being sent encoded from dapp
       final base58Decoded = base58.decode(message);
       final decodedMessage = utf8.decode(base58Decoded);
-      if (await CommonMethods.requestApproval(
+      if (await MethodsUtils.requestApproval(
         decodedMessage,
         method: pRequest.method,
         chainId: pRequest.chainId,
         address: keyPair.address,
-      if (await MethodsUtils.requestApproval(
-        decodedMessage,
-        title: method,
         transportType: pRequest.transportType.name,
       )) {
         final signature = await keyPair.sign(base58Decoded.toList());
@@ -81,23 +78,18 @@ class SolanaService {
       );
     }
 
-    _handleResponseForTopic(topic, response);
-  }
+    await _web3wallet.respondSessionRequest(
+      topic: topic,
+      response: response,
+    );
 
-  Future<solana.Ed25519HDKeyPair> _getKeyPair() async {
-    final keys = GetIt.I<IKeyService>().getKeysForChain(
-      chainSupported.chainId,
-    );
-    final secKeyBytes = keys[0].privateKey.parse32Bytes();
-    return await solana.Ed25519HDKeyPair.fromPrivateKeyBytes(
-      privateKey: secKeyBytes,
-    );
+    _handleResponseForTopic(topic, response);
   }
 
   Future<void> solanaSignTransaction(String topic, dynamic parameters) async {
     debugPrint(
         '[SampleWallet] solanaSignTransaction: ${jsonEncode(parameters)}');
-    final pRequest = _web3Wallet.pendingRequests.getAll().last;
+    final pRequest = _web3wallet.pendingRequests.getAll().last;
     var response = JsonRpcResponse(id: pRequest.id, jsonrpc: '2.0');
 
     try {
@@ -106,25 +98,12 @@ class SolanaService {
 
       final keyPair = await _getKeyPair();
 
-      if (await CommonMethods.requestApproval(
+      if (await MethodsUtils.requestApproval(
         // Show Approval Modal
         beautifiedTrx,
         method: pRequest.method,
         chainId: pRequest.chainId,
         address: keyPair.address,
-      final keyPair = await Ed25519HDKeyPair.fromPrivateKeyBytes(
-        privateKey: secKeyBytes,
-      );
-
-      if (keyPair.address != feePayer) {
-        throw Exception('Error');
-      }
-
-      const encoder = JsonEncoder.withIndent('  ');
-      final transaction = encoder.convert(params);
-      if (await MethodsUtils.requestApproval(
-        transaction,
-        title: method,
         transportType: pRequest.transportType.name,
       )) {
         // Sign the transaction.
@@ -185,14 +164,29 @@ class SolanaService {
       );
     }
 
+    await _web3wallet.respondSessionRequest(
+      topic: topic,
+      response: response,
+    );
+
     _handleResponseForTopic(topic, response);
   }
 
+  Future<solana.Ed25519HDKeyPair> _getKeyPair() async {
+    final keys = GetIt.I<IKeyService>().getKeysForChain(
+      chainSupported.chainId,
+    );
+    final secKeyBytes = keys[0].privateKey.parse32Bytes();
+    return await solana.Ed25519HDKeyPair.fromPrivateKeyBytes(
+      privateKey: secKeyBytes,
+    );
+  }
+
   void _handleResponseForTopic(String topic, JsonRpcResponse response) async {
-    final session = _web3Wallet.sessions.get(topic);
+    final session = _web3wallet.sessions.get(topic);
 
     try {
-      await _web3Wallet.respondSessionRequest(
+      await _web3wallet.respondSessionRequest(
         topic: topic,
         response: response,
       );

@@ -123,7 +123,7 @@ class Web3WalletService extends IWeb3WalletService {
   }
 
   Future<void> _emitEvent() async {
-    if (!_web3Wallet!.core.connectivity.isOnline) {
+    if (!_web3Wallet!.core.connectivity.isOnline.value) {
       await Future.delayed(const Duration(milliseconds: 500));
       _emitEvent();
       return;
