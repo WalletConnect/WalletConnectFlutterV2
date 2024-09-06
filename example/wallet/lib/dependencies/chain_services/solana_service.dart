@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
-import 'package:walletconnect_flutter_v2_wallet/dependencies/chains/common.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/i_web3wallet_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/key_service/i_key_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/models/chain_metadata.dart';
@@ -14,6 +13,7 @@ import 'package:solana/solana.dart' as solana;
 import 'package:solana/encoder.dart' as solana_encoder;
 // ignore: depend_on_referenced_packages
 import 'package:bs58/bs58.dart';
+import 'package:walletconnect_flutter_v2_wallet/utils/methods_utils.dart';
 
 ///
 /// Uses solana: ^0.30.4
@@ -56,6 +56,10 @@ class SolanaService {
         method: pRequest.method,
         chainId: pRequest.chainId,
         address: keyPair.address,
+      if (await MethodsUtils.requestApproval(
+        decodedMessage,
+        title: method,
+        transportType: pRequest.transportType.name,
       )) {
         final signature = await keyPair.sign(base58Decoded.toList());
 
@@ -77,12 +81,7 @@ class SolanaService {
       );
     }
 
-    await _web3Wallet.respondSessionRequest(
-      topic: topic,
-      response: response,
-    );
-
-    CommonMethods.goBackToDapp(topic, response.result ?? response.error);
+    _handleResponseForTopic(topic, response);
   }
 
   Future<solana.Ed25519HDKeyPair> _getKeyPair() async {
@@ -113,6 +112,20 @@ class SolanaService {
         method: pRequest.method,
         chainId: pRequest.chainId,
         address: keyPair.address,
+      final keyPair = await Ed25519HDKeyPair.fromPrivateKeyBytes(
+        privateKey: secKeyBytes,
+      );
+
+      if (keyPair.address != feePayer) {
+        throw Exception('Error');
+      }
+
+      const encoder = JsonEncoder.withIndent('  ');
+      final transaction = encoder.convert(params);
+      if (await MethodsUtils.requestApproval(
+        transaction,
+        title: method,
+        transportType: pRequest.transportType.name,
       )) {
         // Sign the transaction.
         // if params contains `transaction` key we should parse that one and disregard the rest
@@ -172,12 +185,29 @@ class SolanaService {
       );
     }
 
-    await _web3Wallet.respondSessionRequest(
-      topic: topic,
-      response: response,
-    );
+    _handleResponseForTopic(topic, response);
+  }
 
-    CommonMethods.goBackToDapp(topic, response.result ?? response.error);
+  void _handleResponseForTopic(String topic, JsonRpcResponse response) async {
+    final session = _web3Wallet.sessions.get(topic);
+
+    try {
+      await _web3Wallet.respondSessionRequest(
+        topic: topic,
+        response: response,
+      );
+      MethodsUtils.handleRedirect(
+        topic,
+        session!.peer.metadata.redirect,
+        response.error?.message,
+      );
+    } on WalletConnectError catch (error) {
+      MethodsUtils.handleRedirect(
+        topic,
+        session!.peer.metadata.redirect,
+        error.message,
+      );
+    }
   }
 }
 

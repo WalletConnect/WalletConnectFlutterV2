@@ -9,6 +9,8 @@ import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 import '../../shared/shared_test_values.dart';
 import 'sign_approve_session.dart';
 import '../utils/sign_client_constants.dart';
+import 'sign_approve_session_authenticate.dart';
+import 'sign_authenticate.dart';
 import 'sign_connect.dart';
 import 'sign_disconnect.dart';
 import 'sign_emit_session_event.dart';
@@ -58,12 +60,22 @@ void signEngineTests({
       clientBCreator: clientBCreator,
     );
 
+    signAuthenticate(
+      clientACreator: clientACreator,
+      clientBCreator: clientBCreator,
+    );
+
     signPair(
       clientACreator: clientACreator,
       clientBCreator: clientBCreator,
     );
 
     signApproveSession(
+      clientACreator: clientACreator,
+      clientBCreator: clientBCreator,
+    );
+
+    signApproveSessionAuthenticate(
       clientACreator: clientACreator,
       clientBCreator: clientBCreator,
     );

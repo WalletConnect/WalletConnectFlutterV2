@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:event/event.dart';
+import 'package:walletconnect_flutter_v2/apis/core/relay_client/relay_client_models.dart';
 import 'package:walletconnect_flutter_v2/apis/core/verify/models/verify_context.dart';
 import 'package:walletconnect_flutter_v2/apis/models/basic_models.dart';
 import 'package:walletconnect_flutter_v2/apis/models/json_rpc_error.dart';
@@ -14,6 +15,7 @@ class SessionAuthRequest extends EventArgs {
   final String topic;
   final SessionAuthPayload authPayload;
   final ConnectionMetadata requester;
+  final TransportType transportType;
   final VerifyContext? verifyContext;
 
   SessionAuthRequest({
@@ -21,6 +23,7 @@ class SessionAuthRequest extends EventArgs {
     required this.topic,
     required this.authPayload,
     required this.requester,
+    this.transportType = TransportType.relay,
     this.verifyContext,
   });
 
@@ -29,7 +32,8 @@ class SessionAuthRequest extends EventArgs {
         'topic': topic,
         'authPayload': authPayload.toJson(),
         'requester': requester.toJson(),
-        'verifyContext': verifyContext?.toJson(),
+        'transportType': transportType.name,
+        if (verifyContext != null) 'verifyContext': verifyContext!.toJson(),
       };
 
   @override

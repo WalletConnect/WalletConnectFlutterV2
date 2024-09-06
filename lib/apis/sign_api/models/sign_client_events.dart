@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:event/event.dart';
+import 'package:walletconnect_flutter_v2/apis/core/relay_client/relay_client_models.dart';
 import 'package:walletconnect_flutter_v2/apis/core/verify/models/verify_context.dart';
 import 'package:walletconnect_flutter_v2/apis/models/basic_models.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/models/proposal_models.dart';
@@ -134,6 +135,7 @@ class SessionRequestEvent extends EventArgs {
   String method;
   String chainId;
   dynamic params;
+  TransportType transportType;
 
   SessionRequestEvent(
     this.id,
@@ -141,23 +143,32 @@ class SessionRequestEvent extends EventArgs {
     this.method,
     this.chainId,
     this.params,
+    this.transportType,
   );
 
-  factory SessionRequestEvent.fromSessionRequest(
-    SessionRequest request,
-  ) {
+  factory SessionRequestEvent.fromSessionRequest(SessionRequest request) {
     return SessionRequestEvent(
       request.id,
       request.topic,
       request.method,
       request.chainId,
       request.params,
+      request.transportType,
     );
   }
 
+  Map<String, dynamic> toJson() => {
+        'id': id,
+        'topic': topic,
+        'method': method,
+        'chainId': chainId,
+        'params': params,
+        'transportType': transportType.name,
+      };
+
   @override
   String toString() {
-    return 'SessionRequestEvent(id: $id, topic: $topic, method: $method, chainId: $chainId, params: $params)';
+    return 'SessionRequestEvent(${jsonEncode(toJson())})';
   }
 }
 

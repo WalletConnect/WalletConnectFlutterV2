@@ -10,6 +10,11 @@ import 'package:walletconnect_flutter_v2_wallet/dependencies/chains/polkadot_ser
 // ignore: unused_import
 import 'package:walletconnect_flutter_v2_wallet/dependencies/chains/solana_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/chains/solana_service_2.dart';
+import 'package:walletconnect_flutter_v2_wallet/dependencies/chain_services/cosmos_service.dart';
+import 'package:walletconnect_flutter_v2_wallet/dependencies/chain_services/evm_service.dart';
+import 'package:walletconnect_flutter_v2_wallet/dependencies/chain_services/kadena_service.dart';
+import 'package:walletconnect_flutter_v2_wallet/dependencies/chain_services/polkadot_service.dart';
+import 'package:walletconnect_flutter_v2_wallet/dependencies/chain_services/solana_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/deep_link_handler.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/i_web3wallet_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/key_service/i_key_service.dart';

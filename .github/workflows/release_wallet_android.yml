@@ -39,6 +39,14 @@ jobs:
     
     # Install Flutter and Dependencies
     - uses: ./.github/actions/dependencies
+
+    - name: Add Secrets file
+      working-directory: example/wallet/android
+      run: touch secrets.properties && echo "${{ secrets.SECRETS_FILE }}" >> secrets.properties
+
+    - name: Add Keystore file
+      working-directory: example/wallet/android
+      run: echo "${{ secrets.KEYSTORE }}" | base64 --decode >> app/debug.keystore
     
     # Fastlane
     - name: Fastlane
@@ -61,4 +69,5 @@ jobs:
         fastlane release_firebase project_id:$PROJECT_ID app_version:$VERSION_NUMBER
 
 # Launch locally
+# Remove build: if:
 # act -j build --container-architecture linux/amd64 -P macos-latest-xlarge=-self-hosted --secret-file .github/workflows/.env.secret -W .github/workflows/release_wallet_android.yml

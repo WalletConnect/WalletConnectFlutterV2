@@ -60,6 +60,9 @@ _$PendingAuthRequestImpl _$$PendingAuthRequestImplFromJson(
           ConnectionMetadata.fromJson(json['metadata'] as Map<String, dynamic>),
       cacaoPayload: CacaoRequestPayload.fromJson(
           json['cacaoPayload'] as Map<String, dynamic>),
+      transportType:
+          $enumDecodeNullable(_$TransportTypeEnumMap, json['transportType']) ??
+              TransportType.relay,
     );
 
 Map<String, dynamic> _$$PendingAuthRequestImplToJson(
@@ -69,4 +72,10 @@ Map<String, dynamic> _$$PendingAuthRequestImplToJson(
       'pairingTopic': instance.pairingTopic,
       'metadata': instance.metadata.toJson(),
       'cacaoPayload': instance.cacaoPayload.toJson(),
+      'transportType': _$TransportTypeEnumMap[instance.transportType]!,
     };
+
+const _$TransportTypeEnumMap = {
+  TransportType.relay: 'relay',
+  TransportType.linkMode: 'linkMode',
+};

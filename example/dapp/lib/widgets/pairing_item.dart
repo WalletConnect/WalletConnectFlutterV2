@@ -38,6 +38,7 @@ class PairingItem extends StatelessWidget {
             Text(
               pairing.peerMetadata?.url ?? 'Expiry: $expiryDate ($inDays days)',
             ),
+            Text(pairing.topic),
           ],
         ),
       ),

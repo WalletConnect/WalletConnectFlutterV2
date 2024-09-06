@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:event/event.dart';
 import 'package:walletconnect_flutter_v2/apis/auth_api/i_auth_engine.dart';
+import 'package:walletconnect_flutter_v2/apis/core/relay_client/relay_client_models.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/models/auth/auth_client_events.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/models/auth/auth_client_models.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/models/auth/common_auth_models.dart';
@@ -117,7 +118,7 @@ class AuthEngine implements IAuthEngine {
     final int expiry = params.expiry ?? WalletConnectConstants.FIVE_MINUTES;
 
     await authKeys.set(
-      AuthConstants.AUTH_CLIENT_PUBLIC_KEY_NAME,
+      StringConstants.AUTH_CLIENT_PUBLIC_KEY_NAME,
       AuthPublicKey(publicKey: publicKey),
     );
 
@@ -399,8 +400,9 @@ class AuthEngine implements IAuthEngine {
 
   void _onAuthRequest(
     String topic,
-    JsonRpcRequest payload,
-  ) async {
+    JsonRpcRequest payload, [
+    TransportType transportType = TransportType.relay,
+  ]) async {
     try {
       final request = WcAuthRequestRequest.fromJson(payload.params);
 
@@ -425,6 +427,7 @@ class AuthEngine implements IAuthEngine {
           topic: topic,
           requester: request.requester,
           payloadParams: request.payloadParams,
+          transportType: request.transportType,
         ),
       );
     } on WalletConnectError catch (err) {

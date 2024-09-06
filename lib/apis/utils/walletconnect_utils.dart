@@ -3,6 +3,7 @@ import 'dart:io';
 
 import 'package:package_info_plus/package_info_plus.dart';
 import 'package:flutter/foundation.dart' show kIsWeb;
+import 'package:url_launcher/url_launcher_string.dart';
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 
 class WalletConnectUtils {
@@ -226,5 +227,36 @@ class WalletConnectUtils {
       m[entry.key] = entry.value as T;
     }
     return m;
+  }
+
+  static String getSearchParamFromURL(String url, String param) {
+    final decodedUri = Uri.parse(Uri.decodeFull(url));
+    final hasParam = decodedUri.queryParameters.keys.contains(param);
+    if (!hasParam) return '';
+
+    return Uri.encodeQueryComponent(decodedUri.queryParameters[param]!);
+  }
+
+  static String getLinkModeURL(
+    String universalLink,
+    String topic,
+    String encodedEnvelope,
+  ) {
+    return '$universalLink?wc_ev=$encodedEnvelope&topic=$topic';
+  }
+
+  static Future<bool> openURL(String url) async {
+    try {
+      final success = await launchUrlString(
+        url,
+        mode: LaunchMode.externalApplication,
+      );
+      if (!success) {
+        throw WalletConnectError(code: 0, message: 'Can not open $url');
+      }
+      return true;
+    } catch (e) {
+      rethrow;
+    }
   }
 }

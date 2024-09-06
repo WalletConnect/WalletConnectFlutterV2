@@ -21,6 +21,12 @@ if (flutterVersionName == null) {
     flutterVersionName = '1.0'
 }
 
+def keystoreProperties = new Properties()
+def keystorePropertiesFile = rootProject.file('secrets.properties')
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+}
+
 apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 apply from: "$flutterRoot/packages/flutter_tools/gradle/flutter.gradle"
@@ -71,6 +77,15 @@ android {
                     appIcon: "@mipmap/ic_launcher",
                     applicationLabel: "FL Dapp",
             ]
+        }
+    }
+
+    signingConfigs {
+        debug {
+            storeFile file(keystoreProperties['WC_FILENAME'])
+            storePassword keystoreProperties['WC_STORE_PASSWORD']
+            keyAlias keystoreProperties['WC_KEYSTORE_ALIAS']
+            keyPassword keystoreProperties['WC_KEY_PASSWORD']
         }
     }
 

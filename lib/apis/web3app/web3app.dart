@@ -343,6 +343,26 @@ class Web3App implements IWeb3App {
   }
 
   @override
+  Future<void> dispatchEnvelope(String url) async {
+    try {
+      return await signEngine.dispatchEnvelope(url);
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  @override
+  Future<bool> redirectToWallet({
+    required String topic,
+    required Redirect? redirect,
+  }) {
+    return signEngine.redirectToWallet(
+      topic: topic,
+      redirect: redirect,
+    );
+  }
+
+  @override
   IPairingStore get pairings => core.pairing.getStore();
 
   ///---------- (DEPRECATED) AUTH ENGINE ----------///
@@ -405,6 +425,7 @@ class Web3App implements IWeb3App {
   Future<SessionAuthRequestResponse> authenticate({
     required SessionAuthRequestParams params,
     String? pairingTopic,
+    String? walletUniversalLink,
     List<List<String>>? methods = const [
       [MethodConstants.WC_SESSION_AUTHENTICATE]
     ],
@@ -412,6 +433,7 @@ class Web3App implements IWeb3App {
     try {
       return signEngine.authenticate(
         params: params,
+        walletUniversalLink: walletUniversalLink,
         pairingTopic: pairingTopic,
         methods: methods,
       );

@@ -1,3 +1,5 @@
+// ignore_for_file: use_build_context_synchronously
+
 import 'dart:math';
 import 'dart:ui';
 
@@ -37,7 +39,6 @@ class _SettingsPageState extends State<SettingsPage> {
                   onCreateAddress: () async {
                     await keysService.createAddressFromSeed();
                     await keysService.loadKeys();
-                    // ignore: use_build_context_synchronously
                     Navigator.of(context).pop();
                     setState(() {});
                   },
@@ -72,6 +73,9 @@ class _SettingsPageState extends State<SettingsPage> {
                 _DeviceData(),
                 const SizedBox(height: 20.0),
                 const Divider(height: 1.0),
+                _Metadata(),
+                const SizedBox(height: 20.0),
+                const Divider(height: 1.0),
                 _Buttons(
                   onRestoreFromSeed: () async {
                     final mnemonic =
@@ -84,7 +88,6 @@ class _SettingsPageState extends State<SettingsPage> {
                       );
                       await keysService.loadKeys();
                       await showDialog(
-                        // ignore: use_build_context_synchronously
                         context: context,
                         builder: (BuildContext context) {
                           return const AlertDialog(
@@ -96,10 +99,10 @@ class _SettingsPageState extends State<SettingsPage> {
                     }
                   },
                   onRestoreDefault: () async {
+                    await keysService.clearAll();
                     await keysService.loadDefaultWallet();
                     await keysService.loadKeys();
                     await showDialog(
-                      // ignore: use_build_context_synchronously
                       context: context,
                       builder: (BuildContext context) {
                         return const AlertDialog(
@@ -116,6 +119,30 @@ class _SettingsPageState extends State<SettingsPage> {
           ),
         ),
       ],
+    );
+  }
+}
+
+class _Metadata extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    final web3Wallet = GetIt.I<IWeb3WalletService>().web3wallet;
+    final nativeLink = web3Wallet.metadata.redirect?.native;
+    final universalLink = web3Wallet.metadata.redirect?.universal;
+    final linkMode = web3Wallet.metadata.redirect?.linkMode;
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 12.0),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const SizedBox.square(dimension: 20.0),
+          _DataContainer(
+            title: 'Redirect',
+            data:
+                'Native: $nativeLink\nUniversal: $universalLink\nLink Mode: $linkMode',
+          ),
+        ],
+      ),
     );
   }
 }
@@ -281,12 +308,12 @@ class _EVMAccountsState extends State<_EVMAccounts> {
         const SizedBox(height: 20.0),
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 12.0),
-          child: FutureBuilder<SharedPreferences>(
-            future: SharedPreferences.getInstance(),
+          child: FutureBuilder<String>(
+            future: keysService.getMnemonic(),
             builder: (context, snapshot) {
               return _DataContainer(
                 title: 'Seed phrase',
-                data: snapshot.data?.getString('w3w_mnemonic') ?? '',
+                data: snapshot.data ?? '',
                 blurred: true,
               );
             },

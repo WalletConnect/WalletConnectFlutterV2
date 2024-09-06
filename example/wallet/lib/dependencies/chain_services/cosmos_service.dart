@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
-import 'package:walletconnect_flutter_v2_wallet/dependencies/chains/common.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/i_web3wallet_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/models/chain_metadata.dart';
+import 'package:walletconnect_flutter_v2_wallet/utils/methods_utils.dart';
 
 class CosmosService {
   final _web3Wallet = GetIt.I<IWeb3WalletService>().web3wallet;
@@ -36,12 +36,8 @@ class CosmosService {
         message: 'Cosmos support not implemented',
       ),
     );
-    await _web3Wallet.respondSessionRequest(
-      topic: topic,
-      response: response,
-    );
 
-    CommonMethods.goBackToDapp(topic, response.result ?? response.error);
+    _handleResponseForTopic(topic, response);
   }
 
   Future<void> cosmosSignAmino(String topic, dynamic parameters) async {
@@ -55,11 +51,29 @@ class CosmosService {
         message: 'Cosmos support not implemented',
       ),
     );
-    await _web3Wallet.respondSessionRequest(
-      topic: topic,
-      response: response,
-    );
 
-    CommonMethods.goBackToDapp(topic, response.result ?? response.error);
+    _handleResponseForTopic(topic, response);
+  }
+
+  void _handleResponseForTopic(String topic, JsonRpcResponse response) async {
+    final session = _web3Wallet.sessions.get(topic);
+
+    try {
+      await _web3Wallet.respondSessionRequest(
+        topic: topic,
+        response: response,
+      );
+      MethodsUtils.handleRedirect(
+        topic,
+        session!.peer.metadata.redirect,
+        response.error?.message,
+      );
+    } on WalletConnectError catch (error) {
+      MethodsUtils.handleRedirect(
+        topic,
+        session!.peer.metadata.redirect,
+        error.message,
+      );
+    }
   }
 }

@@ -134,6 +134,10 @@ class Crypto implements ICrypto {
 
     final String message = jsonEncode(payload);
 
+    if (utils.isTypeTwoEnvelope(params)) {
+      return utils.encodeTypeTwoEnvelope(message: message);
+    }
+
     if (utils.isTypeOneEnvelope(params)) {
       final String selfPublicKey = params.senderPublicKey!;
       final String peerPublicKey = params.receiverPublicKey!;
@@ -167,6 +171,10 @@ class Crypto implements ICrypto {
       encoded,
       receiverPublicKey: options?.receiverPublicKey,
     );
+
+    if (utils.isTypeTwoEnvelope(params)) {
+      return utils.decodeTypeTwoEnvelope(message: encoded);
+    }
 
     if (utils.isTypeOneEnvelope(params)) {
       final String selfPublicKey = params.receiverPublicKey!;
@@ -204,6 +212,18 @@ class Crypto implements ICrypto {
     _checkInitialized();
 
     return utils.deserialize(encoded).type;
+  }
+
+  // TODO LinkMode: Check if this is needed
+  @override
+  String? getPayloadSenderPublicKey(String encoded) {
+    _checkInitialized();
+
+    final deserialized = utils.deserialize(encoded);
+    if (deserialized.senderPublicKey != null) {
+      return utf8.decode(deserialized.senderPublicKey!);
+    }
+    return null;
   }
 
   // PRIVATE FUNCTIONS

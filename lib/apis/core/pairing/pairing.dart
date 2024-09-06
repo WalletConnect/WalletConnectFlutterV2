@@ -244,7 +244,7 @@ class Pairing implements IPairing {
   @override
   void register({
     required String method,
-    required Function(String, JsonRpcRequest) function,
+    required Function(String, JsonRpcRequest, [TransportType]) function,
     required ProtocolType type,
   }) {
     if (routerMapRequest.containsKey(method)) {
@@ -400,24 +400,21 @@ class Pairing implements IPairing {
   // RELAY COMMUNICATION HELPERS
 
   @override
-  Future sendRequest(
+  Future<dynamic> sendRequest(
     String topic,
     String method,
     dynamic params, {
     int? id,
     int? ttl,
     EncodeOptions? encodeOptions,
+    String? appLink,
+    bool openUrl = true,
   }) async {
-    core.logger.t(
-      'pairing sendRequest, id: $id topic: $topic, method: $method, params: $params, ttl: $ttl',
-    );
-
     final payload = JsonRpcUtils.formatJsonRpcRequest(
       method,
       params,
       id: id,
     );
-    // print('sending request: $payload');
 
     final message = await core.crypto.encode(
       topic,
@@ -429,24 +426,40 @@ class Pairing implements IPairing {
       return;
     }
 
-    RpcOptions opts = MethodConstants.RPC_OPTS[method]!['req']!;
-    if (ttl != null) {
-      opts = opts.copyWith(ttl: ttl);
-    }
-
     // print('adding payload to pending requests: ${payload['id']}');
     final resp = PendingRequestResponse(completer: Completer());
     resp.completer.future.catchError((err) {
       // Catch the error so that it won't throw an uncaught error
     });
     pendingRequests[payload['id']] = resp;
-    // print('sent request');
-    await core.relayClient.publish(
-      topic: topic,
-      message: message,
-      ttl: opts.ttl,
-      tag: opts.tag,
-    );
+
+    if ((appLink ?? '').isNotEmpty) {
+      // during wc_sessionAuthenticate we don't need to openURL as it will be done by the host dapp
+      core.logger.t(
+        'pairing sendRequest LinkMode, '
+        'id: $id topic: $topic, method: $method, params: $params, ttl: $ttl',
+      );
+      if (openUrl) {
+        final redirectURL = WalletConnectUtils.getLinkModeURL(
+          appLink!,
+          topic,
+          message,
+        );
+        await WalletConnectUtils.openURL(redirectURL);
+      }
+    } else {
+      core.logger.t(
+        'pairing sendRequest Relay, '
+        'id: $id topic: $topic, method: $method, params: $params, ttl: $ttl',
+      );
+      RpcOptions opts = MethodConstants.RPC_OPTS[method]!['req']!;
+      await core.relayClient.publish(
+        topic: topic,
+        message: message,
+        ttl: ttl ?? opts.ttl,
+        tag: opts.tag,
+      );
+    }
 
     // Get the result from the completer, if it's an error, throw it
     try {
@@ -466,21 +479,19 @@ class Pairing implements IPairing {
   }
 
   @override
-  Future<void> sendResult(
+  Future<dynamic> sendResult(
     int id,
     String topic,
     String method,
     dynamic result, {
     EncodeOptions? encodeOptions,
+    String? appLink,
   }) async {
-    core.logger.t(
-      'pairing sendResult, id: $id topic: $topic, method: $method, result: $result',
-    );
-    final Map<String, dynamic> payload =
-        JsonRpcUtils.formatJsonRpcResponse<dynamic>(
+    final payload = JsonRpcUtils.formatJsonRpcResponse<dynamic>(
       id,
       result,
     );
+
     final String? message = await core.crypto.encode(
       topic,
       payload,
@@ -491,32 +502,47 @@ class Pairing implements IPairing {
       return;
     }
 
-    final RpcOptions opts = MethodConstants.RPC_OPTS[method]!['res']!;
-    await core.relayClient.publish(
-      topic: topic,
-      message: message,
-      ttl: opts.ttl,
-      tag: opts.tag,
-    );
+    if ((appLink ?? '').isNotEmpty) {
+      final redirectURL = WalletConnectUtils.getLinkModeURL(
+        appLink!,
+        topic,
+        message,
+      );
+      core.logger.t(
+        'pairing sendResult LinkMode, '
+        'id: $id topic: $topic, method: $method, result: $result',
+      );
+      await WalletConnectUtils.openURL(redirectURL);
+    } else {
+      final RpcOptions opts = MethodConstants.RPC_OPTS[method]!['res']!;
+      core.logger.t(
+        'pairing sendResult Relay, '
+        'id: $id topic: $topic, method: $method, result: $result',
+      );
+      await core.relayClient.publish(
+        topic: topic,
+        message: message,
+        ttl: opts.ttl,
+        tag: opts.tag,
+      );
+    }
   }
 
   @override
-  Future<void> sendError(
+  Future<dynamic> sendError(
     int id,
     String topic,
     String method,
     JsonRpcError error, {
     EncodeOptions? encodeOptions,
     RpcOptions? rpcOptions,
+    String? appLink,
   }) async {
-    core.logger.t(
-      'pairing sendError, id: $id topic: $topic, method: $method, error: $error',
-    );
-
     final Map<String, dynamic> payload = JsonRpcUtils.formatJsonRpcError(
       id,
       error,
     );
+
     final String? message = await core.crypto.encode(
       topic,
       payload,
@@ -527,19 +553,34 @@ class Pairing implements IPairing {
       return;
     }
 
-    final fallbackMethod = MethodConstants.UNREGISTERED_METHOD;
-    final fallbackRpcOpts = MethodConstants.RPC_OPTS[method] ??
-        MethodConstants.RPC_OPTS[fallbackMethod]!;
-    final fallbackOpts = fallbackRpcOpts['reject'] ?? fallbackRpcOpts['res']!;
-
-    final RpcOptions opts = rpcOptions ?? fallbackOpts;
-
-    await core.relayClient.publish(
-      topic: topic,
-      message: message,
-      ttl: opts.ttl,
-      tag: opts.tag,
-    );
+    if ((appLink ?? '').isNotEmpty) {
+      final redirectURL = WalletConnectUtils.getLinkModeURL(
+        appLink!,
+        topic,
+        message,
+      );
+      core.logger.t(
+        'pairing sendError LinkMode, '
+        'id: $id topic: $topic, method: $method, error: $error',
+      );
+      await WalletConnectUtils.openURL(redirectURL);
+    } else {
+      final fallbackMethod = MethodConstants.UNREGISTERED_METHOD;
+      final methodOpts = MethodConstants.RPC_OPTS[method];
+      final fallbackMethodOpts = MethodConstants.RPC_OPTS[fallbackMethod]!;
+      final relayOpts = methodOpts ?? fallbackMethodOpts;
+      final fallbackOpts = relayOpts['reject'] ?? relayOpts['res']!;
+      core.logger.t(
+        'pairing sendError Relay, '
+        'id: $id topic: $topic, method: $method, error: $error',
+      );
+      await core.relayClient.publish(
+        topic: topic,
+        message: message,
+        ttl: (rpcOptions ?? fallbackOpts).ttl,
+        tag: (rpcOptions ?? fallbackOpts).tag,
+      );
+    }
   }
 
   /// ---- Private Helpers ---- ///
@@ -619,6 +660,7 @@ class Pairing implements IPairing {
   void _registerRelayEvents() {
     core.relayClient.onRelayClientConnect.subscribe(_onRelayConnect);
     core.relayClient.onRelayClientMessage.subscribe(_onMessageEvent);
+    core.relayClient.onLinkModeMessage.subscribe(_onMessageEvent);
 
     register(
       method: MethodConstants.WC_PAIRING_PING,
@@ -662,45 +704,35 @@ class Pairing implements IPairing {
     if (payloadString == null) {
       return;
     }
-    // print(payloadString);
 
     Map<String, dynamic> data = jsonDecode(payloadString);
     core.logger.i('Pairing _onMessageEvent, Received data: $data');
 
     // If it's an rpc request, handle it
-    // print('Pairing: Received data: $data');
     if (data.containsKey('method')) {
       final request = JsonRpcRequest.fromJson(data);
+
       if (routerMapRequest.containsKey(request.method)) {
-        routerMapRequest[request.method]!.function(event.topic, request);
+        routerMapRequest[request.method]!.function(
+          event.topic,
+          request,
+          event.transportType,
+        );
       } else {
         _onUnkownRpcMethodRequest(event.topic, request);
       }
-    }
-    // Otherwise handle it as a response
-    else {
+      // Otherwise handle it as a response
+    } else {
       final response = JsonRpcResponse.fromJson(data);
+      core.logger.d('[$runtimeType] Relay event response ${jsonEncode(data)}');
 
-      // Only handle the response if we have a record of the request
-      // final JsonRpcRecord? record = history.get(response.id.toString());
-      // // print(record);
-      // if (record == null) {
-      //   return;
-      // }
-
-      // print(
-      //   'pendingRequests: ${pendingRequests.keys} has ${response.id} is ${pendingRequests.containsKey(response.id)}',
-      // );
       if (pendingRequests.containsKey(response.id)) {
         if (response.error != null) {
           pendingRequests[response.id]!.error = response.error;
-          pendingRequests[response.id]!
-              .completer
-              .completeError(response.error!);
+          pendingRequests[response.id]!.completer.completeError(
+                response.error!,
+              );
         } else {
-          // print(
-          //   'completing: ${response.result}',
-          // );
           pendingRequests[response.id]!.response = response.result;
           pendingRequests[response.id]!.completer.complete(response.result);
         }
@@ -710,8 +742,9 @@ class Pairing implements IPairing {
 
   Future<void> _onPairingPingRequest(
     String topic,
-    JsonRpcRequest request,
-  ) async {
+    JsonRpcRequest request, [
+    _,
+  ]) async {
     final int id = request.id;
     try {
       // print('ping req');
@@ -741,8 +774,9 @@ class Pairing implements IPairing {
 
   Future<void> _onPairingDeleteRequest(
     String topic,
-    JsonRpcRequest request,
-  ) async {
+    JsonRpcRequest request, [
+    _,
+  ]) async {
     // print('delete');
     final int id = request.id;
     try {
@@ -833,5 +867,16 @@ class Pairing implements IPairing {
 
   Future<void> _isValidDisconnect(String topic) async {
     await isValidPairingTopic(topic: topic);
+  }
+
+  @override
+  void dispatchEnvelope({
+    required String topic,
+    required String envelope,
+  }) async {
+    core.logger.i('[$runtimeType] dispatchEnvelope $topic, $envelope');
+
+    final message = Uri.decodeComponent(envelope);
+    await core.relayClient.handleLinkModeMessage(topic, message);
   }
 }

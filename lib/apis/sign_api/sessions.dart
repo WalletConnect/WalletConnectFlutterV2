@@ -1,3 +1,4 @@
+import 'package:walletconnect_flutter_v2/apis/core/relay_client/relay_client_models.dart';
 import 'package:walletconnect_flutter_v2/apis/core/store/generic_store.dart';
 
 import 'package:walletconnect_flutter_v2/apis/sign_api/i_sessions.dart';
@@ -16,6 +17,7 @@ class Sessions extends GenericStore<SessionData> implements ISessions {
     String topic, {
     int? expiry,
     Map<String, Namespace>? namespaces,
+    TransportType? transportType,
   }) async {
     checkInitialized();
 
@@ -29,6 +31,9 @@ class Sessions extends GenericStore<SessionData> implements ISessions {
     }
     if (namespaces != null) {
       info = info.copyWith(namespaces: namespaces);
+    }
+    if (transportType != null) {
+      info = info.copyWith(transportType: transportType);
     }
 
     await set(topic, info);

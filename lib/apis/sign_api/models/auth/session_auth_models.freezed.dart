@@ -848,6 +848,7 @@ mixin _$PendingSessionAuthRequest {
   int get expiryTimestamp => throw _privateConstructorUsedError;
   CacaoRequestPayload get authPayload => throw _privateConstructorUsedError;
   VerifyContext get verifyContext => throw _privateConstructorUsedError;
+  TransportType get transportType => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -867,7 +868,8 @@ abstract class $PendingSessionAuthRequestCopyWith<$Res> {
       ConnectionMetadata requester,
       int expiryTimestamp,
       CacaoRequestPayload authPayload,
-      VerifyContext verifyContext});
+      VerifyContext verifyContext,
+      TransportType transportType});
 
   $ConnectionMetadataCopyWith<$Res> get requester;
   $CacaoRequestPayloadCopyWith<$Res> get authPayload;
@@ -894,6 +896,7 @@ class _$PendingSessionAuthRequestCopyWithImpl<$Res,
     Object? expiryTimestamp = null,
     Object? authPayload = null,
     Object? verifyContext = null,
+    Object? transportType = null,
   }) {
     return _then(_value.copyWith(
       id: null == id
@@ -920,6 +923,10 @@ class _$PendingSessionAuthRequestCopyWithImpl<$Res,
           ? _value.verifyContext
           : verifyContext // ignore: cast_nullable_to_non_nullable
               as VerifyContext,
+      transportType: null == transportType
+          ? _value.transportType
+          : transportType // ignore: cast_nullable_to_non_nullable
+              as TransportType,
     ) as $Val);
   }
 
@@ -963,7 +970,8 @@ abstract class _$$PendingSessionAuthRequestImplCopyWith<$Res>
       ConnectionMetadata requester,
       int expiryTimestamp,
       CacaoRequestPayload authPayload,
-      VerifyContext verifyContext});
+      VerifyContext verifyContext,
+      TransportType transportType});
 
   @override
   $ConnectionMetadataCopyWith<$Res> get requester;
@@ -992,6 +1000,7 @@ class __$$PendingSessionAuthRequestImplCopyWithImpl<$Res>
     Object? expiryTimestamp = null,
     Object? authPayload = null,
     Object? verifyContext = null,
+    Object? transportType = null,
   }) {
     return _then(_$PendingSessionAuthRequestImpl(
       id: null == id
@@ -1018,6 +1027,10 @@ class __$$PendingSessionAuthRequestImplCopyWithImpl<$Res>
           ? _value.verifyContext
           : verifyContext // ignore: cast_nullable_to_non_nullable
               as VerifyContext,
+      transportType: null == transportType
+          ? _value.transportType
+          : transportType // ignore: cast_nullable_to_non_nullable
+              as TransportType,
     ));
   }
 }
@@ -1032,7 +1045,8 @@ class _$PendingSessionAuthRequestImpl implements _PendingSessionAuthRequest {
       required this.requester,
       required this.expiryTimestamp,
       required this.authPayload,
-      required this.verifyContext});
+      required this.verifyContext,
+      this.transportType = TransportType.relay});
 
   factory _$PendingSessionAuthRequestImpl.fromJson(Map<String, dynamic> json) =>
       _$$PendingSessionAuthRequestImplFromJson(json);
@@ -1049,10 +1063,13 @@ class _$PendingSessionAuthRequestImpl implements _PendingSessionAuthRequest {
   final CacaoRequestPayload authPayload;
   @override
   final VerifyContext verifyContext;
+  @override
+  @JsonKey()
+  final TransportType transportType;
 
   @override
   String toString() {
-    return 'PendingSessionAuthRequest(id: $id, pairingTopic: $pairingTopic, requester: $requester, expiryTimestamp: $expiryTimestamp, authPayload: $authPayload, verifyContext: $verifyContext)';
+    return 'PendingSessionAuthRequest(id: $id, pairingTopic: $pairingTopic, requester: $requester, expiryTimestamp: $expiryTimestamp, authPayload: $authPayload, verifyContext: $verifyContext, transportType: $transportType)';
   }
 
   @override
@@ -1070,13 +1087,15 @@ class _$PendingSessionAuthRequestImpl implements _PendingSessionAuthRequest {
             (identical(other.authPayload, authPayload) ||
                 other.authPayload == authPayload) &&
             (identical(other.verifyContext, verifyContext) ||
-                other.verifyContext == verifyContext));
+                other.verifyContext == verifyContext) &&
+            (identical(other.transportType, transportType) ||
+                other.transportType == transportType));
   }
 
   @JsonKey(ignore: true)
   @override
   int get hashCode => Object.hash(runtimeType, id, pairingTopic, requester,
-      expiryTimestamp, authPayload, verifyContext);
+      expiryTimestamp, authPayload, verifyContext, transportType);
 
   @JsonKey(ignore: true)
   @override
@@ -1095,13 +1114,13 @@ class _$PendingSessionAuthRequestImpl implements _PendingSessionAuthRequest {
 
 abstract class _PendingSessionAuthRequest implements PendingSessionAuthRequest {
   const factory _PendingSessionAuthRequest(
-          {required final int id,
-          required final String pairingTopic,
-          required final ConnectionMetadata requester,
-          required final int expiryTimestamp,
-          required final CacaoRequestPayload authPayload,
-          required final VerifyContext verifyContext}) =
-      _$PendingSessionAuthRequestImpl;
+      {required final int id,
+      required final String pairingTopic,
+      required final ConnectionMetadata requester,
+      required final int expiryTimestamp,
+      required final CacaoRequestPayload authPayload,
+      required final VerifyContext verifyContext,
+      final TransportType transportType}) = _$PendingSessionAuthRequestImpl;
 
   factory _PendingSessionAuthRequest.fromJson(Map<String, dynamic> json) =
       _$PendingSessionAuthRequestImpl.fromJson;
@@ -1118,6 +1137,8 @@ abstract class _PendingSessionAuthRequest implements PendingSessionAuthRequest {
   CacaoRequestPayload get authPayload;
   @override
   VerifyContext get verifyContext;
+  @override
+  TransportType get transportType;
   @override
   @JsonKey(ignore: true)
   _$$PendingSessionAuthRequestImplCopyWith<_$PendingSessionAuthRequestImpl>

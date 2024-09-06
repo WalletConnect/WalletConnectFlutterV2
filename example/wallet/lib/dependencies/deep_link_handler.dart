@@ -1,12 +1,9 @@
-import 'dart:async';
-
+// import 'dart:async';
 import 'package:flutter/foundation.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get_it/get_it.dart';
-import 'package:url_launcher/url_launcher_string.dart';
-import 'package:walletconnect_flutter_v2_wallet/dependencies/bottom_sheet/i_bottom_sheet_service.dart';
-import 'package:walletconnect_flutter_v2_wallet/utils/constants.dart';
+import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
+import 'package:walletconnect_flutter_v2_wallet/dependencies/i_web3wallet_service.dart';
 
 class DeepLinkHandler {
   static const _methodChannel = MethodChannel(
@@ -15,8 +12,6 @@ class DeepLinkHandler {
   static const _eventChannel = EventChannel(
     'com.walletconnect.flutterwallet/events',
   );
-  static final _linksController = StreamController<String>.broadcast();
-  static Stream<String> get onLink => _linksController.stream;
   static final waiting = ValueNotifier<bool>(false);
 
   static void initListener() {
@@ -27,40 +22,22 @@ class DeepLinkHandler {
         );
   }
 
-  static void checkInitialLink() {
+  static void checkInitialLink() async {
     if (kIsWeb) return;
     try {
-      _methodChannel.invokeMethod('initialLink').then(
-            _onLink,
-            onError: _onError,
-          );
+      _methodChannel.invokeMethod('initialLink');
     } catch (e) {
       debugPrint('[SampleWallet] [DeepLinkHandler] checkInitialLink $e');
     }
   }
 
-  static void goTo(
-    String scheme, {
-    int delay = 100,
-    String? modalTitle,
-    String? modalMessage,
-    bool success = true,
-  }) async {
-    waiting.value = false;
-    await Future.delayed(Duration(milliseconds: delay));
-    debugPrint('[SampleWallet] [DeepLinkHandler] redirecting to $scheme');
-    try {
-      await launchUrlString(scheme, mode: LaunchMode.externalApplication);
-    } catch (e) {
-      debugPrint(
-          '[SampleWallet] [DeepLinkHandler] error re-opening dapp ($scheme). $e');
-      goBackModal(
-        title: modalTitle,
-        message: modalMessage,
-        success: success,
-      );
-    }
-  }
+  static IWeb3Wallet get _web3wallet =>
+      GetIt.I<IWeb3WalletService>().web3wallet;
+  static Uri get nativeUri =>
+      Uri.parse(_web3wallet.metadata.redirect?.native ?? '');
+  static Uri get universalUri =>
+      Uri.parse(_web3wallet.metadata.redirect?.universal ?? '');
+  static String get host => universalUri.host;
 
   static void goBackModal({
     String? title,
@@ -101,11 +78,28 @@ class DeepLinkHandler {
     if (decodedUri.isScheme('wc')) {
       waiting.value = true;
       _linksController.sink.add(decodedUri.toString());
+  static void _onLink(Object? event) async {
+    final ev = WalletConnectUtils.getSearchParamFromURL('$event', 'wc_ev');
+    if (ev.isNotEmpty) {
+      debugPrint('[SampleWallet] is linkMode $event');
+      await _web3wallet.dispatchEnvelope('$event');
     } else {
-      if (decodedUri.query.startsWith('uri=')) {
-        final pairingUri = decodedUri.query.replaceFirst('uri=', '');
+      final decodedUri = Uri.parse(Uri.decodeFull(event.toString()));
+      if (decodedUri.isScheme('wc')) {
+        debugPrint('[SampleWallet] is legacy uri $decodedUri');
         waiting.value = true;
-        _linksController.sink.add(pairingUri);
+        await _web3wallet.pair(uri: decodedUri);
+      } else {
+        final uriParam = WalletConnectUtils.getSearchParamFromURL(
+          '$decodedUri',
+          'uri',
+        );
+        if (decodedUri.isScheme(nativeUri.scheme) && uriParam.isNotEmpty) {
+          debugPrint('[SampleWallet] is custom uri $decodedUri');
+          waiting.value = true;
+          final pairingUri = decodedUri.query.replaceFirst('uri=', '');
+          await _web3wallet.pair(uri: Uri.parse(pairingUri));
+        }
       }
     }
   }

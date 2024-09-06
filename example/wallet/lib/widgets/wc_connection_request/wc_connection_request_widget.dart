@@ -16,19 +16,19 @@ class WCConnectionRequestWidget extends StatelessWidget {
     this.authPayloadParams,
     this.sessionAuthPayload,
     this.proposalData,
-    this.metadata,
+    this.requester,
     this.verifyContext,
   }) : super(key: key);
 
   final AuthPayloadParams? authPayloadParams;
   final SessionAuthPayload? sessionAuthPayload;
   final ProposalData? proposalData;
-  final ConnectionMetadata? metadata;
+  final ConnectionMetadata? requester;
   final VerifyContext? verifyContext;
 
   @override
   Widget build(BuildContext context) {
-    if (metadata == null) {
+    if (requester == null) {
       return const Text('ERROR');
     }
 
@@ -42,7 +42,7 @@ class WCConnectionRequestWidget extends StatelessWidget {
         mainAxisSize: MainAxisSize.min,
         children: [
           Text(
-            '${metadata!.metadata.name}\n${StringConstants.wouldLikeToConnect}',
+            '${requester!.metadata.name} ${StringConstants.wouldLikeToConnect}',
             style: StyleConstants.subtitleText.copyWith(
               fontSize: 18,
               color: Colors.black,
@@ -70,9 +70,8 @@ class WCConnectionRequestWidget extends StatelessWidget {
     final cacaoPayload = CacaoRequestPayload.fromPayloadParams(
       authPayloadParams!,
     );
-    const chain = 'eip155:1';
-    final chainKeys = GetIt.I<IKeyService>().getKeysForChain(chain);
-    final iss = 'did:pkh:$chain:${chainKeys.first.address}';
+    final chainKeys = GetIt.I<IKeyService>().getKeysForChain('eip155');
+    final iss = 'did:pkh:eip155:1:${chainKeys.first.address}';
     final message = web3Wallet.formatAuthMessage(
       iss: iss,
       cacaoPayload: cacaoPayload,

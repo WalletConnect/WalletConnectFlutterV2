@@ -94,6 +94,7 @@ class SignEngine implements ISignEngine {
 
   // FORMER AUTH ENGINE PROPERTY (apparently not used before and not used now)
   List<AuthRequestCompleter> pendingAuthRequests = [];
+  List<SessionAuthenticateCompleter> pendingSessionAuthRequests = [];
 
   SignEngine({
     required this.core,
@@ -156,6 +157,7 @@ class SignEngine implements ISignEngine {
     List<List<String>>? methods = DEFAULT_METHODS,
   }) async {
     _checkInitialized();
+    _confirmOnlineStateOrThrow();
 
     await _isValidConnect(
       requiredNamespaces: requiredNamespaces ?? {},
@@ -280,6 +282,7 @@ class SignEngine implements ISignEngine {
     required Uri uri,
   }) async {
     _checkInitialized();
+    _confirmOnlineStateOrThrow();
 
     return await core.pairing.pair(
       uri: uri,
@@ -297,6 +300,7 @@ class SignEngine implements ISignEngine {
   }) async {
     // print('sign approveSession');
     _checkInitialized();
+    _confirmOnlineStateOrThrow();
 
     await _isValidApprove(
       id: id,
@@ -358,6 +362,7 @@ class SignEngine implements ISignEngine {
       ),
       peer: proposal.proposer,
       sessionProperties: proposal.sessionProperties,
+      transportType: TransportType.relay,
     );
 
     onSessionConnect.broadcast(SessionConnect(session));
@@ -366,20 +371,21 @@ class SignEngine implements ISignEngine {
     await _setSessionExpiry(sessionTopic, expiry);
 
     // `wc_sessionSettle` is not critical throughout the entire session.
+    final settleRequest = WcSessionSettleRequest(
+      relay: relay,
+      namespaces: namespaces,
+      sessionProperties: sessionProperties,
+      expiry: expiry,
+      controller: ConnectionMetadata(
+        publicKey: selfPubKey,
+        metadata: metadata,
+      ),
+    );
     bool acknowledged = await core.pairing
         .sendRequest(
           sessionTopic,
           MethodConstants.WC_SESSION_SETTLE,
-          WcSessionSettleRequest(
-            relay: relay,
-            namespaces: namespaces,
-            sessionProperties: sessionProperties,
-            expiry: expiry,
-            controller: ConnectionMetadata(
-              publicKey: selfPubKey,
-              metadata: metadata,
-            ),
-          ),
+          settleRequest.toJson(),
         )
         // Sometimes we don't receive any response for a long time,
         // in which case we manually time out to prevent waiting indefinitely.
@@ -414,6 +420,7 @@ class SignEngine implements ISignEngine {
     required WalletConnectError reason,
   }) async {
     _checkInitialized();
+    _confirmOnlineStateOrThrow();
 
     await _isValidReject(id, reason);
 
@@ -444,6 +451,8 @@ class SignEngine implements ISignEngine {
     required Map<String, Namespace> namespaces,
   }) async {
     _checkInitialized();
+    _confirmOnlineStateOrThrow();
+
     await _isValidUpdate(
       topic,
       namespaces,
@@ -454,10 +463,14 @@ class SignEngine implements ISignEngine {
       namespaces: namespaces,
     );
 
+    final updateRequest = WcSessionUpdateRequest(
+      namespaces: namespaces,
+    );
+
     await core.pairing.sendRequest(
       topic,
       MethodConstants.WC_SESSION_UPDATE,
-      WcSessionUpdateRequest(namespaces: namespaces),
+      updateRequest.toJson(),
     );
   }
 
@@ -466,6 +479,8 @@ class SignEngine implements ISignEngine {
     required String topic,
   }) async {
     _checkInitialized();
+    _confirmOnlineStateOrThrow();
+
     await _isValidSessionTopic(topic);
 
     await core.pairing.sendRequest(
@@ -495,7 +510,7 @@ class SignEngine implements ISignEngine {
   }
 
   @override
-  Future request({
+  Future<dynamic> request({
     required String topic,
     required String chainId,
     required SessionRequestParams request,
@@ -506,14 +521,31 @@ class SignEngine implements ISignEngine {
       chainId,
       request,
     );
+
+    final session = sessions.get(topic);
+    final isLinkMode = _isLinkModeRequest(session);
+    if (!isLinkMode) {
+      _confirmOnlineStateOrThrow();
+    }
+
+    final sessionRequest = WcSessionRequestRequest(
+      chainId: chainId,
+      request: request,
+      transportType: session?.transportType ?? TransportType.relay,
+    );
+
     return await core.pairing.sendRequest(
       topic,
       MethodConstants.WC_SESSION_REQUEST,
-      WcSessionRequestRequest(
-        chainId: chainId,
-        request: request,
-      ),
+      sessionRequest.toJson(),
+      appLink: _getAppLinkIfEnabled(session?.peer.metadata),
     );
+  }
+
+  bool _isLinkModeRequest(SessionData? session) {
+    final appLink = (session?.peer.metadata.redirect?.universal ?? '');
+    final supportedApps = core.getLinkModeSupportedApps();
+    return appLink.isNotEmpty && supportedApps.contains(appLink);
   }
 
   @override
@@ -583,14 +615,21 @@ class SignEngine implements ISignEngine {
     _checkInitialized();
     await _isValidResponse(topic, response);
 
-    // final SessionRequest req = pendingRequests.get(response.id.toString())!;
-    // print('respondSessionRequest: ${req.toJson()}');
+    final session = sessions.get(topic);
+    final isLinkModeSession = session?.transportType.isLinkMode ?? false;
+    if (!isLinkModeSession) {
+      _confirmOnlineStateOrThrow();
+    }
+
+    final appLink = _getAppLinkIfEnabled(session?.peer.metadata);
+
     if (response.result != null) {
       await core.pairing.sendResult(
         response.id,
         topic,
         MethodConstants.WC_SESSION_REQUEST,
         response.result,
+        appLink: appLink,
       );
     } else {
       await core.pairing.sendError(
@@ -598,6 +637,7 @@ class SignEngine implements ISignEngine {
         topic,
         MethodConstants.WC_SESSION_REQUEST,
         response.error!,
+        appLink: appLink,
       );
     }
 
@@ -624,18 +664,23 @@ class SignEngine implements ISignEngine {
     required SessionEventParams event,
   }) async {
     _checkInitialized();
+    _confirmOnlineStateOrThrow();
+
     await _isValidEmit(
       topic,
       event,
       chainId,
     );
+
+    final eventRequest = WcSessionEventRequest(
+      chainId: chainId,
+      event: event,
+    );
+
     await core.pairing.sendRequest(
       topic,
       MethodConstants.WC_SESSION_EVENT,
-      WcSessionEventRequest(
-        chainId: chainId,
-        event: event,
-      ),
+      eventRequest.toJson(),
     );
   }
 
@@ -644,6 +689,8 @@ class SignEngine implements ISignEngine {
     required String topic,
   }) async {
     _checkInitialized();
+    _confirmOnlineStateOrThrow();
+
     await _isValidPing(topic);
 
     if (sessions.has(topic)) {
@@ -663,20 +710,23 @@ class SignEngine implements ISignEngine {
     required WalletConnectError reason,
   }) async {
     _checkInitialized();
+    _confirmOnlineStateOrThrow();
+
     try {
       await _isValidDisconnect(topic);
 
       if (sessions.has(topic)) {
         // Send the request to delete the session, we don't care if it fails
         try {
+          final deleteRequest = WcSessionDeleteRequest(
+            code: reason.code,
+            message: reason.message,
+            data: reason.data,
+          );
           core.pairing.sendRequest(
             topic,
             MethodConstants.WC_SESSION_DELETE,
-            WcSessionDeleteRequest(
-              code: reason.code,
-              message: reason.message,
-              data: reason.data,
-            ),
+            deleteRequest.toJson(),
           );
         } catch (_) {}
 
@@ -828,9 +878,10 @@ class SignEngine implements ISignEngine {
     if (!_initialized) {
       throw Errors.getInternalError(Errors.NOT_INITIALIZED);
     }
-    if (!core.connectivity.isOnline) {
-      throw WalletConnectError(code: -1, message: 'No internet connection');
-    }
+  }
+
+  void _confirmOnlineStateOrThrow() {
+    core.confirmOnlineStateOrThrow();
   }
 
   String _getRegisterKey(String chainId, String value) {
@@ -975,15 +1026,15 @@ class SignEngine implements ISignEngine {
       function: _onSessionEventRequest,
       type: ProtocolType.sign,
     );
+    core.pairing.register(
+      method: MethodConstants.WC_SESSION_AUTHENTICATE,
+      function: _onSessionAuthenticateRequest,
+      type: ProtocolType.sign,
+    );
     // FORMER AUTH ENGINE PROPERTY
     core.pairing.register(
       method: MethodConstants.WC_AUTH_REQUEST,
       function: _onAuthRequest,
-      type: ProtocolType.sign,
-    );
-    core.pairing.register(
-      method: MethodConstants.WC_SESSION_AUTHENTICATE,
-      function: _onSessionAuthRequest,
       type: ProtocolType.sign,
     );
   }
@@ -999,8 +1050,9 @@ class SignEngine implements ISignEngine {
 
   Future<void> _onSessionProposeRequest(
     String topic,
-    JsonRpcRequest payload,
-  ) async {
+    JsonRpcRequest payload, [
+    _,
+  ]) async {
     if (_shouldIgnoreSessionPropose(topic)) {
       core.logger.t(
         'Session Propose ignored. Session Authenticate will be used instead',
@@ -1085,6 +1137,7 @@ class SignEngine implements ISignEngine {
       final verifyContext = await _getVerifyContext(
         payload,
         proposal.proposer.metadata,
+        TransportType.relay,
       );
 
       onSessionProposal.broadcast(
@@ -1109,8 +1162,9 @@ class SignEngine implements ISignEngine {
 
   Future<void> _onSessionSettleRequest(
     String topic,
-    JsonRpcRequest payload,
-  ) async {
+    JsonRpcRequest payload, [
+    _,
+  ]) async {
     // print('wc session settle');
     final request = WcSessionSettleRequest.fromJson(payload.params);
     try {
@@ -1135,6 +1189,7 @@ class SignEngine implements ISignEngine {
           metadata: metadata,
         ),
         peer: request.controller,
+        transportType: TransportType.relay,
       );
 
       // Update all the things: session, expiry, metadata, pairing
@@ -1142,7 +1197,7 @@ class SignEngine implements ISignEngine {
       _setSessionExpiry(topic, session.expiry);
       await core.pairing.updateMetadata(
         topic: sProposalCompleter.pairingTopic,
-        metadata: request.controller.metadata,
+        metadata: session.peer.metadata,
       );
       final pairing = core.pairing.getPairing(topic: topic);
       if (pairing != null && !pairing.active) {
@@ -1178,8 +1233,9 @@ class SignEngine implements ISignEngine {
 
   Future<void> _onSessionUpdateRequest(
     String topic,
-    JsonRpcRequest payload,
-  ) async {
+    JsonRpcRequest payload, [
+    _,
+  ]) async {
     try {
       // print(payload.params);
       final request = WcSessionUpdateRequest.fromJson(payload.params);
@@ -1216,8 +1272,9 @@ class SignEngine implements ISignEngine {
 
   Future<void> _onSessionExtendRequest(
     String topic,
-    JsonRpcRequest payload,
-  ) async {
+    JsonRpcRequest payload, [
+    _,
+  ]) async {
     try {
       final _ = WcSessionExtendRequest.fromJson(payload.params);
       await _isValidSessionTopic(topic);
@@ -1253,8 +1310,9 @@ class SignEngine implements ISignEngine {
 
   Future<void> _onSessionPingRequest(
     String topic,
-    JsonRpcRequest payload,
-  ) async {
+    JsonRpcRequest payload, [
+    _,
+  ]) async {
     try {
       final _ = WcSessionPingRequest.fromJson(payload.params);
       await _isValidPing(topic);
@@ -1284,8 +1342,9 @@ class SignEngine implements ISignEngine {
 
   Future<void> _onSessionDeleteRequest(
     String topic,
-    JsonRpcRequest payload,
-  ) async {
+    JsonRpcRequest payload, [
+    _,
+  ]) async {
     try {
       final _ = WcSessionDeleteRequest.fromJson(payload.params);
       await _isValidDisconnect(topic);
@@ -1308,10 +1367,14 @@ class SignEngine implements ISignEngine {
     }
   }
 
-  /// Called when a session request is received
+  /// Called when a session request (method) is received by the wallet
   /// Will attempt to find a handler for the request, if it doesn't,
   /// it will throw an error.
-  Future<void> _onSessionRequest(String topic, JsonRpcRequest payload) async {
+  Future<void> _onSessionRequest(
+    String topic,
+    JsonRpcRequest payload, [
+    TransportType transportType = TransportType.relay,
+  ]) async {
     try {
       final request = WcSessionRequestRequest.fromJson(payload.params);
       await _isValidRequest(
@@ -1324,6 +1387,7 @@ class SignEngine implements ISignEngine {
       final verifyContext = await _getVerifyContext(
         payload,
         session.peer.metadata,
+        transportType,
       );
 
       final sessionRequest = SessionRequest(
@@ -1333,6 +1397,7 @@ class SignEngine implements ISignEngine {
         chainId: request.chainId,
         params: request.request.params,
         verifyContext: verifyContext,
+        transportType: transportType,
       );
 
       // print('payload id: ${payload.id}');
@@ -1340,6 +1405,12 @@ class SignEngine implements ISignEngine {
         payload.id,
         sessionRequest,
       );
+
+      final appLink = (session.peer.metadata.redirect?.universal ?? '');
+      if (session.transportType.isLinkMode && appLink.isNotEmpty) {
+        // save app as supported for link mode
+        core.addLinkModeSupportedApp(appLink);
+      }
 
       final methodKey = _getRegisterKey(
         request.chainId,
@@ -1394,10 +1465,12 @@ class SignEngine implements ISignEngine {
     }
   }
 
+  /// Called when a session event is received by the wallet
   Future<void> _onSessionEventRequest(
     String topic,
-    JsonRpcRequest payload,
-  ) async {
+    JsonRpcRequest payload, [
+    _,
+  ]) async {
     try {
       final request = WcSessionEventRequest.fromJson(payload.params);
       final SessionEventParams event = request.event;
@@ -1817,32 +1890,79 @@ class SignEngine implements ISignEngine {
   Future<VerifyContext> _getVerifyContext(
     JsonRpcRequest payload,
     PairingMetadata proposerMetada,
+    TransportType transportType,
   ) async {
+    if (transportType.isLinkMode) {
+      return await _getVerifyContextLinkMode(payload, proposerMetada);
+    }
+
+    final defaultVerifyUrl = WalletConnectConstants.VERIFY_SERVER;
+    final verifyUrl = proposerMetada.verifyUrl ?? defaultVerifyUrl;
+
+    final metadataUri = Uri.tryParse(proposerMetada.url);
+
     try {
       final jsonStringify = jsonEncode(payload.toJson());
       final hash = core.crypto.getUtils().hashMessage(jsonStringify);
+      final attestation = await core.verify.resolve(attestationId: hash);
 
-      final result = await core.verify.resolve(attestationId: hash);
-      final validation = result?.origin == Uri.parse(proposerMetada.url).origin
-          ? Validation.VALID
-          : Validation.INVALID;
+      final validation = core.verify.getValidation(
+        attestation,
+        metadataUri,
+      );
 
+      final origin = attestation?.origin;
       return VerifyContext(
-        origin: result?.origin ?? proposerMetada.url,
-        verifyUrl: proposerMetada.verifyUrl ?? '',
-        validation: result?.isScam == true ? Validation.SCAM : validation,
-        isScam: result?.isScam,
+        origin: (origin ?? metadataUri?.origin) ?? proposerMetada.url,
+        verifyUrl: verifyUrl,
+        validation: validation,
+        isScam: validation == Validation.SCAM,
       );
     } catch (e, s) {
       if (e is! AttestationNotFound) {
         core.logger.e('[$runtimeType] verify error', error: e, stackTrace: s);
       }
       return VerifyContext(
-        origin: proposerMetada.url,
-        verifyUrl: proposerMetada.verifyUrl ?? '',
+        origin: metadataUri?.origin ?? proposerMetada.url,
+        verifyUrl: verifyUrl,
         validation: Validation.UNKNOWN,
       );
     }
+  }
+
+  Future<VerifyContext> _getVerifyContextLinkMode(
+    JsonRpcRequest payload,
+    PairingMetadata requesterMetadata,
+  ) async {
+    final universalLink = requesterMetadata.redirect?.universal ?? '';
+    final domainUrl = requesterMetadata.url;
+
+    if (universalLink.isEmpty || domainUrl.isEmpty) {
+      return VerifyContext(
+        origin: requesterMetadata.url,
+        verifyUrl: WalletConnectConstants.VERIFY_SERVER,
+        validation: Validation.INVALID,
+      );
+    }
+
+    final universalHost = Uri.parse(universalLink).host;
+    final domainHost = Uri.parse(domainUrl).host;
+
+    final matches =
+        universalHost == domainHost || universalHost.endsWith('.$domainHost');
+    if (matches) {
+      return VerifyContext(
+        origin: domainHost,
+        verifyUrl: WalletConnectConstants.VERIFY_SERVER,
+        validation: Validation.VALID,
+      );
+    }
+
+    return VerifyContext(
+      origin: domainHost,
+      verifyUrl: WalletConnectConstants.VERIFY_SERVER,
+      validation: Validation.INVALID,
+    );
   }
 
   // NEW 1-CA METHOD (Should this be private?)
@@ -1972,6 +2092,7 @@ class SignEngine implements ISignEngine {
     List<List<String>>? methods = DEFAULT_METHODS_AUTH,
   }) async {
     _checkInitialized();
+    _confirmOnlineStateOrThrow();
 
     AuthApiValidators.isValidRequest(params);
     String? pTopic = pairingTopic;
@@ -2007,7 +2128,7 @@ class SignEngine implements ISignEngine {
     final int expiry = params.expiry ?? WalletConnectConstants.FIVE_MINUTES;
 
     await authKeys.set(
-      AuthConstants.AUTH_CLIENT_PUBLIC_KEY_NAME,
+      StringConstants.AUTH_CLIENT_PUBLIC_KEY_NAME,
       AuthPublicKey(publicKey: publicKey),
     );
 
@@ -2130,17 +2251,34 @@ class SignEngine implements ISignEngine {
     return pendingSessionAuthRequests;
   }
 
+  bool _isLinkModeAuthenticate(String? walletLink) {
+    final selfLinkMode = metadata.redirect?.linkMode == true;
+    final selfLink = (metadata.redirect?.universal ?? '');
+    final walletUniversalLink = (walletLink ?? '');
+    return selfLinkMode &&
+        selfLink.isNotEmpty &&
+        walletUniversalLink.isNotEmpty &&
+        core.getLinkModeSupportedApps().contains(walletLink);
+  }
+
   @override
   Future<SessionAuthRequestResponse> authenticate({
     required SessionAuthRequestParams params,
+    String? walletUniversalLink,
     String? pairingTopic,
     List<List<String>>? methods = const [
       [MethodConstants.WC_SESSION_AUTHENTICATE]
     ],
   }) async {
     _checkInitialized();
-
     AuthApiValidators.isValidAuthenticate(params);
+
+    final isLinkMode = _isLinkModeAuthenticate(walletUniversalLink);
+    final transportType =
+        isLinkMode ? TransportType.linkMode : TransportType.relay;
+    if (!transportType.isLinkMode) {
+      _confirmOnlineStateOrThrow();
+    }
 
     final chains = params.chains;
     final resources = params.resources ?? [];
@@ -2164,7 +2302,7 @@ class SignEngine implements ISignEngine {
 
     await Future.wait([
       authKeys.set(
-        AuthConstants.OCAUTH_CLIENT_PUBLIC_KEY_NAME,
+        StringConstants.OCAUTH_CLIENT_PUBLIC_KEY_NAME,
         AuthPublicKey(publicKey: publicKey),
       ),
       pairingTopics.set(responseTopic, pTopic),
@@ -2192,7 +2330,7 @@ class SignEngine implements ISignEngine {
     await core.relayClient.subscribe(topic: responseTopic);
 
     final id = JsonRpcUtils.payloadId();
-    final proposalId = JsonRpcUtils.payloadId();
+    final fallbackId = JsonRpcUtils.payloadId();
 
     // Ensure the expiry is greater than the minimum required for the request - currently 1h
     final method = MethodConstants.WC_SESSION_AUTHENTICATE;
@@ -2211,6 +2349,7 @@ class SignEngine implements ISignEngine {
         metadata: metadata,
       ),
       expiryTimestamp: expiryTimestamp.millisecondsSinceEpoch,
+      transportType: transportType, // TODO LinkMode remove? Ask Nacho or Gancho
     );
 
     // Set the one time use receiver public key for decoding the Type 1 envelope
@@ -2230,7 +2369,7 @@ class SignEngine implements ISignEngine {
       Duration(seconds: fallbackOpts.ttl),
     );
     final proposalData = ProposalData(
-      id: proposalId,
+      id: fallbackId,
       requiredNamespaces: {},
       optionalNamespaces: {
         'eip155': RequiredNamespace(
@@ -2259,7 +2398,7 @@ class SignEngine implements ISignEngine {
 
     pendingProposals.add(
       SessionProposalCompleter(
-        id: proposalData.id,
+        id: fallbackId,
         selfPublicKey: proposalData.proposer.publicKey,
         pairingTopic: proposalData.pairingTopic,
         requiredNamespaces: proposalData.requiredNamespaces,
@@ -2269,30 +2408,52 @@ class SignEngine implements ISignEngine {
     );
 
     // ------------------------------------------------------- //
+    late final Uri linkModeUri;
+    if (isLinkMode) {
+      final payload = JsonRpcUtils.formatJsonRpcRequest(
+        method,
+        request.toJson(),
+        id: id,
+      );
+      final message = await core.crypto.encode(
+        pTopic,
+        payload,
+        options: EncodeOptions(type: EncodeOptions.TYPE_2),
+      );
+      linkModeUri = WalletConnectUtils.getLinkModeURL(
+        walletUniversalLink!,
+        pTopic,
+        message!,
+      ).toLinkMode;
+    } else {
+      // Send Session Proposal request (Only when on Relay mode)
+      _connectResponseHandler(
+        pTopic,
+        proposeRequest,
+        fallbackId,
+      );
+    }
 
-    // Send One-Click Auth request
+    // Send One-Click Auth request (When on Relay and LinkMode)
+    // TODO LinkMode: try to reduce the amount of params, maybe using a pendingSessionAuthRequest
     _sessionAuthResponseHandler(
       id: id,
       publicKey: publicKey,
       pairingTopic: pTopic,
       responseTopic: responseTopic,
+      walletUniversalLink: walletUniversalLink,
+      isLinkMode: isLinkMode,
       request: request,
-      expiry: authRequestExpiry,
+      expiry: authRequestExpiry, // TODO remove, use request.expiryTimestamp
       completer: completer,
-    );
-
-    // Send Session Proposal request
-    _connectResponseHandler(
-      pTopic,
-      proposeRequest,
-      proposalData.id,
     );
 
     return SessionAuthRequestResponse(
       id: id,
       pairingTopic: pTopic,
+      // linkModeUri is sent in the response so the host app can trigger it
+      uri: isLinkMode ? linkModeUri : connectionUri,
       completer: completer,
-      uri: connectionUri,
     );
   }
 
@@ -2301,6 +2462,8 @@ class SignEngine implements ISignEngine {
     required String publicKey,
     required String pairingTopic,
     required String responseTopic,
+    required String? walletUniversalLink,
+    required bool isLinkMode,
     required int expiry,
     required WcSessionAuthRequestParams request,
     required Completer<SessionAuthResponse> completer,
@@ -2314,6 +2477,9 @@ class SignEngine implements ISignEngine {
         request.toJson(),
         id: id,
         ttl: expiry,
+        appLink: isLinkMode ? walletUniversalLink : null,
+        // We don't want to open the appLink in this case as it will be opened by the host app
+        openUrl: false,
       );
       result = WcSessionAuthRequestResult.fromJson(response);
     } catch (error) {
@@ -2322,10 +2488,7 @@ class SignEngine implements ISignEngine {
         topic: responseTopic,
         jsonRpcError: (error is JsonRpcError) ? error : null,
         error: (error is! JsonRpcError)
-            ? WalletConnectError(
-                code: -1,
-                message: error.toString(),
-              )
+            ? WalletConnectError(code: -1, message: '$error')
             : null,
       );
       onSessionAuthResponse.broadcast(response);
@@ -2422,17 +2585,36 @@ class SignEngine implements ISignEngine {
           accounts: approvedAccounts,
           methods: approvedMethods,
         ),
+        authentication: cacaos,
+        transportType: request.transportType,
       );
 
       await core.relayClient.subscribe(topic: sessionTopic);
       await sessions.set(sessionTopic, session);
-
       await core.pairing.updateMetadata(
         topic: pairingTopic,
         metadata: responder.metadata,
       );
 
       session = sessions.get(sessionTopic);
+    }
+
+    // TODO LinkMode: Make this whole block more readable
+    final selfLinkMode = metadata.redirect?.linkMode == true;
+    final responderLinkMode = responder.metadata.redirect?.linkMode == true;
+    final walletLink = (walletUniversalLink ?? '');
+    if (selfLinkMode && responderLinkMode) {
+      if (walletLink.isNotEmpty &&
+          walletLink == responder.metadata.redirect?.universal) {
+        // save wallet link in array of apps that support linkMode
+        await core.addLinkModeSupportedApp(walletUniversalLink!);
+        core.logger
+            .i('[$runtimeType] sessions.update $sessionTopic to linkMode');
+        await sessions.update(
+          sessionTopic,
+          transportType: TransportType.linkMode,
+        );
+      }
     }
 
     final resp = SessionAuthResponse(
@@ -2455,15 +2637,19 @@ class SignEngine implements ISignEngine {
   }) async {
     _checkInitialized();
 
-    Map<int, PendingAuthRequest> pendingRequests = getPendingAuthRequests();
+    final pendingAuthRequests = getPendingAuthRequests();
     AuthApiValidators.isValidRespond(
       id: id,
-      pendingRequests: pendingRequests,
+      pendingRequests: pendingAuthRequests,
       signature: signature,
       error: error,
     );
 
-    final PendingAuthRequest pendingRequest = pendingRequests[id]!;
+    final PendingAuthRequest pendingRequest = pendingAuthRequests[id]!;
+    if (!pendingRequest.transportType.isLinkMode) {
+      _confirmOnlineStateOrThrow();
+    }
+
     final String receiverPublicKey = pendingRequest.metadata.publicKey;
     final String senderPublicKey = await core.crypto.generateKeyPair();
     final String responseTopic = core.crypto.getUtils().hashKey(
@@ -2522,15 +2708,27 @@ class SignEngine implements ISignEngine {
   }) async {
     _checkInitialized();
 
-    final pendingRequests = getPendingSessionAuthRequests();
+    final pendingSessionAuthRequests = getPendingSessionAuthRequests();
+
+    if (!pendingSessionAuthRequests.containsKey(id)) {
+      throw Errors.getInternalError(
+        Errors.MISSING_OR_INVALID,
+        context: 'approveSessionAuthenticate() '
+            'Could not find pending auth request with id $id',
+      );
+    }
 
     AuthApiValidators.isValidRespondAuthenticate(
       id: id,
-      pendingRequests: pendingRequests,
+      pendingRequests: pendingSessionAuthRequests,
       auths: auths,
     );
 
-    final PendingSessionAuthRequest pendingRequest = pendingRequests[id]!;
+    final pendingRequest = pendingSessionAuthRequests[id]!;
+    if (!pendingRequest.transportType.isLinkMode) {
+      _confirmOnlineStateOrThrow();
+    }
+
     final receiverPublicKey = pendingRequest.requester.publicKey;
     final senderPublicKey = await core.crypto.generateKeyPair();
     final responseTopic = core.crypto.getUtils().hashKey(receiverPublicKey);
@@ -2608,13 +2806,20 @@ class SignEngine implements ISignEngine {
           accounts: approvedAccounts,
           methods: approvedMethods,
         ),
+        authentication: auths,
+        transportType: pendingRequest.transportType,
       );
 
       await core.relayClient.subscribe(topic: sessionTopic);
       await sessions.set(sessionTopic, session);
-
-      session = sessions.get(sessionTopic);
+      await core.pairing.updateMetadata(
+        topic: pendingRequest.pairingTopic,
+        metadata: pendingRequest.requester.metadata,
+      );
     }
+
+    await sessionAuthRequests.delete(id.toString());
+    await core.pairing.activate(topic: pendingRequest.pairingTopic);
 
     final result = WcSessionAuthRequestResult(
       cacaos: auths,
@@ -2629,13 +2834,7 @@ class SignEngine implements ISignEngine {
       MethodConstants.WC_SESSION_AUTHENTICATE,
       result.toJson(),
       encodeOptions: encodeOpts,
-    );
-
-    await sessionAuthRequests.delete(id.toString());
-    await core.pairing.activate(topic: pendingRequest.pairingTopic);
-    await core.pairing.updateMetadata(
-      topic: pendingRequest.pairingTopic,
-      metadata: pendingRequest.requester.metadata,
+      appLink: _getAppLinkIfEnabled(pendingRequest.requester.metadata),
     );
 
     return ApproveResponse(
@@ -2651,17 +2850,21 @@ class SignEngine implements ISignEngine {
   }) async {
     _checkInitialized();
 
-    final pendingRequests = getPendingSessionAuthRequests();
+    final pendingSessionAuthRequests = getPendingSessionAuthRequests();
 
-    if (!pendingRequests.containsKey(id)) {
+    if (!pendingSessionAuthRequests.containsKey(id)) {
       throw Errors.getInternalError(
         Errors.MISSING_OR_INVALID,
-        context:
-            'rejectSessionAuthenticate() Could not find pending auth request with id $id',
+        context: 'rejectSessionAuthenticate() '
+            'Could not find pending auth request with id $id',
       );
     }
 
-    final PendingSessionAuthRequest pendingRequest = pendingRequests[id]!;
+    final pendingRequest = pendingSessionAuthRequests[id]!;
+    if (!pendingRequest.transportType.isLinkMode) {
+      _confirmOnlineStateOrThrow();
+    }
+
     final receiverPublicKey = pendingRequest.requester.publicKey;
     final senderPublicKey = await core.crypto.generateKeyPair();
     final responseTopic = core.crypto.getUtils().hashKey(receiverPublicKey);
@@ -2681,6 +2884,7 @@ class SignEngine implements ISignEngine {
       JsonRpcError(code: reason.code, message: reason.message),
       encodeOptions: encodeOpts,
       rpcOptions: rpcOpts?['reject'],
+      appLink: _getAppLinkIfEnabled(pendingRequest.requester.metadata),
     );
 
     await sessionAuthRequests.delete(id.toString());
@@ -2688,7 +2892,11 @@ class SignEngine implements ISignEngine {
   }
 
   // FORMER AUTH ENGINE PROPERTY
-  void _onAuthRequest(String topic, JsonRpcRequest payload) async {
+  void _onAuthRequest(
+    String topic,
+    JsonRpcRequest payload, [
+    TransportType transportType = TransportType.relay,
+  ]) async {
     try {
       final request = WcAuthRequestRequest.fromJson(payload.params);
 
@@ -2704,6 +2912,7 @@ class SignEngine implements ISignEngine {
           pairingTopic: topic,
           metadata: request.requester,
           cacaoPayload: cacaoPayload,
+          transportType: transportType,
         ),
       );
 
@@ -2713,6 +2922,7 @@ class SignEngine implements ISignEngine {
           topic: topic,
           requester: request.requester,
           payloadParams: request.payloadParams,
+          transportType: transportType,
         ),
       );
     } on WalletConnectError catch (err) {
@@ -2727,8 +2937,32 @@ class SignEngine implements ISignEngine {
     }
   }
 
-  void _onSessionAuthRequest(String topic, JsonRpcRequest payload) async {
-    core.logger.t('_onSessionAuthRequest, topic: $topic, payload: $payload');
+  void _onSessionAuthenticateRequest(
+    String topic,
+    JsonRpcRequest payload, [
+    TransportType transportType = TransportType.relay,
+  ]) async {
+    core.logger.t(
+      '_onSessionAuthenticateRequest, topic: $topic, payload: $payload',
+    );
+
+    if (transportType.isLinkMode && !sessions.has(topic)) {
+      final pairingInfo = PairingInfo(
+        topic: topic,
+        expiry: WalletConnectUtils.calculateExpiry(
+          WalletConnectConstants.SEVEN_DAYS,
+        ),
+        relay: Relay(WalletConnectConstants.RELAYER_DEFAULT_PROTOCOL),
+        // Will be activated during approveSessionAuthenticate()
+        // or deleted during rejectSessionAuthenticate()
+        active: false,
+      );
+
+      await pairings.set(topic, pairingInfo);
+      core.logger.t(
+        '[$runtimeType] _onSessionAuthenticateRequest pairingInfo $pairingInfo',
+      );
+    }
 
     final sessionAuthRequest = WcSessionAuthRequestParams.fromJson(
       payload.params,
@@ -2738,7 +2972,11 @@ class SignEngine implements ISignEngine {
         sessionAuthRequest.authPayload,
       );
 
-      final verifyContext = await _getVerifyContext(payload, metadata);
+      final verifyContext = await _getVerifyContext(
+        payload,
+        sessionAuthRequest.requester.metadata,
+        transportType,
+      );
 
       sessionAuthRequests.set(
         payload.id.toString(),
@@ -2749,8 +2987,16 @@ class SignEngine implements ISignEngine {
           authPayload: cacaoPayload,
           expiryTimestamp: sessionAuthRequest.expiryTimestamp,
           verifyContext: verifyContext,
+          transportType: transportType,
         ),
       );
+
+      final appLink =
+          (sessionAuthRequest.requester.metadata.redirect?.universal ?? '');
+      if (transportType.isLinkMode && appLink.isNotEmpty) {
+        // save app as supported for link mode
+        core.addLinkModeSupportedApp(appLink);
+      }
 
       onSessionAuthRequest.broadcast(
         SessionAuthRequest(
@@ -2759,6 +3005,7 @@ class SignEngine implements ISignEngine {
           requester: sessionAuthRequest.requester,
           authPayload: sessionAuthRequest.authPayload,
           verifyContext: verifyContext,
+          transportType: transportType,
         ),
       );
     } on WalletConnectError catch (err) {
@@ -2779,6 +3026,101 @@ class SignEngine implements ISignEngine {
         encodeOptions: encodeOpts,
         rpcOptions: rpcOpts?['autoReject'],
       );
+    }
+  }
+
+  @override
+  Future<void> dispatchEnvelope(String url) async {
+    final topic = WalletConnectUtils.getSearchParamFromURL(url, 'topic');
+    final envelope = WalletConnectUtils.getSearchParamFromURL(url, 'wc_ev');
+
+    if (envelope.isEmpty) {
+      throw WalletConnectError(code: 0, message: 'Envelope not found');
+    }
+    if (topic.isEmpty) {
+      throw WalletConnectError(code: 0, message: 'Topic not found');
+    }
+
+    final session = sessions.get(topic);
+    if (session != null) {
+      core.logger.i('[$runtimeType] sessions.update $topic to linkMode');
+      await sessions.update(
+        session.topic,
+        transportType: TransportType.linkMode,
+      );
+    }
+
+    core.pairing.dispatchEnvelope(
+      topic: topic,
+      envelope: envelope,
+    );
+  }
+
+  bool _isLinkModeEnabled(PairingMetadata? peerMetadata) {
+    if (peerMetadata == null) return false;
+
+    final selfLink = (metadata.redirect?.universal ?? '');
+    final selfLinkMode = metadata.redirect?.linkMode == true;
+    final peerLink = (peerMetadata.redirect?.universal ?? '');
+    final peerLinkMode = peerMetadata.redirect?.linkMode == true;
+    return selfLinkMode &&
+        selfLink.isNotEmpty &&
+        peerLinkMode &&
+        peerLink.isNotEmpty &&
+        core.getLinkModeSupportedApps().contains(peerLink);
+  }
+
+  String? _getAppLinkIfEnabled(PairingMetadata? peerMetadata) {
+    final isLinkMode = _isLinkModeEnabled(peerMetadata);
+    return isLinkMode ? peerMetadata?.redirect?.universal : null;
+  }
+
+  @override
+  Future<bool> redirectToDapp({
+    required String topic,
+    required Redirect? redirect,
+  }) {
+    return _callRedirect(topic, redirect);
+  }
+
+  @override
+  Future<bool> redirectToWallet({
+    required String topic,
+    required Redirect? redirect,
+  }) {
+    return _callRedirect(topic, redirect);
+  }
+
+  Future<bool> _callRedirect(String topic, Redirect? redirect) async {
+    final hasSession = topic.isNotEmpty && sessions.has(topic);
+    if (hasSession) {
+      final session = sessions.get(topic)!;
+      final isLinkMode = session.transportType.isLinkMode;
+      final isEnabled = _isLinkModeEnabled(session.peer.metadata);
+      if (isLinkMode && isEnabled) {
+        // linkMode redirection is already handled in the requests
+        return false;
+      }
+    }
+
+    final scheme = redirect?.native;
+    try {
+      if (scheme == null) {
+        throw WalletConnectError(
+          code: 0,
+          message: 'scheme `$scheme` is invalid',
+        );
+      }
+      final success = await WalletConnectUtils.openURL(scheme);
+      if (!success) {
+        throw WalletConnectError(
+          code: 0,
+          message: 'Can not open $scheme',
+        );
+      }
+      return true;
+    } catch (e) {
+      rethrow;
     }
   }
 }

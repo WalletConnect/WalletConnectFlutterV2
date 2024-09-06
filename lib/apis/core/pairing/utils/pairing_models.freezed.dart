@@ -561,6 +561,7 @@ Redirect _$RedirectFromJson(Map<String, dynamic> json) {
 mixin _$Redirect {
   String? get native => throw _privateConstructorUsedError;
   String? get universal => throw _privateConstructorUsedError;
+  bool get linkMode => throw _privateConstructorUsedError;
 
   Map<String, dynamic> toJson() => throw _privateConstructorUsedError;
   @JsonKey(ignore: true)
@@ -573,7 +574,7 @@ abstract class $RedirectCopyWith<$Res> {
   factory $RedirectCopyWith(Redirect value, $Res Function(Redirect) then) =
       _$RedirectCopyWithImpl<$Res, Redirect>;
   @useResult
-  $Res call({String? native, String? universal});
+  $Res call({String? native, String? universal, bool linkMode});
 }
 
 /// @nodoc
@@ -591,6 +592,7 @@ class _$RedirectCopyWithImpl<$Res, $Val extends Redirect>
   $Res call({
     Object? native = freezed,
     Object? universal = freezed,
+    Object? linkMode = null,
   }) {
     return _then(_value.copyWith(
       native: freezed == native
@@ -601,6 +603,10 @@ class _$RedirectCopyWithImpl<$Res, $Val extends Redirect>
           ? _value.universal
           : universal // ignore: cast_nullable_to_non_nullable
               as String?,
+      linkMode: null == linkMode
+          ? _value.linkMode
+          : linkMode // ignore: cast_nullable_to_non_nullable
+              as bool,
     ) as $Val);
   }
 }
@@ -613,7 +619,7 @@ abstract class _$$RedirectImplCopyWith<$Res>
       __$$RedirectImplCopyWithImpl<$Res>;
   @override
   @useResult
-  $Res call({String? native, String? universal});
+  $Res call({String? native, String? universal, bool linkMode});
 }
 
 /// @nodoc
@@ -629,6 +635,7 @@ class __$$RedirectImplCopyWithImpl<$Res>
   $Res call({
     Object? native = freezed,
     Object? universal = freezed,
+    Object? linkMode = null,
   }) {
     return _then(_$RedirectImpl(
       native: freezed == native
@@ -639,6 +646,10 @@ class __$$RedirectImplCopyWithImpl<$Res>
           ? _value.universal
           : universal // ignore: cast_nullable_to_non_nullable
               as String?,
+      linkMode: null == linkMode
+          ? _value.linkMode
+          : linkMode // ignore: cast_nullable_to_non_nullable
+              as bool,
     ));
   }
 }
@@ -647,7 +658,7 @@ class __$$RedirectImplCopyWithImpl<$Res>
 
 @JsonSerializable()
 class _$RedirectImpl implements _Redirect {
-  const _$RedirectImpl({this.native, this.universal});
+  const _$RedirectImpl({this.native, this.universal, this.linkMode = false});
 
   factory _$RedirectImpl.fromJson(Map<String, dynamic> json) =>
       _$$RedirectImplFromJson(json);
@@ -656,10 +667,13 @@ class _$RedirectImpl implements _Redirect {
   final String? native;
   @override
   final String? universal;
+  @override
+  @JsonKey()
+  final bool linkMode;
 
   @override
   String toString() {
-    return 'Redirect(native: $native, universal: $universal)';
+    return 'Redirect(native: $native, universal: $universal, linkMode: $linkMode)';
   }
 
   @override
@@ -669,12 +683,14 @@ class _$RedirectImpl implements _Redirect {
             other is _$RedirectImpl &&
             (identical(other.native, native) || other.native == native) &&
             (identical(other.universal, universal) ||
-                other.universal == universal));
+                other.universal == universal) &&
+            (identical(other.linkMode, linkMode) ||
+                other.linkMode == linkMode));
   }
 
   @JsonKey(ignore: true)
   @override
-  int get hashCode => Object.hash(runtimeType, native, universal);
+  int get hashCode => Object.hash(runtimeType, native, universal, linkMode);
 
   @JsonKey(ignore: true)
   @override
@@ -691,8 +707,10 @@ class _$RedirectImpl implements _Redirect {
 }
 
 abstract class _Redirect implements Redirect {
-  const factory _Redirect({final String? native, final String? universal}) =
-      _$RedirectImpl;
+  const factory _Redirect(
+      {final String? native,
+      final String? universal,
+      final bool linkMode}) = _$RedirectImpl;
 
   factory _Redirect.fromJson(Map<String, dynamic> json) =
       _$RedirectImpl.fromJson;
@@ -701,6 +719,8 @@ abstract class _Redirect implements Redirect {
   String? get native;
   @override
   String? get universal;
+  @override
+  bool get linkMode;
   @override
   @JsonKey(ignore: true)
   _$$RedirectImplCopyWith<_$RedirectImpl> get copyWith =>

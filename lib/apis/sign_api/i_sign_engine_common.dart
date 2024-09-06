@@ -54,4 +54,6 @@ abstract class ISignEngineCommon {
     required Cacao cacao,
     required String projectId,
   });
+
+  Future<void> dispatchEnvelope(String url);
 }

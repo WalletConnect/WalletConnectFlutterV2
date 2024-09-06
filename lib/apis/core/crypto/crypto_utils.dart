@@ -4,6 +4,7 @@ import 'dart:typed_data';
 
 import 'package:convert/convert.dart';
 import 'package:cryptography/cryptography.dart' as dc;
+import 'package:flutter/services.dart';
 import 'package:pointycastle/digests/sha256.dart';
 import 'package:pointycastle/key_derivators/hkdf.dart';
 import 'package:pointycastle/pointycastle.dart' show HkdfParameters;
@@ -155,6 +156,11 @@ class CryptoUtils extends ICryptoUtils {
   }) {
     List<int> l = [type];
 
+    if (type == EncodeOptions.TYPE_2) {
+      l.addAll(sealed);
+      return base64Url.encode(l);
+    }
+
     if (type == EncodeOptions.TYPE_1) {
       if (senderPublicKey == null) {
         throw const WalletConnectError(
@@ -172,9 +178,17 @@ class CryptoUtils extends ICryptoUtils {
     return base64Encode(l);
   }
 
+  String _padEncodeIfNeeded(String encoded) {
+    final padding = encoded.length % 4;
+    if (padding > 0) {
+      encoded += '=' * (4 - padding);
+    }
+    return encoded;
+  }
+
   @override
   EncodingParams deserialize(String encoded) {
-    final Uint8List bytes = base64Decode(encoded);
+    final Uint8List bytes = base64Decode(_padEncodeIfNeeded(encoded));
     final int type = bytes[0];
 
     int index = TYPE_LENGTH;
@@ -186,6 +200,28 @@ class CryptoUtils extends ICryptoUtils {
       );
       index += KEY_LENGTH;
     }
+    if (type == EncodeOptions.TYPE_2) {
+      senderPublicKey = bytes.sublist(
+        index,
+        index + KEY_LENGTH,
+      );
+      // index += KEY_LENGTH;
+
+      Uint8List sealed = bytes.sublist(index);
+      // iv is not used in TYPE_2 envelopes
+      Uint8List iv = Uint8List(IV_LENGTH)
+        ..setAll(0, List.generate(IV_LENGTH, (_) => Random().nextInt(256)));
+      Uint8List ivSealed = bytes.sublist(index);
+
+      return EncodingParams(
+        type,
+        sealed,
+        iv,
+        ivSealed,
+        senderPublicKey: senderPublicKey,
+      );
+    }
+
     Uint8List iv = bytes.sublist(index, index + IV_LENGTH);
     Uint8List ivSealed = bytes.sublist(index);
     index += IV_LENGTH;
@@ -247,5 +283,45 @@ class CryptoUtils extends ICryptoUtils {
     return result.type == EncodeOptions.TYPE_1 &&
         result.senderPublicKey != null &&
         result.receiverPublicKey != null;
+  }
+
+  @override
+  bool isTypeTwoEnvelope(EncodingValidation result) {
+    return result.type == EncodeOptions.TYPE_2;
+  }
+
+  @override
+  Uint8List encodeTypeByte(int type) {
+    // Convert the integer to its byte representation in base 10
+    String typeString = type.toString();
+    List<int> byteList = typeString.codeUnits;
+
+    // Convert the List<int> to a Uint8List
+    return Uint8List.fromList(byteList);
+  }
+
+  @override
+  int decodeTypeByte(Uint8List byte) {
+    // Convert Uint8List to a string using UTF-16 encoding
+    String typeString = String.fromCharCodes(byte);
+
+    // Convert the string to an integer
+    return int.parse(typeString);
+  }
+
+  @override
+  String encodeTypeTwoEnvelope({required String message}) {
+    // iv is not used in type 2 envelopes
+    Uint8List iv = Uint8List(IV_LENGTH)
+      ..setAll(0, List.generate(IV_LENGTH, (_) => Random().nextInt(256)));
+    Uint8List sealed = utf8.encode(message);
+
+    return serialize(EncodeOptions.TYPE_2, sealed, iv);
+  }
+
+  @override
+  String decodeTypeTwoEnvelope({required String message}) {
+    final EncodingParams deserialized = deserialize(message);
+    return utf8.decode(deserialized.sealed);
   }
 }

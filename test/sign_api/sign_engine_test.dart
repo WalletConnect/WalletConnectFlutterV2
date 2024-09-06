@@ -22,7 +22,7 @@ void main() {
         logLevel: LogLevel.info,
         httpClient: getHttpWrapper(),
       );
-      ISignEngine e = SignEngine(
+      ISignEngine engineA = SignEngine(
         core: core,
         metadata: metadata,
         proposals: GenericStore(
@@ -91,9 +91,9 @@ void main() {
         ),
       );
       await core.start();
-      await e.init();
+      await engineA.init();
 
-      return e;
+      return engineA;
     },
     clientBCreator: (PairingMetadata metadata) async {
       final core = Core(
@@ -103,7 +103,7 @@ void main() {
         logLevel: LogLevel.info,
         httpClient: getHttpWrapper(),
       );
-      ISignEngine e = SignEngine(
+      ISignEngine engineB = SignEngine(
         core: core,
         metadata: metadata,
         proposals: GenericStore(
@@ -172,9 +172,9 @@ void main() {
         ),
       );
       await core.start();
-      await e.init();
+      await engineB.init();
 
-      return e;
+      return engineB;
     },
   );
 }

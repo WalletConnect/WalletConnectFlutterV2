@@ -197,6 +197,7 @@ abstract class ISignClient {
 
   Future<SessionAuthRequestResponse> authenticate({
     required SessionAuthRequestParams params,
+    String? walletUniversalLink,
     String? pairingTopic,
     List<List<String>>? methods,
   });
@@ -204,5 +205,17 @@ abstract class ISignClient {
   Future<bool> validateSignedCacao({
     required Cacao cacao,
     required String projectId,
+  });
+
+  Future<void> dispatchEnvelope(String url);
+
+  Future<bool> redirectToDapp({
+    required String topic,
+    required Redirect? redirect,
+  });
+
+  Future<bool> redirectToWallet({
+    required String topic,
+    required Redirect? redirect,
   });
 }

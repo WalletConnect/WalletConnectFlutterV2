@@ -113,8 +113,6 @@ platform :ios do
       changelog: changelog,
       distribute_external: true,
       notify_external_testers: true,
-      distribute_external: true,
-      notify_external_testers: true,
       skip_waiting_for_build_processing: false,
       groups: ["External Testers"]
     )

@@ -1,6 +1,6 @@
 import 'package:walletconnect_flutter_v2/apis/utils/constants.dart';
 
-class AuthConstants {
+class StringConstants {
   static const AUTH_REQUEST_EXPIRY_MIN = WalletConnectConstants.FIVE_MINUTES;
   static const AUTH_REQUEST_EXPIRY_MAX = WalletConnectConstants.SEVEN_DAYS;
 

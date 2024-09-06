@@ -33,5 +33,16 @@ abstract class ICryptoUtils {
     String? senderPublicKey,
     String? receiverPublicKey,
   });
+
   bool isTypeOneEnvelope(EncodingValidation result);
+
+  bool isTypeTwoEnvelope(EncodingValidation result);
+
+  String encodeTypeTwoEnvelope({required String message});
+
+  String decodeTypeTwoEnvelope({required String message});
+
+  Uint8List encodeTypeByte(int type);
+
+  int decodeTypeByte(Uint8List byte);
 }
