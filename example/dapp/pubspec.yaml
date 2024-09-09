@@ -9,6 +9,9 @@ environment:
   sdk: ">=2.18.6 <3.0.0"
 
 dependencies:
+  bitcoin_base: ^4.7.0
+  pointycastle: ^3.5.2
+  hex: ^0.2.0
   flutter:
     sdk: flutter
 

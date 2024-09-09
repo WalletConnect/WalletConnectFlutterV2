@@ -3,6 +3,7 @@ import 'package:get_it_mixin/get_it_mixin.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/bottom_sheet/bottom_sheet_listener.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/bottom_sheet/bottom_sheet_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/bottom_sheet/i_bottom_sheet_service.dart';
+import 'package:walletconnect_flutter_v2_wallet/dependencies/chain_services/bitcoin_service.dart';
 // ignore: unused_import
 import 'package:walletconnect_flutter_v2_wallet/dependencies/chain_services/solana_service.dart';
 import 'package:walletconnect_flutter_v2_wallet/dependencies/chain_services/solana_service_2.dart';
@@ -73,6 +74,14 @@ class _MyHomePageState extends State<MyHomePage> with GetItStateMixin {
     for (final chainData in ChainData.eip155Chains) {
       GetIt.I.registerSingleton<EVMService>(
         EVMService(chainSupported: chainData),
+        instanceName: chainData.chainId,
+      );
+    }
+
+    // Support Bitcoin Chains
+    for (final chainData in ChainData.bitcoinChains) {
+      GetIt.I.registerSingleton<BitcoinService>(
+        BitcoinService(chainSupported: chainData),
         instanceName: chainData.chainId,
       );
     }

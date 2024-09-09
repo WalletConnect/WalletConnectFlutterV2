@@ -83,11 +83,6 @@ class SolanaService2 {
       );
     }
 
-    await _web3wallet.respondSessionRequest(
-      topic: topic,
-      response: response,
-    );
-
     _handleResponseForTopic(topic, response);
   }
 
@@ -161,11 +156,6 @@ class SolanaService2 {
         error: JsonRpcError(code: 0, message: e.toString()),
       );
     }
-
-    await _web3wallet.respondSessionRequest(
-      topic: topic,
-      response: response,
-    );
 
     _handleResponseForTopic(topic, response);
   }

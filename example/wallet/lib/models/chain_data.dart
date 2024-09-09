@@ -187,4 +187,27 @@ class ChainData {
       ],
     ),
   ];
+
+  static final List<ChainMetadata> bitcoinChains = [
+    const ChainMetadata(
+      type: ChainType.bitcoin,
+      chainId:
+          'bip122:000000000019d6689c085ae165831e934ff763ae46a2a6c172b3f1b60a8ce26f',
+      name: 'Bitcoin Mainnet',
+      logo: '/chain-logos/bitcoin.png',
+      color: Color.fromARGB(255, 255, 161, 9),
+      rpc: ['https://bitcoin.drpc.org/'],
+    ),
+    const ChainMetadata(
+      type: ChainType.bitcoin,
+      chainId:
+          'bip122:000000000933ea01ad0ee984209779baaec3ced90fa3f408719526f8d77f4943',
+      name: 'Bitcoin Signet',
+      logo: '/chain-logos/bitcoin.png',
+      color: Color.fromARGB(255, 255, 161, 9),
+      rpc: ['https://signet.bitcoinrpc.org'],
+      // https://bitcoin-testnet.drpc.org
+      isTestnet: true,
+    ),
+  ];
 }
