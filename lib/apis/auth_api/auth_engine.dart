@@ -23,6 +23,9 @@ import 'package:walletconnect_flutter_v2/apis/utils/constants.dart';
 import 'package:walletconnect_flutter_v2/apis/utils/errors.dart';
 import 'package:walletconnect_flutter_v2/apis/utils/method_constants.dart';
 
+@Deprecated(
+  'walletconnect_flutter_v2 package is no longer maintened. Read more at: https://docs.reown.com/advanced/walletconnect-deprecations#flutter',
+)
 class AuthEngine implements IAuthEngine {
   static const List<List<String>> DEFAULT_METHODS = [
     [

@@ -12,6 +12,9 @@ import 'package:walletconnect_flutter_v2/apis/sign_api/utils/auth/recaps_utils.d
 import 'package:walletconnect_flutter_v2/apis/core/crypto/crypto_models.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/utils/auth/auth_constants.dart';
 
+@Deprecated(
+  'walletconnect_flutter_v2 package is no longer maintened. Read more at: https://docs.reown.com/advanced/walletconnect-deprecations#flutter',
+)
 class SignEngine implements ISignEngine {
   static const List<List<String>> DEFAULT_METHODS = [
     [

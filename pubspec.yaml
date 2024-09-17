@@ -1,7 +1,8 @@
 name: walletconnect_flutter_v2
 description: WalletConnect's official Dart library v2 for WalletKit and AppKit. The communications protocol for web3.
-version: 2.4.0-beta01
+version: 2.4.1
 repository: https://github.com/WalletConnect/WalletConnectFlutterV2
+publish_to: https://pub.dev/publishers/walletconnect.com
 
 environment:
   sdk: ">=2.19.0 <4.0.0"

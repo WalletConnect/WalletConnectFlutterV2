@@ -1,6 +1,6 @@
-## 2.4.0-beta01
+## 2.4.1
 
-- Link Mode! https://docs.walletconnect.com/walletkit/flutter/link-mode
+- Package is no longer maintained. Check readme file
 
 ## 2.3.1
 

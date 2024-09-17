@@ -16,6 +16,9 @@ import 'package:walletconnect_flutter_v2/apis/sign_api/models/auth/common_auth_m
 import 'package:walletconnect_flutter_v2/apis/utils/constants.dart';
 import 'package:walletconnect_flutter_v2/apis/utils/log_level.dart';
 
+@Deprecated(
+  'walletconnect_flutter_v2 package is no longer maintened. Read more at: https://docs.reown.com/advanced/walletconnect-deprecations#flutter',
+)
 class AuthClient implements IAuthClient {
   bool _initialized = false;
 

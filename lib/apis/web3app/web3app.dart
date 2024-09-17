@@ -6,6 +6,9 @@ import 'package:walletconnect_flutter_v2/apis/sign_api/i_sessions.dart';
 import 'package:walletconnect_flutter_v2/apis/sign_api/sign_engine.dart';
 import 'package:walletconnect_flutter_v2/walletconnect_flutter_v2.dart';
 
+@Deprecated(
+  'walletconnect_flutter_v2 package is no longer maintened, please upgrade to reown_appkit. Read more at: https://docs.reown.com/advanced/walletconnect-deprecations#flutter',
+)
 class Web3App implements IWeb3App {
   static const List<List<String>> DEFAULT_METHODS = [
     [

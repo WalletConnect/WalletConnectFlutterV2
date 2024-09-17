@@ -1,3 +1,12 @@
+# ⚠️ WARNING
+
+### This package is no longer maintened, please upgrade to Reown packages.
+
+- Reown packages: [https://pub.dev/publishers/reown.com/packages](https://pub.dev/publishers/reown.com/packages)
+- Read more at: [https://docs.reown.com/advanced/walletconnect-deprecations#flutter](https://docs.reown.com/advanced/walletconnect-deprecations#flutter)
+- WalletKit Updgrade guide: [https://docs.reown.com/walletkit/upgrade/from-web3wallet-flutter](https://docs.reown.com/walletkit/upgrade/from-web3wallet-flutter)
+- AppKit Updgrade guide: [https://docs.reown.com/appkit/upgrade/from-web3modal-flutter](https://docs.reown.com/appkit/upgrade/from-web3modal-flutter)
+
 # Overview
 
 WalletConnect Dart v2 package for WalletKit and AppKit. https://walletconnect.com/.

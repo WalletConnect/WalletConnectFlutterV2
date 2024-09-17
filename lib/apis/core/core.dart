@@ -33,6 +33,9 @@ import 'package:walletconnect_flutter_v2/apis/utils/constants.dart';
 import 'package:walletconnect_flutter_v2/apis/utils/log_level.dart';
 import 'package:walletconnect_flutter_v2/apis/utils/walletconnect_utils.dart';
 
+@Deprecated(
+  'walletconnect_flutter_v2 package is no longer maintened. Read more at: https://docs.reown.com/advanced/walletconnect-deprecations#flutter',
+)
 class Core implements ICore {
   @override
   String get protocol => 'wc';
